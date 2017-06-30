@@ -1,0 +1,1053 @@
+// If you edit this file you need to compile the theme. See README.md for details.
+
+// Global variable overrides. Must be declared before importing Valo.
+
+// Defines the plaintext font size, weight and family. Font size affects general component sizing.
+//$v-font-size: 16px;
+//$v-font-weight: 300;
+//$v-font-family: "Open Sans", sans-serif;
+
+// Defines the border used by all components.
+//$v-border: 1px solid (v-shade 0.7);
+//$v-border-radius: 4px;
+
+// Affects the color of some component elements, e.g Button, Panel title, etc
+//$v-background-color: hsl(210, 0%, 98%);
+// Affects the color of content areas, e.g  Panel and Window content, TextField input etc
+//$v-app-background-color: $v-background-color;
+
+// Affects the visual appearance of all components
+//$v-gradient: v-linear 8%;
+//$v-bevel-depth: 30%;
+//$v-shadow-opacity: 5%;
+
+// Defines colors for indicating status (focus, success, failure)
+//$v-focus-color: valo-focus-color(); // Calculates a suitable color automatically
+//$v-friendly-color: #2c9720;
+//$v-error-indicator-color: #ed473b;
+
+// For more information, see: https://vaadin.com/book/-/page/themes.valo.html
+// Example variants can be copy/pasted from https://vaadin.com/wiki/-/wiki/Main/Valo+Examples
+@import "../../../VAADIN/addons/vaadin-icons/vaadin-icons.scss";
+
+
+
+@font-face {
+    font-family: ThemeIcons;
+    font-weight: normal;
+    font-style: normal;
+    src: url(../valo/util/bourbon/css3/../../../../base/fonts/themeicons-webfont.eot);
+    src: url(../valo/util/bourbon/css3/../../../../base/fonts/themeicons-webfont.eot?#iefix) format("embedded-opentype"), url(../valo/util/bourbon/css3/../../../../base/fonts/themeicons-webfont.woff) format("woff"), url(../valo/util/bourbon/css3/../../../../base/fonts/themeicons-webfont.ttf) format("truetype"), url(../valo/util/bourbon/css3/../../../../base/fonts/themeicons-webfont.svg#ThemeIcons) format("svg");
+}
+@font-face {
+    font-family: "Open Sans";
+    src: url(../valo/fonts/open-sans/OpenSans-Light-webfont.eot);
+    src: url(../valo/fonts/open-sans/OpenSans-Light-webfont.eot?#iefix) format("embedded-opentype"), url(../valo/fonts/open-sans/OpenSans-Light-webfont.woff) format("woff"), url(../valo/fonts/open-sans/OpenSans-Light-webfont.ttf) format("truetype");
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Open Sans";
+    src: url(../valo/fonts/open-sans/OpenSans-Regular-webfont.eot);
+    src: url(../valo/fonts/open-sans/OpenSans-Regular-webfont.eot?#iefix) format("embedded-opentype"), url(../valo/fonts/open-sans/OpenSans-Regular-webfont.woff) format("woff"), url(../valo/fonts/open-sans/OpenSans-Regular-webfont.ttf) format("truetype");
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "Open Sans";
+    src: url(../valo/fonts/open-sans/OpenSans-Semibold-webfont.eot);
+    src: url(../valo/fonts/open-sans/OpenSans-Semibold-webfont.eot?#iefix) format("embedded-opentype"), url(../valo/fonts/open-sans/OpenSans-Semibold-webfont.woff) format("woff"), url(../valo/fonts/open-sans/OpenSans-Semibold-webfont.ttf) format("truetype");
+    font-weight: 600;
+    font-style: normal;
+}
+@font-face {
+    font-family: FontAwesome;
+    font-weight: normal;
+    font-style: normal;
+    src: url(../valo/util/bourbon/css3/../../../../base/fonts/fontawesome-webfont.eot);
+    src: url(../valo/util/bourbon/css3/../../../../base/fonts/fontawesome-webfont.eot?#iefix) format("embedded-opentype"), url(../valo/util/bourbon/css3/../../../../base/fonts/fontawesome-webfont.woff) format("woff"), url(../valo/util/bourbon/css3/../../../../base/fonts/fontawesome-webfont.ttf) format("truetype"), url(../valo/util/bourbon/css3/../../../../base/fonts/fontawesome-webfont.svg#FontAwesome) format("svg");
+}
+@import "../valo/valo.scss";
+
+@keyframes blink { 
+    50% {        border-color: orange; 
+                 border-width:2px;
+
+
+                 /* CSS3 Transition */
+                 -webkit-transition: all .5s ease-in-out;
+                 -moz-transition: all .5s ease-in-out;
+                 -o-transition: all .5s ease-in-out;
+                 transition: all .5s ease-in-out;
+    } 
+}
+
+
+
+@keyframes blinkII { 
+    50% {        border-color: orange; 
+                 border-width:2px;
+
+                 /* CSS3 Transition */
+                 -webkit-transition: all .5s ease-in-out;
+                 -moz-transition: all .5s ease-in-out;
+                 -o-transition: all .5s ease-in-out;
+                 transition: all .5s ease-in-out;
+    } 
+}
+
+@mixin webpeptideshakertheme {
+    @include valo;
+    // Insert your own theme rules here
+    @include vaadin-icons;
+
+    .margin{
+        padding: 10px;
+    }
+    .autooverflow{
+        overflow: auto;
+    }
+    .v-slot-mainlayout{
+        background-color: white;
+    }
+    .mainlayout{
+
+
+    }
+    .v-link-headerlogo { 	
+        line-height:80px !important; 
+        color:black !important; 
+        font-size:30px; 
+        text-decoration:none !important;
+        margin-top: -40px;
+    }
+    .v-link-headerlogo font{
+        text-decoration: none !important;
+        font-size: 15px;
+        font-style: italic;
+        color: #cd6e1d;
+    }   
+    .galaxybtn {
+        border-top-left-radius: 5px;
+        border-bottom-left-radius: 5px;
+        padding-left: 30px;
+        border: 1px solid #2c3143;
+        background-image: url("img/galaxyLogo.png");
+        background-size: auto 105%;
+        background-repeat: no-repeat;
+        font-weight: bold;
+        background-color: #2c3143;
+        color: white;
+        cursor: pointer;
+        text-decoration:none !important;
+    }
+
+    .galaxybtn:hover {
+        background-color: #2c3143;
+        color: white;
+    }
+
+    .settingbtn {
+
+        background-image: url(img/cog-o.svg);
+        background-repeat: no-repeat;
+        background-size: auto 90%;
+        background-position: center;
+        border: 1px solid #2c3143;
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px;
+        border-left:none;
+        position:relative !important;
+        z-index:1 !important;
+
+        cursor: pointer;
+    }
+
+    .settingbtn:hover {
+        background-color: #2c3143;
+        background-image: url(img/cog-o_dark.svg);
+        cursor: pointer;
+    }
+    .disconnect{
+       	color: white !important;
+        background-color: #4f9d13 !important;
+    }
+    .hide {
+        visibility: hidden !important;
+    }
+    .v-slot-rightsidebtncontainer {
+        margin-top: 30px;
+        max-height: 250px;
+        width: 50px !important;
+        margin-left:-35px;
+        background-color:white;
+        /*        border-top:2px solid lightgray;
+                border-bottom:2px solid lightgray;
+                border-bottom:2px solid lightgray;*/
+        overflow:hidden;
+    }
+
+    .rightsidebtncontainer {
+        min-width: 16px;
+        max-width: 64px;
+        max-height: 280px;
+        -webkit-transition: all 1.5s ease-in-out;
+        -moz-transition: all 1.5s ease-in-out;
+        -o-transition: all 1.5s ease-in-out;
+        transition: all 1.5s ease-in-out;
+    }
+    .smallmenubtn {
+        background-color: whitesmoke;
+        border: 1px solid lightgray;
+        border-radius: 5px;
+        width: 35px !important;
+        height: 35px !important;
+        cursor: pointer;
+        -webkit-transition: all 0.5s ease-in-out;
+        -moz-transition: all 0.5s ease-in-out;
+        -o-transition: all 0.5s ease-in-out;
+        transition: all 0.5s ease-in-out;
+    }
+
+    .smallmenubtn:hover {
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
+        -webkit-box-shadow: 0 0px 20px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
+        -moz-box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
+        border-color: gray;
+        padding:0px !important;
+    }
+
+    .selectedsmallbtn {
+        background-color: white;
+        border-width: 2px;
+        border-color: rgba(18, 120, 239, 0.96);
+        padding: 0px !important;
+    }
+
+    .smallmenubtn img {
+        padding: 10%;
+    }
+
+    .hidepanel {
+
+        -webkit-transform: rotateX(150deg); /* Safari */
+        transform: rotateX(150deg);
+        overflow: hidden !important;
+        -webkit-transition: all 0.5s ease-in-out;
+        -moz-transition: all 0.5s ease-in-out;
+        -o-transition: all 0.5s ease-in-out;
+        transition: all 0.5s ease-in-out;
+    }
+    .v-absolutelayout-wrapper-hidepanel{
+        width:0px !important;
+    }
+
+    .activelayout {
+        background-color: white;
+        -webkit-transition: all 0.5s ease-in-out;
+        -moz-transition: all 0.5s ease-in-out;
+        -o-transition: all 0.5s ease-in-out;
+        transition: all 0.5s ease-in-out;
+    }
+
+    .v-slot-leftsidebtncontainer {
+        margin-top: 20px;
+        max-width:100px !important;
+    }
+
+    .leftsidebtncontainer {
+
+        margin-left:2px;
+        position:relative;
+        z-index:10000000000000000000000000000 !important;
+        -webkit-transition: all 0.5s ease-in-out;
+        -moz-transition: all 0.5s ease-in-out;
+        -o-transition: all 0.5s ease-in-out;
+        transition: all 0.5s ease-in-out;
+    }
+
+    .lightgraylayout {
+        background-color: lightgray;
+    }
+
+    .bigmenubtn {
+        max-height: 225px;
+        height:auto !important;
+        padding:10%;
+        border: 2px solid rgba(0, 0, 255, 0);
+        cursor: pointer;
+        -webkit-transition: all 0.5s ease-in-out;
+        -moz-transition: all 0.5s ease-in-out;
+        -o-transition: all 0.5s ease-in-out;
+        transition: all 0.5s ease-in-out;
+    }
+
+    .bigmenubtn img {
+        max-width:100px !important;
+        width: 100% !important;
+        height: auto !important;
+        border: 2px solid lightgray;
+        border-radius: 5px;
+        cursor: pointer;
+        padding:10%;
+        position: relative;
+        z-index: 10 !important;
+    }
+
+    .bigbtnText {
+        max-width: 150px;
+        font-size: 12px;
+        font-weight: bold;
+        overflow: hidden;
+        text-align: center;
+        text-overflow: ellipsis;
+        background-color: white;
+        border: 2px solid lightgray;
+        border-left-color: white !important;
+        z-index: 10000000 !important;
+        border-bottom-right-radius: 5px;
+        border-top-right-radius: 5px;
+        position: relative;
+        margin-left: -3px !important;
+    }
+
+    .selectedbiglbtn {
+        background-color: whitesmoke;
+        border: 2px solid lightgray;
+        border-right-color: whitesmoke;
+        border-radius: 5px;
+        border-top-right-radius:0px;
+        border-bottom-right-radius:0px;
+        position: relative;
+        z-index: 10 !important;
+        padding:10%;
+    }
+
+    .selectedbiglbtn img {
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
+        -webkit-box-shadow: 0 0px 20px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
+        -moz-box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
+        border-color: rgba(18, 120, 239, 0.96) !important;
+    }
+
+    .bigmenubtn :hover {
+        background-color: whitesmoke;
+    }
+
+    .selectedbiglbtn .bigbtnText {
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
+        -webkit-box-shadow: 0 0px 20px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
+        -moz-box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
+        border-color: #ada9a9;
+    }
+
+    .zeropadding img {
+        padding: 0px !important;
+    }
+
+    .integratedframe {
+        background-color: whitesmoke;
+        border: 2px solid lightgray;
+        border-radius: 5px;
+    }
+    .integratedframe .v-captiontext{
+        font-size:16px;
+        font-weight:bold;
+        font-family:"Open Sans", sans-serif;
+        color:rgb(70,70,70);
+    }
+    .viewframe{
+        padding: 10px !important;
+
+    }
+    .v-slot-viewframe {
+        height:100% !important;
+    }
+    .viewframecontent{
+        background-color:white;
+        border:2px solid lightgray;
+        border-radius: 5px;
+    }
+    .v-slot-bottomsidebtncontainer{
+        opacity: 0;
+    }
+    .v-label-frametitle{
+        padding-left:10px;
+        padding-top:10px;
+        font-size:16px;
+        font-weight:bold;
+        font-family:"Open Sans", sans-serif;
+        color:rgb(70,70,70);
+
+    }
+    .subtitle {
+        padding-left: 20px;
+        padding-top: 10px;
+        font-size: 12px;
+
+        font-weight: bold;
+        font-family: "Open Sans", sans-serif;
+    }
+    .v-caption-dropdownlist {
+        padding-left: 20px;
+        padding-top: 10px;
+        font-size: 12px;
+        font-weight: bold;
+        font-family: "Open Sans", sans-serif;
+    }
+
+    .dropdownlist {
+        max-height: 25px;
+        padding-left: 20px;
+        min-width: 420px !important;
+    }
+
+    .dropdownlistframe {
+        min-width: 200px !important;
+    }
+
+
+    .v-caption-optiongroup {
+        padding-left: 20px;
+        padding-top: 10px;
+        font-size: 12px;
+        font-weight: bold;
+        font-family: "Open Sans", sans-serif;
+        min-width: 200px !important;
+        cursor: pointer;
+    }
+
+    .v-caption-hidelist div {	
+        display: inline-block !important;
+        margin-right: 10px;
+    }
+    .v-caption-showlist div {
+        -webkit-transform: rotate(90deg) !important;
+        -moz-transform: rotate(90deg) !important;
+        -o-transform: rotate(90deg) !important;
+        -ms-transform: rotate(90deg) !important;
+        transform: rotate(90deg) !important;
+        display: inline-block !important;
+        margin-right: 10px;
+    }
+    .v-caption-hidelist  {
+        display: inline-block !important;
+        max-height:20px !important;
+    }
+
+    .v-select-optiongroup-hidelist {
+        visibility: hidden !important;
+        max-height: 1px !important;
+
+    }
+    .optiongroup {
+        padding-left: 20px;
+        min-width: 200px !important;
+
+    }
+    .optiongroup .v-select-option {
+        overflow:hidden;
+        text-overflow:ellipsis !important;
+    }
+    .v-select-optiongroup-optiongroup {
+        max-height: 260px;
+        overflow-y: auto;
+        overflow-x:hidden;
+        text-overflow:ellipsis;
+        font-size: 12px;
+        font-family: "Open Sans", sans-serif;
+    }
+
+    /*    .optiongroupframe {
+            width: 200px !important;
+    
+    
+        }*/
+
+    .frame{
+        border: 1px solid lightgray;
+        border-radius: 5px;
+        padding:10px !important;
+        min-height: 600px;
+        min-width: 650px;
+        background-color: white;
+    }
+    .leftsideviewcontainer {
+        padding-top: 20px;
+        width: 100px !important;
+        z-index: 10000000000.0 !important;
+        position: absolute !important;
+        overflow:visible;
+    }
+    .v-slot-rightsidebtncontainer {
+        width: 50px !important;
+        z-index: 10000000000.0 !important;
+        position: absolute !important;
+        overflow: visible;
+        right: 10px;        
+        visibility:visible !important;
+    }
+    .v-slot-rightsidebtncontainer.v-slot-hide{
+        border:none !important;
+    }
+    .middleviewcontainer{
+        padding-left:98px;
+        padding-right:15px;
+    }
+    .visible{
+        visibility: visible !important;
+    }
+    .v-verticallayout-integratedframe.hidepanel {
+        border-width:0px;
+    }
+    .v-slot-bottomsidebtncontainer{
+        min-height:0px;	
+        visibility:hidden;
+        opacity:0;
+        position:absolute;
+    }
+    .minwidth470{
+        min-width: 470px;
+    }
+    .maxwidth600{
+        max-width: 600px;
+    }
+
+    .bottomformlayout{
+        margin-left:20px;
+        min-height:30px;
+    }
+    .bottomformlayout .v-popupview {
+        text-decoration:none;
+        font-weight:bold;
+        font-size: 13px !important;
+    }
+    .bottomformlayout .v-popupview:hover {
+        text-decoration:underline;
+    }
+    .bottomformlayout .v-button{
+        max-height:25px;
+        margin-left:20px;
+        font-weight:bold !important;
+        font-size: 13px !important;
+    }
+    .error {
+        color:red;
+    }
+    .v-window.v-window-progress{
+        width: 40px !important;
+        height: 40px !important;
+        min-width: 10px !important;
+        max-width: 40px !important;
+        z-index:2000000  !important;
+        /*        left: 100% !important;
+                top: 100% !important;
+                margin-left: -68px !important;
+                margin-top: -53px !important;*/
+        position: fixed !important;
+        background-image: url("img/loading.gif");
+        background-size: 90% 90%;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+    .v-popupview-popup-centerwindow{
+        position: absolute !important; /* or absolute */
+        max-width:100%;
+        max-height:100%;
+        top: 50% !important;;
+        left: 50% !important;
+        /* bring your own prefixes */
+        transform: translate(-50%, -50%);
+        overflow:auto !important;
+        border:2px solid  gray;
+    }
+    .v-popupview-popup-centerwindow .v-label {
+        color: gray;
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom:10px;
+    }
+    .v-slot-panelframe{
+        min-width:650px !important;
+    }
+    .panelframe .v-label{
+        text-decoration:underline;
+        font-size:15px !important;
+    }
+    .panelframe .v-captiontext{
+        margin-top:5px;
+        font-size:13px !important;
+    }
+    .v-filterselect-input{
+        font-size:13px !important;
+    }
+    .v-filterselect {
+        z-index: 3 !important;
+        position: relative !important;
+    }
+    .v-caption-inline-label{
+        display: inline-block !important;
+        padding-right:5px;
+    }
+    .smallundecorated.v-label-smallundecorated {
+        text-decoration: none !important;
+        font-size: 12px !important;
+        font-weight:normal !important;
+    }
+    .windowtitle{
+        font-size:13px;
+        font-weight:bold;
+        color:#3d84dc;
+        cursor:pointer;
+    }
+    .popupwindow{
+        border:2px solid gray;
+    }
+    .focos .v-filterselect-input{
+        border:2px solid  rgba(18, 120, 239, 0.96)!important;
+    }
+    .focos .v-filterselect[class*="prompt"] > [class*="input"]{
+        color:rgba(18, 120, 239, 0.96);
+    }
+    /*    .v-has-caption.v-has-width > .inline-label.v-widget {
+            width: 50% !important;
+            float: right;
+            margin-top: 5px;
+        }
+        .inline-label.v-textfield-inline-label{
+            width: 50% !important;
+            float: right;
+            margin-top: 5px;
+        }
+        .v-caption-inline-label div{
+            display: inline-block !important;
+            background-color:#cdc9ca;
+            margin-top:5px !important;
+        }*/
+
+    .blink{ 
+        animation-name: blink !important;
+        animation-duration: .5s !important;
+        animation-timing-function: step-end !important;
+        animation-iteration-count: 12 !important;
+        animation-direction: alternate !important;
+
+    }
+    .blinkII{ 
+        animation-name: blinkII !important;
+        animation-duration: .5s !important;
+        animation-timing-function: step-end !important;
+        animation-iteration-count: 12 !important;
+        animation-direction: alternate !important;
+
+    }
+
+
+
+
+    .paddingleft-20 {	
+        margin-left: -20px;
+    }
+
+    .smallfontlongtext{
+        overflow-y: auto;
+        overflow-x: hidden;
+        text-overflow: ellipsis;
+        font-size: 12px;
+        font-family: "Open Sans", sans-serif;
+    }
+
+
+
+    .subpanelframe{
+        border:1px solid lightgray;
+        padding:5px;
+        border-radius:5px;
+        background-color:whitesmoke;
+    }
+    .padding25{
+        padding-top: 25px;
+        padding-right: 25px;
+        padding-bottom: 25px;
+        padding-left: 25px;
+    }
+    .row {
+        background-color: white;
+        padding-left: 10px;
+        font-size: 14px;
+        border: 2px solid lightgray;
+    }
+    .row .v-label{
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;font-family: "Open Sans", sans-serif;
+    }
+    .header{
+        font-weight:bold;
+        border-color:gray;
+    }
+    .actionlabel {
+        cursor: pointer;
+        font-weight:bold;
+        padding-top:2px;
+    }
+
+    .actionlabel:hover {
+        cursor: pointer;
+        color: #1278ef !important;
+
+    }
+    .v-disabled .v-slot-actionlabel{
+        color:lightgray;
+    }
+    .v-disabled.actionlabel {
+        color: lightgray;
+    }
+
+    .textalignmiddle{
+        text-align: center !important;
+    }
+    .disablescrolltable{
+        overflow: hidden !important;
+    }
+    .v-textfield-pagedtable-pagefield{
+        min-width:40px;
+    }
+    .datasetcomponent {
+        max-height: 200px;
+        max-width: 200px;
+        background-color: whitesmoke;
+        border-radius: 50%;
+        border: 2px solid lightgray;
+        box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
+        -webkit-box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
+        -moz-box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
+        border-radius: 50%;
+        -webkit-border-radius: 50%;
+        -moz-border-radius: 50%;
+        -webkit-transition: all 1.5s ease-in-out;
+        -moz-transition: all 1.5s ease-in-out;
+        -o-transition: all 1.5s ease-in-out;
+        transition: all 1.5s ease-in-out;
+        opacity:0.5;
+        cursor: pointer;
+    }
+    .datasetcomponent:hover {
+        opacity:1;
+        background-color:lightgray;
+        border-color:gray;
+    }
+    .datasetcomponent .v-label {
+        text-align:center;
+        text-transform:uppercase;
+        font-weight:bold;
+        font-size:14px;
+        overflow:hidden;
+        text-overflow:ellipsis;
+    }
+    .orangecolor{
+        color:orange;
+    }
+    .bluecolor{        
+        color:	#4d749f !important;
+    }
+    .v-button-centerbackground {
+        text-align:center !important;
+        padding-top:1px !important;
+
+    }
+    .v-button-centerbackground:hover {
+        color: #3d84dc !important;
+    }
+    .largetitle .v-label{
+        margin-top:10px;
+        margin-left:25px;
+        font-size:18px !important;
+        font-weight:normal !important;
+
+    }
+    .v-slot-largetitle{
+        min-height:30px;
+    }
+    .scrollinsideframe{
+        padding-left: 25px;
+        padding-right: 25px;
+    }
+    .disable{
+        opacity:0.6;
+    }
+    .v-table-framedpanel.v-table-body-wrapper.v-table-body{
+        overflow-x:hidden !important;
+    }
+    .v-table-framedpanel.v-table-borderless {
+        border:1px solid lightgray;
+    }
+    /****mobile css**/
+    .horizontalcss  .largetitle .v-label{
+        margin-left:10px;
+    }
+    .horizontalcss .scrollinsideframe{
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    .horizontalcss .mainlayout {
+
+    }
+
+    .horizontalcss .v-slot-leftsidebtncontainer {
+        width: 1% !important;
+        background-color: white;
+        opacity:0;
+    }
+
+    .horizontalcss .v-slot-integratedframe {
+        width: 99% !important;
+        height: 90% !important;
+    }
+
+    .horizontalcss .v-slot-bottomsidebtncontainer{       
+        opacity: 1;
+    }
+    .horizontalcss .bigmenubtn img {
+        height:100% !important;
+        width: 40px !important;
+        border: 2px solid lightgray;
+        border-radius: 5px;
+        cursor: pointer;
+        padding: 10% !important;
+        z-index:10000000000000000000000000000000 !important;
+        position:relative;
+    }
+    .horizontalcss zeropadding{
+        padding:10px !important;
+    }
+    .horizontalcss .selectedbiglbtn {
+        background-color:whitesmoke;
+        margin-top:-2px !important;
+        border-top-color:whitesmoke;
+        border-right-color:lightgrey;
+        border-bottom-right-radius:5px;
+    }
+    .horizontalcss .selectedbiglbtn img{
+        border-color:rgba(18, 120, 239, 0.96) !important;
+    }
+    .horizontalcss.autooverflow{
+        overflow:hidden !important;
+    }
+    .horizontalcss .v-slot-rightsidebtncontainer {	
+        /*        background-color: white;
+                border-top: 2px solid white;
+                border-bottom: 2px solid white;
+                overflow: hidden;*/
+        width: 0px !important;
+        z-index:0 !important;
+        overflow: hidden;
+    }
+    .smalltable div{
+        font-size:12px !important;
+    }
+    .smalltable .v-label-smalltable.v-label{
+        font-size: 12px !important;
+        font-weight:normal !important;
+        text-decoration:none !important;
+        padding-left:5px
+    }
+
+
+    /*    .horizontalcss .v-slot-rightsidebtncontainer {
+            width: 50px !important;
+            z-index: 10000000000.0 !important;
+            position: absolute !important;
+            overflow: visible;
+            right: 10px;
+        }*/
+
+    .v-horizontallayout-logocontainer{
+        margin-top:30px !important;
+        left:20px !important;
+
+        overflow:visible !important;
+        position:fixed !important;
+        z-index:2222222222 !important;
+    }
+    .horizontalcss .middleviewcontainer {
+        padding-left: 0px;
+        padding-right: 0px;
+        padding-bottom:60px;
+    }
+    .horizontalcss .leftsideviewcontainer .v-slot-bigmenubtn {
+        visibility: hidden !important;
+    }
+    .horizontalcss.frame {	
+        min-height: 400px !important;
+        min-width: 495px !important;
+
+    }
+    .horizontalcss .v-slot-bottomsidebtncontainer {
+
+        min-height: 60px !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        position: relative;
+        z-index: 2;
+        background-color: white !important;
+    }
+    .horizontalcss .bottomsidebtncontainer {
+        margin-top: -2px;	
+        min-height: 60px !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        position: relative;
+        margin-left:20px;
+    }
+    .horizontalcss .v-slot-topviewcontainer {
+        min-height: 50px;
+        max-width: 220px;
+        position: relative !important;
+        top: 35px !important;
+        float: right;
+        left: -50px !important;
+        z-index: 2000000000 !important;
+        background-color: #ffffff !important;
+        height: 50px !important;
+        overflow: visible;
+        visibility: visible !important;
+    }
+    .v-slot-smallmenubtn{
+        min-width:50px;
+    }
+    .horizontalcss .v-verticallayout-middleviewcontainer{
+        top:-39px !important;
+        overflow:visible;
+        visibility:visible !important;
+        z-index:2 !important;
+        position:absolute !important;
+    }
+    .horizontalcss .logocontainer img {
+        height:140px !important;
+        overflow:visible;
+        margin-top:-20px;
+        position:fixed ;
+        z-index:10!important;
+    }
+    .v-verticallayout-hidepanel img{
+        visibility:hidden;
+    }
+    .horizontalcss .v-link-headerlogo {
+        visibility:hidden;
+    }
+
+    .logocontainer{
+        top:-1px !important;
+        position:absolute;
+    }
+    .horizontalcss .selectedsmallbtn {
+
+    }
+    .horizontalcss .v-slot-smallmenubtn {
+        min-width: 50px;
+    }
+    .horizontalcss .v-label-frametitle {
+
+        padding-left: 10px;
+        padding-top: 20px;
+        font-size: 14px;
+        font-weight: bold;
+        font-family: "Open Sans", sans-serif;
+        color: #464646;
+    }
+
+
+
+    .v-slot-smallmenubtn {
+        max-height: 80px !important;
+        border: 2px solid lightgray;
+        border-right: none;
+        background-color: whitesmoke;
+        margin-top: -4px;
+        border-radius: 5px;
+        border-bottom-right-radius: 0px;
+        border-top-right-radius: 0px;
+        overflow: visible !important;
+        z-index: 3 !important;
+        position: relative !important;
+        margin-top:-6px;
+    }
+    .v-slot-smallmenubtn.v-slot-selectedsmallbtn {
+
+        border-top: 2px solid lightgray;
+        border-radius: 5px;
+        border-top-left-radius: 0px;
+        border-bottom-left-radius: 0px;
+        background: linear, lightgray, lightgray right no-repeat;
+        background: -webkit-linear-gradient(lightgray, lightgray) right no-repeat;
+        background: -o-linear-gradient(lightgray, lightgray) right no-repeat;
+        background: -moz-linear-gradient(lightgray, lightgray) right no-repeat;
+        background: linear, lightgray, lightgray right no-repeat;
+        background-size: 2px 100%;
+        margin-left: -2px;
+        overflow: hidden;
+        z-index: 2 !important;
+        border-right: 2px solid lightgray;
+    }
+
+    .v-slot-selectedsmallbtn.v-slot-middilesmallbtn {
+        border-right:none;
+        border-left-color:white;
+        background: linear, lightgray, lightgray right no-repeat;
+        background: -webkit-linear-gradient(lightgray, lightgray) right no-repeat;
+        background: -o-linear-gradient(lightgray, lightgray) right no-repeat;
+        background: -moz-linear-gradient(lightgray, lightgray) right no-repeat;
+        background-size: 2px 100%;
+        margin-left:-2px;
+        overflow: hidden;
+        z-index: 2 !important;
+    }
+
+    .horizontalcss .v-slot-smallmenubtn {
+        max-height: 40px !important;
+        border: 2px solid lightgray;
+        border-top: 2px solid rgba(211, 211, 211, 0);
+        background: whitesmoke;
+        border-radius: 5px;
+        border-top-right-radius: 0px;
+        border-top-left-radius: 0px;
+        overflow: visible !important;
+        z-index: 3 !important;
+        position: relative !important;
+        margin-top:-2px;
+        padding-top:2px;
+        margin-left:-2px;
+        float:bottom;
+    }
+
+    .horizontalcss .v-slot-smallmenubtn.v-slot-selectedsmallbtn {
+        border-bottom-color: white !important;	
+        background:white !important;
+        border-top-color:lightgray;
+        border-top-right-radius: 5px;
+        border-top-left-radius: 5px;
+        border-bottom-right-radius: 0px;
+        border-bottom-left-radius: 0px;
+        overflow: hidden;
+        z-index: 2 !important;
+
+    }
+
+    .webpeptideshakertheme .showpanel {
+        width: 0px !important;
+        height: 0px !important;
+        overflow: hidden !important;
+        -webkit-transition: all 0.5s ease-in-out;
+        -moz-transition: all 0.5s ease-in-out;
+        -o-transition: all 0.5s ease-in-out;
+        transition: all 0.5s ease-in-out;
+    }
+
+    .webpeptideshakertheme .v-absolutelayout-wrapper-showpanel {
+        width: 1000px !important;
+    }
+
+}

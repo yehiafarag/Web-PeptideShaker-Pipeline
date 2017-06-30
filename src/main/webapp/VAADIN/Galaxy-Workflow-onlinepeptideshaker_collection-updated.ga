@@ -1,0 +1,315 @@
+{
+    "a_galaxy_workflow": "true", 
+    "annotation": "", 
+    "format-version": "0.1", 
+    "name": "onlinepeptideshaker_collection (imported from uploaded file)", 
+    "steps": {
+        "0": {
+            "annotation": "", 
+            "content_id": null, 
+            "id": 0, 
+            "input_connections": {}, 
+            "inputs": [
+                {
+                    "description": "", 
+                    "name": "input_dataset_1"
+                }
+            ], 
+            "label": "input_dataset_1", 
+            "name": "Input dataset", 
+            "outputs": [], 
+            "position": {
+                "left": 199.96875, 
+                "top": 339.3125
+            }, 
+            "tool_errors": null, 
+            "tool_id": null, 
+            "tool_state": "{\"name\": \"input_dataset_1\"}", 
+            "tool_version": null, 
+            "type": "data_input", 
+            "uuid": "cac6101f-0b49-47b4-8982-4c7f95fd5cea", 
+            "workflow_outputs": [
+                {
+                    "label": null, 
+                    "output_name": "output", 
+                    "uuid": "00d6b44d-bc34-4429-a7c3-0f60865b5967"
+                }
+            ]
+        }, 
+        "1": {
+            "annotation": "", 
+            "content_id": null, 
+            "id": 1, 
+            "input_connections": {}, 
+            "inputs": [
+                {
+                    "description": "", 
+                    "name": "input_dataset_2_collection"
+                }
+            ], 
+            "label": "input_dataset_2_collection", 
+            "name": "Input dataset collection", 
+            "outputs": [], 
+            "position": {
+                "left": 160.5625, 
+                "top": 494.609375
+            }, 
+            "tool_errors": null, 
+            "tool_id": null, 
+            "tool_state": "{\"collection_type\": \"list\", \"name\": \"input_dataset_2_collection\"}", 
+            "tool_version": null, 
+            "type": "data_collection_input", 
+            "uuid": "a0b4ab71-b06c-4f06-81cb-806447f856b1", 
+            "workflow_outputs": [
+                {
+                    "label": null, 
+                    "output_name": "output", 
+                    "uuid": "b2600ca7-38e5-4d9b-842b-b31c4b18b90b"
+                }
+            ]
+        }, 
+        "2": {
+            "annotation": "", 
+            "content_id": "toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/search_gui/3.2.11", 
+            "id": 2, 
+            "input_connections": {
+                "input_database": {
+                    "id": 0, 
+                    "output_name": "output"
+                }, 
+                "peak_lists": {
+                    "id": 1, 
+                    "output_name": "output"
+                }
+            }, 
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Search GUI", 
+                    "name": "peak_lists"
+                }, 
+                {
+                    "description": "runtime parameter for tool Search GUI", 
+                    "name": "input_database"
+                }
+            ], 
+            "label": null, 
+            "name": "Search GUI", 
+            "outputs": [
+                {
+                    "name": "searchgui_results", 
+                    "type": "searchgui_archive"
+                }
+            ], 
+            "position": {
+                "left": 473, 
+                "top": 149.5
+            }, 
+            "post_job_actions": {
+                "RenameDatasetActionsearchgui_results": {
+                    "action_arguments": {
+                        "newname": "SearchGUI_Label"
+                    }, 
+                    "action_type": "RenameDatasetAction", 
+                    "output_name": "searchgui_results"
+                }
+            }, 
+            "tool_errors": null, 
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/search_gui/3.2.11", 
+            "tool_shed_repository": {
+                "changeset_revision": "7f2aeb19650f", 
+                "name": "peptideshaker", 
+                "owner": "galaxyp", 
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            }, 
+            "tool_state": "{\"__page__\": 0, \"peak_lists\": \"{\\\"__class__\\\": \\\"RuntimeValue\\\"}\", \"protein_database_options\": \"{\\\"update_gene_mapping\\\": \\\"false\\\", \\\"use_gene_mapping\\\": \\\"false\\\", \\\"create_decoy\\\": \\\"true\\\"}\", \"protein_digest_options\": \"{\\\"digestion\\\": {\\\"cleavage\\\": \\\"default\\\", \\\"missed_cleavages\\\": \\\"2\\\", \\\"__current_case__\\\": 0}}\", \"__rerun_remap_job_id__\": null, \"search_engines_options\": \"{\\\"engines\\\": [\\\"search_eng_to_replace"]}\", \"precursor_options\": \"{\\\"forward_ion\\\": \\\"b\\\", \\\"max_charge\\\": \\\"4\\\", \\\"max_isotope\\\": \\\"1\\\", \\\"precursor_ion_tol_units\\\": \\\"1\\\", \\\"min_isotope\\\": \\\"0\\\", \\\"fragment_tol\\\": \\\"0.5\\\", \\\"min_charge\\\": \\\"2\\\", \\\"reverse_ion\\\": \\\"y\\\", \\\"precursor_ion_tol\\\": \\\"10.0\\\"}\", \"advanced_options\": \"{\\\"searchgui_advanced\\\": {\\\"searchgui_advanced_selector\\\": \\\"basic\\\", \\\"__current_case__\\\": 0}, \\\"xtandem\\\": {\\\"__current_case__\\\": 0, \\\"xtandem_advanced\\\": \\\"no\\\"}, \\\"msgf\\\": {\\\"msgf_advanced\\\": \\\"no\\\", \\\"__current_case__\\\": 0}, \\\"directtag\\\": {\\\"directtag_advanced\\\": \\\"no\\\", \\\"__current_case__\\\": 0}, \\\"comet\\\": {\\\"comet_advanced\\\": \\\"no\\\", \\\"__current_case__\\\": 0}, \\\"omssa\\\": {\\\"omssa_advanced\\\": \\\"no\\\", \\\"__current_case__\\\": 0}, \\\"novor\\\": {\\\"novor_advanced\\\": \\\"no\\\", \\\"__current_case__\\\": 0}}\", \"input_database\": \"{\\\"__class__\\\": \\\"RuntimeValue\\\"}\", \"protein_modification_options\": \"{\\\"variable_modifications\\\": null, \\\"fixed_modifications\\\": null}\"}", 
+            "tool_version": "3.2.11", 
+            "type": "tool", 
+            "uuid": "29915572-f230-46a8-b2c7-6df8e9754165", 
+            "workflow_outputs": [
+                {
+                    "label": null, 
+                    "output_name": "searchgui_results", 
+                    "uuid": "b2f3a6b6-593f-4013-85ec-c4f646fdd4e4"
+                }
+            ]
+        }, 
+        "3": {
+            "annotation": "", 
+            "content_id": "toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/peptide_shaker/1.16.3", 
+            "id": 3, 
+            "input_connections": {
+                "searchgui_input": {
+                    "id": 2, 
+                    "output_name": "searchgui_results"
+                }
+            }, 
+            "inputs": [
+                {
+                    "description": "runtime parameter for tool Peptide Shaker", 
+                    "name": "searchgui_input"
+                }
+            ], 
+            "label": null, 
+            "name": "Peptide Shaker", 
+            "outputs": [
+                {
+                    "name": "mzidentML", 
+                    "type": "mzid"
+                }, 
+                {
+                    "name": "output_cps", 
+                    "type": "peptideshaker_archive"
+                }, 
+                {
+                    "name": "output_zip", 
+                    "type": "zip"
+                }, 
+                {
+                    "name": "output_certificate", 
+                    "type": "txt"
+                }, 
+                {
+                    "name": "output_hierarchical", 
+                    "type": "tabular"
+                }, 
+                {
+                    "name": "output_psm_phosphorylation", 
+                    "type": "tabular"
+                }, 
+                {
+                    "name": "output_psm", 
+                    "type": "tabular"
+                }, 
+                {
+                    "name": "output_extended_psm", 
+                    "type": "tabular"
+                }, 
+                {
+                    "name": "output_peptides_phosphorylation", 
+                    "type": "tabular"
+                }, 
+                {
+                    "name": "output_peptides", 
+                    "type": "tabular"
+                }, 
+                {
+                    "name": "output_proteins_phosphorylation", 
+                    "type": "tabular"
+                }, 
+                {
+                    "name": "output_proteins", 
+                    "type": "tabular"
+                }
+            ], 
+            "position": {
+                "left": 811, 
+                "top": 185.5
+            }, 
+            "post_job_actions": {
+                "HideDatasetActionmzidentML": {
+                    "action_arguments": {}, 
+                    "action_type": "HideDatasetAction", 
+                    "output_name": "mzidentML"
+                }, 
+                "HideDatasetActionoutput_certificate": {
+                    "action_arguments": {}, 
+                    "action_type": "HideDatasetAction", 
+                    "output_name": "output_certificate"
+                }, 
+                "HideDatasetActionoutput_extended_psm": {
+                    "action_arguments": {}, 
+                    "action_type": "HideDatasetAction", 
+                    "output_name": "output_extended_psm"
+                }, 
+                "HideDatasetActionoutput_hierarchical": {
+                    "action_arguments": {}, 
+                    "action_type": "HideDatasetAction", 
+                    "output_name": "output_hierarchical"
+                }, 
+                "HideDatasetActionoutput_peptides_phosphorylation": {
+                    "action_arguments": {}, 
+                    "action_type": "HideDatasetAction", 
+                    "output_name": "output_peptides_phosphorylation"
+                }, 
+                "HideDatasetActionoutput_proteins_phosphorylation": {
+                    "action_arguments": {}, 
+                    "action_type": "HideDatasetAction", 
+                    "output_name": "output_proteins_phosphorylation"
+                }, 
+                "HideDatasetActionoutput_psm_phosphorylation": {
+                    "action_arguments": {}, 
+                    "action_type": "HideDatasetAction", 
+                    "output_name": "output_psm_phosphorylation"
+                }, 
+                "HideDatasetActionoutput_zip": {
+                    "action_arguments": {}, 
+                    "action_type": "HideDatasetAction", 
+                    "output_name": "output_zip"
+                }, 
+                "RenameDatasetActionoutput_cps": {
+                    "action_arguments": {
+                        "newname": "CPS_Label"
+                    }, 
+                    "action_type": "RenameDatasetAction", 
+                    "output_name": "output_cps"
+                }, 
+                "RenameDatasetActionoutput_peptides": {
+                    "action_arguments": {
+                        "newname": "Peptides_Label"
+                    }, 
+                    "action_type": "RenameDatasetAction", 
+                    "output_name": "output_peptides"
+                }, 
+                "RenameDatasetActionoutput_proteins": {
+                    "action_arguments": {
+                        "newname": "Proteins_Label"
+                    }, 
+                    "action_type": "RenameDatasetAction", 
+                    "output_name": "output_proteins"
+                }, 
+                "RenameDatasetActionoutput_psm": {
+                    "action_arguments": {
+                        "newname": "PSM_Label"
+                    }, 
+                    "action_type": "RenameDatasetAction", 
+                    "output_name": "output_psm"
+                }
+            }, 
+            "tool_errors": null, 
+            "tool_id": "toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/peptide_shaker/1.16.3", 
+            "tool_shed_repository": {
+                "changeset_revision": "7f2aeb19650f", 
+                "name": "peptideshaker", 
+                "owner": "galaxyp", 
+                "tool_shed": "toolshed.g2.bx.psu.edu"
+            }, 
+            "tool_state": "{\"__page__\": 0, \"processing_options\": \"{\\\"processing_options_selector\\\": \\\"no\\\", \\\"__current_case__\\\": 0}\", \"__rerun_remap_job_id__\": null, \"filtering_options\": \"{\\\"filtering_options_selector\\\": \\\"no\\\", \\\"__current_case__\\\": 0}\", \"searchgui_input\": \"{\\\"__class__\\\": \\\"RuntimeValue\\\"}\", \"contact_options\": \"{\\\"contact_options_selector\\\": \\\"no\\\", \\\"__current_case__\\\": 0}\", \"outputs\": \"[\\\"3\\\", \\\"5\\\", \\\"7\\\", \\\"cps\\\"]\", \"include_sequences\": \"\\\"false\\\"\"}", 
+            "tool_version": "1.16.3", 
+            "type": "tool", 
+            "uuid": "e0de1e37-e68b-4aa0-8d6a-0170994131b1", 
+            "workflow_outputs": [
+                {
+                    "label": null, 
+                    "output_name": "output_psm", 
+                    "uuid": "06093d63-f630-4259-af62-e4978ec5860a"
+                }, 
+                {
+                    "label": null, 
+                    "output_name": "output_cps", 
+                    "uuid": "e1b53a1b-9828-4a98-8945-bea63da28fd0"
+                }, 
+                {
+                    "label": null, 
+                    "output_name": "output_proteins", 
+                    "uuid": "5eac9058-75e9-4b7a-aee9-c821a6c232f7"
+                }, 
+                {
+                    "label": null, 
+                    "output_name": "output_peptides", 
+                    "uuid": "37887da0-76de-4345-9010-fc6d0b1daf47"
+                }
+            ]
+        }
+    }, 
+    "uuid": "62127421-cab7-475c-b889-b3e748112bcb"
+}
