@@ -1,4 +1,4 @@
-package com.uib.web.peptideshaker.galaxy;
+package com.uib.web.peptideshaker.galaxy.dataobjects;
 
 /**
  * This class represents the Galaxy Dataset in the application

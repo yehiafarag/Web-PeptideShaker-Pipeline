@@ -2,10 +2,10 @@ package com.uib.web.peptideshaker;
 
 import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
 import com.github.jmchilton.blend4j.galaxy.GalaxyInstance;
-import com.uib.web.peptideshaker.galaxy.SystemDataSet;
-import com.uib.web.peptideshaker.galaxy.GalaxyFile;
+import com.uib.web.peptideshaker.galaxy.dataobjects.SystemDataSet;
+import com.uib.web.peptideshaker.galaxy.dataobjects.GalaxyFile;
 import com.uib.web.peptideshaker.galaxy.GalaxyLayer;
-import com.uib.web.peptideshaker.galaxy.PeptideShakerVisualizationDataset;
+import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDataset;
 import com.uib.web.peptideshaker.presenter.GalaxyFileSystemPresenter;
 import com.uib.web.peptideshaker.presenter.PeptideShakerViewPresenter;
 import com.uib.web.peptideshaker.presenter.ToolPresenter;

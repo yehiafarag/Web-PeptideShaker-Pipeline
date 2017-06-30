@@ -1,5 +1,8 @@
 package com.uib.web.peptideshaker.galaxy;
 
+import com.uib.web.peptideshaker.galaxy.dataobjects.GalaxyFile;
+import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDataset;
+import com.uib.web.peptideshaker.galaxy.dataobjects.SystemDataSet;
 import com.github.jmchilton.blend4j.galaxy.GalaxyInstance;
 import com.github.jmchilton.blend4j.galaxy.HistoriesClient;
 import com.github.jmchilton.blend4j.galaxy.beans.History;

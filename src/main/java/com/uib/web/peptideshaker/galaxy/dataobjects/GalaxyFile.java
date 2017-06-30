@@ -1,5 +1,6 @@
-package com.uib.web.peptideshaker.galaxy;
+package com.uib.web.peptideshaker.galaxy.dataobjects;
 
+import com.uib.web.peptideshaker.galaxy.dataobjects.SystemDataSet;
 import com.vaadin.server.VaadinSession;
 import java.io.File;
 import java.io.FileOutputStream;

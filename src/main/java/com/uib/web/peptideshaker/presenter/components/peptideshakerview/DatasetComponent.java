@@ -1,6 +1,6 @@
 package com.uib.web.peptideshaker.presenter.components.peptideshakerview;
 
-import com.uib.web.peptideshaker.galaxy.PeptideShakerVisualizationDataset;
+import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDataset;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Label;

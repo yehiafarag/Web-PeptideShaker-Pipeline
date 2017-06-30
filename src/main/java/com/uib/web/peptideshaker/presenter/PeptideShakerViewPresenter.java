@@ -1,6 +1,6 @@
 package com.uib.web.peptideshaker.presenter;
 
-import com.uib.web.peptideshaker.galaxy.PeptideShakerVisualizationDataset;
+import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDataset;
 import com.uib.web.peptideshaker.presenter.components.peptideshakerview.PeptideShakerDatasesViewLayout;
 import com.uib.web.peptideshaker.presenter.components.peptideshakerview.SelectionManager;
 import com.uib.web.peptideshaker.presenter.core.BigSideBtn;

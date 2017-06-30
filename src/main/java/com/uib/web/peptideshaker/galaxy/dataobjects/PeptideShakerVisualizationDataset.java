@@ -1,5 +1,6 @@
-package com.uib.web.peptideshaker.galaxy;
+package com.uib.web.peptideshaker.galaxy.dataobjects;
 
+import com.uib.web.peptideshaker.galaxy.dataobjects.SystemDataSet;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;

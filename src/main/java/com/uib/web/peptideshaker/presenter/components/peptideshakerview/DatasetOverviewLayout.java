@@ -3,7 +3,7 @@ package com.uib.web.peptideshaker.presenter.components.peptideshakerview;
 import com.compomics.util.experiment.biology.Enzyme;
 import com.compomics.util.experiment.biology.EnzymeFactory;
 import com.compomics.util.experiment.biology.PTMFactory;
-import com.uib.web.peptideshaker.galaxy.PeptideShakerVisualizationDataset;
+import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDataset;
 import com.uib.web.peptideshaker.presenter.core.form.ColorLabel;
 import com.uib.web.peptideshaker.presenter.core.form.Horizontal2Label;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabel2DropdownList;

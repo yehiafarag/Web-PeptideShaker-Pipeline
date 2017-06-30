@@ -7,7 +7,7 @@ import com.compomics.util.experiment.identification.identification_parameters.Pt
 import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
 import com.compomics.util.experiment.massspectrometry.Charge;
 import com.compomics.util.preferences.DigestionPreferences;
-import com.uib.web.peptideshaker.galaxy.SystemDataSet;
+import com.uib.web.peptideshaker.galaxy.dataobjects.SystemDataSet;
 import com.uib.web.peptideshaker.presenter.core.DropDownList;
 import com.uib.web.peptideshaker.presenter.core.MultiSelectOptionGroup;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;

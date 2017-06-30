@@ -1,8 +1,8 @@
 package com.uib.web.peptideshaker.presenter.components;
 
 import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
-import com.uib.web.peptideshaker.galaxy.PeptideShakerVisualizationDataset;
-import com.uib.web.peptideshaker.galaxy.SystemDataSet;
+import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDataset;
+import com.uib.web.peptideshaker.galaxy.dataobjects.SystemDataSet;
 import com.uib.web.peptideshaker.presenter.components.peptideshakerview.DatasetOverviewLayout;
 import com.uib.web.peptideshaker.presenter.core.ActionLabel;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;

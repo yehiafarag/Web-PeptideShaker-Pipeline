@@ -1,6 +1,6 @@
 package com.uib.web.peptideshaker.presenter.components.peptideshakerview;
 
-import com.uib.web.peptideshaker.galaxy.PeptideShakerVisualizationDataset;
+import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDataset;
 import com.vaadin.data.Property;
 import com.vaadin.shared.ui.MultiSelectMode;
 import com.vaadin.ui.Table;
