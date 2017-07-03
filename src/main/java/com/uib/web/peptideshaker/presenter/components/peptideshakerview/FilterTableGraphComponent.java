@@ -2,13 +2,17 @@ package com.uib.web.peptideshaker.presenter.components.peptideshakerview;
 
 import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDataset;
 import com.vaadin.data.Property;
+import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.shared.ui.MultiSelectMode;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import org.vaadin.hezamu.canvas.Canvas;
 
 /**
  * This class represents filtered Table with graph view
@@ -19,6 +23,7 @@ public class FilterTableGraphComponent extends VerticalLayout implements Propert
 
     private Table proteinsTable;
     private PeptideShakerVisualizationDataset peptideShakerVisualizationDataset;
+    private final GraphComponent graphLayout;
 
     public FilterTableGraphComponent() {
         FilterTableGraphComponent.this.setSizeFull();
@@ -26,8 +31,7 @@ public class FilterTableGraphComponent extends VerticalLayout implements Propert
         FilterTableGraphComponent.this.addStyleName("scrollinsideframe");
         initProteinTable();
         FilterTableGraphComponent.this.addComponent(proteinsTable);
-        VerticalLayout graphLayout = new VerticalLayout();
-        graphLayout.addStyleName("lightgraylayout");
+        graphLayout = new GraphComponent();
         FilterTableGraphComponent.this.addComponent(graphLayout);
 
     }
@@ -99,10 +103,35 @@ public class FilterTableGraphComponent extends VerticalLayout implements Propert
             Set<Object[]> peptidesSet = peptideShakerVisualizationDataset.getPeptideInfo(protAcc);
             int index = 1;
             for (Object[] peptide : peptidesSet) {
-                System.out.println("at selected value "+index++ + "     "+peptide[1] + "  key "+protAcc);
+                System.out.println("at selected value " + index++ + "     " + peptide[1] + "  key " + protAcc);
             }
 
         }
+        ArrayList<String> nodes = new ArrayList<>();
+//        nodes.add("A");
+//        nodes.add("B");
+//        nodes.add("C");
+//        nodes.add("D");
+//        nodes.add("E");
+//        nodes.add("F");
+//        nodes.add("G");
+//        nodes.add("H");
+//        nodes.add("I");
+        for (int x = 0; x < 10; x++) {
+            nodes.add("A" + x);
+        }
+
+        HashMap<String, ArrayList<String>> edges = new HashMap<>();
+        ArrayList<String> tEd = new ArrayList<>();
+        
+        tEd.add("A1");
+        tEd.add("A100");
+//        tEd.add("D");
+//        tEd.add("E");
+//        tEd.add("F");
+        edges.put("A1", tEd);
+
+        graphLayout.initGraph(nodes, edges);
 
     }
 

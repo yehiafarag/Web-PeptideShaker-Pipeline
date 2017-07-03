@@ -784,6 +784,13 @@
     .v-table-framedpanel.v-table-borderless {
         border:1px solid lightgray;
     }
+    .node{
+        background-color:green;
+        border:1px solid black;
+        border-radius:100%;
+        max-width:20px;
+        max-height:20px;
+    }
     /****mobile css**/
     .horizontalcss  .largetitle .v-label{
         margin-left:10px;

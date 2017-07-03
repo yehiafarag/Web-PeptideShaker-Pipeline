@@ -13770,6 +13770,14 @@ div.v-layout.v-horizontal.v-widget {
 	border: 1px solid lightgray;
 }
 
+.webpeptideshakertheme .node {
+	background-color: green;
+	border: 1px solid black;
+	border-radius: 100%;
+	max-width: 20px;
+	max-height: 20px;
+}
+
 .webpeptideshakertheme .horizontalcss .largetitle .v-label {
 	margin-left: 10px;
 }
