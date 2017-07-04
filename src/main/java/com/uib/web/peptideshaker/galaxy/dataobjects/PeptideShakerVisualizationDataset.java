@@ -2,7 +2,9 @@ package com.uib.web.peptideshaker.galaxy.dataobjects;
 
 import com.uib.web.peptideshaker.galaxy.dataobjects.SystemDataSet;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -19,12 +21,13 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
 
     private Map<Object, Object[]> proteinTableData;
     private Map<String, Set<String>> protein_peptide_Map;
+    private Map<String, Set<String>> protein_relatedProteins_Map;
 
     public Map<Object, Object[]> getProteinTableData() {
         if (proteinTableData != null) {
             return proteinTableData;
         }
-
+        protein_relatedProteins_Map = new HashMap<>();
         proteinTableData = new LinkedHashMap<>();
         BufferedRandomAccessFile bufferedRandomAccessFile = null;
         try {//           
@@ -39,6 +42,19 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
                 String[] arr = line.split("\\t");
                 Object[] obj = new Object[]{Integer.valueOf(arr[0]), arr[1], arr[2], arr[3], Double.valueOf(arr[5]), Double.valueOf(arr[6]), Integer.valueOf(arr[16])};
                 proteinTableData.put(index, obj);
+                if (!protein_relatedProteins_Map.containsKey(arr[1])) {
+                    Set<String> relatedProteins = new HashSet<>();
+                    protein_relatedProteins_Map.put(arr[1], relatedProteins);
+                }
+                Set<String> relatedProteins = protein_relatedProteins_Map.get(arr[1]);
+                if (arr[13].equalsIgnoreCase("Related Proteins")) {
+                    relatedProteins.addAll(Arrays.asList(arr[14].replace(" ", "").split(","))); 
+                    
+                }
+                relatedProteins.addAll(Arrays.asList(arr[15].replace(" ", "").split(",")));
+                relatedProteins.add(arr[1]);
+               
+                protein_relatedProteins_Map.put(arr[1], relatedProteins);
                 index++;
             }
             bufferedRandomAccessFile.close();
@@ -73,7 +89,7 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
             while ((line = bufferedRandomAccessFile.getNextLine()) != null) {
                 String[] arr = line.split("\\t");
                 //	Protein(s)	Protein Group(s)	#Validated Protein Group(s)	Unique Database	Sequence	Modified Sequence	Position	AAs Before	AAs After	Variable Modifications	Fixed Modifications	Localization Confidence	#Validated PSMs	#PSMs	Confidence [%]	Validation
-               
+
                 Object[] obj = new Object[]{Integer.valueOf(arr[0]), arr[1], arr[2], Integer.valueOf(arr[3]), Integer.valueOf(arr[4]), (arr[5]), (arr[10]), (arr[11]), Integer.valueOf(arr[14]), Double.valueOf(arr[15]), arr[16]};
                 String key = arr[0] + "_-_" + arr[1].replace(";", "_") + "_-_" + arr[2].replace(";", "_");
                 for (String prot : arr[1].split("; ")) {
@@ -106,6 +122,15 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
             }
         }
         return proteinTableData;
+    }
+
+    public Set<String> getRelatedProteinsSet(String proteinKey) {
+        if (protein_relatedProteins_Map.containsKey(proteinKey)) {
+            return protein_relatedProteins_Map.get(proteinKey);
+        }
+
+        return new HashSet<>();
+
     }
 
     public Set<Object[]> getPeptideInfo(String proteinKey) {

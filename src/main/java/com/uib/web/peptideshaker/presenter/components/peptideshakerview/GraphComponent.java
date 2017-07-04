@@ -2,14 +2,25 @@ package com.uib.web.peptideshaker.presenter.components.peptideshakerview;
 
 import com.ejt.vaadin.sizereporter.ComponentResizeEvent;
 import com.ejt.vaadin.sizereporter.SizeReporter;
+import com.vaadin.event.dd.DragAndDropEvent;
+import com.vaadin.event.dd.DropHandler;
+import com.vaadin.event.dd.acceptcriteria.AcceptAll;
+import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.AbsoluteLayout.ComponentPosition;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.DragAndDropWrapper;
+import com.vaadin.ui.DragAndDropWrapper.WrapperTargetDetails;
+import com.vaadin.ui.DragAndDropWrapper.WrapperTransferable;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
 import edu.uci.ics.jung.graph.UndirectedSparseGraph;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
 import edu.uci.ics.jung.visualization.control.ScalingControl;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,8 +35,8 @@ import org.vaadin.hezamu.canvas.Canvas;
 public class GraphComponent extends VerticalLayout {
 
     private final Canvas canvas;
-    private int width;
-    private int height;
+    private int liveWidth;
+    private int liveHeight;
 
     /**
      * The graph.
@@ -45,84 +56,178 @@ public class GraphComponent extends VerticalLayout {
      */
     private VisualizationViewer visualizationViewer;
     private FRLayout graphLayout;
-    
+
     private final AbsoluteLayout graphContainer;
+    private final DropHandler dropHandler;
+
+    private boolean ignorResize = true;
+    private final Button updateLayoutBtn;
 
     public GraphComponent() {
-
+        GraphComponent.this.setMargin(new MarginInfo(false, false, true, false));
         //init main layout
-        GraphComponent.this.addStyleName("lightgraylayout");
+
         //calculate canavas dimension 
-        SizeReporter sizeReporter = new SizeReporter(GraphComponent.this);
-        sizeReporter.addResizeListener((ComponentResizeEvent event) -> {
-            width = event.getWidth();
-            height = event.getHeight();
-            System.out.println("Panel size: " + width + " x " + height);
-        });
-        
         graphContainer = new AbsoluteLayout();
+        SizeReporter sizeReporter = new SizeReporter(GraphComponent.this.graphContainer);
+        sizeReporter.addResizeListener((ComponentResizeEvent event) -> {
+            int tWidth = event.getWidth();
+            int tHeight = event.getHeight();
+            if (liveWidth == tWidth && liveHeight == tHeight || ignorResize) {
+                ignorResize = false;
+                return;
+            }
+            ignorResize = true;
+            liveWidth = tWidth - 100;
+            liveHeight = tHeight - 100;
+            reDrawGraph();
+        });
         graphContainer.setSizeFull();
-         GraphComponent.this.addComponent(graphContainer);
+        updateLayoutBtn = new Button("Update layout");
+        updateLayoutBtn.setStyleName(ValoTheme.BUTTON_SMALL);
+        updateLayoutBtn.setStyleName(ValoTheme.BUTTON_TINY);
+        updateLayoutBtn.addClickListener(new Button.ClickListener() {
+            @Override
+            public void buttonClick(Button.ClickEvent event) {
+                updateGraphLayout();
+            }
+        });
 
         //calculate graph
-        //draw graph
-        graphContainer.addComponent(canvas = new Canvas());
+        //draw graph     
+        canvas = new Canvas();
+//        graphContainer.addComponent(canvas);
         GraphComponent.this.canvas.setSizeFull();
         GraphComponent.this.setSizeFull();
-//        canvas.setSizeFull();
-////    drawLines();
-//        drawInitialPattern();
-//        canvas.addMouseUpListener(new Canvas.CanvasMouseUpListener() {
-//            @Override
-//            public void onMouseUp() {
-//                System.out.println("mouse up");
-//            }
-//        });
-//        canvas.addMouseDownListener(new Canvas.CanvasMouseDownListener() {
-//            @Override
-//            public void onMouseDown() {
-//                System.out.println("mouse down");
-//            }
-//        });
+
+// Wrap the layout to allow handling drops
+        DragAndDropWrapper layoutWrapper
+                = new DragAndDropWrapper(graphContainer);
+        layoutWrapper.addStyleName("subframe");
+        GraphComponent.this.addComponent(layoutWrapper);
+        layoutWrapper.setSizeFull();
+// Handle moving components within the AbsoluteLayout
+
+        dropHandler = new DropHandler() {
+            @Override
+            public AcceptCriterion getAcceptCriterion() {
+
+                return AcceptAll.get();
+            }
+
+            @Override
+            public void drop(DragAndDropEvent event) {
+
+                Component component = event.getTransferable().getSourceComponent();
+                if (component instanceof WrappedComponent) {
+                    WrappedComponent node = (WrappedComponent) component;
+                    WrapperTransferable t = (WrapperTransferable) event.getTransferable();
+                    WrapperTargetDetails details = (WrapperTargetDetails) event.getTargetDetails();
+                    // Calculate the drag coordinate difference
+                    int xChange = details.getMouseEvent().getClientX() - t.getMouseDownEvent().getClientX();
+                    int yChange = details.getMouseEvent().getClientY() - t.getMouseDownEvent().getClientY();
+                    // Move the component in the absolute layout
+                    ComponentPosition pos = graphContainer.getPosition(t.getSourceComponent());
+                    pos.setLeftValue(pos.getLeftValue() + xChange);
+                    pos.setTopValue(pos.getTopValue() + yChange);
+                    graphLayout.setLocation(node.getData() + "", pos.getLeftValue(), pos.getTopValue());
+                    drawEdges();
+                }
+
+            }
+        };
+
+        layoutWrapper.setDropHandler(dropHandler);
+
     }
 
-    public void initGraph(ArrayList<String> nodes, HashMap<String, ArrayList<String>> edges) {
-        canvas.clear();
+    private void updateGraphLayout() {
+        ScalingControl scaler = new CrossoverScalingControl();
+        scaler.scale(visualizationViewer, 0.9f, visualizationViewer.getCenter());
+        reDrawGraph();
+    }
+
+    public void updateGraphData(ArrayList<String> nodes, HashMap<String, ArrayList<String>> edges) {
+
         graphContainer.removeAllComponents();
+        graphContainer.addComponent(canvas);
+        canvas.clear();
         //calculate graph
-        this.nodes=nodes;
-        this.edges=edges;
-        visualizationViewer = setUpGraph();
+        this.nodes = nodes;
+        this.edges = edges;
+        setUpGraph();
         for (String node : graph.getVertices()) {
-            graphContainer.addComponent(initNode(), "left: " +graphLayout.getX(node) + "px; top: " + graphLayout.getY(node) + "px");
-//            System.out.println("at fr neame " + node + "   x: " + graphLayout.getX(node) + "  y: " + graphLayout.getX(node));
+            final WrappedComponent wrapper = new WrappedComponent(initNode(),
+                    dropHandler);
+            wrapper.setSizeUndefined();
+            wrapper.setData(node);
+            graphContainer.addComponent(wrapper, "left: " + graphLayout.getX(node) + "px; top: " + graphLayout.getY(node) + "px");
+        }
+        for (String key : edges.keySet()) {
+            ArrayList<String> edg = edges.get(key);
+            double startX = graphLayout.getX(key) + 10;
+            double startY = graphLayout.getY(key) + 10;
+            double endX;
+            double endY;
+            for (String node : edg) {
+                endX = graphLayout.getX(node) + 10;
+                endY = graphLayout.getY(node) + 10;
+                drawLines(startX, startY, endX, endY);
+
+            }
+
+        }
+        graphContainer.addComponent(updateLayoutBtn, "right: " + 5 + "px; bottom: " + 5 + "px");
+
+    }
+
+    private VerticalLayout initNode() {
+        VerticalLayout node = new VerticalLayout();
+        node.setWidth(20, Unit.PIXELS);
+        node.setHeight(20, Unit.PIXELS);
+        node.setStyleName("node");
+        return node;
+
+    }
+
+    private void reDrawGraph() {
+
+        if (visualizationViewer != null) {
+            setUpGraph();
+            Iterator<Component> itr = graphContainer.iterator();
+            while (itr.hasNext()) {
+                Component component = itr.next();
+                if (component instanceof WrappedComponent) {
+                    WrappedComponent wComp = (WrappedComponent) component;
+                    String nodeName = wComp.getData() + "";
+                    AbsoluteLayout.ComponentPosition newPosition = graphContainer.getPosition(wComp);
+                    newPosition.setCSSString("left: " + graphLayout.getX(nodeName) + "px; top: " + graphLayout.getY(nodeName) + "px");
+                }
+
+            }
+            drawEdges();
+
+        }
+    }
+
+    private void drawEdges() {
+        canvas.clear();
+        for (String key : edges.keySet()) {
+            ArrayList<String> edg = edges.get(key);
+            double startX = graphLayout.getX(key) + 10;
+            double startY = graphLayout.getY(key) + 10;
+            double endX;
+            double endY;
+            for (String node : edg) {
+                endX = graphLayout.getX(node) + 10;
+                endY = graphLayout.getY(node) + 10;
+                drawLines(startX, startY, endX, endY);
+
+            }
 
         }
 
     }
-    private VerticalLayout initNode(){
-    VerticalLayout node = new VerticalLayout();
-    node.setWidth(20,Unit.PIXELS);
-    node.setHeight(20,Unit.PIXELS);
-    node.setStyleName("node");
-    return node;
-    
-    }
-    private void reDrawGraph(){
-    
-     visualizationViewer = setUpGraph();
-        ScalingControl scaler = new CrossoverScalingControl();
-        scaler.scale(visualizationViewer, 0.9f, visualizationViewer.getCenter());
-//        jPanel1.add(visualizationViewer);
-//        jPanel1.revalidate();
-//        jPanel1.repaint();
-//        for (String node : graph.getVertices()) {
-//            graphLayout.setLocation(node, 100, 100);        }
-
-        for (String node : graph.getVertices()) {
-            System.out.println("at fr neame " + node + "   x: " + graphLayout.getX(node) + "  y: " + graphLayout.getX(node));
-
-        }}
 
     /**
      * Set up the graph.
@@ -130,192 +235,69 @@ public class GraphComponent extends VerticalLayout {
      * @param parentPanel the parent panel
      * @return the visualization viewer
      */
-    private VisualizationViewer setUpGraph() {
-
+    private void setUpGraph() {
         graph = new UndirectedSparseGraph<>();
-
         // add all the nodes
         for (String node : nodes) {
             graph.addVertex(node);
         }
-
         // add the vertexes
         Iterator<String> startNodeKeys = edges.keySet().iterator();
-
         while (startNodeKeys.hasNext()) {
-
             String startNode = startNodeKeys.next();
-
             for (String endNode : edges.get(startNode)) {
                 graph.addEdge(startNode + "|" + endNode, startNode, endNode);
             }
         }
-
         // create the visualization viewer
         graphLayout = new FRLayout<>(graph);
-        VisualizationViewer<String, String> vv = new VisualizationViewer<>(graphLayout,
-                new Dimension(width - 20, height - 100));
-        vv.setBackground(Color.WHITE);
-
-        // set the vertex label transformer
-//        vv.getRenderContext().setVertexLabelTransformer(new Transformer<String, String>() {
-//            @Override
-//            public String transform(String arg0) {
-//                return arg0;
-//            }
-//        });
-        // set the edge label transformer
-//        vv.getRenderContext().setEdgeLabelTransformer(new Transformer<String, String>() {
-//            @Override
-//            public String transform(String arg0) {
-//                return arg0;
-//            }
-//        });
-        // set the vertex renderer
-//        vv.getRenderer().setVertexRenderer(new ProteinInferenceVertexRenderer());
-//        // set the edge label renderer
-//        vv.getRenderer().setEdgeLabelRenderer(new BasicEdgeLabelRenderer<String, String>() {
-//
-//            @Override
-//            public void labelEdge(RenderContext<String, String> rc, Layout<String, String> layout, String e, String label) {
-//                // do nothing
-//            }
-//        });
-//
-//        // set the vertex label renderer
-//        vv.getRenderer().setVertexLabelRenderer(new BasicVertexLabelRenderer<String, String>() {
-//
-//            @Override
-//            public void labelVertex(RenderContext<String, String> rc, Layout<String, String> layout, String v, String label) {
-//                if (label.startsWith("Peptide") && showPeptideLabels) {
-//                    String fullTooltip = nodeToolTips.get(label);
-//                    super.labelVertex(rc, layout, v, fullTooltip.substring(0, fullTooltip.indexOf("<br>")));
-//                }
-//                if (label.startsWith("Protein") && showProteinLabels) {
-//                    super.labelVertex(rc, layout, v, label.substring(label.indexOf(" ") + 1));
-//                }
-//            }
-//        });
-        // set the edge format
-//        vv.getRenderContext().setEdgeDrawPaintTransformer(edgePaint);
-//        vv.getRenderContext().setEdgeStrokeTransformer(edgeStroke);
-//        // set the mouse interaction mode
-//        final DefaultModalGraphMouse<String, Number> graphMouse = new DefaultModalGraphMouse<String, Number>();
-//        graphMouse.setMode(ModalGraphMouse.Mode.PICKING);
-//        vv.setGraphMouse(graphMouse);
-        // add a key listener
-//        vv.addKeyListener(new KeyAdapter() {
-//
-//            @Override
-//            public void keyReleased(KeyEvent e) {
-//                if (e.isControlDown() && e.getKeyCode() == KeyEvent.VK_A) {
-//                    for (String tempNode : nodes) {
-//                        visualizationViewer.getPickedVertexState().pick(tempNode, true);
-//                    }
-//                } else if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-//                    for (String tempNode : nodes) {
-//                        visualizationViewer.getPickedVertexState().pick(tempNode, false);
-//                    }
-//                }
-//                super.keyReleased(e);
-//            }
-//
-//        });
-        // set the vertex tooltips
-//        vv.setVertexToolTipTransformer(
-//                new ToStringLabeller<String>() {
-//
-//                    @Override
-//                    public String transform(String v) {
-//                        if (nodeToolTips != null && nodeToolTips.get(v) != null) {
-//                            return super.transform(nodeToolTips.get(v));
-//                        } else {
-//                            return super.transform(v.substring(v.indexOf(" ") + 1));
-//                        }
-//                    }
-//                }
-//        );
-        // attach the listener that will print when the vertices selection changes
-//        final PickedState<String> pickedState = vv.getPickedVertexState();
-//        pickedState.addItemListener(
-//                new ItemListener() {
-//
-//                    @Override
-//                    public void itemStateChanged(ItemEvent e) {
-//                        Object subject = e.getItem();
-//                        if (subject instanceof String) {
-//                            String vertex = (String) subject;
-//                            if (pickedState.isPicked(vertex)) {
-//                                if (!selectedNodes.contains(vertex)) {
-//                                    selectedNodes.add(vertex);
-//                                }
-//                            } else {
-//                                selectedNodes.remove(vertex);
-//                            }
-//                        }
-//                        updateNodeSelection();
-//                    }
-//                }
-//        );
-        return vv;
+        visualizationViewer = new VisualizationViewer<>(graphLayout, new Dimension(liveWidth, liveHeight));
     }
 
-    private void drawInitialPattern() {
+    private void drawLines(double startX, double startY, double endX, double endY) {
         canvas.saveContext();
-        canvas.translate(175d, 175d);
-        canvas.scale(1.6d, 1.6d);
-
-        for (int i = 1; i < 6; ++i) {
-            canvas.saveContext();
-            canvas.setFillStyle("rgb(" + (51 * i) + "," + (255 - 51 * i)
-                    + ",255)");
-
-            for (int j = 0; j < i * 6; ++j) {
-                canvas.rotate((Math.PI * 2d / (i * 6)));
-                canvas.beginPath();
-                canvas.arc(0d, i * 12.5d, 5d, 0d, Math.PI * 2d, true);
-                canvas.closePath();
-                canvas.fill();
-            }
-
-            canvas.restoreContext();
-        }
-
-        canvas.closePath();
-
-        canvas.restoreContext();
-    }
-
-    private void drawLines() {
-        canvas.saveContext();
-        canvas.clear();
-
         canvas.beginPath();
         canvas.setLineWidth(1);
         canvas.setLineCap("round");
+        canvas.setFillStyle("#053b72");
         canvas.setMiterLimit(1);
-        canvas.moveTo(10, 50);
-        canvas.lineTo(30, 150);
-        canvas.lineTo(50, 50);
+        canvas.moveTo(startX, startY);
+        canvas.lineTo(endX, endY);
         canvas.stroke();
         canvas.closePath();
-
-//		canvas.beginPath();
-//		canvas.setLineWidth(5);
-//		canvas.setLineCap("butt");
-//		canvas.setLineJoin("round");
-//		canvas.setMiterLimit(1);
-//		canvas.moveTo(70, 50);
-//		canvas.lineTo(90, 150);
-//		canvas.lineTo(110, 50);
-//		canvas.stroke();
-//		canvas.closePath();
-//
-//		canvas.beginPath();
-//		canvas.moveTo(20, 200);
-//		canvas.quadraticCurveTo(20, 275, 200, 200);
-//		canvas.stroke();
         canvas.restoreContext();
+    }
+
+    /**
+     * This class is a wrapper for the dropped component that is used in the
+     * Drag-Drop layout.
+     *
+     * @author Yehia Farag
+     */
+    class WrappedComponent extends DragAndDropWrapper {
+
+        /**
+         * The layout drop handler.
+         */
+        private final DropHandler dropHandler;
+
+        /**
+         * Constructor to initialize the main attributes.
+         *
+         * @param content the dropped component (the label layout)
+         * @param dropHandler The layout drop handler.
+         */
+        public WrappedComponent(final Component content, final DropHandler dropHandler) {
+            super(content);
+            this.dropHandler = dropHandler;
+            setDragStartMode(DragAndDropWrapper.DragStartMode.WRAPPER);
+        }
+
+        @Override
+        public DropHandler getDropHandler() {
+            return dropHandler;
+        }
+
     }
 
 }

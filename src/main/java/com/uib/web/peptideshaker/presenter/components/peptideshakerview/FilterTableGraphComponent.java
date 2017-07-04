@@ -2,7 +2,6 @@ package com.uib.web.peptideshaker.presenter.components.peptideshakerview;
 
 import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDataset;
 import com.vaadin.data.Property;
-import com.vaadin.shared.MouseEventDetails;
 import com.vaadin.shared.ui.MultiSelectMode;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
@@ -10,9 +9,9 @@ import com.vaadin.ui.themes.ValoTheme;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import org.vaadin.hezamu.canvas.Canvas;
 
 /**
  * This class represents filtered Table with graph view
@@ -60,7 +59,7 @@ public class FilterTableGraphComponent extends VerticalLayout implements Propert
         this.proteinsTable.setHeight(100, Unit.PERCENTAGE);
         this.proteinsTable.setWidth(100, Unit.PERCENTAGE);
         this.proteinsTable.setCacheRate(1);
-        this.proteinsTable.setMultiSelect(true);
+        this.proteinsTable.setMultiSelect(false);
         this.proteinsTable.setMultiSelectMode(MultiSelectMode.DEFAULT);
         this.proteinsTable.setSelectable(true);
         this.proteinsTable.setSortEnabled(true);
@@ -97,41 +96,46 @@ public class FilterTableGraphComponent extends VerticalLayout implements Propert
 
     @Override
     public void valueChange(Property.ValueChangeEvent event) {
-        Set objectIds = (Set) proteinsTable.getValue();
-        for (Object objcetId : objectIds) {
-            String protAcc = peptideShakerVisualizationDataset.getProteinTableData().get(objcetId)[1].toString();
-            Set<Object[]> peptidesSet = peptideShakerVisualizationDataset.getPeptideInfo(protAcc);
-            int index = 1;
-            for (Object[] peptide : peptidesSet) {
-                System.out.println("at selected value " + index++ + "     " + peptide[1] + "  key " + protAcc);
+        Object objcetId = proteinsTable.getValue();
+        if (objcetId == null) {
+            graphLayout.updateGraphData(new ArrayList<>(), new HashMap<>());
+            return;
+        }
+        String protAcc = peptideShakerVisualizationDataset.getProteinTableData().get(objcetId)[1].toString();
+        Set<String> relatedProteinsSet = new HashSet<>();
+        Set<String> tempRelatedProteinsSet = new HashSet<>();
+        Set<String> mainProteinGroup = peptideShakerVisualizationDataset.getRelatedProteinsSet(protAcc);
+        relatedProteinsSet.addAll(mainProteinGroup);
+        tempRelatedProteinsSet.addAll(mainProteinGroup);
+        boolean addNewValue = true;
+        while (addNewValue) {
+            for (String pro : relatedProteinsSet) {
+                tempRelatedProteinsSet.addAll(peptideShakerVisualizationDataset.getRelatedProteinsSet(pro));
             }
+            if (tempRelatedProteinsSet.size() != relatedProteinsSet.size()) {
+                relatedProteinsSet.addAll(tempRelatedProteinsSet);
+                addNewValue = true;
 
+            } else {
+                addNewValue = false;
+            }
         }
+
         ArrayList<String> nodes = new ArrayList<>();
-//        nodes.add("A");
-//        nodes.add("B");
-//        nodes.add("C");
-//        nodes.add("D");
-//        nodes.add("E");
-//        nodes.add("F");
-//        nodes.add("G");
-//        nodes.add("H");
-//        nodes.add("I");
-        for (int x = 0; x < 10; x++) {
-            nodes.add("A" + x);
+        HashMap<String, ArrayList<String>> edges = new HashMap<>();
+        for (String prot : relatedProteinsSet) {
+            nodes.add(prot);
+            System.out.println("at protein name " + prot);
+//            ArrayList<String> tEd = new ArrayList<>();
+//            tEd.add("A" + x);
+//            tEd.add("A1" + (x + 1));
+////        tEd.add("D");
+////        tEd.add("E");
+////        tEd.add("F");
+//            edges.put("A" + x, tEd);
         }
 
-        HashMap<String, ArrayList<String>> edges = new HashMap<>();
-        ArrayList<String> tEd = new ArrayList<>();
-        
-        tEd.add("A1");
-        tEd.add("A100");
-//        tEd.add("D");
-//        tEd.add("E");
-//        tEd.add("F");
-        edges.put("A1", tEd);
-
-        graphLayout.initGraph(nodes, edges);
+        graphLayout.updateGraphData(nodes, edges);
 
     }
 

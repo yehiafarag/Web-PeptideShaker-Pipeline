@@ -13771,11 +13771,29 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .node {
-	background-color: green;
-	border: 1px solid black;
+	background-color: #197de1;
+	border: 1px solid #053b72;
 	border-radius: 100%;
 	max-width: 20px;
 	max-height: 20px;
+}
+
+.webpeptideshakertheme .v-active-drag-source div {
+	background-color: #b6cbdf !important;
+	border-radius: 100%;
+	overflow: hidden;
+}
+
+.webpeptideshakertheme .subframe {
+	border: 1px solid lightgray;
+	border-radius: 5px;
+}
+
+.webpeptideshakertheme .v-ddwrapper.v-widget.v-drag-element {
+	border-radius: 100%;
+	opacity: 1;
+	max-width: 20px !important;
+	max-height: 20px !important;
 }
 
 .webpeptideshakertheme .horizontalcss .largetitle .v-label {

@@ -785,11 +785,27 @@
         border:1px solid lightgray;
     }
     .node{
-        background-color:green;
-        border:1px solid black;
+      background-color: rgb(25, 125, 225);
+	border: 1px solid #053b72;
+	border-radius: 100%;
+	max-width: 20px;
+	max-height: 20px;
+    }
+    .v-active-drag-source div{
+        background-color: #b6cbdf !important; 
         border-radius:100%;
-        max-width:20px;
-        max-height:20px;
+        overflow:hidden;
+    }
+    .subframe{
+        border: 1px solid lightgray;
+        border-radius: 5px;
+    }
+    .v-ddwrapper.v-widget.v-drag-element{
+        border-radius:100%;
+        opacity:1;
+        max-width:20px !important;
+        max-height:20px !important;
+
     }
     /****mobile css**/
     .horizontalcss  .largetitle .v-label{
