@@ -1,6 +1,8 @@
 package com.uib.web.peptideshaker.presenter.components.peptideshakerview;
 
+import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideObject;
 import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDataset;
+import com.uib.web.peptideshaker.galaxy.dataobjects.ProteinObject;
 import com.vaadin.data.Property;
 import com.vaadin.shared.ui.MultiSelectMode;
 import com.vaadin.ui.Table;
@@ -10,6 +12,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -75,6 +78,7 @@ public class FilterTableGraphComponent extends VerticalLayout implements Propert
         this.proteinsTable.addContainerProperty("Accession", String.class, null, "Accession", null, Table.Align.CENTER);
         this.proteinsTable.addContainerProperty("Name", String.class, null, "Name", null, Table.Align.LEFT);
         this.proteinsTable.addContainerProperty("geneName", String.class, null, "Gene Name", null, Table.Align.CENTER);
+        this.proteinsTable.addContainerProperty("proteinInference", String.class, null, "Protein Inference", null, Table.Align.CENTER);
         this.proteinsTable.addContainerProperty("mwkDa", Double.class, null, "MW (kDa)", null, Table.Align.RIGHT);
         this.proteinsTable.addContainerProperty("possibleCoverage", Double.class, null, "Possible Coverage", null, Table.Align.RIGHT);
         this.proteinsTable.addContainerProperty("peptides_number", Integer.class, null, "#Peptides", null, Table.Align.RIGHT);
@@ -85,57 +89,84 @@ public class FilterTableGraphComponent extends VerticalLayout implements Propert
         this.peptideShakerVisualizationDataset = peptideShakerVisualizationDataset;
         proteinsTable.removeValueChangeListener(FilterTableGraphComponent.this);
         proteinsTable.removeAllItems();
-        Map<Object, Object[]> proteinTableData = peptideShakerVisualizationDataset.getProteinTableData();
-        for (Object x : proteinTableData.keySet()) {
-            this.proteinsTable.addItem(proteinTableData.get(x), x);
+        Map<Object, ProteinObject> proteinTableData = peptideShakerVisualizationDataset.getProteinsMap();
+        for (ProteinObject protein : proteinTableData.values()) {
+            this.proteinsTable.addItem(new Object[]{protein.getIndex(), protein.getAccession(), protein.getDescription(), protein.getGeneName(), protein.getProteinInference(), protein.getMW(), protein.getPossibleCoverage(), protein.getValidatedPeptidesNumber()}, protein.getAccession());
         }
         proteinsTable.setCaption("<b>Proteins</b> ( " + proteinsTable.getItemIds().size() + " )");
         proteinsTable.addValueChangeListener(FilterTableGraphComponent.this);
-        peptideShakerVisualizationDataset.getPeptideTableData();
+        peptideShakerVisualizationDataset.getPeptidesMap();
     }
 
     @Override
     public void valueChange(Property.ValueChangeEvent event) {
         Object objcetId = proteinsTable.getValue();
         if (objcetId == null) {
-            graphLayout.updateGraphData(new ArrayList<>(), new HashMap<>());
+            graphLayout.updateGraphData(null, null, null, null);
             return;
         }
-        String protAcc = peptideShakerVisualizationDataset.getProteinTableData().get(objcetId)[1].toString();
-        Set<String> relatedProteinsSet = new HashSet<>();
-        Set<String> tempRelatedProteinsSet = new HashSet<>();
-        Set<String> mainProteinGroup = peptideShakerVisualizationDataset.getRelatedProteinsSet(protAcc);
-        relatedProteinsSet.addAll(mainProteinGroup);
-        tempRelatedProteinsSet.addAll(mainProteinGroup);
-        boolean addNewValue = true;
-        while (addNewValue) {
-            for (String pro : relatedProteinsSet) {
-                tempRelatedProteinsSet.addAll(peptideShakerVisualizationDataset.getRelatedProteinsSet(pro));
-            }
-            if (tempRelatedProteinsSet.size() != relatedProteinsSet.size()) {
-                relatedProteinsSet.addAll(tempRelatedProteinsSet);
-                addNewValue = true;
+        ProteinObject protein = peptideShakerVisualizationDataset.getProtein(objcetId);
 
-            } else {
-                addNewValue = false;
-            }
+        Set<String> proteinNodes = new LinkedHashSet<>();
+        Set<PeptideObject> peptides = new LinkedHashSet<>();
+        for (String acc : protein.getProteinGroupSet()) {
+            proteinNodes.add(acc);
+            System.out.println("acction list " + acc);
+            peptides.addAll(peptideShakerVisualizationDataset.getPeptides(acc));
         }
 
-        ArrayList<String> nodes = new ArrayList<>();
+        Set<String> peptidesNodes = new LinkedHashSet<>();
         HashMap<String, ArrayList<String>> edges = new HashMap<>();
-        for (String prot : relatedProteinsSet) {
-            nodes.add(prot);
-            System.out.println("at protein name " + prot);
+        for (PeptideObject peptide : peptides) {
+            peptidesNodes.add(peptide.getModifiedSequence());
+            ArrayList<String> tEd = new ArrayList<>();
+            for (String acc : peptide.getProteinsSet()) {
+               tEd.add(acc);
+            } 
+            edges.put(peptide.getModifiedSequence(), tEd);
+
+        }
+
+//        Set<ProteinObject> relatedProteinsSet = new HashSet<>();
+//        for (String acc : protein.getProteinGroupSet()) {
+////            relatedProteinsSet.addAll(peptideShakerVisualizationDataset.getRelatedProteinsSet(acc));
+////            System.out.println("at other proteins [" + relatedProteinsSet.size() + "] [" + protein.getProteinGroup() + "]");
+//        }
+//        Set<ProteinObject> tempRelatedProteinsSet = new HashSet<>(relatedProteinsSet);
+////        Set<ProteinObject> mainProteinGroup = peptideShakerVisualizationDataset.getRelatedProteinsSet(protAcc);
+////        relatedProteinsSet.addAll(mainProteinGroup);
+////        tempRelatedProteinsSet.addAll(mainProteinGroup);
+//        boolean addNewValue = true;
+//        while (addNewValue) {
+//            for (ProteinObject tempProtein : relatedProteinsSet) {
+//                tempRelatedProteinsSet.addAll(peptideShakerVisualizationDataset.getRelatedProteinsSet(tempProtein.getAccession()));
+//            }
+//            if (tempRelatedProteinsSet.size() != relatedProteinsSet.size()) {
+//                relatedProteinsSet.addAll(tempRelatedProteinsSet);
+//                addNewValue = true;
+//
+//            } else {
+//                addNewValue = false;
+//            }
+//        }
+//        Set<String> proteinNodes = new LinkedHashSet<>();
+//        HashMap<String, ArrayList<String>> edges = new HashMap<>();
+////        for (ProteinObject tempProtein : relatedProteinsSet) {
+////        for (int x = 0; x < 100; x++) {
+//            for (String acc : protein.getProteinGroupSet()) {
+//                proteinNodes.add(acc);
+//            }
+//            nodes.add("A1 "+x);
+////            System.out.println("at protein name " + prot);
 //            ArrayList<String> tEd = new ArrayList<>();
-//            tEd.add("A" + x);
-//            tEd.add("A1" + (x + 1));
+//            tEd.add("A1"+x);
+//            tEd.add("A1"+(x+1));
 ////        tEd.add("D");
 ////        tEd.add("E");
 ////        tEd.add("F");
-//            edges.put("A" + x, tEd);
-        }
-
-        graphLayout.updateGraphData(nodes, edges);
+//            edges.put("A1"+x, tEd);
+//        }
+        graphLayout.updateGraphData(protein, proteinNodes, peptidesNodes, edges);
 
     }
 

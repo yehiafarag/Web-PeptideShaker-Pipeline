@@ -19,16 +19,26 @@ import uk.ac.ebi.pride.tools.braf.BufferedRandomAccessFile;
  */
 public class PeptideShakerVisualizationDataset extends SystemDataSet {
 
-    private Map<Object, Object[]> proteinTableData;
-    private Map<String, Set<String>> protein_peptide_Map;
-    private Map<String, Set<String>> protein_relatedProteins_Map;
+    private Map<Object, ProteinObject> proteinsMap;
+    private Map<String, Set<PeptideObject>> protein_peptide_Map;
+    private Map<String, Set<ProteinObject>> protein_relatedProteins_Map;
+    private Map<Object, PeptideObject> peptidesMap;
 
-    public Map<Object, Object[]> getProteinTableData() {
-        if (proteinTableData != null) {
-            return proteinTableData;
+    public ProteinObject getProtein(Object proteinKey) {
+        if (proteinsMap.containsKey(proteinKey)) {
+            return proteinsMap.get(proteinKey);
+        } else {
+            return null;
+        }
+
+    }
+
+    public Map<Object, ProteinObject> getProteinsMap() {
+        if (proteinsMap != null) {
+            return proteinsMap;
         }
         protein_relatedProteins_Map = new HashMap<>();
-        proteinTableData = new LinkedHashMap<>();
+        proteinsMap = new LinkedHashMap<>();
         BufferedRandomAccessFile bufferedRandomAccessFile = null;
         try {//           
             bufferedRandomAccessFile = new BufferedRandomAccessFile(proteinFile.getFile(), "r", 1024 * 100);
@@ -40,21 +50,57 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
             int index = 0;
             while ((line = bufferedRandomAccessFile.getNextLine()) != null) {
                 String[] arr = line.split("\\t");
-                Object[] obj = new Object[]{Integer.valueOf(arr[0]), arr[1], arr[2], arr[3], Double.valueOf(arr[5]), Double.valueOf(arr[6]), Integer.valueOf(arr[16])};
-                proteinTableData.put(index, obj);
-                if (!protein_relatedProteins_Map.containsKey(arr[1])) {
-                    Set<String> relatedProteins = new HashSet<>();
-                    protein_relatedProteins_Map.put(arr[1], relatedProteins);
+//                Object[] obj = new Object[]{Integer.valueOf(arr[0]), arr[1], arr[2], arr[3], Double.valueOf(arr[5]), Double.valueOf(arr[6]), Integer.valueOf(arr[16])};
+                ProteinObject protein = new ProteinObject();
+                protein.setIndex(Integer.valueOf(arr[0]));
+                protein.setAccession(arr[1]);
+                protein.setDescription(arr[2]);
+                protein.setGeneName(arr[3]);
+                protein.setChromosome(arr[4]);
+
+                protein.setMW(Double.valueOf(arr[5]));
+                protein.setPossibleCoverage(Double.valueOf(arr[6]));
+                protein.setCoverage(Double.valueOf(arr[7]));
+                protein.setSpectrumCounting(Double.valueOf(arr[8]));
+                protein.setConfidentlyLocalizedModificationSites(arr[9]);
+                protein.setConfidentlyLocalizedModificationSitesNumber(arr[10]);
+                protein.setAmbiguouslyLocalizedModificationSites(arr[11]);
+                protein.setAmbiguouslyLocalizedModificationSitesNumber(arr[12]);
+                protein.setProteinInference(arr[13]);
+                protein.setSecondaryAccessions(arr[14]);
+
+                protein.setProteinGroup(arr[15]);
+                protein.setValidatedPeptidesNumber(Integer.parseInt(arr[16]));
+                protein.setPeptidesNumber(Integer.parseInt(arr[17]));
+                protein.setUniqueNumber(Integer.parseInt(arr[18]));
+                protein.setValidatedUniqueNumber(Integer.parseInt(arr[19]));
+                protein.setUniqueToGroupNumber(Integer.parseInt(arr[20]));
+                protein.setValidatedUniqueToGroupNumber(Integer.valueOf(arr[21]));
+                protein.setValidatedPSMsNumber(Integer.valueOf(arr[22]));
+                protein.setConfidence(Double.valueOf(arr[23]));
+                protein.setValidation(arr[24]);
+                proteinsMap.put(protein.getAccession(), protein);
+                for (String acc : protein.getProteinGroupSet()) {
+                    if (!protein_relatedProteins_Map.containsKey(acc)) {
+                        Set<ProteinObject> protenHashSet = new LinkedHashSet<>();
+                        protein_relatedProteins_Map.put(acc, protenHashSet);
+                    }
+                    protein_relatedProteins_Map.get(acc).add(protein);
                 }
-                Set<String> relatedProteins = protein_relatedProteins_Map.get(arr[1]);
-                if (arr[13].equalsIgnoreCase("Related Proteins")) {
-                    relatedProteins.addAll(Arrays.asList(arr[14].replace(" ", "").split(","))); 
-                    
-                }
-                relatedProteins.addAll(Arrays.asList(arr[15].replace(" ", "").split(",")));
-                relatedProteins.add(arr[1]);
-               
-                protein_relatedProteins_Map.put(arr[1], relatedProteins);
+
+//                if (!protein_relatedProteins_Map.containsKey(arr[1])) {
+//                    Set<String> relatedProteins = new HashSet<>();
+//                    protein_relatedProteins_Map.put(arr[1], relatedProteins);
+//                }
+//                Set<String> relatedProteins = protein_relatedProteins_Map.get(arr[1]);
+//                if (arr[13].equalsIgnoreCase("Related Proteins")) {
+//                    relatedProteins.addAll(Arrays.asList(arr[14].replace(" ", "").split(","))); 
+//                    
+//                }
+//                relatedProteins.addAll(Arrays.asList(arr[15].replace(" ", "").split(",")));
+//                relatedProteins.add(arr[1]);
+//               
+//                protein_relatedProteins_Map.put(arr[1], relatedProteins);
                 index++;
             }
             bufferedRandomAccessFile.close();
@@ -66,17 +112,15 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
                 }
             }
         }
-        return proteinTableData;
+        return proteinsMap;
     }
 
-    private Map<Object, Object[]> peptideTableData;
-
-    public Map<Object, Object[]> getPeptideTableData() {
-        if (peptideTableData != null) {
-            return peptideTableData;
+    public Map<Object, PeptideObject> getPeptidesMap() {
+        if (peptidesMap != null) {
+            return peptidesMap;
         }
 
-        peptideTableData = new LinkedHashMap<>();
+        peptidesMap = new LinkedHashMap<>();
         protein_peptide_Map = new HashMap<>();
         BufferedRandomAccessFile bufferedRandomAccessFile = null;
         try {//           
@@ -86,32 +130,46 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
              * escape header
              */
             bufferedRandomAccessFile.getNextLine();
+            int count=0;
             while ((line = bufferedRandomAccessFile.getNextLine()) != null) {
                 String[] arr = line.split("\\t");
-                //	Protein(s)	Protein Group(s)	#Validated Protein Group(s)	Unique Database	Sequence	Modified Sequence	Position	AAs Before	AAs After	Variable Modifications	Fixed Modifications	Localization Confidence	#Validated PSMs	#PSMs	Confidence [%]	Validation
+                if(line.contains("P68104") || line.contains("Q5VTE0"))
+                    count++;
+                //	Position	AAs Before	AAs After	Variable Modifications	Fixed Modifications	Localization Confidence	#Validated PSMs	#PSMs	Confidence [%]	Validation
+                PeptideObject peptide = new PeptideObject();
+                peptide.setIndex(Integer.parseInt(arr[0]));
+                peptide.setProteins(arr[1]);
+                peptide.setProteinGroups(arr[2]);
+                peptide.setValidatedProteinGroupsNumber(Integer.parseInt(arr[3]));
+                peptide.setUniqueDatabase(Integer.parseInt(arr[4]));
+                peptide.setSequence(arr[5]);
+                peptide.setModifiedSequence(arr[6]);
 
-                Object[] obj = new Object[]{Integer.valueOf(arr[0]), arr[1], arr[2], Integer.valueOf(arr[3]), Integer.valueOf(arr[4]), (arr[5]), (arr[10]), (arr[11]), Integer.valueOf(arr[14]), Double.valueOf(arr[15]), arr[16]};
-                String key = arr[0] + "_-_" + arr[1].replace(";", "_") + "_-_" + arr[2].replace(";", "_");
-                for (String prot : arr[1].split("; ")) {
-                    prot = prot.trim();
+                peptide.setPostion(arr[7]);
+                peptide.setAasBefore(arr[8]);
+                peptide.setAasAfter(arr[9]);
+                peptide.setVariableModifications(arr[10]);
+                peptide.setFixedModifications(arr[11]);
+                peptide.setLocalizationConfidence(arr[12]);
+                peptide.setValidatedPSMsNumber(Integer.parseInt(arr[13]));
+                peptide.setPSMsNumber(Integer.parseInt(arr[14]));
+
+                peptide.setConfidence(Double.parseDouble(arr[14]));
+                peptide.setValidation(arr[6]);
+
+//                Object[] obj = new Object[]{Integer.valueOf(arr[0]), arr[1], arr[2], Integer.valueOf(arr[3]), Integer.valueOf(arr[4]), (arr[5]), (arr[10]), (arr[11]), Integer.valueOf(arr[14]), Double.valueOf(arr[15]), arr[16]};
+//                String key = arr[0] + "_-_" + arr[1].replace(";", "_") + "_-_" + arr[2].replace(";", "_");
+                for (String prot : peptide.getProteinsSet()) {
                     if (!protein_peptide_Map.containsKey(prot)) {
                         protein_peptide_Map.put(prot, new LinkedHashSet<>());
                     }
-                    protein_peptide_Map.get(prot).add(key);
+                    protein_peptide_Map.get(prot).add(peptide);
+                }
 
-                }
-                for (String protGr : arr[2].split(";")) {
-                    for (String prot : protGr.split(",")) {
-                        prot = prot.replace(" (", "_-_").split("_-_")[0].trim();
-                        if (!protein_peptide_Map.containsKey(prot)) {
-                            protein_peptide_Map.put(prot, new LinkedHashSet<>());
-                        }
-                        protein_peptide_Map.get(prot).add(key);
-                    }
-                }
-                peptideTableData.put(key, obj);
+                peptidesMap.put(peptide.getSequence(), peptide);
 
             }
+            System.out.println("at full reading count "+count);
             bufferedRandomAccessFile.close();
         } catch (IOException | NumberFormatException ex) {
             if (bufferedRandomAccessFile != null) {
@@ -121,10 +179,10 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
                 }
             }
         }
-        return proteinTableData;
+        return null;
     }
 
-    public Set<String> getRelatedProteinsSet(String proteinKey) {
+    public Set<ProteinObject> getRelatedProteinsSet(String proteinKey) {
         if (protein_relatedProteins_Map.containsKey(proteinKey)) {
             return protein_relatedProteins_Map.get(proteinKey);
         }
@@ -133,14 +191,9 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
 
     }
 
-    public Set<Object[]> getPeptideInfo(String proteinKey) {
-        Set<Object[]> peptidesSet = new LinkedHashSet<>();
+    public Set<PeptideObject> getPeptides(String proteinKey) {
         if (protein_peptide_Map.containsKey(proteinKey)) {
-            Set<String> keys = protein_peptide_Map.get(proteinKey);
-            for (String key : keys) {
-                peptidesSet.add(peptideTableData.get(key));
-            }
-            return peptidesSet;
+            return protein_peptide_Map.get(proteinKey);
         }
 
         return null;

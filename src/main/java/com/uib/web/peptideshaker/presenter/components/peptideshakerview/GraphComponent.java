@@ -2,6 +2,7 @@ package com.uib.web.peptideshaker.presenter.components.peptideshakerview;
 
 import com.ejt.vaadin.sizereporter.ComponentResizeEvent;
 import com.ejt.vaadin.sizereporter.SizeReporter;
+import com.uib.web.peptideshaker.galaxy.dataobjects.ProteinObject;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
@@ -14,6 +15,8 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.DragAndDropWrapper;
 import com.vaadin.ui.DragAndDropWrapper.WrapperTargetDetails;
 import com.vaadin.ui.DragAndDropWrapper.WrapperTransferable;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import edu.uci.ics.jung.algorithms.layout.FRLayout;
@@ -25,6 +28,7 @@ import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Set;
 import org.vaadin.hezamu.canvas.Canvas;
 
 /**
@@ -45,7 +49,8 @@ public class GraphComponent extends VerticalLayout {
     /**
      * The nodes.
      */
-    private ArrayList<String> nodes;
+    private Set<String> proteinNodes;
+    private Set<String> peptidesNodes;
     /**
      * The edges: the keys are the node labels and the elements the list of
      * objects.
@@ -61,7 +66,8 @@ public class GraphComponent extends VerticalLayout {
     private final DropHandler dropHandler;
 
     private boolean ignorResize = true;
-    private final Button updateLayoutBtn;
+    private final Label graphInfo;
+    private final HorizontalLayout bottomPanel;
 
     public GraphComponent() {
         GraphComponent.this.setMargin(new MarginInfo(false, false, true, false));
@@ -83,16 +89,22 @@ public class GraphComponent extends VerticalLayout {
             reDrawGraph();
         });
         graphContainer.setSizeFull();
-        updateLayoutBtn = new Button("Update layout");
+
+        bottomPanel = new HorizontalLayout();
+        bottomPanel.setSpacing(true);
+        graphInfo = new Label();
+        graphInfo.setStyleName(ValoTheme.LABEL_LIGHT);
+        graphInfo.addStyleName(ValoTheme.LABEL_SMALL);
+        graphInfo.addStyleName(ValoTheme.LABEL_TINY);
+        bottomPanel.addComponent(graphInfo);
+
+        Button updateLayoutBtn = new Button("Update layout");
         updateLayoutBtn.setStyleName(ValoTheme.BUTTON_SMALL);
         updateLayoutBtn.setStyleName(ValoTheme.BUTTON_TINY);
-        updateLayoutBtn.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                updateGraphLayout();
-            }
+        updateLayoutBtn.addClickListener((Button.ClickEvent event) -> {
+            updateGraphLayout();
         });
-
+        bottomPanel.addComponent(updateLayoutBtn);
         //calculate graph
         //draw graph     
         canvas = new Canvas();
@@ -147,37 +159,51 @@ public class GraphComponent extends VerticalLayout {
         reDrawGraph();
     }
 
-    public void updateGraphData(ArrayList<String> nodes, HashMap<String, ArrayList<String>> edges) {
+    public void updateGraphData(ProteinObject selectedProtein, Set<String> proteinNodes, Set<String> peptidesNodes, HashMap<String, ArrayList<String>> edges) {
 
         graphContainer.removeAllComponents();
         graphContainer.addComponent(canvas);
         canvas.clear();
         //calculate graph
-        this.nodes = nodes;
+        if (selectedProtein == null) {
+            graphInfo.setValue("#Proteins: 0  || #Peptides: 0");
+            return;
+        }
+        this.proteinNodes = proteinNodes;
+        this.peptidesNodes = peptidesNodes;
+        graphInfo.setValue("#Proteins: " + selectedProtein.getProteinGroupSet().size() + "  || #Peptides: " + peptidesNodes.size() + "");
         this.edges = edges;
         setUpGraph();
         for (String node : graph.getVertices()) {
-            final WrappedComponent wrapper = new WrappedComponent(initNode(),
+            VerticalLayout n = initNode();
+            if (peptidesNodes.contains(node)) {
+                n.addStyleName("peptidenode");
+
+            } else {
+                n.addStyleName("proteinnode");
+            }
+            final WrappedComponent wrapper = new WrappedComponent(n,
                     dropHandler);
             wrapper.setSizeUndefined();
             wrapper.setData(node);
+            wrapper.setDescription(node);
             graphContainer.addComponent(wrapper, "left: " + graphLayout.getX(node) + "px; top: " + graphLayout.getY(node) + "px");
         }
         for (String key : edges.keySet()) {
             ArrayList<String> edg = edges.get(key);
-            double startX = graphLayout.getX(key) + 10;
-            double startY = graphLayout.getY(key) + 10;
+            double startX = graphLayout.getX(key) + 8;
+            double startY = graphLayout.getY(key) + 8;
             double endX;
             double endY;
             for (String node : edg) {
-                endX = graphLayout.getX(node) + 10;
-                endY = graphLayout.getY(node) + 10;
+                endX = graphLayout.getX(node) + 15;
+                endY = graphLayout.getY(node) + 15;
                 drawLines(startX, startY, endX, endY);
 
             }
 
         }
-        graphContainer.addComponent(updateLayoutBtn, "right: " + 5 + "px; bottom: " + 5 + "px");
+        graphContainer.addComponent(bottomPanel, "right: " + 5 + "px; bottom: " + 5 + "px");
 
     }
 
@@ -238,9 +264,13 @@ public class GraphComponent extends VerticalLayout {
     private void setUpGraph() {
         graph = new UndirectedSparseGraph<>();
         // add all the nodes
-        for (String node : nodes) {
+        for (String node : proteinNodes) {
             graph.addVertex(node);
         }
+        for (String node : peptidesNodes) {
+            graph.addVertex(node);
+        }
+
         // add the vertexes
         Iterator<String> startNodeKeys = edges.keySet().iterator();
         while (startNodeKeys.hasNext()) {
@@ -259,10 +289,13 @@ public class GraphComponent extends VerticalLayout {
         canvas.beginPath();
         canvas.setLineWidth(1);
         canvas.setLineCap("round");
-        canvas.setFillStyle("#053b72");
+        canvas.setFillStyle(5, 59, 114);
         canvas.setMiterLimit(1);
+        canvas.setStrokeStyle(5, 59, 114);
         canvas.moveTo(startX, startY);
         canvas.lineTo(endX, endY);
+//        canvas.quadraticCurveTo(startX, startY + 10, endX, endY);
+
         canvas.stroke();
         canvas.closePath();
         canvas.restoreContext();

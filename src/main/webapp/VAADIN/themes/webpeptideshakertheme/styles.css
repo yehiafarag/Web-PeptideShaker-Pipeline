@@ -13770,12 +13770,20 @@ div.v-layout.v-horizontal.v-widget {
 	border: 1px solid lightgray;
 }
 
-.webpeptideshakertheme .node {
+.webpeptideshakertheme .peptidenode {
 	background-color: #197de1;
 	border: 1px solid #053b72;
 	border-radius: 100%;
-	max-width: 20px;
-	max-height: 20px;
+	max-width: 16px;
+	max-height: 16px;
+}
+
+.webpeptideshakertheme .proteinnode {
+	background-color: #ce212b;
+	border: 1px solid #053b72;
+	border-radius: 100%;
+	min-width: 30px;
+	min-height: 30px;
 }
 
 .webpeptideshakertheme .v-active-drag-source div {

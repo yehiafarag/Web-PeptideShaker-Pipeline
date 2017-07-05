@@ -784,12 +784,19 @@
     .v-table-framedpanel.v-table-borderless {
         border:1px solid lightgray;
     }
-    .node{
-      background-color: rgb(25, 125, 225);
-	border: 1px solid #053b72;
-	border-radius: 100%;
-	max-width: 20px;
-	max-height: 20px;
+    .peptidenode {
+        background-color: #197de1;
+        border: 1px solid #053b72;
+        border-radius: 100%;
+        max-width: 16px;
+        max-height: 16px;
+    }
+    .proteinnode{
+        background-color: #ce212b;
+        border: 1px solid #053b72;
+        border-radius: 100%;
+        min-width: 30px;
+        min-height: 30px;	
     }
     .v-active-drag-source div{
         background-color: #b6cbdf !important; 
