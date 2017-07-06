@@ -1,4 +1,4 @@
-package com.uib.web.peptideshaker.presenter.components.peptideshakerview;
+package com.uib.web.peptideshaker.presenter.core.graph;
 
 import com.ejt.vaadin.sizereporter.ComponentResizeEvent;
 import com.ejt.vaadin.sizereporter.SizeReporter;
@@ -27,7 +27,9 @@ import edu.uci.ics.jung.visualization.control.ScalingControl;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import org.vaadin.hezamu.canvas.Canvas;
 
@@ -68,9 +70,14 @@ public class GraphComponent extends VerticalLayout {
     private boolean ignorResize = true;
     private final Label graphInfo;
     private final HorizontalLayout bottomPanel;
+    private final Map<String, Node> nodesMap;
+    private final Set<Edge> edgesMap;
+    private String selectAllValueLabel;
 
     public GraphComponent() {
         GraphComponent.this.setMargin(new MarginInfo(false, false, true, false));
+        nodesMap = new HashMap<>();
+        edgesMap = new HashSet<>();
         //init main layout
 
         //calculate canavas dimension 
@@ -100,10 +107,22 @@ public class GraphComponent extends VerticalLayout {
 
         Button updateLayoutBtn = new Button("Update layout");
         updateLayoutBtn.setStyleName(ValoTheme.BUTTON_SMALL);
-        updateLayoutBtn.setStyleName(ValoTheme.BUTTON_TINY);
+        updateLayoutBtn.addStyleName(ValoTheme.BUTTON_TINY);
+//        updateLayoutBtn.addStyleName(ValoTheme.BUTTON_LINK);
         updateLayoutBtn.addClickListener((Button.ClickEvent event) -> {
             updateGraphLayout();
         });
+
+        Button selectAllBtn = new Button("Select all");
+//        selectAllBtn.setStyleName(ValoTheme.BUTTON_SMALL);
+        selectAllBtn.addStyleName(ValoTheme.BUTTON_TINY);
+//        selectAllBtn.addStyleName(ValoTheme.BUTTON_LINK);
+        selectAllBtn.addClickListener((Button.ClickEvent event) -> {
+            selectAll();
+        });
+
+        bottomPanel.addComponent(selectAllBtn);
+
         bottomPanel.addComponent(updateLayoutBtn);
         //calculate graph
         //draw graph     
@@ -142,7 +161,11 @@ public class GraphComponent extends VerticalLayout {
                     ComponentPosition pos = graphContainer.getPosition(t.getSourceComponent());
                     pos.setLeftValue(pos.getLeftValue() + xChange);
                     pos.setTopValue(pos.getTopValue() + yChange);
-                    graphLayout.setLocation(node.getData() + "", pos.getLeftValue(), pos.getTopValue());
+
+                    double x = pos.getLeftValue();
+                    double y = pos.getTopValue();
+                    nodesMap.get(node.getData() + "").setX(x);
+                    nodesMap.get(node.getData() + "").setY(y);
                     drawEdges();
                 }
 
@@ -162,6 +185,8 @@ public class GraphComponent extends VerticalLayout {
     public void updateGraphData(ProteinObject selectedProtein, Set<String> proteinNodes, Set<String> peptidesNodes, HashMap<String, ArrayList<String>> edges) {
 
         graphContainer.removeAllComponents();
+        nodesMap.clear();
+        edgesMap.clear();
         graphContainer.addComponent(canvas);
         canvas.clear();
         //calculate graph
@@ -171,53 +196,57 @@ public class GraphComponent extends VerticalLayout {
         }
         this.proteinNodes = proteinNodes;
         this.peptidesNodes = peptidesNodes;
-        graphInfo.setValue("#Proteins: " + selectedProtein.getProteinGroupSet().size() + "  || #Peptides: " + peptidesNodes.size() + "");
+        selectAllValueLabel = "#Proteins: " + proteinNodes.size() + "  || #Peptides: " + peptidesNodes.size()+ "";
+      
         this.edges = edges;
         setUpGraph();
         for (String node : graph.getVertices()) {
-            VerticalLayout n = initNode();
+            Node n = new Node(node) {
+                @Override
+                public void selected(String id) {
+                    selectNode(id);
+                }
+
+            };
+            n.setX(graphLayout.getX(node));
+            n.setY(graphLayout.getY(node));
+            nodesMap.put(node, n);
             if (peptidesNodes.contains(node)) {
                 n.addStyleName("peptidenode");
+                if (selectedProtein.isRelatedPeptide(node)) {
+                    n.setSelected(true);
+                }
+                n.setType(1);
 
             } else {
                 n.addStyleName("proteinnode");
+                n.setType(0);
+                if (selectedProtein.getProteinGroupSet().contains(node)) {
+                    n.setSelected(true);
+                }
             }
+
             final WrappedComponent wrapper = new WrappedComponent(n,
                     dropHandler);
             wrapper.setSizeUndefined();
             wrapper.setData(node);
             wrapper.setDescription(node);
-            graphContainer.addComponent(wrapper, "left: " + graphLayout.getX(node) + "px; top: " + graphLayout.getY(node) + "px");
+            graphContainer.addComponent(wrapper, "left: " + n.getX() + "px; top: " + n.getY() + "px");
         }
         for (String key : edges.keySet()) {
             ArrayList<String> edg = edges.get(key);
-            double startX = graphLayout.getX(key) + 8;
-            double startY = graphLayout.getY(key) + 8;
-            double endX;
-            double endY;
             for (String node : edg) {
-                endX = graphLayout.getX(node) + 15;
-                endY = graphLayout.getY(node) + 15;
-                drawLines(startX, startY, endX, endY);
-
+                Edge edge = new Edge(nodesMap.get(key), nodesMap.get(node));
+                edgesMap.add(edge);
             }
 
         }
+          graphInfo.setValue("#Proteins: " + selectedProtein.getProteinGroupSet().size() + "  || #Peptides: " + (drawEdges()-selectedProtein.getProteinGroupSet().size()) + "");
         graphContainer.addComponent(bottomPanel, "right: " + 5 + "px; bottom: " + 5 + "px");
 
     }
 
-    private VerticalLayout initNode() {
-        VerticalLayout node = new VerticalLayout();
-        node.setWidth(20, Unit.PIXELS);
-        node.setHeight(20, Unit.PIXELS);
-        node.setStyleName("node");
-        return node;
-
-    }
-
     private void reDrawGraph() {
-
         if (visualizationViewer != null) {
             setUpGraph();
             Iterator<Component> itr = graphContainer.iterator();
@@ -227,32 +256,41 @@ public class GraphComponent extends VerticalLayout {
                     WrappedComponent wComp = (WrappedComponent) component;
                     String nodeName = wComp.getData() + "";
                     AbsoluteLayout.ComponentPosition newPosition = graphContainer.getPosition(wComp);
-                    newPosition.setCSSString("left: " + graphLayout.getX(nodeName) + "px; top: " + graphLayout.getY(nodeName) + "px");
-                }
+                    double x = graphLayout.getX(nodeName);
+                    double y = graphLayout.getY(nodeName);
+                    nodesMap.get(nodeName).setX(x);
+                    nodesMap.get(nodeName).setY(y);
+                    newPosition.setCSSString("left: " + x + "px; top: " + y + "px");
 
+                }
             }
             drawEdges();
-
         }
     }
 
-    private void drawEdges() {
-        canvas.clear();
-        for (String key : edges.keySet()) {
-            ArrayList<String> edg = edges.get(key);
-            double startX = graphLayout.getX(key) + 10;
-            double startY = graphLayout.getY(key) + 10;
-            double endX;
-            double endY;
-            for (String node : edg) {
-                endX = graphLayout.getX(node) + 10;
-                endY = graphLayout.getY(node) + 10;
-                drawLines(startX, startY, endX, endY);
-
-            }
-
+    private void selectNode(String id) {
+        for (Node node : nodesMap.values()) {
+            node.setSelected(false);
         }
+        Node n = nodesMap.get(id);
+        for (Edge edge : edgesMap) {
+            edge.select(n);
+        }
+        int number = drawEdges();
+        
+        if (n.getType() == 0) {
+            graphInfo.setValue("#Proteins: " + 1 + "  || #Peptides: " + number + "");
+        } else {
+            graphInfo.setValue("#Proteins: " + number + "  || #Peptides: " + 1 + "");
+        }
+        
+    }
 
+    private void selectAll() {
+        for (Node node : nodesMap.values()) {
+            node.setSelected(true);
+        }
+        drawEdges();
     }
 
     /**
@@ -294,11 +332,37 @@ public class GraphComponent extends VerticalLayout {
         canvas.setStrokeStyle(5, 59, 114);
         canvas.moveTo(startX, startY);
         canvas.lineTo(endX, endY);
-//        canvas.quadraticCurveTo(startX, startY + 10, endX, endY);
-
         canvas.stroke();
         canvas.closePath();
         canvas.restoreContext();
+    }
+
+    private int drawEdges() {
+        canvas.clear();
+        canvas.setLineWidth(1);
+        canvas.setLineCap("round");//      
+        canvas.setStrokeStyle(5, 59, 114);
+        canvas.beginPath();
+        int edgeNumber=0;
+        for (Edge edge : edgesMap) {
+            if (edge.isSelected()) {
+                edgeNumber++;
+                canvas.moveTo(edge.getStartX(), edge.getStartY());
+                canvas.lineTo(edge.getEndX(), edge.getEndY());
+            }
+        }
+        canvas.stroke();
+        canvas.setStrokeStyle("lightgray");
+        canvas.beginPath();
+        for (Edge edge : edgesMap) {
+            if (!edge.isSelected()) {
+                canvas.moveTo(edge.getStartX(), edge.getStartY());
+                canvas.lineTo(edge.getEndX(), edge.getEndY());
+            }
+        }
+
+        canvas.stroke();
+        return edgeNumber;
     }
 
     /**
@@ -323,7 +387,7 @@ public class GraphComponent extends VerticalLayout {
         public WrappedComponent(final Component content, final DropHandler dropHandler) {
             super(content);
             this.dropHandler = dropHandler;
-            setDragStartMode(DragAndDropWrapper.DragStartMode.WRAPPER);
+            WrappedComponent.this.setDragStartMode(DragAndDropWrapper.DragStartMode.WRAPPER);
         }
 
         @Override

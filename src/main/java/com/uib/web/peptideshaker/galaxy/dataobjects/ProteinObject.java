@@ -2,6 +2,7 @@ package com.uib.web.peptideshaker.galaxy.dataobjects;
 
 import com.compomics.util.experiment.biology.Protein;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -41,10 +42,20 @@ public class ProteinObject extends Protein {
     private double confidence;
     private String validation;
     private int index;
+    private Set<String> relatedPeptidesList;
 
     public ProteinObject() {
         this.secondaryAccessionSet = new LinkedHashSet<>();
         this.proteinGroupSet = new LinkedHashSet<>();
+        this.relatedPeptidesList = new HashSet<>();
+    }
+
+    public void addPeptideSequence(String peptideSequence) {
+        relatedPeptidesList.add(peptideSequence);
+    }
+
+    public boolean isRelatedPeptide(String peptideSequence) {
+        return relatedPeptidesList.contains(peptideSequence);
     }
 
     @Override

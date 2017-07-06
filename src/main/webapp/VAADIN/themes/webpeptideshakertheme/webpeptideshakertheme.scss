@@ -784,35 +784,95 @@
     .v-table-framedpanel.v-table-borderless {
         border:1px solid lightgray;
     }
+    
     .peptidenode {
-        background-color: #197de1;
-        border: 1px solid #053b72;
+        background-color: #e1e8ef;
+        border: 1px solid #bfdfff;
         border-radius: 100%;
         max-width: 16px;
         max-height: 16px;
+        position: fixed !important;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #b6cbdf;
+        -webkit-box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #b6cbdf;
+        -moz-box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #b6cbdf;
+        border-radius: 100%;
+        -webkit-border-radius: 100%;
+        -moz-border-radius: 100%;
+        -webkit-transition: all .5s ease-in-out;
+        -moz-transition: all .5s ease-in-out;
+        -o-transition: all .5s ease-in-out;
+        transition: all .5s ease-in-out;
+        cursor: -webkit-grabing;
     }
-    .proteinnode{
-        background-color: #ce212b;
-        border: 1px solid #053b72;
+
+    .selectednode.peptidenode , .peptidenode:hover{
+        background-color: #197de1;
+        border: 1px solid #bfdfff;
+        border-radius: 100%;
+        max-width: 16px;
+        max-height: 16px;
+        position: fixed !important;
+        box-shadow: 0 0px 30px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
+        -webkit-box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #197fde;
+        -moz-box-shadow: 0 0px 30px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
+        cursor: -webkit-grab;
+    }
+    .selectednode.proteinnode , .proteinnode:hover{
+        background-color: #ce212b !important;
+        border: 1px solid #e29d96 !important;
         border-radius: 100%;
         min-width: 30px;
-        min-height: 30px;	
+        min-height: 30px;
+        overflow: visible !important;
+        position: fixed !important;
+        box-shadow: 0 0px 30px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
+        -webkit-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #ef6c6c !important;
+        -moz-box-shadow: 0 0px 30px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
+        cursor: -webkit-grab;
+
     }
+    .proteinnode {
+        background-color: #fae4e5;
+        border: 1px solid #dfc4c1;
+        border-radius: 100%;
+        min-width: 30px;
+        min-height: 30px;
+        overflow: visible !important;
+        position: fixed !important;
+        box-shadow: 0 5px 30px rgba(248, 248, 248, 0), inset 0px 10px 30px 3px #eaeaea;
+        -webkit-box-shadow: 0 5px 30px rgba(248, 248, 248, 0), inset 0px 10px 30px 3px #eaeaea;
+        -moz-box-shadow: 0 5px 30px rgba(248, 248, 248, 0), inset 0px 10px 30px 3px #eaeaea;
+        border-radius: 100%;
+        -webkit-border-radius: 100%;
+        -moz-border-radius: 100%;
+        -webkit-transition: all .5s ease-in-out;
+        -moz-transition: all .5s ease-in-out;
+        -o-transition: all .5s ease-in-out;
+        transition: all .5s ease-in-out;
+        cursor: -webkit-grabing;
+    }
+
     .v-active-drag-source div{
-        background-color: #b6cbdf !important; 
+        border-radius: 100%;
+        overflow: hidden;
+        background-color:lightgray;
+        border-color:gray;
+        box-shadow:none;
+    }   
+
+    .v-ddwrapper.v-widget.v-drag-element {
+        max-width: 15px;
+        max-height: 15px;
+        opacity: 1;
         border-radius:100%;
-        overflow:hidden;
-    }
-    .subframe{
+        -webkit-cursor:-webkit-grabbing !important;
+        -moz-cursor: -webkit-grabbing !important;
+        -o-cursor: -webkit-grabbing !important;
+        cursor: -webkit-grabbing !important;
+    } 
+    .subframe {
         border: 1px solid lightgray;
         border-radius: 5px;
-    }
-    .v-ddwrapper.v-widget.v-drag-element{
-        border-radius:100%;
-        opacity:1;
-        max-width:20px !important;
-        max-height:20px !important;
-
     }
     /****mobile css**/
     .horizontalcss  .largetitle .v-label{

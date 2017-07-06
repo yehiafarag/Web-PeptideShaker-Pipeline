@@ -130,11 +130,8 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
              * escape header
              */
             bufferedRandomAccessFile.getNextLine();
-            int count=0;
             while ((line = bufferedRandomAccessFile.getNextLine()) != null) {
-                String[] arr = line.split("\\t");
-                if(line.contains("P68104") || line.contains("Q5VTE0"))
-                    count++;
+                String[] arr = line.split("\\t");                
                 //	Position	AAs Before	AAs After	Variable Modifications	Fixed Modifications	Localization Confidence	#Validated PSMs	#PSMs	Confidence [%]	Validation
                 PeptideObject peptide = new PeptideObject();
                 peptide.setIndex(Integer.parseInt(arr[0]));
@@ -169,7 +166,6 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
                 peptidesMap.put(peptide.getSequence(), peptide);
 
             }
-            System.out.println("at full reading count "+count);
             bufferedRandomAccessFile.close();
         } catch (IOException | NumberFormatException ex) {
             if (bufferedRandomAccessFile != null) {
