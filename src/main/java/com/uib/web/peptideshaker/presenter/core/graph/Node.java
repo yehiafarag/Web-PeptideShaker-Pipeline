@@ -19,9 +19,25 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
 
     private final String id;
     private boolean selected;
+    private String defaultStyleName;
 
     public int getType() {
         return type;
+    }
+
+    public String getDefaultStyleName() {
+        return defaultStyleName;
+    }
+
+    public void setDefaultStyleName(String defaultStyleName) {
+        this.setStyleName(defaultStyleName);
+        this.defaultStyleName = defaultStyleName;
+    }
+
+    public void resetStyle() {
+        this.removeStyleName(this.getStyleName());
+        this.setStyleName(defaultStyleName);
+        this.setSelected(selected);
     }
 
     public void setType(int type) {
@@ -32,11 +48,6 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
     public double getX() {
         return x;
     }
-
-   
-
-    
-    
 
     public void setX(double x) {
         this.x = x;
