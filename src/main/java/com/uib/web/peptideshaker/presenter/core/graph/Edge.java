@@ -24,10 +24,18 @@ public class Edge {
         return (n1.isSelected() && n2.isSelected());
     }
 
-    public void select(Node n) {
-        if (n == n1 || n == n2) {
-            n1.setSelected(true);
-            n2.setSelected(true);
+    public void select(Node n, boolean uniqueOnly) {
+        if (n == n2) {
+            n2.setSelected(true);            
+            if (uniqueOnly && n1.getEdgesNumber() == 1 || !uniqueOnly) {
+                n1.setSelected(true);
+            }
+        }
+        else  if (n == n1) {
+            n1.setSelected(true);            
+            if (uniqueOnly && n2.getEdgesNumber() == 1 || !uniqueOnly) {
+                n2.setSelected(true);
+            }
         }
     }
 
@@ -46,5 +54,14 @@ public class Edge {
     public double getEndY() {
         return n2.getY() + 15;
     }
+
+    public Node getN1() {
+        return n1;
+    }
+
+    public Node getN2() {
+        return n2;
+    }
+    
 
 }

@@ -13,6 +13,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -27,9 +28,10 @@ public class FilterTableGraphComponent extends VerticalLayout implements Propert
     private Table proteinsTable;
     private PeptideShakerVisualizationDataset peptideShakerVisualizationDataset;
     private final GraphComponent graphLayout;
-    private final Set<String> proteinNodes;
-    private final Set<String> peptidesNodes;
+    private final Map<String, ProteinObject> proteinNodes;
+    private final Map<String, PeptideObject> peptidesNodes;
     private final Set<PeptideObject> peptides;
+    private Map<Object, ProteinObject> proteinTableData;
     private final HashMap<String, ArrayList<String>> edges;
 
     public FilterTableGraphComponent() {
@@ -40,8 +42,8 @@ public class FilterTableGraphComponent extends VerticalLayout implements Propert
         FilterTableGraphComponent.this.addComponent(proteinsTable);
         graphLayout = new GraphComponent();
         FilterTableGraphComponent.this.addComponent(graphLayout);
-        proteinNodes = new LinkedHashSet<>();
-        peptidesNodes = new LinkedHashSet<>();
+        proteinNodes = new LinkedHashMap<>();
+        peptidesNodes = new LinkedHashMap<>();
         peptides = new LinkedHashSet<>();
         edges = new HashMap<>();
     }
@@ -97,7 +99,7 @@ public class FilterTableGraphComponent extends VerticalLayout implements Propert
         this.peptideShakerVisualizationDataset = peptideShakerVisualizationDataset;
         proteinsTable.removeValueChangeListener(FilterTableGraphComponent.this);
         proteinsTable.removeAllItems();
-        Map<Object, ProteinObject> proteinTableData = peptideShakerVisualizationDataset.getProteinsMap();
+        proteinTableData = peptideShakerVisualizationDataset.getProteinsMap();
         for (ProteinObject protein : proteinTableData.values()) {
             this.proteinsTable.addItem(new Object[]{protein.getIndex(), protein.getAccession(), protein.getDescription(), protein.getGeneName(), protein.getProteinInference(), protein.getMW(), protein.getPossibleCoverage(), protein.getValidatedPeptidesNumber()}, protein.getAccession());
         }
@@ -121,18 +123,18 @@ public class FilterTableGraphComponent extends VerticalLayout implements Propert
         }
         ProteinObject protein = peptideShakerVisualizationDataset.getProtein(objcetId);
         for (String acc : protein.getProteinGroupSet()) {
-            proteinNodes.add(acc);
+            proteinNodes.put(acc, proteinTableData.get(acc));
             peptides.addAll(peptideShakerVisualizationDataset.getPeptides(acc));
         }
 
         Set<String> tunrelatedProt = new LinkedHashSet<>();
         for (PeptideObject peptide : peptides) {
-            peptidesNodes.add(peptide.getModifiedSequence());
+            peptidesNodes.put(peptide.getModifiedSequence(), peptide);
             protein.addPeptideSequence(peptide.getModifiedSequence());
             ArrayList<String> tEd = new ArrayList<>();
             for (String acc : peptide.getProteinsSet()) {
                 tEd.add(acc);
-                if (!proteinNodes.contains(acc)) {
+                if (!proteinNodes.containsKey(acc)) {
                     tunrelatedProt.add(acc);
                 }
             }
@@ -140,37 +142,37 @@ public class FilterTableGraphComponent extends VerticalLayout implements Propert
 
         }
         for (String unrelated : tunrelatedProt) {
-
-            fillUnrelatedProteinsAndPeptides(unrelated);
+            fillUnrelatedProteinsAndPeptides(unrelated, proteinTableData.get(unrelated));
         }
-        proteinNodes.addAll(unrelatedProt);
-        peptidesNodes.addAll(unrelatedPeptides);
+        proteinNodes.putAll(unrelatedProt);
+        peptidesNodes.putAll(unrelatedPeptides);
         graphLayout.updateGraphData(protein, proteinNodes, peptidesNodes, edges);
 
     }
-    Set<String> unrelatedProt = new LinkedHashSet<>();
-    Set<String> unrelatedPeptides = new LinkedHashSet<>();
+    Map<String, ProteinObject> unrelatedProt = new LinkedHashMap<>();
+    Map<String, PeptideObject> unrelatedPeptides = new LinkedHashMap<>();
 
-    private void fillUnrelatedProteinsAndPeptides(String proteinAccession) {
-        if (unrelatedProt.contains(proteinAccession)) {
+    private void fillUnrelatedProteinsAndPeptides(String proteinAccession, ProteinObject protein) {
+        if (unrelatedProt.containsKey(proteinAccession)) {
             return;
         }
-        unrelatedProt.add(proteinAccession);
+        unrelatedProt.put(proteinAccession, protein);
         Set<PeptideObject> tpeptides = peptideShakerVisualizationDataset.getPeptides(proteinAccession);
-
-        for (PeptideObject pep : tpeptides) {
-            if (!edges.containsKey(pep.getModifiedSequence())) {
-                ArrayList<String> tEd = new ArrayList<>();
-                edges.put(pep.getModifiedSequence(), tEd);
-            }
-            edges.get(pep.getModifiedSequence()).add(proteinAccession);
-            if (!peptidesNodes.contains(pep.getModifiedSequence())) {
-                unrelatedPeptides.add(pep.getModifiedSequence());
-                for (String newAcc : pep.getProteinsSet()) {
-                    fillUnrelatedProteinsAndPeptides(newAcc);
+        if (tpeptides != null) {
+            for (PeptideObject pep : tpeptides) {
+                if (!edges.containsKey(pep.getModifiedSequence())) {
+                    ArrayList<String> tEd = new ArrayList<>();
+                    edges.put(pep.getModifiedSequence(), tEd);
                 }
-            }
+                edges.get(pep.getModifiedSequence()).add(proteinAccession);
+                if (!peptidesNodes.containsKey(pep.getModifiedSequence())) {
+                    unrelatedPeptides.put(pep.getModifiedSequence(), pep);
+                    for (String newAcc : pep.getProteinsSet()) {
+                        fillUnrelatedProteinsAndPeptides(newAcc, proteinTableData.get(newAcc));
+                    }
+                }
 
+            }
         }
 
     }

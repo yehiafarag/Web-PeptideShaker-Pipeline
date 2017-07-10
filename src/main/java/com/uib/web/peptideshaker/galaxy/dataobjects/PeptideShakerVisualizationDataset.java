@@ -77,8 +77,9 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
                 protein.setUniqueToGroupNumber(Integer.parseInt(arr[20]));
                 protein.setValidatedUniqueToGroupNumber(Integer.valueOf(arr[21]));
                 protein.setValidatedPSMsNumber(Integer.valueOf(arr[22]));
-                protein.setConfidence(Double.valueOf(arr[23]));
-                protein.setValidation(arr[24]);
+                 protein.setPSMsNumber(Integer.valueOf(arr[23]));
+                protein.setConfidence(Double.valueOf(arr[24]));
+                protein.setValidation(arr[25]);
                 proteinsMap.put(protein.getAccession(), protein);
                 for (String acc : protein.getProteinGroupSet()) {
                     if (!protein_relatedProteins_Map.containsKey(acc)) {
@@ -151,8 +152,8 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
                 peptide.setValidatedPSMsNumber(Integer.parseInt(arr[13]));
                 peptide.setPSMsNumber(Integer.parseInt(arr[14]));
 
-                peptide.setConfidence(Double.parseDouble(arr[14]));
-                peptide.setValidation(arr[6]);
+                peptide.setConfidence(Double.parseDouble(arr[15]));
+                peptide.setValidation(arr[16]);
 
 //                Object[] obj = new Object[]{Integer.valueOf(arr[0]), arr[1], arr[2], Integer.valueOf(arr[3]), Integer.valueOf(arr[4]), (arr[5]), (arr[10]), (arr[11]), Integer.valueOf(arr[14]), Double.valueOf(arr[15]), arr[16]};
 //                String key = arr[0] + "_-_" + arr[1].replace(";", "_") + "_-_" + arr[2].replace(";", "_");

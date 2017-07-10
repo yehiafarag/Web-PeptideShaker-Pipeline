@@ -7,8 +7,6 @@ package com.uib.web.peptideshaker.presenter.core.graph;
 
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.ui.VerticalLayout;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * This class represents Node for graph layout
@@ -17,12 +15,52 @@ import java.util.Set;
  */
 public abstract class Node extends VerticalLayout implements LayoutEvents.LayoutClickListener {
 
-    private final String id;
+    private final String nodeId;
+
+    public String getNodeId() {
+        return nodeId;
+    }
+
+    public String getProteinEvidenceStyle() {
+        return proteinEvidenceStyle;
+    }
+
+    public void setProteinEvidenceStyle(String proteinEvidenceStyle) {
+        this.proteinEvidenceStyle = proteinEvidenceStyle;
+    }
     private boolean selected;
     private String defaultStyleName;
 
+    public int getEdgesNumber() {
+        return edgesNumber;
+    }
+
+    public void addEdge() {
+        this.edgesNumber++;
+    }
+    private String validationStatuesStyle;
+    private String proteinEvidenceStyle;
+    private int edgesNumber;
+
     public int getType() {
         return type;
+    }
+    public void setNodeStatues(String statues){
+        this.resetStyle();
+        if(statues.equalsIgnoreCase("Validation Status")){
+        this.addStyleName(validationStatuesStyle);
+        }else if(statues.equalsIgnoreCase("Protein Evidence")){
+         this.addStyleName(proteinEvidenceStyle);
+        }   
+    
+    }
+
+    public String getValidationStatuesStyle() {
+        return validationStatuesStyle;
+    }
+
+    public void setValidationStatuesStyle(String validationStatuesStyle) {
+        this.validationStatuesStyle = validationStatuesStyle;
     }
 
     public String getDefaultStyleName() {
@@ -83,12 +121,12 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
         Node.this.setHeight(20, Unit.PIXELS);
         Node.this.setStyleName("node");
         Node.this.addLayoutClickListener(Node.this);
-        this.id = id;
+        this.nodeId = id;
     }
 
     @Override
     public void layoutClick(LayoutEvents.LayoutClickEvent event) {
-        selected(id);
+        selected(nodeId);
     }
 
     public abstract void selected(String id);
