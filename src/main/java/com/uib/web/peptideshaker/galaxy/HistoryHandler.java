@@ -10,15 +10,30 @@ import com.github.jmchilton.blend4j.galaxy.beans.HistoryContents;
 import com.github.jmchilton.blend4j.galaxy.beans.HistoryContentsProvenance;
 import com.github.wolfie.refresher.Refresher;
 import com.uib.web.peptideshaker.PeptidShakerUI;
+import com.uib.web.peptideshaker.galaxy.dataobjects.GalaxyFastaFileReader;
+import com.vaadin.server.VaadinService;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Notification;
 
 import com.vaadin.ui.UI;
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 
 /**
  * This class represents Galaxy history (galaxy file system) in Peptide-Shaker
@@ -45,6 +60,10 @@ public abstract class HistoryHandler {
      * The main MGF Files Map.
      */
     private final Map<String, SystemDataSet> mgfFilesMap;
+    /**
+     * The main MGF and FASTA index Files Map.
+     */
+    private final Map<String, GalaxyFile> indexFilesMap;
     /**
      * The Full historyFiles Map.
      */
@@ -75,6 +94,8 @@ public abstract class HistoryHandler {
      */
     private final Refresher REFRESHER;
 
+    private final GalaxyFastaFileReader fastaFileReader;
+
     public Map<String, PeptideShakerVisualizationDataset> getPeptideShakerVisualizationMap() {
         return peptideShakerVisualizationMap;
     }
@@ -90,10 +111,12 @@ public abstract class HistoryHandler {
         this.searchSetiingsFilesMap = new LinkedHashMap<>();
         this.fastaFilesMap = new LinkedHashMap<>();
         this.mgfFilesMap = new LinkedHashMap<>();
+        this.indexFilesMap = new LinkedHashMap<>();
         this.peptideShakerVisualizationMap = new LinkedHashMap<>();
         this.searchGUIFilesMap = new LinkedHashMap<>();
         this.historyFilesMap = new LinkedHashMap<>();
         this.historiesIds = new HashSet<>();
+        this.fastaFileReader = new GalaxyFastaFileReader();
 
         REFRESHER = new Refresher();
         ((PeptidShakerUI) UI.getCurrent()).addExtension(REFRESHER);
@@ -174,6 +197,7 @@ public abstract class HistoryHandler {
             peptideShakerVisualizationMap.clear();
             searchSetiingsFilesMap.clear();
             historiesIds.clear();
+            indexFilesMap.clear();
             HistoriesClient galaxyHistoriesClient = Galaxy_Instance.getHistoriesClient();
             List<History> historiesList = galaxyHistoriesClient.getHistories();
             if (historiesList.isEmpty()) {
@@ -244,7 +268,7 @@ public abstract class HistoryHandler {
                                 ds.setHistoryId(history.getId());
                                 ds.setGalaxyId(map.get("id").toString());
                                 ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + ds.getGalaxyId() + "/display");
-                                GalaxyFile file = new GalaxyFile(userFolder, ds);
+                                GalaxyFile file = new GalaxyFile(userFolder, ds, false);
                                 file.setDownloadUrl("to_ext=" + map.get("file_ext").toString());
                                 vDs.setProteinFile(file);
 
@@ -266,7 +290,7 @@ public abstract class HistoryHandler {
                                 ds.setHistoryId(history.getId());
                                 ds.setGalaxyId(map.get("id").toString());
                                 ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + ds.getGalaxyId() + "/display");
-                                GalaxyFile file = new GalaxyFile(userFolder, ds);
+                                GalaxyFile file = new GalaxyFile(userFolder, ds, false);
                                 file.setDownloadUrl("to_ext=" + map.get("file_ext").toString());
                                 vDs.setPeptideFile(file);
                             } else if (map.get("name").toString().endsWith("(PSM)")) {
@@ -295,13 +319,35 @@ public abstract class HistoryHandler {
                             ds.setHistoryId(history.getId());
                             ds.setGalaxyId(map.get("id").toString());
                             ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + ds.getGalaxyId() + "/display");
-                            GalaxyFile file = new GalaxyFile(userFolder, ds);
+                            GalaxyFile file = new GalaxyFile(userFolder, ds, false);
                             file.setDownloadUrl("to_ext=" + map.get("file_ext").toString());
                             this.searchSetiingsFilesMap.put(ds.getGalaxyId(), file);
+                        } else if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.data.Data") && map.get("name").toString().endsWith(".cui")) {
+                            SystemDataSet ds = new SystemDataSet();
+                            ds.setName(map.get("name").toString());
+                            ds.setType("Index File");
+                            ds.setHistoryId(history.getId());
+                            ds.setGalaxyId(map.get("id").toString());
+                            ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + ds.getGalaxyId() + "/display");
+                            GalaxyFile file = new GalaxyFile(userFolder, ds, false);
+                            file.setDownloadUrl("to_ext=" + map.get("file_ext").toString());
+                            this.indexFilesMap.put(ds.getName().replace(".cui", ""), file);
+                        } else if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.binary.CompressedZipArchive") && map.get("name").toString().endsWith("(ZIP)")) {
+
+                            SystemDataSet ds = new SystemDataSet();
+                            ds.setName(map.get("name").toString().replace("(ZIP)", " - FASTA"));
+                            ds.setType("FASTA File");
+                            ds.setHistoryId(history.getId());
+                            ds.setGalaxyId(map.get("id").toString() + "__data/input_database.fasta");
+                            ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + map.get("id").toString() + "/display");
+                            GalaxyFile file = new GalaxyFile(userFolder, ds, true);
+                            file.setDownloadUrl("to_ext=" + map.get("file_ext").toString());
+                            this.indexFilesMap.put(ds.getName(), file);
+//                            
                         }
                     }
-                } else {
 
+                } else {
                     for (Map<String, Object> map : results) {
                         if (map.get("purged").toString().equalsIgnoreCase("true") || map.get("deleted").toString().equalsIgnoreCase("true")) {
                             continue;
@@ -322,9 +368,17 @@ public abstract class HistoryHandler {
                         } else if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.text.Json") && map.get("name").toString().endsWith(".par")) {
                             ds.setType("Search Paramerters File (JSON)");
                             ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + ds.getGalaxyId() + "/display");
-                            GalaxyFile file = new GalaxyFile(userFolder, ds);
+                            GalaxyFile file = new GalaxyFile(userFolder, ds, false);
                             file.setDownloadUrl("to_ext=" + map.get("file_ext").toString());
                             this.searchSetiingsFilesMap.put(ds.getGalaxyId(), file);
+                        } else if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.data.Data") && map.get("name").toString().endsWith(".cui")) {
+                            ds.setType("Index File");
+                            ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + ds.getGalaxyId() + "/display");
+                            GalaxyFile file = new GalaxyFile(userFolder, ds, false);
+                            file.setDownloadUrl("to_ext=" + map.get("file_ext").toString());
+                            this.indexFilesMap.put(ds.getName().replace(".cui", ""), file);
+                        } else if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.binary.CompressedZipArchive") && map.get("name").toString().endsWith("Archive")) {
+
                         }
                     }
 
@@ -332,6 +386,23 @@ public abstract class HistoryHandler {
 
             }
 
+            /**
+             * **Temp until we find another re indexer**
+             */
+            SystemDataSet tds = new SystemDataSet();
+            tds.setName("qExactive01819.mgf.cui");
+            tds.setType("Index File");
+            tds.setHistoryId("btoot");
+            tds.setGalaxyId("qExactive01819.mgf.cui");
+            String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
+            tds.setDownloadUrl(basepath + "/VAADIN/qExactive01819.mgf.cui");
+            GalaxyFile file = new GalaxyFile(userFolder.getParentFile(), tds, false);
+            file.setDownloadUrl(basepath + "/VAADIN/qExactive01819.mgf.cui");
+            this.indexFilesMap.put(tds.getName().replace(".cui", ""), file);
+
+            /**
+             * **end**
+             */
             //if no search param file exist add default search param file 
             for (SystemDataSet ds : fastaFilesMap.values()) {
                 ds.setReIndexedHistoryId(workingHistory.getId());
@@ -362,8 +433,11 @@ public abstract class HistoryHandler {
                 vDs.setType("Web Peptide Shaker Dataset");
                 Map<String, Object> parameters = searchGUIFilesMap.get(vDs.getSearchGUIFileId()).getParameters();
                 String fastaFileId = parameters.get("input_database").toString().split(",")[0].replace("{id=", "");
-                vDs.setFastaFile(fastaFileId, fastaFilesMap.get(fastaFileId).getName());
-                vDs.setFastaFileIndex(fastaFilesMap.get(fastaFileId).getReIndexedId());
+                vDs.setFastaFileReader(fastaFileReader);
+                System.out.println("indexFilesMap "+indexFilesMap.keySet()+" ---  "+vDs.getName());
+                vDs.setFastaFile(indexFilesMap.get(vDs.getName()+" - FASTA"));
+                vDs.setFastaFileName(fastaFilesMap.get(fastaFileId).getName());
+                vDs.setFastaFileId(fastaFileId);
                 vDs.setParameters(parameters);
                 for (String paramKey : parameters.keySet()) {
                     if (paramKey.contains("peak_list")) {
@@ -375,10 +449,10 @@ public abstract class HistoryHandler {
 
             }
 
-
             historyFilesMap.putAll(mgfFilesMap);
             historyFilesMap.putAll(fastaFilesMap);
             historyFilesMap.putAll(searchSetiingsFilesMap);
+            historyFilesMap.putAll(indexFilesMap);
             historyFilesMap.putAll(peptideShakerVisualizationMap);
             if (tempWorkflowOutput != null) {
                 historyFilesMap.put(tempWorkflowOutput.getJobId(), tempWorkflowOutput);

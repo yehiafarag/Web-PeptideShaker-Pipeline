@@ -227,7 +227,7 @@ public class ToolsHandler {
             ds.setHistoryId(workHistoryId);
             ds.setGalaxyId(oDs.getId());
             ds.setDownloadUrl(galaxyURL + "/datasets/" + ds.getGalaxyId() + "/display");
-            GalaxyFile userFolderfile = new GalaxyFile(userFolder, ds);
+            GalaxyFile userFolderfile = new GalaxyFile(userFolder, ds,false);
             searchSetiingsFilesMap.put(ds.getGalaxyId(), userFolderfile);
             File updated = new File(userFolder, ds.getGalaxyId());
             try {
@@ -346,7 +346,7 @@ public class ToolsHandler {
             String json = readWorkflowFile(file);
             json = json.replace("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/search_gui/3.2.11", search_GUI_Tool_Id);
             json = json.replace("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/peptide_shaker/1.11.0", peptideShaker_Tool_Id);
-            json = json.replace("SearchGUI_Label", projectName + " (SearchGUI Results)").replace("CPS_Label", projectName + " (CPS)").replace("PSM_Label", projectName + " (PSM)").replace("Proteins_Label", projectName + " (Proteins)").replace("Peptides_Label", projectName + " (Peptides)");
+            json = json.replace("SearchGUI_Label", projectName + " (SearchGUI Results)").replace("ZIP_Label", projectName + " (ZIP)").replace("PSM_Label", projectName + " (PSM)").replace("Proteins_Label", projectName + " (Proteins)").replace("Peptides_Label", projectName + " (Peptides)");
             //protein_database_options
             json = json.replace("\"create_decoy\\\\\\\": \\\\\\\"true\\\\\\\"", "\"create_decoy\\\\\\\": \\\\\\\"" + (Boolean.valueOf(searchParameters.getFastaFile().getName().split("__")[2])) + "\\\\\\\"");
 //json = json.replace("\"update_gene_mapping\\\\\\\": \\\\\\\"false\\\\\\\"", "\"update_gene_mapping\\\\\\\": \\\\\\\"" + (Boolean.valueOf(searchParameters.getFastaFile().getName().split("__")[2])) + "\\\\\\\"");

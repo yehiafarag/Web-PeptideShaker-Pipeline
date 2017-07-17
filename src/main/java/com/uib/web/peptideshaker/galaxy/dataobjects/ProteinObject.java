@@ -2,8 +2,9 @@ package com.uib.web.peptideshaker.galaxy.dataobjects;
 
 import com.compomics.util.experiment.biology.Protein;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -40,22 +41,57 @@ public class ProteinObject extends Protein {
     private int validatedPSMsNumber;
     private int PSMsNumber;
     private double confidence;
+
+    public String getProteinEvidence() {
+        return proteinEvidence;
+    }
+
+    public void setProteinEvidence(String proteinEvidence) {
+        this.proteinEvidence = proteinEvidence;
+    }
+
+    public String getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(String sequence) {
+        this.sequence = sequence;
+    }
     private String validation;
     private int index;
-    private Set<String> relatedPeptidesList;
+    private String proteinEvidence;
+    private String sequence;
+    private final Map<String, Boolean> relatedPeptidesList;
 
     public ProteinObject() {
         this.secondaryAccessionSet = new LinkedHashSet<>();
         this.proteinGroupSet = new LinkedHashSet<>();
-        this.relatedPeptidesList = new HashSet<>();
+        this.relatedPeptidesList = new HashMap<>();
+    }
+
+    public Set<String> getRelatedPeptidesList() {
+        return relatedPeptidesList.keySet();
     }
 
     public void addPeptideSequence(String peptideSequence) {
-        relatedPeptidesList.add(peptideSequence);
+        relatedPeptidesList.put(peptideSequence, true);
+    }
+
+    public void updatePeptideType(String peptideSequence, boolean enzymatic) {
+        relatedPeptidesList.put(peptideSequence, enzymatic);
+    }
+
+    public boolean isEnymaticPeptide(String peptideSequence) {
+        if (relatedPeptidesList.containsKey(peptideSequence)) {
+            return relatedPeptidesList.get(peptideSequence);
+        } else {
+            return true;
+        }
+
     }
 
     public boolean isRelatedPeptide(String peptideSequence) {
-        return relatedPeptidesList.contains(peptideSequence);
+        return relatedPeptidesList.containsKey(peptideSequence);
     }
 
     @Override

@@ -12,11 +12,11 @@ import com.vaadin.ui.themes.ValoTheme;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import org.apache.commons.collections15.map.LinkedMap;
 
 /**
  * This class represents filtered Table with graph view
@@ -129,8 +129,8 @@ public class FilterTableGraphComponent extends VerticalLayout implements Propert
 
         Set<String> tunrelatedProt = new LinkedHashSet<>();
         for (PeptideObject peptide : peptides) {
-            peptidesNodes.put(peptide.getModifiedSequence(), peptide);
-            protein.addPeptideSequence(peptide.getModifiedSequence());
+            peptidesNodes.put(peptide.getModifiedSequence(), peptide);            
+//            protein.addPeptideSequence(peptide.getModifiedSequence());
             ArrayList<String> tEd = new ArrayList<>();
             for (String acc : peptide.getProteinsSet()) {
                 tEd.add(acc);
@@ -146,6 +146,14 @@ public class FilterTableGraphComponent extends VerticalLayout implements Propert
         }
         proteinNodes.putAll(unrelatedProt);
         peptidesNodes.putAll(unrelatedPeptides);
+
+        Map<String, ProteinObject> tempProteinNodes = new LinkedMap<>(proteinNodes);
+        for (String accession : tempProteinNodes.keySet()) {
+            proteinNodes.replace(accession, peptideShakerVisualizationDataset.updateProteinInformation(tempProteinNodes.get(accession),accession));
+            proteinTableData.put(accession,proteinNodes.get(accession));
+        }
+        
+
         graphLayout.updateGraphData(protein, proteinNodes, peptidesNodes, edges);
 
     }

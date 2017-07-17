@@ -13971,7 +13971,7 @@ div.v-layout.v-horizontal.v-widget {
 	-moz-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #c4a1a1 !important;
 }
 
-.webpeptideshakertheme .v-verticallayout-proteinnode.v-verticallayout-graybackground {
+.webpeptideshakertheme .v-verticallayout-proteinnode.v-verticallayout-graybackground, .webpeptideshakertheme .v-verticallayout-proteinnode.v-verticallayout-lightgraybackground, .webpeptideshakertheme .v-verticallayout-proteinnode.v-verticallayout-lightgraybackground.selectednode {
 	background-color: lightgray !important;
 	border-color: whitesmoke !important;
 	border-radius: 100%;
@@ -13989,7 +13989,7 @@ div.v-layout.v-horizontal.v-widget {
 	-moz-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px gray !important;
 }
 
-.webpeptideshakertheme .v-verticallayout-peptidenode.v-verticallayout-graybackground {
+.webpeptideshakertheme .v-verticallayout-peptidenode.v-verticallayout-graybackground, .webpeptideshakertheme .v-verticallayout-peptidenode.v-verticallayout-lightgraybackground, .webpeptideshakertheme .v-verticallayout-peptidenode.v-verticallayout-lightgraybackground.selectednode {
 	background-color: lightgray !important;
 	border-color: whitesmoke !important;
 	border-radius: 100%;

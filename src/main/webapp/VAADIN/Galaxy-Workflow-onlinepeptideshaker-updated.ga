@@ -241,16 +241,16 @@
                     "action_type": "HideDatasetAction", 
                     "output_name": "output_psm_phosphorylation"
                 }, 
-                "HideDatasetActionoutput_zip": {
-                    "action_arguments": {}, 
-                    "action_type": "HideDatasetAction", 
+                "RenameDatasetActionoutput_zip": {
+                    "action_arguments": {
+                        "newname": "ZIP_Label"
+                    },
+                    "action_type": "RenameDatasetAction", 
                     "output_name": "output_zip"
                 }, 
-                "RenameDatasetActionoutput_cps": {
-                    "action_arguments": {
-                        "newname": "CPS_Label"
-                    }, 
-                    "action_type": "RenameDatasetAction", 
+                "HideDatasetActionoutput_cps": {
+                    "action_arguments": {}, 
+                    "action_type": "HideDatasetAction", 
                     "output_name": "output_cps"
                 }, 
                 "RenameDatasetActionoutput_peptides": {
@@ -283,7 +283,7 @@
                 "owner": "galaxyp", 
                 "tool_shed": "toolshed.g2.bx.psu.edu"
             }, 
-            "tool_state": "{\"__page__\": 0, \"processing_options\": \"{\\\"processing_options_selector\\\": \\\"no\\\", \\\"__current_case__\\\": 0}\", \"__rerun_remap_job_id__\": null, \"filtering_options\": \"{\\\"filtering_options_selector\\\": \\\"no\\\", \\\"__current_case__\\\": 0}\", \"searchgui_input\": \"{\\\"__class__\\\": \\\"RuntimeValue\\\"}\", \"contact_options\": \"{\\\"contact_options_selector\\\": \\\"no\\\", \\\"__current_case__\\\": 0}\", \"outputs\": \"[\\\"3\\\", \\\"5\\\", \\\"7\\\", \\\"cps\\\"]\", \"include_sequences\": \"\\\"false\\\"\"}", 
+            "tool_state": "{\"__page__\": 0, \"processing_options\": \"{\\\"processing_options_selector\\\": \\\"no\\\", \\\"__current_case__\\\": 0}\", \"__rerun_remap_job_id__\": null, \"filtering_options\": \"{\\\"filtering_options_selector\\\": \\\"no\\\", \\\"__current_case__\\\": 0}\", \"searchgui_input\": \"{\\\"__class__\\\": \\\"RuntimeValue\\\"}\", \"contact_options\": \"{\\\"contact_options_selector\\\": \\\"no\\\", \\\"__current_case__\\\": 0}\", \"outputs\": \"[\\\"3\\\", \\\"5\\\", \\\"7\\\", \\\"zip\\\"]\", \"include_sequences\": \"\\\"false\\\"\"}", 
             "tool_version": "1.16.3", 
             "type": "tool", 
             "uuid": "bfc50e3e-4349-4cd2-b536-004fad6f5c68", 
@@ -295,7 +295,7 @@
                 }, 
                 {
                     "label": null, 
-                    "output_name": "output_cps", 
+                    "output_name": "output_zip", 
                     "uuid": "75e33e1f-6d78-4dc3-836d-07b2c5afc3b6"
                 }, 
                 {

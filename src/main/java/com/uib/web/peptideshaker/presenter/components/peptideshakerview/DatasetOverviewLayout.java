@@ -1,20 +1,11 @@
 package com.uib.web.peptideshaker.presenter.components.peptideshakerview;
 
-import com.compomics.util.experiment.biology.Enzyme;
-import com.compomics.util.experiment.biology.EnzymeFactory;
 import com.compomics.util.experiment.biology.PTMFactory;
 import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDataset;
 import com.uib.web.peptideshaker.presenter.core.form.ColorLabel;
 import com.uib.web.peptideshaker.presenter.core.form.Horizontal2Label;
-import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabel2DropdownList;
-import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabel2TextField;
-import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelDropDounList;
-import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelTextField;
-import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelTextFieldDropdownList;
 import com.uib.web.peptideshaker.presenter.core.form.SparkLine;
 import com.vaadin.data.Property;
-import com.vaadin.data.validator.DoubleRangeValidator;
-import com.vaadin.data.validator.IntegerRangeValidator;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
@@ -31,12 +22,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
@@ -47,15 +34,6 @@ import org.codehaus.jettison.json.JSONObject;
  */
 public abstract class DatasetOverviewLayout extends VerticalLayout {
 
-//    private final SearchParameters searchParameters;
-    /**
-     * The sequence factory.
-     */
-//    private final SequenceFactory sequenceFactory = SequenceFactory.getInstance();
-    /**
-     * The enzyme factory.
-     */
-    private final EnzymeFactory enzymeFactory = EnzymeFactory.getInstance();
     /**
      * Convenience array for forward ion type selection.
      */
@@ -65,7 +43,13 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
     private final PTMFactory PTM = PTMFactory.getInstance();
 
     private Table fixedModificationTable;
+
+    public String getEnzyme() {
+        return enzyme;
+    }
     private Table variableModificationTable;
+    
+    private String enzyme = "";
 
     /**
      * Constructor to initialize the main setting parameters
@@ -100,8 +84,7 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
         });
         titleLayout.addComponent(closeBtn);
         titleLayout.setComponentAlignment(closeBtn, Alignment.TOP_RIGHT);
-
-//        titleLayout.setExpandRatio(projectNameLabel, 20);
+        
         HorizontalLayout overviewPanel = new HorizontalLayout();
         overviewPanel.setSizeFull();
         overviewPanel.addStyleName("subpanelframe");
@@ -214,7 +197,9 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
             if (mod.equalsIgnoreCase("null")) {
                 continue;
             }
+            mod=mod.replace("\"", "");
             ColorLabel color = new ColorLabel(PTM.getColor(mod));
+            System.out.println("at bug in size "+mod+"  "+PTM.getPTM(mod).getMass()+","+ minMass+","+ maxMass);
             SparkLine sLine = new SparkLine(PTM.getPTM(mod).getMass(), minMass, maxMass);
             Object[] modificationArr = new Object[]{color, mod, sLine};
             variableModificationTable.addItem(modificationArr, mod);
@@ -231,7 +216,6 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
     private Table initModificationTable(String cap) {
         Table modificationsTable = new Table(cap) {
             DecimalFormat df = new DecimalFormat("#.##");
-
             @Override
             protected String formatPropertyValue(Object rowId, Object colId, Property property) {
                 Object v = property.getValue();
@@ -278,8 +262,7 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
 //        digestionOptionList.add("Enzyme");
 //        digestionOptionList.add("Unspecific");
 //        digestionOptionList.add("Whole Protein");
-        String digestion = "";
-        String enzyme = "";
+        String digestion = "";        
         String specificity = "";
         Integer maxMissCleavValue = null;
         String ion = "";

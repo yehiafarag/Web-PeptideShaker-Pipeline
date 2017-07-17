@@ -992,7 +992,7 @@
     }
     
     /*****gray*****/
-        .v-verticallayout-proteinnode.v-verticallayout-graybackground{  
+        .v-verticallayout-proteinnode.v-verticallayout-graybackground,.v-verticallayout-proteinnode.v-verticallayout-lightgraybackground,.v-verticallayout-proteinnode.v-verticallayout-lightgraybackground.selectednode{  
         background-color:lightgray  !important;	
         border-color:whitesmoke !important;
           border-radius: 100%;
@@ -1010,7 +1010,7 @@
 	-moz-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px gray !important;
     }
     
-        .v-verticallayout-peptidenode.v-verticallayout-graybackground{  
+        .v-verticallayout-peptidenode.v-verticallayout-graybackground, .v-verticallayout-peptidenode.v-verticallayout-lightgraybackground,.v-verticallayout-peptidenode.v-verticallayout-lightgraybackground.selectednode{  
         background-color:lightgray  !important;	
         border-color:whitesmoke !important;
           border-radius: 100%;

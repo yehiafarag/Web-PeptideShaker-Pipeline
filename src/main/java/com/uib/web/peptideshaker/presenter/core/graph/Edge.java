@@ -14,10 +14,12 @@ public class Edge {
 
     private final Node n1;
     private final Node n2;
+    private final boolean dotted;
 
-    public Edge(Node n1, Node n2) {
+    public Edge(Node n1, Node n2, boolean dotted) {
         this.n1 = n1;
         this.n2 = n2;
+        this.dotted=dotted;
     }
 
     public boolean isSelected() {
@@ -61,6 +63,10 @@ public class Edge {
 
     public Node getN2() {
         return n2;
+    }
+
+    public boolean isDotted() {
+        return dotted;
     }
     
 
