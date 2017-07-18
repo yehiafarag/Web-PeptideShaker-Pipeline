@@ -14079,6 +14079,43 @@ div.v-layout.v-horizontal.v-widget {
 	-moz-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #d109ea !important;
 }
 
+.webpeptideshakertheme .v-slot-searchtablecontainer {
+	max-width: 345px;
+	max-height: 0px !important;
+	margin-top: 0px !important;
+	float: right;
+}
+
+.webpeptideshakertheme .searchtablecontainer {
+	width: 430px !important;
+	text-align: middle !important;
+	position: relative !important;
+}
+
+.webpeptideshakertheme .searchtablecontainer .v-label, .webpeptideshakertheme .searchtablecontainer .smallundecorated.v-label-smallundecorated {
+	text-align: center;
+	margin-left: -10px;
+	max-width: 300px;
+	font-size: 15px !important;
+	color: gray !important;
+	margin-top: 2px;
+	font-weight: bold !important;
+}
+
+.webpeptideshakertheme .searchtablecontainer .v-textfield {
+	width: 140px !important;
+	text-overflow: ellipsis !important;
+	overflow: hidden !important;
+	border-width: 2px;
+	margin-left: 5px;
+}
+
+.webpeptideshakertheme .searchtablecontainer .v-button {
+	margin-left: -5px !important;
+	margin-right: 5px;
+	color: gray;
+}
+
 .webpeptideshakertheme .horizontalcss .largetitle .v-label {
 	margin-left: 10px;
 }

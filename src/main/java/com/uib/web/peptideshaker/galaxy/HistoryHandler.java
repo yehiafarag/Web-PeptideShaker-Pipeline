@@ -434,7 +434,6 @@ public abstract class HistoryHandler {
                 Map<String, Object> parameters = searchGUIFilesMap.get(vDs.getSearchGUIFileId()).getParameters();
                 String fastaFileId = parameters.get("input_database").toString().split(",")[0].replace("{id=", "");
                 vDs.setFastaFileReader(fastaFileReader);
-                System.out.println("indexFilesMap "+indexFilesMap.keySet()+" ---  "+vDs.getName());
                 vDs.setFastaFile(indexFilesMap.get(vDs.getName()+" - FASTA"));
                 vDs.setFastaFileName(fastaFilesMap.get(fastaFileId).getName());
                 vDs.setFastaFileId(fastaFileId);

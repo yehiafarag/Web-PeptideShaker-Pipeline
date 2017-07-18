@@ -831,7 +831,7 @@
         cursor: -webkit-grab;
 
     }/*
-*/    .proteinnode {
+    */    .proteinnode {
         background-color: #fae4e5;       
         border: 1px solid #997474;
         min-width: 30px;
@@ -839,9 +839,9 @@
         overflow: visible !important;
         position: fixed !important;
         background-color:#e99292 !important;
-	box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #c4a1a1 !important;
-	-webkit-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #c4a1a1 !important;
-	-moz-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #c4a1a1 !important;        
+        box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #c4a1a1 !important;
+        -webkit-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #c4a1a1 !important;
+        -moz-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #c4a1a1 !important;        
         border-radius: 100%;
         -webkit-border-radius: 100%;
         -moz-border-radius: 100%;
@@ -878,27 +878,27 @@
         color:gray;
         font-size:12px !important;
     }
- 
-  
-     .v-verticallayout-proteinnode.v-verticallayout-greenbackground.selectednode, .v-verticallayout-proteinnode.v-verticallayout-greenbackground :hover { 
+
+
+    .v-verticallayout-proteinnode.v-verticallayout-greenbackground.selectednode, .v-verticallayout-proteinnode.v-verticallayout-greenbackground :hover { 
         background-color:green !important;	
         border-color:#85ca85 !important;
-           border-radius: 100%;
+        border-radius: 100%;
         box-shadow:  0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #09772a !important;
         -webkit-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #09772a !important;
         -moz-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #09772a !important;
     }
-   .v-verticallayout-proteinnode.v-verticallayout-greenbackground { 
+    .v-verticallayout-proteinnode.v-verticallayout-greenbackground { 
         background-color:#9ff29f !important;	
         border-color:#85ca85 !important;
-           border-radius: 100%;
+        border-radius: 100%;
         box-shadow:  0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #09772a !important;
         -webkit-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #a8b4ac !important;
         -moz-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #09772a !important;
     }
-    
-    
-     .v-verticallayout-peptidenode.v-verticallayout-greenbackground.selectednode,   .v-verticallayout-peptidenode.v-verticallayout-greenbackground :hover   { 
+
+
+    .v-verticallayout-peptidenode.v-verticallayout-greenbackground.selectednode,   .v-verticallayout-peptidenode.v-verticallayout-greenbackground :hover   { 
         background-color:green !important;	
         border-color:#85ca85 !important;
         border-radius: 100% !important;
@@ -914,204 +914,238 @@
         -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #a8b4ac !important;
         -moz-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #09772a !important;
     }
-    
-    
+
+
     /*****orange*****/
-         .v-verticallayout-proteinnode.v-verticallayout-orangebackground{  
+    .v-verticallayout-proteinnode.v-verticallayout-orangebackground{  
         background-color:#ffe0c0  !important;	
         border-color:#cab785 !important;
         box-shadow:  0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #ffe0c0  !important;
         -webkit-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #ffe0c0  !important;
         -moz-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #ffe0c0  !important;
     }   
-    
+
     .v-verticallayout-proteinnode.v-verticallayout-orangebackground.selectednode,  .v-verticallayout-proteinnode.v-verticallayout-orangebackground:hover  { 
         background-color:#d2b175 !important;
-	border-color:#cab785 !important;
-	box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #ffa602 !important;
-	-webkit-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #ffa602 !important;
-	-moz-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #ffa602 !important;
+        border-color:#cab785 !important;
+        box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #ffa602 !important;
+        -webkit-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #ffa602 !important;
+        -moz-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #ffa602 !important;
     }
-    
-    
-       .v-verticallayout-peptidenode.v-verticallayout-orangebackground{  
+
+
+    .v-verticallayout-peptidenode.v-verticallayout-orangebackground{  
         background-color:#ffe0c0  !important;	
         border-color:#cab785 !important;
         box-shadow:  0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #ffe0c0  !important;
         -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #ffe0c0  !important;
         -moz-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #ffe0c0  !important;
     }   
-    
+
     .v-verticallayout-peptidenode.v-verticallayout-orangebackground.selectednode, .v-verticallayout-peptidenode.v-verticallayout-orangebackground:hover { 
         background-color:#d2b175 !important;
-	border-color:#cab785 !important;
-	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #ffa602 !important;
-	-webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #ffa602 !important;
-	-moz-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #ffa602 !important;
-    }
-    
-    
-    
-    /*****red*****/
-          .v-verticallayout-proteinnode.v-verticallayout-redbackground.selectednode,   .v-verticallayout-proteinnode.v-verticallayout-redbackground:hover  {  
-              background-color:#e90000  !important;	
         border-color:#cab785 !important;
-         border-radius: 100%;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #ffa602 !important;
+        -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #ffa602 !important;
+        -moz-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #ffa602 !important;
+    }
+
+
+
+    /*****red*****/
+    .v-verticallayout-proteinnode.v-verticallayout-redbackground.selectednode,   .v-verticallayout-proteinnode.v-verticallayout-redbackground:hover  {  
+        background-color:#e90000  !important;	
+        border-color:#cab785 !important;
+        border-radius: 100%;
         box-shadow:  0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #951906  !important;
         -webkit-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #951906  !important;
         -moz-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #951906  !important;
     }   
-    
-   .v-verticallayout-proteinnode.v-verticallayout-redbackground{  
-       
+
+    .v-verticallayout-proteinnode.v-verticallayout-redbackground{  
+
         background-color:#e99292 !important;
-	border-color:#997474 !important;
-          border-radius: 100%;
-	box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #c4a1a1 !important;
-	-webkit-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #c4a1a1 !important;
-	-moz-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #c4a1a1 !important;
+        border-color:#997474 !important;
+        border-radius: 100%;
+        box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #c4a1a1 !important;
+        -webkit-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #c4a1a1 !important;
+        -moz-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #c4a1a1 !important;
     }
-    
-         .v-verticallayout-peptidenode.v-verticallayout-redbackground.selectednode, .v-verticallayout-peptidenode.v-verticallayout-redbackground:hover {  
-              background-color:#e90000  !important;	
+
+    .v-verticallayout-peptidenode.v-verticallayout-redbackground.selectednode, .v-verticallayout-peptidenode.v-verticallayout-redbackground:hover {  
+        background-color:#e90000  !important;	
         border-color:#cab785 !important;
-          border-radius: 100%;
+        border-radius: 100%;
         box-shadow:  0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #951906  !important;
         -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #951906  !important;
         -moz-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #951906  !important;
     }   
-    
-  .v-verticallayout-peptidenode.v-verticallayout-redbackground{  
-       
+
+    .v-verticallayout-peptidenode.v-verticallayout-redbackground{  
+
         background-color:#e99292 !important;
-	border-color:#997474 !important;
-          border-radius: 100%;
-	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #c4a1a1 !important;
-	-webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #c4a1a1 !important;
-	-moz-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #c4a1a1 !important;
+        border-color:#997474 !important;
+        border-radius: 100%;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #c4a1a1 !important;
+        -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #c4a1a1 !important;
+        -moz-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #c4a1a1 !important;
     }
-    
+
     /*****gray*****/
-        .v-verticallayout-proteinnode.v-verticallayout-graybackground,.v-verticallayout-proteinnode.v-verticallayout-lightgraybackground,.v-verticallayout-proteinnode.v-verticallayout-lightgraybackground.selectednode{  
+    .v-verticallayout-proteinnode.v-verticallayout-graybackground,.v-verticallayout-proteinnode.v-verticallayout-lightgraybackground,.v-verticallayout-proteinnode.v-verticallayout-lightgraybackground.selectednode{  
         background-color:lightgray  !important;	
         border-color:whitesmoke !important;
-          border-radius: 100%;
+        border-radius: 100%;
         box-shadow:  0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px lightgray  !important;
         -webkit-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px lightgray  !important;
         -moz-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px lightgray  !important;
     }   
-    
-     .v-verticallayout-proteinnode.v-verticallayout-graybackground.selectednode, .v-verticallayout-proteinnode.v-verticallayout-graybackground:hover  { 
+
+    .v-verticallayout-proteinnode.v-verticallayout-graybackground.selectednode, .v-verticallayout-proteinnode.v-verticallayout-graybackground:hover  { 
         background-color:gray !important;
-	border-color:lightgray !important;
-          border-radius: 100%;
-	box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px gray !important;
-	-webkit-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px gray !important;
-	-moz-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px gray !important;
+        border-color:lightgray !important;
+        border-radius: 100%;
+        box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px gray !important;
+        -webkit-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px gray !important;
+        -moz-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px gray !important;
     }
-    
-        .v-verticallayout-peptidenode.v-verticallayout-graybackground, .v-verticallayout-peptidenode.v-verticallayout-lightgraybackground,.v-verticallayout-peptidenode.v-verticallayout-lightgraybackground.selectednode{  
+
+    .v-verticallayout-peptidenode.v-verticallayout-graybackground, .v-verticallayout-peptidenode.v-verticallayout-lightgraybackground,.v-verticallayout-peptidenode.v-verticallayout-lightgraybackground.selectednode{  
         background-color:lightgray  !important;	
         border-color:whitesmoke !important;
-          border-radius: 100%;
+        border-radius: 100%;
         box-shadow:  0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px lightgray  !important;
         -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px lightgray  !important;
         -moz-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px lightgray  !important;
     }   
-    
+
     .v-verticallayout-peptidenode.v-verticallayout-graybackground.selectednode, .v-verticallayout-peptidenode.v-verticallayout-graybackground:hover  { 
         background-color:gray !important;
-	border-color:lightgray !important;
-          border-radius: 100%;
-	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px gray !important;
-	-webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px gray !important;
-	-moz-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px gray !important;
+        border-color:lightgray !important;
+        border-radius: 100%;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px gray !important;
+        -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px gray !important;
+        -moz-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px gray !important;
     }
-    
-     /*****sea-blue color*****/
-         .v-verticallayout-proteinnode.v-verticallayout-seabluebackground{  
+
+    /*****sea-blue color*****/
+    .v-verticallayout-proteinnode.v-verticallayout-seabluebackground{  
         background-color:#c8e9ef  !important;	
         border-color:#d1f6f6 !important;
-          border-radius: 100%;
+        border-radius: 100%;
         box-shadow:  0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #c2ebf1  !important;
         -webkit-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #c2ebf1  !important;
         -moz-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #c2ebf1  !important;
     }   
-    
+
     .v-verticallayout-proteinnode.v-verticallayout-seabluebackground.selectednode,  .v-verticallayout-proteinnode.v-verticallayout-seabluebackground:hover  { 
         background-color:#277785 !important;
-	border-color:#71c5c4 !important;
-          border-radius: 100%;
-	box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #08d0ef !important;
-	-webkit-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #08d0ef !important;
-	-moz-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #08d0ef !important;
+        border-color:#71c5c4 !important;
+        border-radius: 100%;
+        box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #08d0ef !important;
+        -webkit-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #08d0ef !important;
+        -moz-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #08d0ef !important;
     }
-    
-    
-       .v-verticallayout-peptidenode.v-verticallayout-seabluebackground{  
+
+
+    .v-verticallayout-peptidenode.v-verticallayout-seabluebackground{  
         background-color:#c8e9ef  !important;	
         border-color:#d1f6f6 !important;
-          border-radius: 100%;
+        border-radius: 100%;
         box-shadow:  0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #c2ebf1  !important;
         -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #c2ebf1  !important;
         -moz-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #c2ebf1  !important;
     }   
-    
+
     .v-verticallayout-peptidenode.v-verticallayout-seabluebackground.selectednode, .v-verticallayout-peptidenode.v-verticallayout-seabluebackground:hover { 
         background-color:#277785 !important;
-	border-color:#71c5c4 !important;
-          border-radius: 100%;
-	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #08d0ef !important;
-	-webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #08d0ef !important;
-	-moz-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #08d0ef !important;
+        border-color:#71c5c4 !important;
+        border-radius: 100%;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #08d0ef !important;
+        -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #08d0ef !important;
+        -moz-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #08d0ef !important;
     }
-    
-    
-    
+
+
+
     /*****purple color*****/
-         .v-verticallayout-proteinnode.v-verticallayout-purplebackground{  
+    .v-verticallayout-proteinnode.v-verticallayout-purplebackground{  
         background-color:#e5d2ed  !important;	
         border-color:#e6dfea !important;
-          border-radius: 100%;
+        border-radius: 100%;
         box-shadow:  0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #e5d2ed  !important;
         -webkit-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #e5d2ed  !important;
         -moz-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #e5d2ed  !important;
     }   
-    
+
     .v-verticallayout-proteinnode.v-verticallayout-purplebackground.selectednode,  .v-verticallayout-proteinnode.v-verticallayout-purplebackground:hover  { 
         background-color:#e5d2ed !important;
-	border-color:#e5afff !important;
-         border-radius: 100%;
-	box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #d109ea !important;
-	-webkit-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #d109ea !important;
-	-moz-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #d109ea !important;
+        border-color:#e5afff !important;
+        border-radius: 100%;
+        box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #d109ea !important;
+        -webkit-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #d109ea !important;
+        -moz-box-shadow: 0 5px 30px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #d109ea !important;
     }
-    
-    
-       .v-verticallayout-peptidenode.v-verticallayout-purplebackground{  
+
+
+    .v-verticallayout-peptidenode.v-verticallayout-purplebackground{  
         background-color:#e5d2ed  !important;	
         border-color:#e6dfea !important;
-         border-radius: 100%;
+        border-radius: 100%;
         box-shadow:  0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #e5d2ed  !important;
         -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #e5d2ed  !important;
         -moz-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #e5d2ed  !important;
     }   
-    
+
     .v-verticallayout-peptidenode.v-verticallayout-purplebackground.selectednode, .v-verticallayout-peptidenode.v-verticallayout-purplebackground:hover { 
         background-color:#e5d2ed !important;
-	border-color:#e5afff !important;
-         border-radius: 100%;
-	box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #d109ea !important;
-	-webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #d109ea !important;
-	-moz-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #d109ea !important;
+        border-color:#e5afff !important;
+        border-radius: 100%;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #d109ea !important;
+        -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #d109ea !important;
+        -moz-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5), inset 0px 10px 30px 3px #d109ea !important;
     }
-    
-    
-    
-    /*****red*****/
-    
-    
-    
+    .v-slot-searchtablecontainer {
+        max-width: 345px;
+        max-height: 0px !important;
+        margin-top: 0px !important;
+        float: right;
+    }
+
+    .searchtablecontainer {
+        width: 430px !important;
+        text-align: middle !important;
+        position: relative !important;
+    }
+
+    .searchtablecontainer .v-label,  .searchtablecontainer .smallundecorated.v-label-smallundecorated {
+        text-align: center;
+        margin-left: -10px;
+        max-width: 300px;
+        font-size: 15px !important;
+        color: gray !important;
+        margin-top: 2px;
+        font-weight: bold !important;
+
+    }
+
+    .searchtablecontainer .v-textfield {
+        width: 140px !important;
+        text-overflow: ellipsis !important;
+        overflow: hidden !important;
+        border-width: 2px;
+        margin-left:5px;
+
+    }
+    .searchtablecontainer .v-button{
+        margin-left:-5px !important;
+        margin-right:5px;
+        color:gray;
+
+    }
+
+
+
     /****mobile css**/
     .horizontalcss  .largetitle .v-label{
         margin-left:10px;

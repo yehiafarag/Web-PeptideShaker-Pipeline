@@ -1,15 +1,12 @@
 package com.uib.web.peptideshaker.presenter.core.form;
 
 import com.vaadin.data.Validator;
-import com.vaadin.data.validator.IntegerRangeValidator;
+import com.vaadin.event.FieldEvents;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.themes.ValoTheme;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * This class represent form component (drop down list with caption on the left
@@ -65,6 +62,12 @@ public class HorizontalLabelTextField extends HorizontalLayout {
         textField.setHeight(25, Unit.PIXELS);
         HorizontalLabelTextField.this.addComponent(textField);
         HorizontalLabelTextField.this.setExpandRatio(textField, 55);
+       
+    }
+    public void addTextChangeListener(FieldEvents.TextChangeListener listener){
+        textField.addTextChangeListener(listener);
+        textField.setTextChangeTimeout(2000);
+    
     }
 
     public void setRequired(boolean required) {

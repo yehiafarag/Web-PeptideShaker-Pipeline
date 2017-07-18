@@ -199,7 +199,6 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
             }
             mod=mod.replace("\"", "");
             ColorLabel color = new ColorLabel(PTM.getColor(mod));
-            System.out.println("at bug in size "+mod+"  "+PTM.getPTM(mod).getMass()+","+ minMass+","+ maxMass);
             SparkLine sLine = new SparkLine(PTM.getPTM(mod).getMass(), minMass, maxMass);
             Object[] modificationArr = new Object[]{color, mod, sLine};
             variableModificationTable.addItem(modificationArr, mod);
