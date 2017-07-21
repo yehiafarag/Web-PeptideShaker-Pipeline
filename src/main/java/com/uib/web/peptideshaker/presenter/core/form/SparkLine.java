@@ -26,6 +26,7 @@ public class SparkLine extends HorizontalLayout {
         label.setStyleName("smalltable");
         SparkLine.this.setSpacing(true);
         SparkLine.this.addComponent(label);
+        SparkLine.this.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
         Color selectedColor;
         
         double factor = Math.max(max, Math.abs(min));
@@ -47,7 +48,7 @@ public class SparkLine extends HorizontalLayout {
         spark.setHeight(60, Unit.PERCENTAGE);
         spark.setWidth(Math.min(Math.max(Math.round(value),5),100), Unit.PERCENTAGE);
         SparkLine.this.addComponent(spark);
-        SparkLine.this.setComponentAlignment(spark, Alignment.BOTTOM_LEFT);
+        SparkLine.this.setComponentAlignment(spark, Alignment.MIDDLE_LEFT);
 
     }
 

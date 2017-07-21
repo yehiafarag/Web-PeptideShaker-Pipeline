@@ -13733,6 +13733,10 @@ div.v-layout.v-horizontal.v-widget {
 	color: #4d749f !important;
 }
 
+.webpeptideshakertheme .blacklayout {
+	background-color: black;
+}
+
 .webpeptideshakertheme .v-button-centerbackground {
 	text-align: center !important;
 	padding-top: 1px !important;
@@ -14116,6 +14120,44 @@ div.v-layout.v-horizontal.v-widget {
 	color: gray;
 }
 
+.webpeptideshakertheme .v-slot-minwidth30 {
+	min-width: 30px !important;
+}
+
+.webpeptideshakertheme .padding40 {
+	padding-left: 40px;
+}
+
+.webpeptideshakertheme .padding50 {
+	padding-left: 50px;
+}
+
+.webpeptideshakertheme .node {
+	background-color: red;
+	border: 2px solid green;
+	border-radius: 100%;
+}
+
+.webpeptideshakertheme .v-panel-content-scrolspacer.v-scrollable::-webkit-scrollbar {
+	width: 12px;
+}
+
+.webpeptideshakertheme .v-panel-content-scrolspacer.v-scrollable::-webkit-scrollbar-track {
+	-webkit-box-shadow: inset 0 0 6px rgba(255, 255, 255, 0) !important;
+	opacity: 0 !important;
+}
+
+.webpeptideshakertheme .v-panel-content-scrolspacer.v-scrollable::-webkit-scrollbar-thumb {
+	background-color: lightgray;
+	border-radius: 15px;
+	-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.86);
+}
+
+.webpeptideshakertheme .v-panel-content-scrolspacer {
+	overflow-y: scroll !important;
+	opacity: 5;
+}
+
 .webpeptideshakertheme .horizontalcss .largetitle .v-label {
 	margin-left: 10px;
 }
@@ -14375,4 +14417,33 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .webpeptideshakertheme .v-absolutelayout-wrapper-showpanel {
 	width: 1000px !important;
+}
+
+.webpeptideshakertheme .selectablebubble {
+	background-image: url("img/blackdot.png");
+	background-repeat: no-repeat;
+	background-size: 50% auto;
+	background-position: center;
+	cursor: pointer;
+}
+
+.webpeptideshakertheme .lightgraybubble {
+	background-image: url("img/lightgraydot.png");
+	background-repeat: no-repeat;
+	background-size: 50% auto;
+	background-position: center;
+}
+
+.webpeptideshakertheme .selectednodeline {
+	background-color: #0d0202;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+	max-width: 4px;
+	min-width: 1px;
+}
+
+.webpeptideshakertheme .unselectednodeline {
+	opacity: 0;
 }

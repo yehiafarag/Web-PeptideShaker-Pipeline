@@ -5,7 +5,7 @@ import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideObject;
 import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDataset;
 import com.uib.web.peptideshaker.galaxy.dataobjects.ProteinObject;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelTextField;
-import com.uib.web.peptideshaker.presenter.core.piecharts.PieChartFiltersContainer;
+import com.uib.web.peptideshaker.presenter.core.filtercharts.ChartFiltersContainer;
 import com.vaadin.data.Property;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -38,7 +38,7 @@ import org.apache.commons.collections15.map.LinkedMap;
 public class FilterTableGraphComponent extends VerticalLayout implements Property.ValueChangeListener {
 
     private Table proteinsTable;
-    private final PieChartFiltersContainer pieChartFiltersContainer;
+    private final ChartFiltersContainer pieChartFiltersContainer;
     private PeptideShakerVisualizationDataset peptideShakerVisualizationDataset;
     private final GraphComponent graphLayout;
     private final Map<String, ProteinObject> proteinNodes;
@@ -55,7 +55,7 @@ public class FilterTableGraphComponent extends VerticalLayout implements Propert
         FilterTableGraphComponent.this.setSpacing(true);
         FilterTableGraphComponent.this.addStyleName("scrollinsideframe");
 
-        this.pieChartFiltersContainer = new PieChartFiltersContainer();
+        this.pieChartFiltersContainer = new ChartFiltersContainer();
         FilterTableGraphComponent.this.addComponent(pieChartFiltersContainer);
         
         VerticalLayout proteinTableContainer = new VerticalLayout();
