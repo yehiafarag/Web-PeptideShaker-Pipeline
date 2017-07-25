@@ -1449,14 +1449,14 @@
    .selectablebubble {	
 	background-image: url("img/blackdot.png");
 	background-repeat: no-repeat;
-	background-size: 50% auto;
+	background-size: auto 65% ;
 	background-position: center;
         cursor: pointer;
 }
 .lightgraybubble{    
     background-image: url("img/lightgraydot.png");
 	background-repeat: no-repeat;
-	background-size: 50% auto;
+	background-size: auto 65% ;
 	background-position: center;
 }
 .selectednodeline{

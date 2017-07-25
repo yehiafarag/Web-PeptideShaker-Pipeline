@@ -28,12 +28,12 @@ public class SparkLine extends HorizontalLayout {
         SparkLine.this.addComponent(label);
         SparkLine.this.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
         Color selectedColor;
-        
+
         double factor = Math.max(max, Math.abs(min));
         factor = Math.log10((Double) factor);
         if (value > 0) {
             value = Math.log10((Double) value);
-           
+
             value = value * 100 / factor;
             selectedColor = Color.RED;
         } else if (value < 0) {
@@ -46,9 +46,49 @@ public class SparkLine extends HorizontalLayout {
 
         ColorLabel spark = new ColorLabel(selectedColor);
         spark.setHeight(60, Unit.PERCENTAGE);
-        spark.setWidth(Math.min(Math.max(Math.round(value),5),100), Unit.PERCENTAGE);
+        spark.setWidth(Math.min(Math.max(Math.round(value), 5), 100), Unit.PERCENTAGE);
         SparkLine.this.addComponent(spark);
         SparkLine.this.setComponentAlignment(spark, Alignment.MIDDLE_LEFT);
+
+    }
+
+    /**
+     * Constructor to initialize the spark-line class
+     */
+    public SparkLine(String textLabel, double value, double min, double max) {
+
+        SparkLine.this.setWidth(100, Unit.PERCENTAGE);
+        SparkLine.this.setHeight(10, Unit.PIXELS);
+        Label label = new Label(textLabel);
+        label.setStyleName("smalltable");
+        SparkLine.this.setSpacing(true);
+
+        Color selectedColor;
+
+        double factor = Math.max(max, Math.abs(min));
+        factor = Math.log10((Double) factor);
+        if (value > 0) {
+            value = Math.log10((Double) value);
+            value = value * 100 / factor;
+            selectedColor = Color.RED;
+        } else if (value < 0) {
+            value = Math.log10((Double) value * -1.0);
+            value = value * 100 / factor;
+            selectedColor = Color.BLUE;
+        } else {
+             SparkLine.this.addComponent(new Label());
+            SparkLine.this.addComponent(label);
+            SparkLine.this.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
+            return;
+        }
+
+        ColorLabel spark = new ColorLabel(selectedColor);
+        spark.setHeight(60, Unit.PERCENTAGE);
+        spark.setWidth(Math.min(Math.max(Math.round(value), 5), 100), Unit.PERCENTAGE);
+        SparkLine.this.addComponent(spark);
+        SparkLine.this.setComponentAlignment(spark, Alignment.MIDDLE_LEFT);
+        SparkLine.this.addComponent(label);
+        SparkLine.this.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
 
     }
 

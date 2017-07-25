@@ -14422,7 +14422,7 @@ div.v-layout.v-horizontal.v-widget {
 .webpeptideshakertheme .selectablebubble {
 	background-image: url("img/blackdot.png");
 	background-repeat: no-repeat;
-	background-size: 50% auto;
+	background-size: auto 65%;
 	background-position: center;
 	cursor: pointer;
 }
@@ -14430,7 +14430,7 @@ div.v-layout.v-horizontal.v-widget {
 .webpeptideshakertheme .lightgraybubble {
 	background-image: url("img/lightgraydot.png");
 	background-repeat: no-repeat;
-	background-size: 50% auto;
+	background-size: auto 65%;
 	background-position: center;
 }
 
