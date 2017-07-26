@@ -1,5 +1,6 @@
 package com.uib.web.peptideshaker.presenter.core.filtercharts.components;
 
+import com.vaadin.event.LayoutEvents;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.VerticalLayout;
 
@@ -9,7 +10,7 @@ import com.vaadin.ui.VerticalLayout;
  *
  * @author Yehia Farag
  */
-public class SelectableNode extends VerticalLayout {
+public abstract class SelectableNode extends VerticalLayout implements LayoutEvents.LayoutClickListener {
 
     private boolean upperSelected;
     private boolean lowerSelected;
@@ -18,19 +19,24 @@ public class SelectableNode extends VerticalLayout {
     private final VerticalLayout upperLine;
     private final VerticalLayout lowerLine;
     private final String nodeId;
+    private boolean selected;
+    private final int columnIndex;
 
     public String getNodeId() {
         return nodeId;
     }
 
-    public SelectableNode(String nodeId, boolean disables) {
+    public SelectableNode(String nodeId, int columnIndex, boolean disables) {
         this.nodeId = nodeId;
+        this.columnIndex = columnIndex;
         SelectableNode.this.setWidth(100, Unit.PERCENTAGE);
         SelectableNode.this.setHeight(100, Unit.PERCENTAGE);
 //        
         this.disables = disables;
         if (disables) {
             SelectableNode.this.setStyleName("lightgraybubble");
+        } else {
+            SelectableNode.this.addLayoutClickListener(SelectableNode.this);
         }
         upperLine = new VerticalLayout();
         upperLine.setHeight(105, Unit.PERCENTAGE);
@@ -45,6 +51,7 @@ public class SelectableNode extends VerticalLayout {
 
         SelectableNode.this.addComponent(lowerLine);
         SelectableNode.this.setComponentAlignment(lowerLine, Alignment.TOP_CENTER);
+
     }
 
     public boolean isUpperSelected() {
@@ -52,9 +59,9 @@ public class SelectableNode extends VerticalLayout {
     }
 
     public void setUpperSelected(boolean upperSelected) {
-         if (disables) {
-             return;
-         }
+        if (disables) {
+            return;
+        }
         this.upperSelected = upperSelected;
         if (upperSelected) {
             upperLine.setStyleName("selectednodeline");
@@ -69,14 +76,14 @@ public class SelectableNode extends VerticalLayout {
     }
 
     public void setLowerSelected(boolean lowerSelected) {
-         if (disables) {
-             return;
-         }
+        if (disables) {
+            return;
+        }
         this.lowerSelected = lowerSelected;
         if (lowerSelected) {
-            lowerLine.setStyleName("selectednodeline");
+            lowerLine.addStyleName("selectednodeline");
         } else {
-            lowerLine.setStyleName("unselectednodeline");
+            lowerLine.addStyleName("unselectednodeline");
         }
     }
 
@@ -88,15 +95,42 @@ public class SelectableNode extends VerticalLayout {
     }
 
     public void setSelecatble(boolean selecatble) {
-         if (disables) {
-             return;
-         }
+        if (disables) {
+            return;
+        }
         this.selecatble = selecatble;
         if (selecatble) {
-            SelectableNode.this.setStyleName("selectablebubble");
+            SelectableNode.this.addStyleName("selectablebubble");
         } else {
-            SelectableNode.this.setStyleName("lightgraybubble");
+            SelectableNode.this.addStyleName("lightgraybubble");
         }
     }
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+        if (selected) {
+            SelectableNode.this.addStyleName("selectedbubble");
+            lowerLine.addStyleName("selectedbubble");
+        } else {
+            SelectableNode.this.removeStyleName("selectedbubble");
+            lowerLine.removeStyleName("selectedbubble");
+        }
+
+    }
+
+    public int getColumnIndex() {
+        return columnIndex;
+    }
+
+    @Override
+    public void layoutClick(LayoutEvents.LayoutClickEvent event) {
+        selectNode(columnIndex);
+    }
+
+    public abstract void selectNode(int columnIndex);
 
 }

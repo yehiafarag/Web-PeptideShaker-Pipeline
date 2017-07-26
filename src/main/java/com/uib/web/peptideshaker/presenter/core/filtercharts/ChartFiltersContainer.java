@@ -2,8 +2,12 @@ package com.uib.web.peptideshaker.presenter.core.filtercharts;
 
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.VerticalLayout;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Random;
+import java.util.Set;
 
 /**
  * This class represents main container for pie-chart filters the class
@@ -40,9 +44,30 @@ public class ChartFiltersContainer extends HorizontalLayout {
         ChartFiltersContainer.this.addComponent(filter2);
         filter2.updateChartData(rangeValues);
         ChartFiltersContainer.this.setComponentAlignment(filter2, Alignment.MIDDLE_CENTER);
-//        MatrixLayoutChartFilter filter3 = new MatrixLayoutChartFilter("Validation");
-//        ChartFiltersContainer.this.addComponent(filter3);
-//        ChartFiltersContainer.this.setComponentAlignment(filter3, Alignment.MIDDLE_CENTER);
+        MatrixLayoutChartFilter filter3 = new MatrixLayoutChartFilter("Validation");
+        ChartFiltersContainer.this.addComponent(filter3);
+        ChartFiltersContainer.this.setComponentAlignment(filter3, Alignment.MIDDLE_CENTER);
+        
+         ///for testing 
+        VerticalLayout ChartFiltersContainer = new VerticalLayout();
+        ChartFiltersContainer.setWidth(100, Unit.PERCENTAGE);
+        ChartFiltersContainer.setHeight(100, Unit.PERCENTAGE);    
+
+        Map<String, Set<String>> rows = new LinkedHashMap<>();
+        Random r = new Random();
+        String alphabet = "abcdefghijklmnopqrstuvwxyz";
+        String alphabet2 = "ABCDEF";
+        for (int i = 0; i < alphabet2.length(); i++) {
+            String key = "" + alphabet2.charAt(i);
+            rows.put(key, new HashSet<>());
+            int protNum = r.nextInt(alphabet2.length());
+            for (int y = 0; y < protNum; y++) {
+                rows.get(key).add(""+alphabet.charAt(r.nextInt(alphabet.length())));
+                rows.get(key).add("ZzZ");
+            }
+        }
+        filter3.updateChartData(rows);
+        
     }
 
 }

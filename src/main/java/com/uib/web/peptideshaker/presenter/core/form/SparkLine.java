@@ -5,6 +5,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import java.awt.Color;
 import java.text.DecimalFormat;
+import org.jfree.chart.ChartColor;
 
 /**
  * This class represent sparkLine
@@ -14,6 +15,24 @@ import java.text.DecimalFormat;
 public class SparkLine extends HorizontalLayout {
 
     private final DecimalFormat df = new DecimalFormat("#.##");
+    private ColorLabel spark;
+
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+        if(spark==null)
+            return;
+        if (selected) {
+            spark.updateColor(new Color(25, 125, 225));
+        } else {
+            spark.updateColor(Color.RED);
+        }
+
+    }
+    private boolean selected;
 
     /**
      * Constructor to initialize the spark-line class
@@ -44,7 +63,7 @@ public class SparkLine extends HorizontalLayout {
             return;
         }
 
-        ColorLabel spark = new ColorLabel(selectedColor);
+        spark = new ColorLabel(selectedColor);
         spark.setHeight(60, Unit.PERCENTAGE);
         spark.setWidth(Math.min(Math.max(Math.round(value), 5), 100), Unit.PERCENTAGE);
         SparkLine.this.addComponent(spark);
@@ -76,17 +95,17 @@ public class SparkLine extends HorizontalLayout {
             value = value * 100 / factor;
             selectedColor = Color.BLUE;
         } else {
-             SparkLine.this.addComponent(new Label());
+            SparkLine.this.addComponent(new Label());
             SparkLine.this.addComponent(label);
             SparkLine.this.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
             return;
         }
 
-        ColorLabel spark = new ColorLabel(selectedColor);
+        spark = new ColorLabel(selectedColor);
         spark.setHeight(60, Unit.PERCENTAGE);
         spark.setWidth(Math.min(Math.max(Math.round(value), 5), 100), Unit.PERCENTAGE);
         SparkLine.this.addComponent(spark);
-        SparkLine.this.setComponentAlignment(spark, Alignment.MIDDLE_LEFT);
+        SparkLine.this.setComponentAlignment(spark, Alignment.MIDDLE_RIGHT);
         SparkLine.this.addComponent(label);
         SparkLine.this.setComponentAlignment(label, Alignment.MIDDLE_LEFT);
 

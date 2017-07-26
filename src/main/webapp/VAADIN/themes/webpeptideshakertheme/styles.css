@@ -14158,6 +14158,96 @@ div.v-layout.v-horizontal.v-widget {
 	opacity: 5;
 }
 
+.webpeptideshakertheme .selectablebubble {
+	background-image: url("img/blackdot.png");
+	background-repeat: no-repeat;
+	background-size: auto 50%;
+	background-position: center;
+	cursor: pointer;
+	min-width: 20px;
+	min-height: 20px;
+}
+
+.webpeptideshakertheme .lightgraybubble {
+	background-image: url("img/lightgraydot.png");
+	background-repeat: no-repeat;
+	background-size: auto 50%;
+	background-position: center;
+	min-width: 20px;
+	min-height: 20px;
+}
+
+.webpeptideshakertheme .selectednodeline {
+	background-color: #0d0202;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+	max-width: 3px;
+	min-width: 1px;
+}
+
+.webpeptideshakertheme .unselectednodeline {
+	opacity: 0;
+}
+
+.webpeptideshakertheme .sizelabel {
+	font-size: 12px;
+	color: black;
+	font-weight: bold;
+	line-height: 15px !important;
+	overflow: hidden !important;
+	text-overflow: ellipsis !important;
+}
+
+.webpeptideshakertheme .sizelabel font {
+	font-size: 12px !important;
+	line-height: 15px !important;
+	float: right !important;
+}
+
+.webpeptideshakertheme .v-slot-sizelabel {
+	border-bottom: 2px solid black;
+	line-height: 15px !important;
+}
+
+.webpeptideshakertheme .hilightcolumn {
+	background-color: whitesmoke;
+}
+
+.webpeptideshakertheme .barchartlabelcontainer .v-label {
+	color: white;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	position: relative;
+	z-index: 2;
+}
+
+.webpeptideshakertheme .barchartlabelcontainer .v-label:hover {
+	color: white;
+	font-weight: bold;
+}
+
+.webpeptideshakertheme .selectedbubble.selectablebubble {
+	background-image: url("img/bluedot.png");
+	background-repeat: no-repeat;
+	background-size: auto 50%;
+	background-position: center;
+	cursor: pointer;
+	min-width: 20px;
+	min-height: 20px;
+}
+
+.webpeptideshakertheme .selectedbubble .selectednodeline {
+	background-color: #1780E9;
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	border-bottom-left-radius: 5px;
+	border-bottom-right-radius: 5px;
+	max-width: 3px;
+	min-width: 1px;
+}
+
 .webpeptideshakertheme .horizontalcss .largetitle .v-label {
 	margin-left: 10px;
 }
@@ -14403,47 +14493,4 @@ div.v-layout.v-horizontal.v-widget {
 	border-bottom-left-radius: 0px;
 	overflow: hidden;
 	z-index: 2 !important;
-}
-
-.webpeptideshakertheme .webpeptideshakertheme .showpanel {
-	width: 0px !important;
-	height: 0px !important;
-	overflow: hidden !important;
-	-webkit-transition: all 0.5s ease-in-out;
-	-moz-transition: all 0.5s ease-in-out;
-	-o-transition: all 0.5s ease-in-out;
-	transition: all 0.5s ease-in-out;
-}
-
-.webpeptideshakertheme .webpeptideshakertheme .v-absolutelayout-wrapper-showpanel {
-	width: 1000px !important;
-}
-
-.webpeptideshakertheme .selectablebubble {
-	background-image: url("img/blackdot.png");
-	background-repeat: no-repeat;
-	background-size: auto 65%;
-	background-position: center;
-	cursor: pointer;
-}
-
-.webpeptideshakertheme .lightgraybubble {
-	background-image: url("img/lightgraydot.png");
-	background-repeat: no-repeat;
-	background-size: auto 65%;
-	background-position: center;
-}
-
-.webpeptideshakertheme .selectednodeline {
-	background-color: #0d0202;
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
-	border-bottom-left-radius: 5px;
-	border-bottom-right-radius: 5px;
-	max-width: 4px;
-	min-width: 1px;
-}
-
-.webpeptideshakertheme .unselectednodeline {
-	opacity: 0;
 }
