@@ -2,7 +2,7 @@ package com.uib.web.peptideshaker.presenter;
 
 import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDataset;
 import com.uib.web.peptideshaker.presenter.components.peptideshakerview.PeptideShakerDatasesViewLayout;
-import com.uib.web.peptideshaker.presenter.components.peptideshakerview.SelectionManager;
+import com.uib.web.peptideshaker.presenter.components.peptideshakerview.components.SelectionManager;
 import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
 import com.uib.web.peptideshaker.presenter.core.SmallSideBtn;
 import com.vaadin.event.LayoutEvents;
@@ -70,8 +70,8 @@ public class PeptideShakerViewPresenter extends VerticalLayout implements Viewab
         btnContainer.addComponent(datasetsOverviewBtn);
         btnContainer.setComponentAlignment(datasetsOverviewBtn, Alignment.TOP_CENTER);
         datasetsOverviewBtn.addLayoutClickListener(PeptideShakerViewPresenter.this);
-        
-        datasetOverviewLayout = new PeptideShakerDatasesViewLayout();
+        Selection_Manager.addBtnLayout(datasetsOverviewBtn, datasetOverviewLayout);
+        datasetOverviewLayout = new PeptideShakerDatasesViewLayout(Selection_Manager);
         datasetOverviewLayout.setSizeFull();
         Selection_Manager.addBtnLayout(datasetsOverviewBtn, datasetOverviewLayout);
 

@@ -48,7 +48,7 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
         return enzyme;
     }
     private Table variableModificationTable;
-    
+
     private String enzyme = "";
 
     /**
@@ -84,7 +84,7 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
         });
         titleLayout.addComponent(closeBtn);
         titleLayout.setComponentAlignment(closeBtn, Alignment.TOP_RIGHT);
-        
+
         HorizontalLayout overviewPanel = new HorizontalLayout();
         overviewPanel.setSizeFull();
         overviewPanel.addStyleName("subpanelframe");
@@ -129,19 +129,16 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
 
         Map<String, String> paramMap = new LinkedHashMap<>();
         paramMap.put("create_decoy", "Add Decoy Sequences");
-        try {
-            String fixedMod = (jsonToMap(dataset.getParameters().get("protein_modification_options").toString())).get("fixed_modifications").replace("[", "").replace("]", "").replace("\"", "").replace("\n", "");
-            String varMod = (jsonToMap(dataset.getParameters().get("protein_modification_options").toString())).get("variable_modifications").replace("[", "").replace("]", "");
-            HorizontalLayout modificationContainer = inititModificationLayout(fixedMod.split(","), varMod.split(","));
-            modificationContainer.addStyleName("subpanelframe");
-            if (!variableModificationTable.getItemIds().isEmpty() || !fixedModificationTable.getItemIds().isEmpty()) {
-                DatasetOverviewLayout.this.addComponent(modificationContainer);
-            }
-            variableModificationTable.setVisible(!variableModificationTable.getItemIds().isEmpty());
-            fixedModificationTable.setVisible(!fixedModificationTable.getItemIds().isEmpty());
-        } catch (JSONException ex) {
 
+        String fixedMod = dataset.getFixedModification();
+        String varMod = dataset.getVariableModification();
+        HorizontalLayout modificationContainer = inititModificationLayout(fixedMod.split(","), varMod.split(","));
+        modificationContainer.addStyleName("subpanelframe");
+        if (!variableModificationTable.getItemIds().isEmpty() || !fixedModificationTable.getItemIds().isEmpty()) {
+            DatasetOverviewLayout.this.addComponent(modificationContainer);
         }
+        variableModificationTable.setVisible(!variableModificationTable.getItemIds().isEmpty());
+        fixedModificationTable.setVisible(!fixedModificationTable.getItemIds().isEmpty());
 
         GridLayout proteaseFragmentationContainer = inititProteaseFragmentationLayout(dataset.getParameters());
         proteaseFragmentationContainer.addStyleName("subpanelframe");
@@ -197,7 +194,7 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
             if (mod.equalsIgnoreCase("null")) {
                 continue;
             }
-            mod=mod.replace("\"", "");
+            mod = mod.replace("\"", "");
             ColorLabel color = new ColorLabel(PTM.getColor(mod));
             SparkLine sLine = new SparkLine(PTM.getPTM(mod).getMass(), minMass, maxMass);
             Object[] modificationArr = new Object[]{color, mod, sLine};
@@ -215,6 +212,7 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
     private Table initModificationTable(String cap) {
         Table modificationsTable = new Table(cap) {
             DecimalFormat df = new DecimalFormat("#.##");
+
             @Override
             protected String formatPropertyValue(Object rowId, Object colId, Property property) {
                 Object v = property.getValue();
@@ -261,7 +259,7 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
 //        digestionOptionList.add("Enzyme");
 //        digestionOptionList.add("Unspecific");
 //        digestionOptionList.add("Whole Protein");
-        String digestion = "";        
+        String digestion = "";
         String specificity = "";
         Integer maxMissCleavValue = null;
         String ion = "";
@@ -295,7 +293,7 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
                 specificity = null;
 
             }
-            
+
             Map<String, String> json_Precursor_options_Objects = jsonToMap(parameters.get("precursor_options").toString());
             ion = json_Precursor_options_Objects.get("forward_ion") + " , " + json_Precursor_options_Objects.get("reverse_ion");
             precursor_ion = json_Precursor_options_Objects.get("precursor_ion_tol") + " " + json_Precursor_options_Objects.get("precursor_ion_tol_units").replace("1", "ppm").replace("2", "Da");

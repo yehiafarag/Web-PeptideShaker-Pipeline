@@ -1,6 +1,5 @@
 package com.uib.web.peptideshaker.presenter.core.graph;
 
-import com.compomics.util.experiment.identification.protein_sequences.SequenceFactory;
 import com.ejt.vaadin.sizereporter.ComponentResizeEvent;
 import com.ejt.vaadin.sizereporter.SizeReporter;
 import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideObject;
@@ -32,15 +31,12 @@ import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
 import edu.uci.ics.jung.visualization.control.ScalingControl;
 import java.awt.Dimension;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.vaadin.hezamu.canvas.Canvas;
 
 /**
@@ -508,12 +504,10 @@ public class GraphComponent extends VerticalLayout {
      * @author Yehia Farag
      */
     class WrappedComponent extends DragAndDropWrapper {
-
         /**
          * The layout drop handler.
          */
         private final DropHandler dropHandler;
-
         /**
          * Constructor to initialize the main attributes.
          *

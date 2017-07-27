@@ -14139,7 +14139,9 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .v-panel-content-scrolspacer.v-scrollable::-webkit-scrollbar {
-	width: 12px;
+	width: 1%;
+	min-width: 5px;
+	max-width: 10px;
 }
 
 .webpeptideshakertheme .v-panel-content-scrolspacer.v-scrollable::-webkit-scrollbar-track {
@@ -14215,16 +14217,28 @@ div.v-layout.v-horizontal.v-widget {
 	background-color: whitesmoke;
 }
 
+.webpeptideshakertheme .barchartlabelcontainer {
+	margin-top: -20px !important;
+}
+
 .webpeptideshakertheme .barchartlabelcontainer .v-label {
-	color: white;
+	color: gray;
+	background-color: white;
+	border-radius: 100%;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	position: relative;
 	z-index: 2;
+	font-size: 13px;
+	width: 30px !important;
+	height: 30px !important;
+	text-align: center;
+	border: 1px solid gray;
+	line-height: 200%;
 }
 
 .webpeptideshakertheme .barchartlabelcontainer .v-label:hover {
-	color: white;
+	color: black;
 	font-weight: bold;
 }
 
@@ -14246,6 +14260,19 @@ div.v-layout.v-horizontal.v-widget {
 	border-bottom-right-radius: 5px;
 	max-width: 3px;
 	min-width: 1px;
+}
+
+.webpeptideshakertheme .pointer {
+	cursor: pointer !important;
+}
+
+.webpeptideshakertheme .v-label-smalltable {
+	font-size: 12px;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	margin-left: -6px;
+	width: 180% !important;
 }
 
 .webpeptideshakertheme .horizontalcss .largetitle .v-label {

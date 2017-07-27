@@ -6,13 +6,17 @@ import com.compomics.util.experiment.biology.EnzymeFactory;
 import com.compomics.util.preferences.SequenceMatchingPreferences;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import uk.ac.ebi.pride.tools.braf.BufferedRandomAccessFile;
 
 /**
@@ -28,6 +32,31 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
     private Map<String, Set<PeptideObject>> protein_peptide_Map;
     private Map<String, Set<ProteinObject>> protein_relatedProteins_Map;
     private Map<Object, PeptideObject> peptidesMap;
+    private final Map<String, Set<String>> modificationMap;
+
+    private GalaxyFile peptideFile;
+    private GalaxyFile fastaFile;
+
+    private String proteinFileId;
+    private String peptideFileId;
+    private String cpsId;
+    private String psmFileId;
+    private final String jobId;
+    private String searchGUIFileId;
+    private final Map<String, String> mgfFiles;
+    private final Map<String, String> mgfFilesIndexes;
+    private String fastaFileName;
+    private String fastaFileId;
+    private GalaxyFastaFileReader fastaFileReader;
+    private int proteinsNumber;
+    private int psmNumber;
+    private final SequenceMatchingPreferences sequenceMatchingPreferences;
+    private final EnzymeFactory enzymeFactory;
+
+    private int peptidesNumber;
+    private Map<String, Object> parameters;
+    private String fixedModification;
+    private String variableModification;
 
     public void setEnzyme(String enzyme) {
         this.enzyme = enzyme;
@@ -97,6 +126,19 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
                 protein.setPSMsNumber(Integer.valueOf(arr[23]));
                 protein.setConfidence(Double.valueOf(arr[24]));
                 protein.setValidation(arr[25]);
+                 boolean addModification = false;
+                for (String modification : modificationMap.keySet()) {
+                    if (protein.getConfidentlyLocalizedModificationSites().contains(modification) || protein.getAmbiguouslyLocalizedModificationSites().contains(modification)) {
+                        modificationMap.get(modification).add(protein.getAccession());
+                        addModification = true;
+                    }
+
+                }
+                if (!addModification) {
+                    modificationMap.get("No Modifications").add(protein.getAccession());
+                }
+
+                
 //                protein = fastaFileReader.updateProteinInformation(protein, protein.getAccession());
                 proteinsMap.put(protein.getAccession(), protein);
                 for (String acc : protein.getProteinGroupSet()) {
@@ -215,6 +257,18 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
                     }
                 }
 
+//                boolean addModification = false;
+//                for (String modification : modificationMap.keySet()) {
+//                    if (peptide.getVariableModifications().contains(modification) || peptide.getFixedModifications().contains(modification)) {
+//                        modificationMap.get(modification).addAll(peptide.getProteinsSet());
+//                        addModification = true;
+//                    }
+//
+//                }
+//                if (!addModification) {
+//                    modificationMap.get("No Modifications").addAll(peptide.getProteinsSet());
+//                }
+
                 peptidesMap.put(peptide.getModifiedSequence(), peptide);
 
             }
@@ -269,24 +323,6 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
     public void setFastaFile(GalaxyFile fastaFile) {
         this.fastaFile = fastaFile;
     }
-    private GalaxyFile peptideFile;
-    private GalaxyFile fastaFile;
-
-    private String proteinFileId;
-    private String peptideFileId;
-    private String cpsId;
-    private String psmFileId;
-    private final String jobId;
-    private String searchGUIFileId;
-    private final Map<String, String> mgfFiles;
-    private final Map<String, String> mgfFilesIndexes;
-    private String fastaFileName;
-    private String fastaFileId;
-    private GalaxyFastaFileReader fastaFileReader;
-    private int proteinsNumber;
-    private int psmNumber;
-    private final SequenceMatchingPreferences sequenceMatchingPreferences;
-    private final EnzymeFactory enzymeFactory;
 
     public int getPsmNumber() {
         return psmNumber;
@@ -308,12 +344,44 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
         return parameters;
     }
 
+    public String getVariableModification() {
+        if (variableModification == null) {
+            variableModification = (jsonToMap(parameters.get("protein_modification_options").toString())).get("variable_modifications").replace("[", "").replace("]", "");
+            if (variableModification != null&& !variableModification.equalsIgnoreCase("null")) {
+                variableModification = variableModification.replace("\"", "");
+                String[] modArr = variableModification.split(",");
+                for (String mod : modArr) {
+                    modificationMap.put(mod, new LinkedHashSet<>());
+                }
+            } else {
+                variableModification = "";
+            }
+
+        }
+        return variableModification;
+    }
+
+    public String getFixedModification() {
+        if (fixedModification == null) {
+            fixedModification = (jsonToMap(parameters.get("protein_modification_options").toString())).get("fixed_modifications").replace("[", "").replace("]", "").replace("\"", "").replace("\n", "");
+            if (fixedModification != null && !fixedModification.equalsIgnoreCase("null")) {
+                fixedModification = fixedModification.replace("\"", "");
+                String[] modArr = fixedModification.split(",");
+                for (String mod : modArr) {
+                    modificationMap.put(mod, new LinkedHashSet<>());
+                }
+            } else {
+                fixedModification = "";
+            }
+
+        }
+        return fixedModification;
+    }
+
     public void setParameters(Map<String, Object> parameters) {
         this.parameters = parameters;
 
     }
-    private int peptidesNumber;
-    private Map<String, Object> parameters;
 
     public int getPeptidesNumber() {
         return peptidesNumber;
@@ -346,6 +414,8 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
         sequenceMatchingPreferences = SequenceMatchingPreferences.getDefaultSequenceMatching();
         enzymeFactory = EnzymeFactory.getInstance();
         fastaProteinsMap = new LinkedHashMap<>();
+        modificationMap = new LinkedHashMap<>();
+        modificationMap.put("No Modifications", new LinkedHashSet<>());
     }
 
     public String getJobId() {
@@ -539,6 +609,30 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
     private ArrayList<Integer> getPeptideStart(String sequence, String peptideSequence, SequenceMatchingPreferences sequenceMatchingPreferences) {
         AminoAcidPattern aminoAcidPattern = AminoAcidPattern.getAminoAcidPatternFromString(peptideSequence);
         return aminoAcidPattern.getIndexes(sequence, sequenceMatchingPreferences);
+    }
+
+    public Map<String, Set<String>> getModificationMap() {
+        return modificationMap;
+    }
+
+    private HashMap<String, String> jsonToMap(String t) {
+
+        try {
+            HashMap<String, String> map = new HashMap<>();
+            JSONObject jObject = new JSONObject(t);
+            Iterator<?> keys = jObject.keys();
+            while (keys.hasNext()) {
+                String key = (String) keys.next();
+                String value = jObject.getString(key);
+                map.put(key, value);
+
+            }
+
+            return map;
+        } catch (JSONException ex) {
+            Logger.getLogger(PeptideShakerVisualizationDataset.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 
 }

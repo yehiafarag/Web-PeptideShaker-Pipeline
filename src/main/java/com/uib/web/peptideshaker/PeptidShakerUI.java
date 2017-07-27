@@ -77,28 +77,28 @@ public class PeptidShakerUI extends UI {
         }
 
         ///for testing 
-        VerticalLayout ChartFiltersContainer = new VerticalLayout();
-        ChartFiltersContainer.setWidth(100, Unit.PERCENTAGE);
-        ChartFiltersContainer.setHeight(100, Unit.PERCENTAGE);
-        MatrixLayoutChartFilter filter3 = new MatrixLayoutChartFilter("Validation");
-        ChartFiltersContainer.addComponent(filter3);
-        ChartFiltersContainer.setComponentAlignment(filter3, Alignment.MIDDLE_CENTER);
-        setContent(ChartFiltersContainer);
-
-        Map<String, Set<String>> rows = new LinkedHashMap<>();
-        Random r = new Random();
-        String alphabet = "abcdefghijklmnopqrstuvwxyz";
-        String alphabet2 = "ABCDEF";
-        for (int i = 0; i < alphabet2.length(); i++) {
-            String key = "" + alphabet2.charAt(i);
-            rows.put(key, new HashSet<>());
-            int protNum = r.nextInt(alphabet2.length());
-            for (int y = 0; y < protNum; y++) {
-                rows.get(key).add(""+alphabet.charAt(r.nextInt(alphabet.length())));
-                rows.get(key).add("ZzZ");
-            }
-        }
-        filter3.updateChartData(rows);
+//        VerticalLayout ChartFiltersContainer = new VerticalLayout();
+//        ChartFiltersContainer.setWidth(100, Unit.PERCENTAGE);
+//        ChartFiltersContainer.setHeight(100, Unit.PERCENTAGE);
+//        MatrixLayoutChartFilter filter3 = new MatrixLayoutChartFilter("Validation");
+//        ChartFiltersContainer.addComponent(filter3);
+//        ChartFiltersContainer.setComponentAlignment(filter3, Alignment.MIDDLE_CENTER);
+//        setContent(ChartFiltersContainer);
+//
+//        Map<String, Set<String>> rows = new LinkedHashMap<>();
+//        Random r = new Random();
+//        String alphabet = "abcdefghijklmnopqrstuvwxyz";
+//        String alphabet2 = "ABCDEF";
+//        for (int i = 0; i < alphabet2.length(); i++) {
+//            String key = "" + alphabet2.charAt(i);
+//            rows.put(key, new HashSet<>());
+//            int protNum = r.nextInt(alphabet2.length());
+//            for (int y = 0; y < protNum; y++) {
+//                rows.get(key).add(""+alphabet.charAt(r.nextInt(alphabet.length())));
+//                rows.get(key).add("ZzZ");
+//            }
+//        }
+//        filter3.updateChartData(rows);
     }
     
 

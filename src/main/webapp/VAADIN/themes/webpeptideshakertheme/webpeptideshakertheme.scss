@@ -1159,7 +1159,9 @@
         border-radius: 100%;
     }
     .v-panel-content-scrolspacer.v-scrollable::-webkit-scrollbar {
-        width:12px;
+        width: 1%;
+        min-width:5px;
+        max-width:10px;
     }
 
     .v-panel-content-scrolspacer.v-scrollable::-webkit-scrollbar-track {
@@ -1227,41 +1229,62 @@
     .hilightcolumn {
         background-color:whitesmoke;
     }
+    .barchartlabelcontainer{
+        margin-top:-20px !important;
+    }
     .barchartlabelcontainer .v-label{
-        color:white;
-
-        overflow:hidden;
-        text-overflow:ellipsis;
-        position:relative;
-        z-index: 2;
+        color: gray;
+	background-color:white;
+	border-radius:100%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	position: relative;
+	z-index: 2;
+	font-size:13px;
+	width:30px !important;
+	height:30px !important;
+	text-align:center;
+	border:1px solid gray;
+	line-height:200%;
 
 
     }
     .barchartlabelcontainer .v-label:hover{
-        color:white;
-        font-weight:bold;
+        color: black;
+	font-weight: bold;
+	overflow: visible;
+	font-size: 14px;
+	width: 50px !important;
     }
     .selectedbubble.selectablebubble {
-	background-image: url("img/bluedot.png");
-	background-repeat: no-repeat;
-	background-size: auto 50%;
-	background-position: center;
-	cursor: pointer;
-	min-width: 20px;
-	min-height: 20px;
-}
- .selectedbubble .selectednodeline {
-	background-color: #1780E9;
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
-	border-bottom-left-radius: 5px;
-	border-bottom-right-radius: 5px;
-	max-width: 3px;
-	min-width: 1px;
-}
-.pointer{
-    cursor: pointer !important;
-}
+        background-image: url("img/bluedot.png");
+        background-repeat: no-repeat;
+        background-size: auto 50%;
+        background-position: center;
+        cursor: pointer;
+        min-width: 20px;
+        min-height: 20px;
+    }
+    .selectedbubble .selectednodeline {
+        background-color: #1780E9;
+        border-top-left-radius: 5px;
+        border-top-right-radius: 5px;
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+        max-width: 3px;
+        min-width: 1px;
+    }
+    .pointer{
+        cursor: pointer !important;
+    }
+    .v-label-smalltable{
+        font-size:12px;
+        text-overflow:ellipsis;
+        overflow:hidden;
+        white-space: nowrap;
+        margin-left:-6px;
+        width:180% !important;
+    }
     /****mobile css**/
     .horizontalcss  .largetitle .v-label{
         margin-left:10px;

@@ -43,7 +43,7 @@ import java.util.TreeSet;
  *
  * @author Yehia Farag
  */
-public class MatrixLayoutChartFilter extends VerticalLayout {
+public class MatrixLayoutChartFilter extends VerticalLayout implements RegistrableFilter {
 
     private final Panel barChartContainerPanel;
     private final Panel graphChartContainerPanel;
@@ -52,9 +52,11 @@ public class MatrixLayoutChartFilter extends VerticalLayout {
     private final Set<String> keySorter = new TreeSet<>();
     private final Label setSizeLabel;
     private final String title;
+    private final String filterId;
 
-    public MatrixLayoutChartFilter(String title) {
+    public MatrixLayoutChartFilter(String title, String filterId) {
         this.title = title;
+        this.filterId = filterId;
         MatrixLayoutChartFilter.this.setWidth(80, Unit.PERCENTAGE);
         MatrixLayoutChartFilter.this.setHeight(80, Unit.PERCENTAGE);
         HorizontalLayout barChartPanel = new HorizontalLayout();
@@ -136,12 +138,11 @@ public class MatrixLayoutChartFilter extends VerticalLayout {
                 if (keyI.equals(keyII) || keyII.contains(keyI)) {
                     continue;
                 }
-                String key = (keyII + "," + keyI).replace("[", "").replace("]", "").replace(" ", "");
+                String key = (keyII + "," + keyI).replace("[", "").replace("]", "");//.replace(" ", "");
 
                 keySorter.addAll(Arrays.asList(key.split(",")));
                 key = keySorter.toString();
                 keySorter.clear();
-
                 if (trows.containsKey(key)) {
                     Set<String> union = new LinkedHashSet<>(Sets.union(trows.get(key), Sets.intersection(rowsII.get(keyII), sortedData.get(keyI))));
                     trows.put(key, union);
@@ -176,24 +177,21 @@ public class MatrixLayoutChartFilter extends VerticalLayout {
                 updatedKey = sortingKysMap.values().toString();
             }
             if (!tempColumns.get(key).isEmpty()) {
-                this.columns.put(updatedKey, tempColumns.get(key));
+                this.columns.put(updatedKey, tempColumns.get(key));                
             }
         }
 
     }
 
     private AbsoluteLayout initBarChartFilter(double protNumber, List<Double> data, String[] labels) {
-
         TreeSet<Double> maxSet = new TreeSet<>(data);
         int step = maxSet.last().intValue();
         step = Math.max((step / 10), 1);
-
         //init color array
         colors = new String[labels.length];
         for (int x = 0; x < colors.length; x++) {
             colors[x] = unselectedColor;
         }
-
         barConfig = new BarChartConfig();
         barConfig.
                 data().labels(labels)
@@ -217,14 +215,11 @@ public class MatrixLayoutChartFilter extends VerticalLayout {
                 .add(Axis.X, new CategoryScale().display(false).gridLines().display(false).and())
                 .and().legend().display(false).and()
                 .done();
-
         for (Dataset<?, ?> ds : barConfig.data().getDatasets()) {
             BarDataset lds = (BarDataset) ds;
             lds.dataAsList(data);
             lds.fill(false);
-
         }
-
 //        chart = new ChartJs(barConfig);
 //        chart.setJsLoggingEnabled(true);
 //        chart.addClickListener((int datasetIndex, int dataIndex) -> {
@@ -269,13 +264,11 @@ public class MatrixLayoutChartFilter extends VerticalLayout {
 
         HorizontalLayout graphLabelsContainer = new HorizontalLayout();
         graphLabelsContainer.setSizeFull();
-
         labelsContainer = new VerticalLayout();
         labelsContainer.setSizeFull();
         labelsContainer.setMargin(new MarginInfo(false, false, false, true));
         graphLabelsContainer.addComponent(labelsContainer);
         graphLabelsContainer.setExpandRatio(labelsContainer, 10);
-
         VerticalLayout graphContainer = new VerticalLayout();
         graphContainer.setSizeFull();
         graphLabelsContainer.addComponent(graphContainer);
@@ -286,6 +279,7 @@ public class MatrixLayoutChartFilter extends VerticalLayout {
         } else {
             x0 = 50;
         }
+
         graphContainer.addStyleName("padding" + x0);
         AbsoluteLayout wrapper = new AbsoluteLayout();
         graphContainer.addComponent(wrapper);
@@ -311,7 +305,6 @@ public class MatrixLayoutChartFilter extends VerticalLayout {
 
         LayoutEvents.LayoutClickListener listener = (LayoutEvents.LayoutClickEvent event) -> {
             Component c = event.getClickedComponent();
-            System.out.println("at componmet " + c);
             if (c instanceof SparkLine) {
                 setSelectRow((Integer) ((SparkLine) c).getData(), !((SparkLine) c).isSelected());
                 ((SparkLine) c).setSelected(!((SparkLine) c).isSelected());
@@ -381,7 +374,7 @@ public class MatrixLayoutChartFilter extends VerticalLayout {
                 } else {
                     node.setSelecatble(false);
                 }
-                if (columnKey.length() == 1) {
+                if (columnKey.split(",").length == 1) {
                     node.setUpperSelected(false);
                     node.setLowerSelected(false);
                 } else {
@@ -491,4 +484,20 @@ public class MatrixLayoutChartFilter extends VerticalLayout {
         chart.setHeight(100, Unit.PERCENTAGE);
         chartContainer.addComponent(chart);
     }
+
+    @Override
+    public String getFilterId() {
+        return filterId;
+    }
+
+    @Override
+    public void selectData() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void updateFilter() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

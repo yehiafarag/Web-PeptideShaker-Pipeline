@@ -1,6 +1,8 @@
 package com.uib.web.peptideshaker.presenter.components.peptideshakerview;
 
+import com.uib.web.peptideshaker.presenter.components.peptideshakerview.components.FilterTableGraphComponent;
 import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDataset;
+import com.uib.web.peptideshaker.presenter.components.peptideshakerview.components.SelectionManager;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
@@ -21,7 +23,7 @@ public class PeptideShakerDatasesViewLayout extends HorizontalLayout {
     /**
      * Constructor to initialize the main layout and variables.
      */
-    public PeptideShakerDatasesViewLayout() {
+    public PeptideShakerDatasesViewLayout(SelectionManager Selection_Manager) {
         PeptideShakerDatasesViewLayout.this.setSizeFull();
         PeptideShakerDatasesViewLayout.this.setSpacing(true);
         PeptideShakerDatasesViewLayout.this.setMargin(false);
@@ -36,7 +38,7 @@ public class PeptideShakerDatasesViewLayout extends HorizontalLayout {
         container.addComponent(headerLabel);
         container.setExpandRatio(headerLabel, 1);
 
-        proteinsTableComponents = new FilterTableGraphComponent();
+        proteinsTableComponents = new FilterTableGraphComponent(Selection_Manager);
         container.addComponent(proteinsTableComponents);
         container.setExpandRatio(proteinsTableComponents, 99);
 
@@ -109,7 +111,7 @@ public class PeptideShakerDatasesViewLayout extends HorizontalLayout {
 
         };
         headerLabel.setContent(dsOverview);
-        proteinsTableComponents.upateTableData(peptideShakerVisualizationDataset);
+        proteinsTableComponents.updateData(peptideShakerVisualizationDataset);
 
     }
 
