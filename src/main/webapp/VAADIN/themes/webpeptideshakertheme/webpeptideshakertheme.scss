@@ -1234,27 +1234,25 @@
     }
     .barchartlabelcontainer .v-label{
         color: gray;
-	background-color:white;
-	border-radius:100%;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	position: relative;
-	z-index: 2;
-	font-size:13px;
-	width:30px !important;
-	height:30px !important;
-	text-align:center;
-	border:1px solid gray;
-	line-height:200%;
-
-
+        background-color:white;
+        border-radius:100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        position: relative;
+        z-index: 2;
+        font-size:13px;
+        width:30px !important;
+        height:30px !important;
+        text-align:center;
+        border:1px solid gray;
+        line-height:200%;
     }
     .barchartlabelcontainer .v-label:hover{
         color: black;
-	font-weight: bold;
-	overflow: visible;
-	font-size: 14px;
-	width: 50px !important;
+        font-weight: bold;
+        overflow: visible;
+        font-size: 14px;
+        width: 50px !important;
     }
     .selectedbubble.selectablebubble {
         background-image: url("img/bluedot.png");

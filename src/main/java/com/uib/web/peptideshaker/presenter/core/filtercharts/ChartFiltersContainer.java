@@ -3,11 +3,7 @@ package com.uib.web.peptideshaker.presenter.core.filtercharts;
 import com.uib.web.peptideshaker.presenter.components.peptideshakerview.components.SelectionManager;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.VerticalLayout;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
 /**
@@ -50,14 +46,15 @@ public class ChartFiltersContainer extends HorizontalLayout {
 //        filter2.updateChartData(rangeValues);
 //        ChartFiltersContainer.this.setComponentAlignment(filter2, Alignment.MIDDLE_CENTER);
         modifications_filter = new MatrixLayoutChartFilter("Modifications", "modifications_filter");
-        ChartFiltersContainer.this.addComponent(modifications_filter);
-        ChartFiltersContainer.this.setComponentAlignment(modifications_filter, Alignment.MIDDLE_CENTER);
         this.Selection_Manager.RegistrFilter(modifications_filter);
 
+        PopUpFilterContainer modifications_filterContainer = new PopUpFilterContainer(modifications_filter);
+        ChartFiltersContainer.this.addComponent(modifications_filterContainer);
+        ChartFiltersContainer.this.setComponentAlignment(modifications_filterContainer, Alignment.MIDDLE_CENTER);
         ///for testing 
     }
 
-    public void updateFiltersData(Map<String, Set<String>> rows) {       
+    public void updateFiltersData(Map<String, Set<String>> rows) {
         if (rows.size() > 10) {
             return;
         }

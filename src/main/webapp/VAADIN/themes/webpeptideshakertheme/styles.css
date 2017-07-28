@@ -14240,6 +14240,9 @@ div.v-layout.v-horizontal.v-widget {
 .webpeptideshakertheme .barchartlabelcontainer .v-label:hover {
 	color: black;
 	font-weight: bold;
+	overflow: visible;
+	font-size: 14px;
+	width: 50px !important;
 }
 
 .webpeptideshakertheme .selectedbubble.selectablebubble {

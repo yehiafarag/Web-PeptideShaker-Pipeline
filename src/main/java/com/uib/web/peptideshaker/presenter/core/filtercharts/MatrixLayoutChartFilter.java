@@ -15,10 +15,12 @@ import com.uib.web.peptideshaker.presenter.core.filtercharts.components.Selectab
 import com.uib.web.peptideshaker.presenter.core.form.ColorLabel;
 import com.uib.web.peptideshaker.presenter.core.form.SparkLine;
 import com.vaadin.event.LayoutEvents;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
@@ -54,23 +56,50 @@ public class MatrixLayoutChartFilter extends VerticalLayout implements Registrab
     private final String title;
     private final String filterId;
 
+    private BarChartConfig barConfig;
+    private ChartJs chart;
+    private String[] colors;
+    private VerticalLayout chartContainer;
+    private final String unselectedColor = "lightgray";
+    private final String selectedColor = "#1780E9";
+    private GridLayout nodeContainer;
+    private VerticalLayout labelsContainer;
+    private final Label chartTitle;
+    private final Set<String> selectedDataSet;
+
+    private int totalItemsNumber;
+
     public MatrixLayoutChartFilter(String title, String filterId) {
         this.title = title;
         this.filterId = filterId;
-        MatrixLayoutChartFilter.this.setWidth(80, Unit.PERCENTAGE);
-        MatrixLayoutChartFilter.this.setHeight(80, Unit.PERCENTAGE);
+        MatrixLayoutChartFilter.this.setWidth(95, Unit.PERCENTAGE);
+        MatrixLayoutChartFilter.this.setHeight(95, Unit.PERCENTAGE);
+
+        this.selectedDataSet = new LinkedHashSet<>();
         HorizontalLayout barChartPanel = new HorizontalLayout();
         barChartPanel.setSizeFull();
         MatrixLayoutChartFilter.this.addComponent(barChartPanel);
         VerticalLayout spacer = new VerticalLayout();
         spacer.setSizeFull();
+        spacer.setMargin(new MarginInfo(true, false, false, false));
         barChartPanel.addComponent(spacer);
-        barChartPanel.setExpandRatio(spacer, 10);
+        barChartPanel.setExpandRatio(spacer, 20);
         HorizontalLayout setSizeLabelContainer = new HorizontalLayout();
         setSizeLabelContainer.setSizeFull();
         setSizeLabelContainer.setMargin(new MarginInfo(false, false, false, true));
         setSizeLabelContainer.setSpacing(true);
+
+        chartTitle = new Label("<center>" + title + "<br/><font style='font-size:12px;'>(100000/1000000)</font></center>");
+        chartTitle.setContentMode(ContentMode.HTML);
+        chartTitle.setStyleName(ValoTheme.LABEL_BOLD);
+        chartTitle.addStyleName(ValoTheme.LABEL_NO_MARGIN);
+        chartTitle.setWidth(100, Unit.PERCENTAGE);
+        chartTitle.setHeight(100, Unit.PERCENTAGE);
+        spacer.addComponent(chartTitle);
+        spacer.setComponentAlignment(chartTitle, Alignment.MIDDLE_LEFT);
+        spacer.setExpandRatio(chartTitle, 0.9f);
         spacer.addComponent(setSizeLabelContainer);
+        spacer.setExpandRatio(setSizeLabelContainer, 0.1f);
 
         setSizeLabel = new Label("0  <font>0</font>");
         setSizeLabel.setContentMode(ContentMode.HTML);
@@ -87,7 +116,7 @@ public class MatrixLayoutChartFilter extends VerticalLayout implements Registrab
 
         barChartContainerPanel.setSizeFull();
         barChartPanel.addComponent(barChartContainerPanel);
-        barChartPanel.setExpandRatio(barChartContainerPanel, 90);
+        barChartPanel.setExpandRatio(barChartContainerPanel, 80);
         barChartContainerPanel.setWidth(100, Unit.PERCENTAGE);
         barChartContainerPanel.setHeight(100, Unit.PERCENTAGE);
         barChartContainerPanel.addStyleName("scrolspacer");
@@ -101,6 +130,7 @@ public class MatrixLayoutChartFilter extends VerticalLayout implements Registrab
     }
 
     public void updateChartData(Map<String, Set<String>> data) {
+        selectedDataSet.clear();
         calculateMatrix(data);
         List<Double> barChartData = new ArrayList<>();
         for (Set<String> set : columns.values()) {
@@ -108,7 +138,6 @@ public class MatrixLayoutChartFilter extends VerticalLayout implements Registrab
         }
         TreeSet<Double> ts = new TreeSet<>(barChartData);
         barChartContainerPanel.setContent(initBarChartFilter(ts.last(), barChartData, columns.keySet().toArray(new String[columns.size()])));
-
         HorizontalLayout graphLayout = initGraph(ts.last(), columns, rows);
         graphChartContainerPanel.setContent(graphLayout);
     }
@@ -124,11 +153,14 @@ public class MatrixLayoutChartFilter extends VerticalLayout implements Registrab
         }
         Map<String, Set<String>> sortedData = new LinkedHashMap<>();
 
+        totalItemsNumber = 0;
         for (String key : sortingMap.values()) {
-            this.rows.put(key, data.get(key).size());
+            int size = data.get(key).size();
+            totalItemsNumber += size;
+            this.rows.put(key, size);
             sortedData.put(key, data.get(key));
         }
-
+        chartTitle.setValue("<center>" + title + "<br/><font style='font-size:12px;'>(" + totalItemsNumber + "/" + totalItemsNumber + ")</font></center>");
         Map<String, Set<String>> rowsII = new LinkedHashMap<>(sortedData);
         Map<String, Set<String>> tempColumns = new LinkedHashMap<>();
         tempColumns.putAll(sortedData);
@@ -177,7 +209,7 @@ public class MatrixLayoutChartFilter extends VerticalLayout implements Registrab
                 updatedKey = sortingKysMap.values().toString();
             }
             if (!tempColumns.get(key).isEmpty()) {
-                this.columns.put(updatedKey, tempColumns.get(key));                
+                this.columns.put(updatedKey, tempColumns.get(key));
             }
         }
 
@@ -207,7 +239,7 @@ public class MatrixLayoutChartFilter extends VerticalLayout implements Registrab
                 .animationDuration(1)
                 .and()
                 .title()
-                .display(true)
+                .display(false)
                 .text(this.title)
                 .and()
                 .scales()
@@ -257,6 +289,16 @@ public class MatrixLayoutChartFilter extends VerticalLayout implements Registrab
         container.addComponent(labelContainer, "left: " + 0 + "px; bottom: " + 10 + "%");
         container.addComponent(chartContainer);
         redrawBarChart();
+
+        Button resetSelectionButton = new Button("Reset", VaadinIcons.REFRESH);
+        resetSelectionButton.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
+        resetSelectionButton.addStyleName(ValoTheme.BUTTON_TINY);
+        resetSelectionButton.setWidth(75, Unit.PIXELS);
+        resetSelectionButton.setHeight(25, Unit.PIXELS);
+        container.addComponent(resetSelectionButton, "right: " + 15 + "px; top: " + 10 + "%");
+        resetSelectionButton.addClickListener((Button.ClickEvent event) -> {
+            unselectAll();
+        });
         return container;
     }
 
@@ -268,11 +310,11 @@ public class MatrixLayoutChartFilter extends VerticalLayout implements Registrab
         labelsContainer.setSizeFull();
         labelsContainer.setMargin(new MarginInfo(false, false, false, true));
         graphLabelsContainer.addComponent(labelsContainer);
-        graphLabelsContainer.setExpandRatio(labelsContainer, 10);
+        graphLabelsContainer.setExpandRatio(labelsContainer, 20);
         VerticalLayout graphContainer = new VerticalLayout();
         graphContainer.setSizeFull();
         graphLabelsContainer.addComponent(graphContainer);
-        graphLabelsContainer.setExpandRatio(graphContainer, 90);
+        graphLabelsContainer.setExpandRatio(graphContainer, 80);
         int x0;
         if (protNumber < 100) {
             x0 = 40;
@@ -286,7 +328,7 @@ public class MatrixLayoutChartFilter extends VerticalLayout implements Registrab
         wrapper.setWidth(100, Unit.PERCENTAGE);
         int rowNum = rows.size();
 
-        graphLabelsContainer.setHeight(rowNum * 40, Unit.PIXELS);
+        graphLabelsContainer.setHeight(rowNum * 35, Unit.PIXELS);
         wrapper.setHeight(100, Unit.PERCENTAGE);
         nodeContainer = new GridLayout(columns.size(), rowNum);
         nodeContainer.setSizeFull();
@@ -327,9 +369,8 @@ public class MatrixLayoutChartFilter extends VerticalLayout implements Registrab
             sl.addStyleName("pointer");
             labelsContainer.addComponent(sl);
             sl.setData(x);
-//            sl.addLayoutClickListener(listener);
+            sl.setDescription(rowKey);
             labelsContainer.setComponentAlignment(sl, Alignment.MIDDLE_CENTER);
-
             int y = 0;
             for (String columnKey : columns.keySet()) {
 
@@ -357,9 +398,7 @@ public class MatrixLayoutChartFilter extends VerticalLayout implements Registrab
         }
         int z = 0;
         List<String> sortingKeysList = new ArrayList<>(rows.keySet());
-
         for (String columnKey : columns.keySet()) {
-
             String[] subArr = columnKey.replace("]", "").replace("[", "").trim().split(",");
             int startLineRange = sortingKeysList.indexOf(subArr[0]);
             int endLineRange = sortingKeysList.indexOf(subArr[subArr.length - 1].trim());
@@ -402,16 +441,10 @@ public class MatrixLayoutChartFilter extends VerticalLayout implements Registrab
         return graphLabelsContainer;
     }
 
-    private BarChartConfig barConfig;
-    private ChartJs chart;
-    private String[] colors;
-    private VerticalLayout chartContainer;
-    private final String unselectedColor = "lightgray";
-    private final String selectedColor = "#1780E9";
-    private GridLayout nodeContainer;
-    private VerticalLayout labelsContainer;
-
     private void unselectAll() {
+        selectedDataSet.clear();
+        chartTitle.setValue("<center>" + title + "<br/><font style='font-size:12px;'>(" + totalItemsNumber + "/" + totalItemsNumber + ")</font></center>");
+
         for (int col = 0; col < nodeContainer.getColumns(); col++) {
             for (int row = 0; row < nodeContainer.getRows(); row++) {
                 SelectableNode node = (SelectableNode) nodeContainer.getComponent(col, row);
@@ -466,6 +499,17 @@ public class MatrixLayoutChartFilter extends VerticalLayout implements Registrab
             node.setSelected(select);
 
         }
+        if (select) {
+            selectedDataSet.addAll(columns.get(columns.keySet().toArray(new String[columns.size()])[columnIndex]));
+        } else {
+            selectedDataSet.removeAll(columns.get(columns.keySet().toArray(new String[columns.size()])[columnIndex]));
+        }
+
+        int size = selectedDataSet.size();
+        if (size == 0) {
+            size = totalItemsNumber;
+        }
+        chartTitle.setValue("<center>" + title + "<br/><font style='font-size:12px;'>(" + size + "/" + totalItemsNumber + ")</font></center>");
 
     }
 
@@ -473,16 +517,20 @@ public class MatrixLayoutChartFilter extends VerticalLayout implements Registrab
         chartContainer.removeAllComponents();
         chart = new ChartJs(barConfig);
         chart.setJsLoggingEnabled(true);
+
         chart.addClickListener((int datasetIndex, int dataIndex) -> {
+            chart.setData(dataIndex);
             Iterator<Component> itr = labelsContainer.iterator();
             while (itr.hasNext()) {
                 ((SparkLine) itr.next()).setSelected(false);
             }
             selectColumn(dataIndex);
+
         });
         chart.setWidth(100, Unit.PERCENTAGE);
         chart.setHeight(100, Unit.PERCENTAGE);
         chartContainer.addComponent(chart);
+
     }
 
     @Override
@@ -498,6 +546,10 @@ public class MatrixLayoutChartFilter extends VerticalLayout implements Registrab
     @Override
     public void updateFilter() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public Set<String> getSelectedDataSet() {
+        return selectedDataSet;
     }
 
 }

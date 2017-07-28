@@ -20,14 +20,14 @@ public class PopupWindow extends VerticalLayout implements LayoutEvents.LayoutCl
     private final Label titleLabel;
 
     /**
-     * Constructor to initialize the main layout*
+     * Constructor to initialize the main layout.
      */
     public PopupWindow(String title) {
         titleLabel = new Label(title);
         titleLabel.setStyleName("windowtitle");
         PopupWindow.this.addComponent(titleLabel);
         PopupWindow.this.addLayoutClickListener(PopupWindow.this);
-
+       
         window = new Window() {
             @Override
             public void close() {
@@ -37,13 +37,13 @@ public class PopupWindow extends VerticalLayout implements LayoutEvents.LayoutCl
             @Override
             public void setVisible(boolean visible) {
                 if (windoContent != null) {
-                    super.setVisible(visible); //To change body of generated methods, choose Tools | Templates.
+                    super.setVisible(visible);
                 } else {
                     super.setVisible(false);
                 }
             }
-
-        };
+        }; 
+        
         window.center();
         window.setWindowMode(WindowMode.NORMAL);
         window.setStyleName("popupwindow");
@@ -53,10 +53,10 @@ public class PopupWindow extends VerticalLayout implements LayoutEvents.LayoutCl
         window.setDraggable(false);
         window.setVisible(false);
         UI.getCurrent().addWindow(window);
-
     }
-    public void setLabelValue(String value){
-    titleLabel.setValue(value);
+
+    public void setLabelValue(String value) {
+        titleLabel.setValue(value);
     }
 
     public void setContent(Layout popup) {
@@ -71,6 +71,10 @@ public class PopupWindow extends VerticalLayout implements LayoutEvents.LayoutCl
 
     public void setPopupVisible(boolean visible) {
         window.setVisible(visible);
+    }
+    public void setWindowSize(int width,int height){
+    window.setWidth(width,Unit.PERCENTAGE);
+        window.setHeight(height,Unit.PERCENTAGE);
     }
 
 }
