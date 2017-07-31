@@ -1283,6 +1283,16 @@
         margin-left:-6px;
         width:180% !important;
     }
+    .v-button-icon-only.v-button-tiny{
+        color:gray !important;
+        padding:0px !important;
+        font-size:15px;
+        text-align:center;
+        font-weight:bold;
+    }
+    .v-button-icon-only.v-button-tiny:hover{
+        color: black !important;
+    }
     /****mobile css**/
     .horizontalcss  .largetitle .v-label{
         margin-left:10px;

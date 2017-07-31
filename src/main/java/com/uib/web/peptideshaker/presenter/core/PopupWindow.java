@@ -63,6 +63,12 @@ public class PopupWindow extends VerticalLayout implements LayoutEvents.LayoutCl
         windoContent = popup;
         window.setContent(popup);
     }
+     public void setContent(String title,Layout popup) {
+        windoContent = popup;
+        window.setContent(popup);
+//        window.setCaption(title);
+//        window.setClosable(false);
+    }
 
     @Override
     public void layoutClick(LayoutEvents.LayoutClickEvent event) {

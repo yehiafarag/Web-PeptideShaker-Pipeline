@@ -1,6 +1,7 @@
 
 package com.uib.web.peptideshaker.presenter.core.filtercharts;
 
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Layout;
 
 /**
@@ -11,5 +12,8 @@ public interface RegistrableFilter  extends Layout{
     public String getFilterId();
     public void selectData();
     public void updateFilter();
+    public void selectionChange(String type);
+    public Component getThumb();
+    public void redrawChart();
     
 }

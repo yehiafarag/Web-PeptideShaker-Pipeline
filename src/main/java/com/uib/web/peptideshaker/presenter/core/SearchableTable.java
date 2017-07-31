@@ -1,8 +1,5 @@
 package com.uib.web.peptideshaker.presenter.core;
 
-import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDataset;
-import com.uib.web.peptideshaker.galaxy.dataobjects.ProteinObject;
-import com.uib.web.peptideshaker.presenter.core.filtercharts.RegistrableFilter;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelTextField;
 import com.vaadin.data.Property;
 import com.vaadin.event.FieldEvents;
@@ -21,6 +18,7 @@ import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 /**
@@ -28,7 +26,7 @@ import java.util.TreeMap;
  *
  * @author Yehia Farag
  */
-public class SearchableTable extends VerticalLayout implements Property.ValueChangeListener, RegistrableFilter {
+public class SearchableTable extends VerticalLayout implements Property.ValueChangeListener {
 
     private Label searchResultsLabel;
     private final String tableMainTitle;
@@ -36,12 +34,10 @@ public class SearchableTable extends VerticalLayout implements Property.ValueCha
     private boolean resetSearching = false;
     private final Map<String, String> tableSearchingMap;
     private final Table mainTable;
-    private final String filterId;
 
-    public SearchableTable(String title, String filterId, String defaultSearchingMessage, TableColumnHeader[] tableHeaders) {
+    public SearchableTable(String title, String defaultSearchingMessage, TableColumnHeader[] tableHeaders) {
         SearchableTable.this.setSizeFull();
         SearchableTable.this.setMargin(new MarginInfo(false, false, true, false));
-        this.filterId = filterId;
 
         this.tableMainTitle = title;
         this.tableSearchingResults = new TreeMap<>();
@@ -190,11 +186,14 @@ public class SearchableTable extends VerticalLayout implements Property.ValueCha
         return table;
     }
 
-    public void upateTableData(Object[][] tableData, int[] searchingIndexes, int keyIndex) {
+    private Map<String, Object[]> tableData;
+
+    public void upateTableData(Map<String, Object[]> tableData, int[] searchingIndexes, int keyIndex) {
+        this.tableData = tableData;
         this.tableSearchingMap.clear();
         mainTable.removeValueChangeListener(SearchableTable.this);
         mainTable.removeAllItems();
-        for (Object[] data : tableData) {
+        for (Object[] data : tableData.values()) {
             this.mainTable.addItem(data, data[keyIndex]);
             String searchKey = "";
             for (int i : searchingIndexes) {
@@ -255,19 +254,30 @@ public class SearchableTable extends VerticalLayout implements Property.ValueCha
 
     }
 
-    @Override
-    public String getFilterId() {
-        return filterId;
-    }
+    public void filterTable(Set<String> objectIds) {
+        if ((objectIds == null || objectIds.isEmpty()) && this.mainTable.getItemIds().size() == tableData.size()) {
+            return;
+        }
+        if (objectIds != null && objectIds.size() == tableData.size()) {
+            return;
+        }
 
-    @Override
-    public void selectData() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+        this.tableSearchingMap.clear();
+        mainTable.removeValueChangeListener(SearchableTable.this);
+        mainTable.removeAllItems();
+        if (objectIds != null && !objectIds.isEmpty()) {
+            for (String data : objectIds) {
+                this.mainTable.addItem(tableData.get(data), data);
+            }
+        } else if ((objectIds == null || objectIds.isEmpty()) && this.mainTable.getItemIds().size() != tableData.size()) {
+            for (String data : tableData.keySet()) {
+                this.mainTable.addItem(tableData.get(data), data);
+            }
 
-    @Override
-    public void updateFilter() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+        mainTable.setCaption("<b>" + tableMainTitle + "</b> ( " + mainTable.getItemIds().size() + " )");
+        mainTable.addValueChangeListener(SearchableTable.this);
+
     }
 
 }

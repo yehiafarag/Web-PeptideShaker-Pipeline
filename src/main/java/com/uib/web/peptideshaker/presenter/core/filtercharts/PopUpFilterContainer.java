@@ -2,6 +2,7 @@ package com.uib.web.peptideshaker.presenter.core.filtercharts;
 
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
 import com.vaadin.event.LayoutEvents;
+import com.vaadin.ui.Layout;
 import com.vaadin.ui.VerticalLayout;
 
 /**
@@ -13,20 +14,28 @@ import com.vaadin.ui.VerticalLayout;
 public class PopUpFilterContainer extends VerticalLayout implements LayoutEvents.LayoutClickListener {
 
     private final PopupWindow window;
+    private final RegistrableFilter filter;
 
-    public PopUpFilterContainer(RegistrableFilter filter) {
+    public PopUpFilterContainer(String title, RegistrableFilter filter) {
         PopUpFilterContainer.this.setSizeFull();
-        PopUpFilterContainer.this.setStyleName("blacklayout");
-        PopUpFilterContainer.this.addLayoutClickListener(this);
+        this.filter=filter;
+//        PopUpFilterContainer.this.setStyleName("blacklayout");
+        PopUpFilterContainer.this.addLayoutClickListener(PopUpFilterContainer.this);
         window = new PopupWindow("");
-        window.setContent(filter);
+        window.setContent(title, filter);
         window.setWindowSize(95, 95);
-        
+        PopUpFilterContainer.this.addComponent(filter.getThumb());
+
     }
-    
+
     @Override
     public void layoutClick(LayoutEvents.LayoutClickEvent event) {
+        filter.redrawChart();
         window.setPopupVisible(true);
     }
-    
+
+    public void setPopupVisible(boolean visible) {
+        window.setPopupVisible(visible);
+    }
+
 }

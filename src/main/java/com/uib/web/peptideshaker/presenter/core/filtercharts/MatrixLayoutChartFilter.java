@@ -11,6 +11,7 @@ import com.byteowls.vaadin.chartjs.options.scale.CategoryScale;
 import com.byteowls.vaadin.chartjs.options.scale.LinearScale;
 import com.google.common.collect.Sets;
 import com.uib.web.peptideshaker.model.AlphanumComparator;
+import com.uib.web.peptideshaker.presenter.components.peptideshakerview.components.SelectionManager;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.components.SelectableNode;
 import com.uib.web.peptideshaker.presenter.core.form.ColorLabel;
 import com.uib.web.peptideshaker.presenter.core.form.SparkLine;
@@ -45,7 +46,7 @@ import java.util.TreeSet;
  *
  * @author Yehia Farag
  */
-public class MatrixLayoutChartFilter extends VerticalLayout implements RegistrableFilter {
+public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements RegistrableFilter {
 
     private final Panel barChartContainerPanel;
     private final Panel graphChartContainerPanel;
@@ -57,47 +58,85 @@ public class MatrixLayoutChartFilter extends VerticalLayout implements Registrab
     private final String filterId;
 
     private BarChartConfig barConfig;
+
     private ChartJs chart;
     private String[] colors;
     private VerticalLayout chartContainer;
+    private VerticalLayout thumbChartContainer;
     private final String unselectedColor = "lightgray";
     private final String selectedColor = "#1780E9";
     private GridLayout nodeContainer;
     private VerticalLayout labelsContainer;
     private final Label chartTitle;
     private final Set<String> selectedDataSet;
-
     private int totalItemsNumber;
+    private final SelectionManager Selection_Manager;
 
-    public MatrixLayoutChartFilter(String title, String filterId) {
+    public MatrixLayoutChartFilter(String title, String filterId, SelectionManager Selection_Manager) {
         this.title = title;
         this.filterId = filterId;
-        MatrixLayoutChartFilter.this.setWidth(95, Unit.PERCENTAGE);
-        MatrixLayoutChartFilter.this.setHeight(95, Unit.PERCENTAGE);
+        this.Selection_Manager = Selection_Manager;
+        MatrixLayoutChartFilter.this.setWidth(100, Unit.PERCENTAGE);
+        MatrixLayoutChartFilter.this.setHeight(100, Unit.PERCENTAGE);
+        VerticalLayout filterContainer = new VerticalLayout();
+        filterContainer.setSizeFull();
+        filterContainer.setMargin(new MarginInfo(true, true, false, true));
+        MatrixLayoutChartFilter.this.addComponent(filterContainer);
 
-        this.selectedDataSet = new LinkedHashSet<>();
-        HorizontalLayout barChartPanel = new HorizontalLayout();
-        barChartPanel.setSizeFull();
-        MatrixLayoutChartFilter.this.addComponent(barChartPanel);
-        VerticalLayout spacer = new VerticalLayout();
-        spacer.setSizeFull();
-        spacer.setMargin(new MarginInfo(true, false, false, false));
-        barChartPanel.addComponent(spacer);
-        barChartPanel.setExpandRatio(spacer, 20);
-        HorizontalLayout setSizeLabelContainer = new HorizontalLayout();
-        setSizeLabelContainer.setSizeFull();
-        setSizeLabelContainer.setMargin(new MarginInfo(false, false, false, true));
-        setSizeLabelContainer.setSpacing(true);
-
-        chartTitle = new Label("<center>" + title + "<br/><font style='font-size:12px;'>(100000/1000000)</font></center>");
+        chartTitle = new Label("" + title + " (100000/1000000)");
         chartTitle.setContentMode(ContentMode.HTML);
         chartTitle.setStyleName(ValoTheme.LABEL_BOLD);
         chartTitle.addStyleName(ValoTheme.LABEL_NO_MARGIN);
         chartTitle.setWidth(100, Unit.PERCENTAGE);
-        chartTitle.setHeight(100, Unit.PERCENTAGE);
-        spacer.addComponent(chartTitle);
-        spacer.setComponentAlignment(chartTitle, Alignment.MIDDLE_LEFT);
-        spacer.setExpandRatio(chartTitle, 0.9f);
+        chartTitle.setHeight(30, Unit.PIXELS);
+        MatrixLayoutChartFilter.this.addComponent(chartTitle, "left: " + 20 + "px; top: " + 10 + "px");
+        Button cancelSelectionButton = new Button(VaadinIcons.CLOSE);
+        cancelSelectionButton.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
+        cancelSelectionButton.addStyleName(ValoTheme.BUTTON_TINY);
+        cancelSelectionButton.setWidth(25, Unit.PIXELS);
+        cancelSelectionButton.setHeight(25, Unit.PIXELS);
+        MatrixLayoutChartFilter.this.addComponent(cancelSelectionButton, "right: " + 20 + "px; top: " + 15 + "px");
+        cancelSelectionButton.addClickListener((Button.ClickEvent event) -> {
+            close();
+        });
+
+        Button applySelectionButton = new Button(VaadinIcons.CHECK_SQUARE);
+        applySelectionButton.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
+        applySelectionButton.addStyleName(ValoTheme.BUTTON_TINY);
+        applySelectionButton.setWidth(25, Unit.PIXELS);
+        applySelectionButton.setHeight(25, Unit.PIXELS);
+        applySelectionButton.setDescription("Apply filter selection");
+        MatrixLayoutChartFilter.this.addComponent(applySelectionButton, "right: " + 50 + "px; top: " + 15 + "px");
+        applySelectionButton.addClickListener((Button.ClickEvent event) -> {
+            applyFilter(getSelectedDataSet());
+            close();
+//            unselectAll();
+        });
+
+        Button resetSelectionButton = new Button(VaadinIcons.REFRESH);//"Unselect All",
+        resetSelectionButton.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
+        resetSelectionButton.addStyleName(ValoTheme.BUTTON_TINY);
+        resetSelectionButton.setWidth(25, Unit.PIXELS);//110
+        resetSelectionButton.setHeight(25, Unit.PIXELS);
+        MatrixLayoutChartFilter.this.addComponent(resetSelectionButton, "right: " + 80 + "px; top: " + 15 + "px");
+        resetSelectionButton.addClickListener((Button.ClickEvent event) -> {
+            unselectAll();
+        });
+
+        this.selectedDataSet = new LinkedHashSet<>();
+        HorizontalLayout barChartPanel = new HorizontalLayout();
+        barChartPanel.setSizeFull();
+        filterContainer.addComponent(barChartPanel);
+        VerticalLayout spacer = new VerticalLayout();
+        spacer.setSizeFull();
+        barChartPanel.setMargin(new MarginInfo(true, false, false, false));
+        barChartPanel.addComponent(spacer);
+        barChartPanel.setExpandRatio(spacer, 20);
+        HorizontalLayout setSizeLabelContainer = new HorizontalLayout();
+        setSizeLabelContainer.setSizeFull();
+        setSizeLabelContainer.setMargin(new MarginInfo(false, false, false, false));
+        setSizeLabelContainer.setSpacing(true);
+
         spacer.addComponent(setSizeLabelContainer);
         spacer.setExpandRatio(setSizeLabelContainer, 0.1f);
 
@@ -125,7 +164,11 @@ public class MatrixLayoutChartFilter extends VerticalLayout implements Registrab
         graphChartContainerPanel.setSizeFull();
         graphChartContainerPanel.setStyleName(ValoTheme.PANEL_BORDERLESS);
         graphChartContainerPanel.addStyleName("scrolspacer");
-        MatrixLayoutChartFilter.this.addComponent(graphChartContainerPanel);
+        filterContainer.addComponent(graphChartContainerPanel);
+
+        this.Selection_Manager.RegistrFilter(MatrixLayoutChartFilter.this);
+        thumbChartContainer = new VerticalLayout();
+        thumbChartContainer.setSizeFull();
 
     }
 
@@ -160,7 +203,8 @@ public class MatrixLayoutChartFilter extends VerticalLayout implements Registrab
             this.rows.put(key, size);
             sortedData.put(key, data.get(key));
         }
-        chartTitle.setValue("<center>" + title + "<br/><font style='font-size:12px;'>(" + totalItemsNumber + "/" + totalItemsNumber + ")</font></center>");
+
+        chartTitle.setValue("" + title + " (" + totalItemsNumber + "/" + totalItemsNumber + ")");
         Map<String, Set<String>> rowsII = new LinkedHashMap<>(sortedData);
         Map<String, Set<String>> tempColumns = new LinkedHashMap<>();
         tempColumns.putAll(sortedData);
@@ -224,6 +268,7 @@ public class MatrixLayoutChartFilter extends VerticalLayout implements Registrab
         for (int x = 0; x < colors.length; x++) {
             colors[x] = unselectedColor;
         }
+        yAxisScale = new LinearScale().display(true).position(Position.LEFT).id("y-axis-1").scaleLabel().display(true).labelString("#Proteins").and().ticks().fixedStepSize(step).beginAtZero(Boolean.TRUE).and();
         barConfig = new BarChartConfig();
         barConfig.
                 data().labels(labels)
@@ -243,7 +288,7 @@ public class MatrixLayoutChartFilter extends VerticalLayout implements Registrab
                 .text(this.title)
                 .and()
                 .scales()
-                .add(Axis.Y, new LinearScale().display(true).position(Position.LEFT).id("y-axis-1").scaleLabel().display(true).labelString("#Proteins").and().ticks().fixedStepSize(step).beginAtZero(Boolean.TRUE).and())
+                .add(Axis.Y, yAxisScale)
                 .add(Axis.X, new CategoryScale().display(false).gridLines().display(false).and())
                 .and().legend().display(false).and()
                 .done();
@@ -261,8 +306,8 @@ public class MatrixLayoutChartFilter extends VerticalLayout implements Registrab
 //        chart.setHeight(100, Unit.PERCENTAGE);
         chartContainer = new VerticalLayout();
         chartContainer.setSizeFull();
-//        chartContainer.addComponent(chart);
 
+//        chartContainer.addComponent(chart);
         AbsoluteLayout container = new AbsoluteLayout();
         container.setWidth(100, Unit.PERCENTAGE);
         container.setHeight(100, Unit.PERCENTAGE);
@@ -288,19 +333,11 @@ public class MatrixLayoutChartFilter extends VerticalLayout implements Registrab
         }
         container.addComponent(labelContainer, "left: " + 0 + "px; bottom: " + 10 + "%");
         container.addComponent(chartContainer);
-        redrawBarChart();
+        redrawChart();
 
-        Button resetSelectionButton = new Button("Reset", VaadinIcons.REFRESH);
-        resetSelectionButton.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
-        resetSelectionButton.addStyleName(ValoTheme.BUTTON_TINY);
-        resetSelectionButton.setWidth(75, Unit.PIXELS);
-        resetSelectionButton.setHeight(25, Unit.PIXELS);
-        container.addComponent(resetSelectionButton, "right: " + 15 + "px; top: " + 10 + "%");
-        resetSelectionButton.addClickListener((Button.ClickEvent event) -> {
-            unselectAll();
-        });
         return container;
     }
+    LinearScale yAxisScale;
 
     private HorizontalLayout initGraph(double protNumber, Map<String, Set<String>> columns, Map<String, Integer> rows) {
 
@@ -308,7 +345,7 @@ public class MatrixLayoutChartFilter extends VerticalLayout implements Registrab
         graphLabelsContainer.setSizeFull();
         labelsContainer = new VerticalLayout();
         labelsContainer.setSizeFull();
-        labelsContainer.setMargin(new MarginInfo(false, false, false, true));
+        labelsContainer.setMargin(new MarginInfo(false, false, false, false));
         graphLabelsContainer.addComponent(labelsContainer);
         graphLabelsContainer.setExpandRatio(labelsContainer, 20);
         VerticalLayout graphContainer = new VerticalLayout();
@@ -443,7 +480,7 @@ public class MatrixLayoutChartFilter extends VerticalLayout implements Registrab
 
     private void unselectAll() {
         selectedDataSet.clear();
-        chartTitle.setValue("<center>" + title + "<br/><font style='font-size:12px;'>(" + totalItemsNumber + "/" + totalItemsNumber + ")</font></center>");
+        chartTitle.setValue("" + title + " (" + totalItemsNumber + "/" + totalItemsNumber + ")");
 
         for (int col = 0; col < nodeContainer.getColumns(); col++) {
             for (int row = 0; row < nodeContainer.getRows(); row++) {
@@ -454,7 +491,7 @@ public class MatrixLayoutChartFilter extends VerticalLayout implements Registrab
         }
         ((BarDataset) barConfig.data().getDatasets().get(0)).backgroundColor(colors);
         barConfig.options().animation().duration(1);
-        redrawBarChart();
+        redrawChart();
         Iterator<Component> itr = labelsContainer.iterator();
         while (itr.hasNext()) {
             ((SparkLine) itr.next()).setSelected(false);
@@ -492,7 +529,6 @@ public class MatrixLayoutChartFilter extends VerticalLayout implements Registrab
         }
         ((BarDataset) barConfig.data().getDatasets().get(0)).backgroundColor(colors);
         barConfig.options().animation().duration(1).and().done();
-        redrawBarChart();
 
         for (int row = 0; row < nodeContainer.getRows(); row++) {
             SelectableNode node = (SelectableNode) nodeContainer.getComponent(columnIndex, row);
@@ -509,15 +545,21 @@ public class MatrixLayoutChartFilter extends VerticalLayout implements Registrab
         if (size == 0) {
             size = totalItemsNumber;
         }
-        chartTitle.setValue("<center>" + title + "<br/><font style='font-size:12px;'>(" + size + "/" + totalItemsNumber + ")</font></center>");
-
+        chartTitle.setValue("" + title + " (" + size + "/" + totalItemsNumber + ")");
+        redrawChart();
     }
 
-    private void redrawBarChart() {
+    @Override
+    public void redrawChart() {
+        yAxisScale.scaleLabel().display(true).and().gridLines().display(true).and().ticks().display(true).and();
+        barConfig.options()
+                .title()
+                .display(false)
+                .and()
+                .done();
         chartContainer.removeAllComponents();
         chart = new ChartJs(barConfig);
         chart.setJsLoggingEnabled(true);
-
         chart.addClickListener((int datasetIndex, int dataIndex) -> {
             chart.setData(dataIndex);
             Iterator<Component> itr = labelsContainer.iterator();
@@ -530,6 +572,31 @@ public class MatrixLayoutChartFilter extends VerticalLayout implements Registrab
         chart.setWidth(100, Unit.PERCENTAGE);
         chart.setHeight(100, Unit.PERCENTAGE);
         chartContainer.addComponent(chart);
+
+        thumbChartContainer.removeAllComponents();
+        yAxisScale.scaleLabel().display(false).and().gridLines().display(false).and().ticks().display(false).and();
+        barConfig.options()
+                .title()
+                .display(true)
+                .text(chartTitle.getValue())
+                .and()
+                .done();
+        ChartJs thumbChart = new ChartJs(barConfig);
+        thumbChart.setJsLoggingEnabled(true);
+
+//        thumbChart.addClickListener((int datasetIndex, int dataIndex) -> {
+//            thumbChart.setData(dataIndex);
+//            Iterator<Component> itr = labelsContainer.iterator();
+//            while (itr.hasNext()) {
+//                ((SparkLine) itr.next()).setSelected(false);
+//            }
+//            selectColumn(dataIndex);
+//
+//        });
+        thumbChart.setWidth(100, Unit.PERCENTAGE);
+        thumbChart.setHeight(100, Unit.PERCENTAGE);
+        thumbChartContainer.addComponent(thumbChart);
+        System.out.println("at chart ready to draw");
 
     }
 
@@ -550,6 +617,25 @@ public class MatrixLayoutChartFilter extends VerticalLayout implements Registrab
 
     public Set<String> getSelectedDataSet() {
         return selectedDataSet;
+    }
+
+    public abstract void close();
+
+    public void applyFilter(Set<String> selectedDataset) {
+        Selection_Manager.setSelection("protein_selection", selectedDataset, filterId);
+    }
+
+    @Override
+    public void selectionChange(String type) {
+        if (type.equalsIgnoreCase("protein_selection")) {
+            System.out.println("at updated data");
+        }
+    }
+
+    @Override
+    public Component getThumb() {
+
+        return thumbChartContainer;
     }
 
 }
