@@ -1,8 +1,8 @@
 package com.uib.web.peptideshaker.presenter.core.filtercharts;
 
+import com.uib.web.peptideshaker.presenter.core.filtercharts.charts.RegistrableFilter;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
 import com.vaadin.event.LayoutEvents;
-import com.vaadin.ui.Layout;
 import com.vaadin.ui.VerticalLayout;
 
 /**
@@ -16,15 +16,23 @@ public class PopUpFilterContainer extends VerticalLayout implements LayoutEvents
     private final PopupWindow window;
     private final RegistrableFilter filter;
 
-    public PopUpFilterContainer(String title, RegistrableFilter filter) {
-        PopUpFilterContainer.this.setSizeFull();
-        this.filter=filter;
-//        PopUpFilterContainer.this.setStyleName("blacklayout");
+    public PopUpFilterContainer(String title, RegistrableFilter filter, String filterSize) {
+
+        PopUpFilterContainer.this.setWidth(100, Unit.PERCENTAGE);
+        PopUpFilterContainer.this.setHeight(100, Unit.PERCENTAGE);
+
+        this.filter = filter;
         PopUpFilterContainer.this.addLayoutClickListener(PopUpFilterContainer.this);
         window = new PopupWindow("");
         window.setContent(title, filter);
         window.setWindowSize(95, 95);
         PopUpFilterContainer.this.addComponent(filter.getThumb());
+        if (filterSize.equalsIgnoreCase("med")) {
+            window.addWindowStyle("medpopupwindow");
+        }
+        if (filterSize.equalsIgnoreCase("small")) {
+            window.addWindowStyle("smallpopupwindow");
+        }
 
     }
 
@@ -36,6 +44,18 @@ public class PopUpFilterContainer extends VerticalLayout implements LayoutEvents
 
     public void setPopupVisible(boolean visible) {
         window.setPopupVisible(visible);
+    }
+
+    @Override
+    public void setHeight(float height, Unit unit) {
+        super.setHeight(height, unit); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void setSizeFull() {
+
+        super.setSizeFull(); //To change body of generated methods, choose Tools | Templates.
+        filter.getThumb().setSizeFull();
     }
 
 }

@@ -28,7 +28,7 @@ import java.util.Map;
  *
  * @author YEhia Farag
  */
-public class RangeFilter extends AbsoluteLayout {
+public class RangeFiltert extends AbsoluteLayout {
 
     private ChartJs chart;
     private final ChartJs.DataPointClickListener clickListener;
@@ -37,12 +37,12 @@ public class RangeFilter extends AbsoluteLayout {
     private final ScatterChartConfig config;
     private final VerticalLayout container;
 
-    public RangeFilter(String chartTitle, double lower, double upper) {
-        RangeFilter.this.setWidth(100, Unit.PERCENTAGE);
-        RangeFilter.this.setHeight(100, Unit.PIXELS);
+    public RangeFiltert(String chartTitle, double lower, double upper) {
+        RangeFiltert.this.setWidth(100, Unit.PERCENTAGE);
+        RangeFiltert.this.setHeight(100, Unit.PIXELS);
         container = new VerticalLayout();
         container.setSizeFull();
-        RangeFilter.this.addComponent(container);
+        RangeFiltert.this.addComponent(container);
         colorsMap = new HashMap<>();
         colorsMap.put("#fcb6b7", "#930608");
         colorsMap.put("#46BFBD", "#287171");
@@ -112,7 +112,7 @@ public class RangeFilter extends AbsoluteLayout {
                 } else {
                     pointColors[dataIndex] = "lightgray";
                 }
-                RangeFilter.this.removeComponent(chart);
+                RangeFiltert.this.removeComponent(chart);
                 ((ScatterDataset) config.data().getDatasetAtIndex(datasetIndex)).pointRadius(pointsSize).pointBackgroundColor(pointColors).pointHoverRadius(pointsSize);
                 TestUpdates = !TestUpdates;
 //                chart.configure(config);
@@ -121,7 +121,7 @@ public class RangeFilter extends AbsoluteLayout {
 
                 chart.setWidth(100, Unit.PERCENTAGE);
                 chart.setHeight(100, Unit.PERCENTAGE);
-                RangeFilter.this.addComponent(chart);
+                RangeFiltert.this.addComponent(chart);
                 chart.addClickListener(this);
 
             }
@@ -137,7 +137,7 @@ public class RangeFilter extends AbsoluteLayout {
         DragAndDropWrapper layoutWrapper
                 = new DragAndDropWrapper(mainContainer);
         layoutWrapper.addStyleName("subframe");
-        RangeFilter.this.addComponent(layoutWrapper);
+        RangeFiltert.this.addComponent(layoutWrapper);
         layoutWrapper.setSizeFull();
 // Handle moving components within the AbsoluteLayout
 
@@ -152,7 +152,7 @@ public class RangeFilter extends AbsoluteLayout {
             public void drop(DragAndDropEvent event) {
 
                 Component component = event.getTransferable().getSourceComponent();
-                if (component instanceof RangeFilter.WrappedComponent) {
+                if (component instanceof RangeFiltert.WrappedComponent) {
 //                    GraphComponent.WrappedComponent node = (GraphComponent.WrappedComponent) component;
 //                    DragAndDropWrapper.WrapperTransferable t = (DragAndDropWrapper.WrapperTransferable) event.getTransferable();
 //                    DragAndDropWrapper.WrapperTargetDetails details = (DragAndDropWrapper.WrapperTargetDetails) event.getTargetDetails();
@@ -239,7 +239,7 @@ public class RangeFilter extends AbsoluteLayout {
         chart.setWidth(100, Unit.PERCENTAGE);
         chart.setHeight(100, Unit.PERCENTAGE);
         chart.setJsLoggingEnabled(true);
-        RangeFilter.this.addComponent(chart);
+        RangeFiltert.this.addComponent(chart);
         chart.addClickListener(clickListener);
 
     }

@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Range;
-import com.uib.web.peptideshaker.presenter.core.filtercharts.MatrixLayoutChartFilter;
+import com.uib.web.peptideshaker.presenter.core.filtercharts.charts.MatrixLayoutChartFilter;
 import javax.servlet.annotation.WebServlet;
 
 import com.vaadin.annotations.Theme;

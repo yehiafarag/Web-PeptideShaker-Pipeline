@@ -258,7 +258,7 @@ public class SearchableTable extends VerticalLayout implements Property.ValueCha
         if ((objectIds == null || objectIds.isEmpty()) && this.mainTable.getItemIds().size() == tableData.size()) {
             return;
         }
-        if (objectIds != null && objectIds.size() == tableData.size()) {
+        if (objectIds != null && objectIds.size() == mainTable.getItemIds().size()) {           
             return;
         }
 
@@ -267,7 +267,11 @@ public class SearchableTable extends VerticalLayout implements Property.ValueCha
         mainTable.removeAllItems();
         if (objectIds != null && !objectIds.isEmpty()) {
             for (String data : objectIds) {
-                this.mainTable.addItem(tableData.get(data), data);
+                if (tableData.containsKey(data)) {
+                    this.mainTable.addItem(tableData.get(data), data);
+                } else {
+                    System.out.println("at data " + data + "   " + tableData.keySet().size());
+                }
             }
         } else if ((objectIds == null || objectIds.isEmpty()) && this.mainTable.getItemIds().size() != tableData.size()) {
             for (String data : tableData.keySet()) {

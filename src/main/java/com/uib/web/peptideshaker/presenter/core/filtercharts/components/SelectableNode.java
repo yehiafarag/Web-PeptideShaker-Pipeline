@@ -1,8 +1,12 @@
 package com.uib.web.peptideshaker.presenter.core.filtercharts.components;
 
 import com.vaadin.event.LayoutEvents;
+import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
+import java.awt.Color;
 
 /**
  * This class represents selectable node that used mainly in
@@ -10,7 +14,7 @@ import com.vaadin.ui.VerticalLayout;
  *
  * @author Yehia Farag
  */
-public abstract class SelectableNode extends VerticalLayout implements LayoutEvents.LayoutClickListener {
+public abstract class SelectableNode extends AbsoluteLayout implements LayoutEvents.LayoutClickListener {
 
     private boolean upperSelected;
     private boolean lowerSelected;
@@ -21,36 +25,61 @@ public abstract class SelectableNode extends VerticalLayout implements LayoutEve
     private final String nodeId;
     private boolean selected;
     private final int columnIndex;
+    private final VerticalLayout nodeContainer;
 
     public String getNodeId() {
         return nodeId;
     }
 
-    public SelectableNode(String nodeId, int columnIndex, boolean disables) {
+    public boolean isDisables() {
+        return disables;
+    }
+
+    public SelectableNode(String nodeId, int columnIndex, boolean disables, Color nodeColor) {
         this.nodeId = nodeId;
         this.columnIndex = columnIndex;
         SelectableNode.this.setWidth(100, Unit.PERCENTAGE);
         SelectableNode.this.setHeight(100, Unit.PERCENTAGE);
+        VerticalLayout lineContainers = new VerticalLayout();
+        lineContainers.setWidth(100, Unit.PERCENTAGE);
+        lineContainers.setHeight(100, Unit.PERCENTAGE);
+        SelectableNode.this.addComponent(lineContainers);
+
+        nodeContainer = new VerticalLayout();
+        nodeContainer.setWidth(100, Unit.PERCENTAGE);
+        nodeContainer.setHeight(100, Unit.PERCENTAGE);
+        SelectableNode.this.addComponent(nodeContainer);
+
 //        
         this.disables = disables;
         if (disables) {
-            SelectableNode.this.setStyleName("lightgraybubble");
+            Label nodeComp = new Label("<center><div style='width: 16px;height: 16px;border-radius: 100%;border:2px solid lightgray;background-color:whitesmoke;'></div><center>");
+            nodeComp.setContentMode(ContentMode.HTML);
+            nodeContainer.addComponent(nodeComp);
+            nodeContainer.setComponentAlignment(nodeComp, Alignment.MIDDLE_CENTER);
+//            SelectableNode.this.setStyleName("lightgraybubble");
         } else {
             SelectableNode.this.addLayoutClickListener(SelectableNode.this);
+        }
+        if (nodeColor != null && !disables) {
+            Label nodeComp = new Label("<center><div style='width: 16px;height: 16px;border-radius: 100%;border:2px solid gray;background-color:rgb(" + nodeColor.getRed() + "," + nodeColor.getGreen() + "," + nodeColor.getBlue() + ");'></div><center>");
+            nodeComp.setContentMode(ContentMode.HTML);
+            nodeContainer.addComponent(nodeComp);
+            nodeContainer.setComponentAlignment(nodeComp, Alignment.MIDDLE_CENTER);
         }
         upperLine = new VerticalLayout();
         upperLine.setHeight(105, Unit.PERCENTAGE);
         upperLine.setWidth(10, Unit.PERCENTAGE);
 
-        SelectableNode.this.addComponent(upperLine);
-        SelectableNode.this.setComponentAlignment(upperLine, Alignment.TOP_CENTER);
+        lineContainers.addComponent(upperLine);
+        lineContainers.setComponentAlignment(upperLine, Alignment.TOP_CENTER);
 
         lowerLine = new VerticalLayout();
         lowerLine.setHeight(105, Unit.PERCENTAGE);
         lowerLine.setWidth(10, Unit.PERCENTAGE);
 
-        SelectableNode.this.addComponent(lowerLine);
-        SelectableNode.this.setComponentAlignment(lowerLine, Alignment.TOP_CENTER);
+        lineContainers.addComponent(lowerLine);
+        lineContainers.setComponentAlignment(lowerLine, Alignment.TOP_CENTER);
 
     }
 
@@ -100,8 +129,15 @@ public abstract class SelectableNode extends VerticalLayout implements LayoutEve
         }
         this.selecatble = selecatble;
         if (selecatble) {
+//             nodeContainer.setVisible(true);
             SelectableNode.this.addStyleName("selectablebubble");
-        } else {
+        } else { 
+//             nodeContainer.setVisible(false);
+            nodeContainer.removeAllComponents();
+           Label nodeComp = new Label("<center><div style='width: 16px;height: 16px;border-radius: 100%;border:2px solid lightgray;background-color:whitesmoke;'></div><center>");
+            nodeComp.setContentMode(ContentMode.HTML);
+            nodeContainer.addComponent(nodeComp);
+            nodeContainer.setComponentAlignment(nodeComp, Alignment.MIDDLE_CENTER);
             SelectableNode.this.addStyleName("lightgraybubble");
         }
     }

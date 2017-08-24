@@ -1,4 +1,4 @@
-package com.uib.web.peptideshaker.presenter.core.filtercharts;
+package com.uib.web.peptideshaker.presenter.core.filtercharts.charts;
 
 import com.byteowls.vaadin.chartjs.ChartJs;
 import com.byteowls.vaadin.chartjs.config.BarChartConfig;
@@ -10,6 +10,7 @@ import com.byteowls.vaadin.chartjs.options.scale.Axis;
 import com.byteowls.vaadin.chartjs.options.scale.CategoryScale;
 import com.byteowls.vaadin.chartjs.options.scale.LinearScale;
 import com.google.common.collect.Sets;
+
 import com.uib.web.peptideshaker.model.AlphanumComparator;
 import com.uib.web.peptideshaker.presenter.components.peptideshakerview.components.SelectionManager;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.components.SelectableNode;
@@ -29,9 +30,11 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -50,32 +53,46 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
 
     private final Panel barChartContainerPanel;
     private final Panel graphChartContainerPanel;
-    private final Map<String, Set<String>> columns = new LinkedHashMap<>();
+    private Map<String, Set<String>> columns;
     private final Map<String, Integer> rows = new LinkedHashMap<>();
+    private final Map<String, Set<String>> calculatedMatrix = new LinkedHashMap<>();
+
     private final Set<String> keySorter = new TreeSet<>();
     private final Label setSizeLabel;
     private final String title;
     private final String filterId;
-
     private BarChartConfig barConfig;
-
     private ChartJs chart;
     private String[] colors;
     private VerticalLayout chartContainer;
-    private VerticalLayout thumbChartContainer;
+    private final VerticalLayout thumbFilterContainer;
+    private final Label thumbTitle;
     private final String unselectedColor = "lightgray";
-    private final String selectedColor = "#1780E9";
+    private final String selectedColor = "#bad5f2";//"#1780E9";
     private GridLayout nodeContainer;
-    private VerticalLayout labelsContainer;
+    private VerticalLayout rowsLabelsLayoutContainer;
     private final Label chartTitle;
     private final Set<String> selectedDataSet;
+    private Map<String, Color> dataColors;
+    private final Set<Object> appliedFilters;
     private int totalItemsNumber;
     private final SelectionManager Selection_Manager;
+    private final GridLayout thumbNodeContainer;
+    private final Set<Integer> selectedColumns;
+    private LinearScale yAxisScale;
+//    private final HorizontalLayout labelContainer;
+    private final Map<String, SparkLine> rowLabelsMap;
 
     public MatrixLayoutChartFilter(String title, String filterId, SelectionManager Selection_Manager) {
         this.title = title;
         this.filterId = filterId;
         this.Selection_Manager = Selection_Manager;
+        this.appliedFilters = new LinkedHashSet<>();
+        this.selectedColumns = new LinkedHashSet<>();
+        this.rowLabelsMap = new LinkedHashMap<>();
+
+//        this.labelContainer = new HorizontalLayout();
+//        this.labelContainer.setSpacing(true);
         MatrixLayoutChartFilter.this.setWidth(100, Unit.PERCENTAGE);
         MatrixLayoutChartFilter.this.setHeight(100, Unit.PERCENTAGE);
         VerticalLayout filterContainer = new VerticalLayout();
@@ -97,6 +114,14 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
         cancelSelectionButton.setHeight(25, Unit.PIXELS);
         MatrixLayoutChartFilter.this.addComponent(cancelSelectionButton, "right: " + 20 + "px; top: " + 15 + "px");
         cancelSelectionButton.addClickListener((Button.ClickEvent event) -> {
+            if (appliedFilters.isEmpty()) {
+                unselectAll();
+            } else {
+                for (Object i : appliedFilters) {
+                    colors[(int) i] = unselectedColor;
+                    selectColumn((int) i);
+                }
+            }
             close();
         });
 
@@ -138,7 +163,7 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
         setSizeLabelContainer.setSpacing(true);
 
         spacer.addComponent(setSizeLabelContainer);
-        spacer.setExpandRatio(setSizeLabelContainer, 0.1f);
+//        spacer.setExpandRatio(setSizeLabelContainer, 0.1f);
 
         setSizeLabel = new Label("0  <font>0</font>");
         setSizeLabel.setContentMode(ContentMode.HTML);
@@ -147,8 +172,13 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
         setSizeLabel.addStyleName("sizelabel");
         setSizeLabelContainer.addComponent(setSizeLabel);
         setSizeLabelContainer.setComponentAlignment(setSizeLabel, Alignment.BOTTOM_RIGHT);
-//         setSizeLabelContainer.setExpandRatio(setSizeLabel, 0.5f);
-        setSizeLabelContainer.addComponent(new VerticalLayout());
+        setSizeLabelContainer.setExpandRatio(setSizeLabel, 50);
+        VerticalLayout v1 = new VerticalLayout();
+        setSizeLabelContainer.addComponent(v1);
+        setSizeLabelContainer.setExpandRatio(v1, 50);
+        VerticalLayout v2 = new VerticalLayout();
+        setSizeLabelContainer.addComponent(v2);
+        setSizeLabelContainer.setExpandRatio(v2, 1);
 
         barChartContainerPanel = new Panel();
         barChartContainerPanel.setStyleName(ValoTheme.PANEL_BORDERLESS);
@@ -167,44 +197,84 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
         filterContainer.addComponent(graphChartContainerPanel);
 
         this.Selection_Manager.RegistrFilter(MatrixLayoutChartFilter.this);
-        thumbChartContainer = new VerticalLayout();
-        thumbChartContainer.setSizeFull();
+
+        thumbFilterContainer = new VerticalLayout();
+        thumbFilterContainer.setStyleName("thumbFilterFrame");
+        thumbFilterContainer.setSizeFull();
+        thumbFilterContainer.setSpacing(true);
+        thumbFilterContainer.setMargin(new MarginInfo(false, false, false, false));
+        thumbFilterContainer.setIcon(VaadinIcons.EXPAND_FULL);
+
+        thumbTitle = new Label();
+        thumbTitle.setContentMode(ContentMode.HTML);
+        thumbTitle.setStyleName(ValoTheme.LABEL_BOLD);
+        thumbTitle.addStyleName(ValoTheme.LABEL_NO_MARGIN);
+        thumbTitle.setWidth(100, Unit.PERCENTAGE);
+        thumbTitle.setHeight(30, Unit.PIXELS);
+        thumbTitle.addStyleName("centeredtext");
+        thumbFilterContainer.addComponent(thumbTitle);
+        thumbFilterContainer.setExpandRatio(thumbTitle, 1);
+
+        Panel thumbFilterPanel = new Panel();
+        thumbFilterPanel.setHeight(100, Unit.PERCENTAGE);
+        thumbFilterPanel.setWidth(95, Unit.PERCENTAGE);
+        thumbFilterPanel.setStyleName(ValoTheme.PANEL_BORDERLESS);
+        thumbFilterContainer.addComponent(thumbFilterPanel);
+        thumbFilterContainer.setComponentAlignment(thumbFilterPanel, Alignment.TOP_CENTER);
+        thumbFilterContainer.setExpandRatio(thumbFilterPanel, 99);
+
+        thumbNodeContainer = new GridLayout();
+        thumbNodeContainer.setWidth(100, Unit.PERCENTAGE);
+        thumbFilterPanel.setContent(thumbNodeContainer);
 
     }
 
-    public void updateChartData(Map<String, Set<String>> data) {
+    public void calculateChartData(Map<String, Set<String>> data, Map<String, Color> dataColors, Set<Object> selectedCategories, int totalNumber) {
         selectedDataSet.clear();
-        calculateMatrix(data);
+        selectedColumns.clear();
+        rows.clear();
+        rowLabelsMap.clear();
+        appliedFilters.clear();
+        this.dataColors = dataColors;
+        columns = calculateMatrix(data);
+        calculatedMatrix.clear();
+        calculatedMatrix.putAll(columns);
+        totalItemsNumber = totalNumber;
+
         List<Double> barChartData = new ArrayList<>();
         for (Set<String> set : columns.values()) {
             barChartData.add((double) set.size());
         }
         TreeSet<Double> ts = new TreeSet<>(barChartData);
-        barChartContainerPanel.setContent(initBarChartFilter(ts.last(), barChartData, columns.keySet().toArray(new String[columns.size()])));
+        barChartContainerPanel.setContent(initBarChartFilter(barChartData));
         HorizontalLayout graphLayout = initGraph(ts.last(), columns, rows);
         graphChartContainerPanel.setContent(graphLayout);
+        unselectAll();
+        int index = 0;
+        for (String col : columns.keySet()) {
+            if (selectedCategories.contains(col)) {
+                selectColumn(index);
+            }
+            index++;
+        }
+        this.updateLabels();
+
     }
 
-    private void calculateMatrix(Map<String, Set<String>> data) {
+    private Map<String, Set<String>> calculateMatrix(Map<String, Set<String>> data) {
         //calculate matrix
-        columns.clear();
-        rows.clear();
+        Map<String, Set<String>> matrixData = new LinkedHashMap<>();
         TreeMap<AlphanumComparator, String> sortingMap = new TreeMap<>();
         for (String key : data.keySet()) {
             AlphanumComparator sortingKey = new AlphanumComparator(data.get(key).size() + "_" + key);
             sortingMap.put(sortingKey, key);
         }
         Map<String, Set<String>> sortedData = new LinkedHashMap<>();
-
-        totalItemsNumber = 0;
         for (String key : sortingMap.values()) {
             int size = data.get(key).size();
-            totalItemsNumber += size;
             this.rows.put(key, size);
             sortedData.put(key, data.get(key));
         }
-
-        chartTitle.setValue("" + title + " (" + totalItemsNumber + "/" + totalItemsNumber + ")");
         Map<String, Set<String>> rowsII = new LinkedHashMap<>(sortedData);
         Map<String, Set<String>> tempColumns = new LinkedHashMap<>();
         tempColumns.putAll(sortedData);
@@ -215,25 +285,31 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
                     continue;
                 }
                 String key = (keyII + "," + keyI).replace("[", "").replace("]", "");//.replace(" ", "");
-
                 keySorter.addAll(Arrays.asList(key.split(",")));
                 key = keySorter.toString();
                 keySorter.clear();
                 if (trows.containsKey(key)) {
-                    Set<String> union = new LinkedHashSet<>(Sets.union(trows.get(key), Sets.intersection(rowsII.get(keyII), sortedData.get(keyI))));
+                    Set<String> union = new LinkedHashSet<>();
+                    union.addAll(com.google.common.collect.Sets.union(trows.get(key), com.google.common.collect.Sets.intersection(rowsII.get(keyII), sortedData.get(keyI))));
                     trows.put(key, union);
                 } else {
-                    Set<String> intersection = new LinkedHashSet<>(Sets.intersection(rowsII.get(keyII), sortedData.get(keyI)));
+                    Set<String> intersection = new LinkedHashSet<>();
+                    intersection.addAll(com.google.common.collect.Sets.intersection(rowsII.get(keyII), sortedData.get(keyI)));
                     trows.put(key, intersection);
-                    rowsII.get(keyII).removeAll(intersection);
-                    sortedData.get(keyI).removeAll(intersection);
+                    Set<String> tempSetI = new LinkedHashSet<>();
+                    tempSetI.addAll(rowsII.get(keyII));
+                    tempSetI.removeAll(intersection);
+                    rowsII.replace(keyII, tempSetI);
+                    Set<String> tempSetII = new LinkedHashSet<>();
+                    tempSetII.addAll(sortedData.get(keyI));
+                    tempSetII.removeAll(intersection);
+                    sortedData.replace(keyI, tempSetII);
                 }
             }
             rowsII.clear();
             rowsII.putAll(trows);
             tempColumns.putAll(trows);
         }
-
         Map<AlphanumComparator, String> sortingMap2 = new TreeMap<>(Collections.reverseOrder());
         for (String key : tempColumns.keySet()) {
             AlphanumComparator sortingKey = new AlphanumComparator(tempColumns.get(key).size() + "_" + key);
@@ -253,25 +329,62 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
                 updatedKey = sortingKysMap.values().toString();
             }
             if (!tempColumns.get(key).isEmpty()) {
-                this.columns.put(updatedKey, tempColumns.get(key));
+                matrixData.put(updatedKey, tempColumns.get(key));
             }
         }
 
+        for (String key1 : matrixData.keySet()) {
+            for (String key2 : matrixData.keySet()) {
+                HashSet<String> intersction = new HashSet<>();
+                intersction.addAll(Sets.intersection(matrixData.get(key2), matrixData.get(key1)));
+                if (!intersction.isEmpty() && !key2.equalsIgnoreCase(key1)) {
+                    if (key1.split(",").length > key2.split(",").length) {
+                        matrixData.get(key2).removeAll(intersction);
+                    } else if (key1.split(",").length < key2.split(",").length) {
+                        matrixData.get(key1).removeAll(intersction);
+                    }
+                }
+            }
+        }
+
+        Map<String, Set<String>> tempMatrixData = new LinkedHashMap<>(matrixData);
+        for (String key1 : tempMatrixData.keySet()) {
+            if (matrixData.get(key1).isEmpty()) {
+                matrixData.remove(key1);
+            }
+
+        }
+
+        return matrixData;
     }
 
-    private AbsoluteLayout initBarChartFilter(double protNumber, List<Double> data, String[] labels) {
+    private AbsoluteLayout initBarChartFilter(List<Double> data) {
         TreeSet<Double> maxSet = new TreeSet<>(data);
         int step = maxSet.last().intValue();
-        step = Math.max((step / 10), 1);
+        step = Math.max((step / 10), 5);
+        while (step % 10 != 0) {
+            step++;
+        }
         //init color array
-        colors = new String[labels.length];
+        int i = 0;
+        List<String> dataLabels = new ArrayList<>();
+        for (double d : data) {
+            if (d > 0) {
+                if (d < 10) {
+                    dataLabels.add("0" + (int) d);
+                } else {
+                    dataLabels.add("" + (int) d);
+                }
+            }
+        }
+        colors = new String[data.size()];
         for (int x = 0; x < colors.length; x++) {
             colors[x] = unselectedColor;
         }
         yAxisScale = new LinearScale().display(true).position(Position.LEFT).id("y-axis-1").scaleLabel().display(true).labelString("#Proteins").and().ticks().fixedStepSize(step).beginAtZero(Boolean.TRUE).and();
         barConfig = new BarChartConfig();
         barConfig.
-                data().labels(labels)
+                data().labels(dataLabels.toArray(new String[dataLabels.size()]))
                 .addDataset(
                         new BarDataset().backgroundColor(colors).borderColor("gray").label("Dataset 1").yAxisID("y-axis-1"))
                 .and();
@@ -289,7 +402,7 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
                 .and()
                 .scales()
                 .add(Axis.Y, yAxisScale)
-                .add(Axis.X, new CategoryScale().display(false).gridLines().display(false).and())
+                .add(Axis.X, new CategoryScale().display(true).gridLines().display(false).and())
                 .and().legend().display(false).and()
                 .done();
         for (Dataset<?, ?> ds : barConfig.data().getDatasets()) {
@@ -297,57 +410,95 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
             lds.dataAsList(data);
             lds.fill(false);
         }
-//        chart = new ChartJs(barConfig);
-//        chart.setJsLoggingEnabled(true);
-//        chart.addClickListener((int datasetIndex, int dataIndex) -> {
-//            selectedNode(dataIndex);
-//        });
-//        chart.setWidth(100, Unit.PERCENTAGE);
-//        chart.setHeight(100, Unit.PERCENTAGE);
         chartContainer = new VerticalLayout();
         chartContainer.setSizeFull();
-
-//        chartContainer.addComponent(chart);
         AbsoluteLayout container = new AbsoluteLayout();
         container.setWidth(100, Unit.PERCENTAGE);
         container.setHeight(100, Unit.PERCENTAGE);
 
-        HorizontalLayout labelContainer = new HorizontalLayout();
-        labelContainer.setStyleName("barchartlabelcontainer");
-        int x0;
-        if (protNumber < 100) {
-            x0 = 40;
-        } else {
-            x0 = 50;
-        }
-        labelContainer.addStyleName("padding" + x0);
-        labelContainer.setWidth(100, Unit.PERCENTAGE);
-        labelContainer.setHeight(20, Unit.PIXELS);
-        labelContainer.setMargin(new MarginInfo(false, false, true, false));
-        for (double labelSize : data) {
-            Label l = new Label("" + (int) labelSize);
-            l.setWidth(20, Unit.PIXELS);
-            l.setHeight(20, Unit.PIXELS);
-            labelContainer.addComponent(l);
-            labelContainer.setComponentAlignment(l, Alignment.BOTTOM_CENTER);
-        }
-        container.addComponent(labelContainer, "left: " + 0 + "px; bottom: " + 10 + "%");
+//        labelContainer.removeAllComponents();
+//        labelContainer.setVisible(false);
+//        labelContainer.setStyleName("barchartlabelcontainer");
+//        int x0;
+//        if (protNumber < 100) {
+//            x0 = 40;
+//        } else {
+//            x0 = 50;
+//        }
+//        labelContainer.addLayoutClickListener((LayoutEvents.LayoutClickEvent event) -> {
+//            Component c = event.getClickedComponent();
+//            if (c != null) {
+//                selectColumn(labelContainer.getComponentIndex(c));
+//            }
+//        });
+//        labelContainer.addStyleName("padding" + x0);
+//        labelContainer.setWidth(100, Unit.PERCENTAGE);
+//        labelContainer.setHeight(40, Unit.PIXELS);
+//        labelContainer.setMargin(new MarginInfo(false, false, true, false));
+//        Iterator<String> itr = columns.keySet().iterator();
+//        for (double labelSize : data) {
+//            VerticalLayout labelLayout = new VerticalLayout();
+//            labelLayout.setSizeFull();
+//
+//            String label = "" + (int) labelSize;
+//            Label l = new Label(label);
+//            labelLayout.addComponent(l);
+//            labelLayout.setExpandRatio(l, 1);
+//            labelLayout.setComponentAlignment(l, Alignment.BOTTOM_CENTER);
+//            l.setContentMode(ContentMode.HTML);
+//            l.setData((int) 0);
+//
+//            String columnTitle = itr.next().replace("[", "").replace("]", "").trim();
+//            GridLayout colorlabelsContainer = new GridLayout(3, 3);
+//            colorlabelsContainer.setHideEmptyRowsAndColumns(true);
+//            int r = 0;
+//            int c = 0;
+//            int counter = 0;
+//            for (String value : columnTitle.split(",")) {
+//                if (c == 3) {
+//                    c = 0;
+//                    r++;
+//                }
+//
+//                Label color = new Label("<center><div style='width: 10px;height: 10px;border: 1px solid lightgray;background: rgb(" + Color.RED.getRed() + "," + Color.RED.getGreen() + "," + Color.RED.getBlue() + ");'></div></center>");
+//                colorlabelsContainer.addComponent(color, c++, r);
+//                color.setWidth(100, Unit.PERCENTAGE);
+//                color.setHeight(100, Unit.PERCENTAGE);
+//                color.setContentMode(ContentMode.HTML);
+//
+//                if (counter < 3) {
+//                    counter++;
+//                }
+//            }
+//
+//            colorlabelsContainer.setWidth(counter * 20, Unit.PIXELS);
+//            colorlabelsContainer.setHeight(100, Unit.PERCENTAGE);
+//            labelLayout.addComponent(colorlabelsContainer);
+//            labelLayout.setComponentAlignment(colorlabelsContainer, Alignment.BOTTOM_CENTER);
+//            labelLayout.setExpandRatio(colorlabelsContainer, r);
+//            labelContainer.addComponent(labelLayout);
+//            labelContainer.setComponentAlignment(labelLayout, Alignment.BOTTOM_CENTER);
+//        }
+//        container.addComponent(labelContainer, "left: " + 0 + "px; bottom: " + 10 + "%");
         container.addComponent(chartContainer);
         redrawChart();
 
         return container;
     }
-    LinearScale yAxisScale;
 
     private HorizontalLayout initGraph(double protNumber, Map<String, Set<String>> columns, Map<String, Integer> rows) {
 
+         while (protNumber % 10 != 0) {
+            protNumber++;
+        }
         HorizontalLayout graphLabelsContainer = new HorizontalLayout();
+        graphLabelsContainer.setMargin(new MarginInfo(true, false, false, false));
         graphLabelsContainer.setSizeFull();
-        labelsContainer = new VerticalLayout();
-        labelsContainer.setSizeFull();
-        labelsContainer.setMargin(new MarginInfo(false, false, false, false));
-        graphLabelsContainer.addComponent(labelsContainer);
-        graphLabelsContainer.setExpandRatio(labelsContainer, 20);
+        rowsLabelsLayoutContainer = new VerticalLayout();
+        rowsLabelsLayoutContainer.setSizeFull();
+        rowsLabelsLayoutContainer.setMargin(new MarginInfo(false, false, false, false));
+        graphLabelsContainer.addComponent(rowsLabelsLayoutContainer);
+        graphLabelsContainer.setExpandRatio(rowsLabelsLayoutContainer, 20);
         VerticalLayout graphContainer = new VerticalLayout();
         graphContainer.setSizeFull();
         graphLabelsContainer.addComponent(graphContainer);
@@ -355,14 +506,16 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
         int x0;
         if (protNumber < 100) {
             x0 = 40;
-        } else {
+        } else if ((protNumber >= 100 && protNumber < 1000)) {
             x0 = 50;
+        } else {
+            x0 = 55;
         }
 
         graphContainer.addStyleName("padding" + x0);
         AbsoluteLayout wrapper = new AbsoluteLayout();
         graphContainer.addComponent(wrapper);
-        wrapper.setWidth(100, Unit.PERCENTAGE);
+        wrapper.setWidth(99, Unit.PERCENTAGE);
         int rowNum = rows.size();
 
         graphLabelsContainer.setHeight(rowNum * 35, Unit.PIXELS);
@@ -382,39 +535,40 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
         }
         setSizeLabel.setValue(max + "  <font>" + min + "</font>");
 
-        LayoutEvents.LayoutClickListener listener = (LayoutEvents.LayoutClickEvent event) -> {
-            Component c = event.getClickedComponent();
-            if (c instanceof SparkLine) {
-                setSelectRow((Integer) ((SparkLine) c).getData(), !((SparkLine) c).isSelected());
-                ((SparkLine) c).setSelected(!((SparkLine) c).isSelected());
-            } else if (c instanceof ColorLabel || c instanceof Label) {
-                setSelectRow((Integer) ((SparkLine) c.getParent()).getData(), !((SparkLine) c.getParent()).isSelected());
-                ((SparkLine) c.getParent()).setSelected(!((SparkLine) c.getParent()).isSelected());
-
-            } else {
-                unselectAll();
-            }
-
-        };
-        labelsContainer.addLayoutClickListener(listener);
-
+//        LayoutEvents.LayoutClickListener listener = (LayoutEvents.LayoutClickEvent event) -> {
+//            Component c = event.getClickedComponent();
+//            if (c instanceof SparkLine) {
+//                setSelectRow((Integer) ((SparkLine) c).getData(), !((SparkLine) c).isSelected());
+//                ((SparkLine) c).setSelected(!((SparkLine) c).isSelected());
+//            } else if (c instanceof ColorLabel || c instanceof Label) {
+//                setSelectRow((Integer) ((SparkLine) c.getParent()).getData(), !((SparkLine) c.getParent()).isSelected());
+//                ((SparkLine) c.getParent()).setSelected(!((SparkLine) c.getParent()).isSelected());
+//
+//            } else {
+//                unselectAll();
+//            }
+//
+//        };
+//        labelsContainer.addLayoutClickListener(listener);
+        rowLabelsMap.clear();
         int x = 0;
         for (String rowKey : rows.keySet()) {
-            SparkLine sl = new SparkLine(rowKey, rows.get(rowKey), 0, max);
+            SparkLine sl = new SparkLine(rowKey, rows.get(rowKey), 0, max, dataColors.get(rowKey));
             sl.setWidth(100, Unit.PERCENTAGE);
             sl.setHeight(50, Unit.PERCENTAGE);
             sl.addStyleName("pointer");
-            labelsContainer.addComponent(sl);
             sl.setData(x);
             sl.setDescription(rowKey);
-            labelsContainer.setComponentAlignment(sl, Alignment.MIDDLE_CENTER);
+            rowsLabelsLayoutContainer.addComponent(sl);
+            rowsLabelsLayoutContainer.setComponentAlignment(sl, Alignment.MIDDLE_CENTER);
+            rowLabelsMap.put(rowKey, sl);
             int y = 0;
             for (String columnKey : columns.keySet()) {
 
-                SelectableNode node = new SelectableNode(rowKey, y, columns.get(columnKey).isEmpty()) {
+                SelectableNode node = new SelectableNode(rowKey, y, columns.get(columnKey).isEmpty(), dataColors.get(rowKey)) {
                     @Override
                     public void selectNode(int columnIndex) {
-                        Iterator<Component> itr = labelsContainer.iterator();
+                        Iterator<Component> itr = rowsLabelsLayoutContainer.iterator();
                         while (itr.hasNext()) {
                             ((SparkLine) itr.next()).setSelected(false);
                         }
@@ -422,6 +576,7 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
                     }
 
                 };
+                node.setData(columns.get(columnKey).size());
                 node.setDescription(columnKey);
                 nodeContainer.addComponent(node, y, x);
                 nodeContainer.setComponentAlignment(node, Alignment.MIDDLE_CENTER);
@@ -475,27 +630,76 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
 
         }
 
+        thumbNodeContainer.removeAllComponents();
+        thumbNodeContainer.setColumns(this.nodeContainer.getColumns());
+        thumbNodeContainer.setRows(this.nodeContainer.getRows());
+        thumbNodeContainer.setHeight(rowNum * 35, Unit.PIXELS);
+        for (int i = 0; i < nodeContainer.getRows(); i++) {
+            for (int n = 0; n < nodeContainer.getColumns(); n++) {
+                SelectableNode node = (SelectableNode) nodeContainer.getComponent(n, i);
+                SelectableNode temNode = new SelectableNode(node.getId(), node.getColumnIndex(), columns.get(node.getDescription()).isEmpty(), dataColors.get(node.getId())) {
+                    @Override
+                    public void selectNode(int columnIndex) {
+                    }
+                };
+                temNode.setSelected(node.isSelected());
+                temNode.setSelecatble(node.isSelecatble());
+                temNode.setUpperSelected(node.isUpperSelected());
+                temNode.setLowerSelected(node.isLowerSelected());
+                temNode.setDescription(node.getDescription());
+                if (n % 2 == 0) {
+                    temNode.addStyleName("hilightcolumn");
+                }
+                thumbNodeContainer.addComponent(temNode, n, i);
+                thumbNodeContainer.setComponentAlignment(temNode, Alignment.MIDDLE_CENTER);
+            }
+
+        }
+
         return graphLabelsContainer;
     }
 
     private void unselectAll() {
         selectedDataSet.clear();
-        chartTitle.setValue("" + title + " (" + totalItemsNumber + "/" + totalItemsNumber + ")");
-
         for (int col = 0; col < nodeContainer.getColumns(); col++) {
             for (int row = 0; row < nodeContainer.getRows(); row++) {
                 SelectableNode node = (SelectableNode) nodeContainer.getComponent(col, row);
                 node.setSelected(false);
+                SelectableNode temnode = (SelectableNode) thumbNodeContainer.getComponent(col, row);
+                temnode.setSelected(false);
             }
             colors[col] = unselectedColor;
         }
         ((BarDataset) barConfig.data().getDatasets().get(0)).backgroundColor(colors);
         barConfig.options().animation().duration(1);
         redrawChart();
-        Iterator<Component> itr = labelsContainer.iterator();
+        Iterator<Component> itr = rowsLabelsLayoutContainer.iterator();
         while (itr.hasNext()) {
             ((SparkLine) itr.next()).setSelected(false);
         }
+        this.updateLabels();
+    }
+
+    private void updateLabels() {
+        int currentSize = 0;
+        int subTotalNumber = 0;
+        for (int r = 0; r < nodeContainer.getRows(); r++) {
+            for (int c = 0; c < nodeContainer.getColumns(); c++) {
+                SelectableNode node = (SelectableNode) nodeContainer.getComponent(c, r);
+                if (r == 0) {
+                    subTotalNumber += (int) node.getData();
+                }
+                if (node.isSelecatble() && node.isSelected() && !node.isUpperSelected()) {
+                    currentSize += (int) node.getData();
+                }
+            }
+
+        }
+        if (currentSize == 0) {
+            currentSize = subTotalNumber;
+        }
+        chartTitle.setValue("" + title + " (" + currentSize + "/" + totalItemsNumber + ")");
+        thumbTitle.setValue(chartTitle.getValue());
     }
 
     private void setSelectRow(Integer rowIndex, boolean selected) {
@@ -519,11 +723,26 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
     }
 
     private void selectColumn(int columnIndex) {
+
+        String selectedColumnTitle = columns.keySet().toArray(new String[columns.size()])[columnIndex];
+        for (SparkLine rowLabel : rowLabelsMap.values()) {
+            rowLabel.removeStyleName("highlightedtext");
+        }
+        Iterator<Component> itr = nodeContainer.iterator();
+        while (itr.hasNext()) {
+            SelectableNode node = (SelectableNode) itr.next();
+            node.setSelected(false);
+        }
+
         boolean select;
         if (colors[columnIndex].equals(selectedColor)) {
             colors[columnIndex] = unselectedColor;
             select = false;
         } else {
+            selectedDataSet.clear();
+            for (int col = 0; col < nodeContainer.getColumns(); col++) {
+                colors[col] = unselectedColor;
+            }
             colors[columnIndex] = selectedColor;
             select = true;
         }
@@ -533,20 +752,24 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
         for (int row = 0; row < nodeContainer.getRows(); row++) {
             SelectableNode node = (SelectableNode) nodeContainer.getComponent(columnIndex, row);
             node.setSelected(select);
+            SelectableNode temnode = (SelectableNode) thumbNodeContainer.getComponent(columnIndex, row);
+            temnode.setSelected(select);
 
         }
         if (select) {
-            selectedDataSet.addAll(columns.get(columns.keySet().toArray(new String[columns.size()])[columnIndex]));
+            String[] columnTitleArr = selectedColumnTitle.replace("[", "").replace("]", "").trim().split(", ");
+            for (String rowTitle : columnTitleArr) {
+                rowLabelsMap.get(rowTitle).addStyleName("highlightedtext");
+            }
+            selectedDataSet.addAll(columns.get(selectedColumnTitle));
+            selectedColumns.add(columnIndex);
         } else {
-            selectedDataSet.removeAll(columns.get(columns.keySet().toArray(new String[columns.size()])[columnIndex]));
+            selectedDataSet.removeAll(columns.get(selectedColumnTitle));
+            selectedColumns.remove(columnIndex);
         }
 
-        int size = selectedDataSet.size();
-        if (size == 0) {
-            size = totalItemsNumber;
-        }
-        chartTitle.setValue("" + title + " (" + size + "/" + totalItemsNumber + ")");
         redrawChart();
+        this.updateLabels();
     }
 
     @Override
@@ -562,7 +785,7 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
         chart.setJsLoggingEnabled(true);
         chart.addClickListener((int datasetIndex, int dataIndex) -> {
             chart.setData(dataIndex);
-            Iterator<Component> itr = labelsContainer.iterator();
+            Iterator<Component> itr = rowsLabelsLayoutContainer.iterator();
             while (itr.hasNext()) {
                 ((SparkLine) itr.next()).setSelected(false);
             }
@@ -573,31 +796,6 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
         chart.setHeight(100, Unit.PERCENTAGE);
         chartContainer.addComponent(chart);
 
-        thumbChartContainer.removeAllComponents();
-        yAxisScale.scaleLabel().display(false).and().gridLines().display(false).and().ticks().display(false).and();
-        barConfig.options()
-                .title()
-                .display(true)
-                .text(chartTitle.getValue())
-                .and()
-                .done();
-        ChartJs thumbChart = new ChartJs(barConfig);
-        thumbChart.setJsLoggingEnabled(true);
-
-//        thumbChart.addClickListener((int datasetIndex, int dataIndex) -> {
-//            thumbChart.setData(dataIndex);
-//            Iterator<Component> itr = labelsContainer.iterator();
-//            while (itr.hasNext()) {
-//                ((SparkLine) itr.next()).setSelected(false);
-//            }
-//            selectColumn(dataIndex);
-//
-//        });
-        thumbChart.setWidth(100, Unit.PERCENTAGE);
-        thumbChart.setHeight(100, Unit.PERCENTAGE);
-        thumbChartContainer.addComponent(thumbChart);
-        System.out.println("at chart ready to draw");
-
     }
 
     @Override
@@ -606,13 +804,61 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
     }
 
     @Override
-    public void selectData() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void resetFilter() {
+        selectedDataSet.clear();
+        selectedColumns.clear();
+        appliedFilters.clear();
+        calculatedMatrix.clear();
+        calculatedMatrix.putAll(columns);
+        List<Double> barChartData = new ArrayList<>();
+        for (Set<String> set : columns.values()) {
+            barChartData.add((double) set.size());
+        }
+        TreeSet<Double> ts = new TreeSet<>(barChartData);
+        barChartContainerPanel.setContent(initBarChartFilter(barChartData));
+        HorizontalLayout graphLayout = initGraph(ts.last(), columns, rows);
+        graphChartContainerPanel.setContent(graphLayout);
+        unselectAll();
+        this.updateLabels();
     }
 
     @Override
-    public void updateFilter() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void updateFilter(Set<String> selection, Set<Object> selectedCategories, boolean singleFilter) {
+
+        List<Double> newDataValues = new ArrayList<>();
+        List<String> newLabels = new ArrayList<>();
+        List<Integer> selectedCategoriesIndexes = new ArrayList<>();
+        Map<String, Set<String>> updatedColumns = new LinkedHashMap<>();
+        int index = 0;
+        for (String colId : columns.keySet()) {
+            Set<String> intersection = new LinkedHashSet<>();
+            if (singleFilter && !selectedCategories.isEmpty()) {
+                intersection.addAll(columns.get(colId));
+            } else {
+                intersection.addAll(Sets.intersection(selection, columns.get(colId)));
+            }
+            newDataValues.add((double) intersection.size());
+            updatedColumns.put(colId, intersection);
+            newLabels.add(colId);
+            if (selectedCategories.contains(colId)) {
+                selectedCategoriesIndexes.add(index);
+            }
+            index++;
+        }
+        TreeSet<Double> ts = new TreeSet<>(newDataValues);
+        barChartContainerPanel.setContent(initBarChartFilter(newDataValues));
+        HorizontalLayout graphLayout = initGraph(ts.last(), updatedColumns, rows);
+        graphChartContainerPanel.setContent(graphLayout);
+        for (int i : selectedCategoriesIndexes) {
+            selectColumn(i);
+        }
+        appliedFilters.clear();
+        appliedFilters.addAll(selectedColumns);
+        this.updateLabels();
+        if (singleFilter && !selectedCategories.isEmpty()) {
+            applyFilter(getSelectedDataSet());
+        }
+
     }
 
     public Set<String> getSelectedDataSet() {
@@ -622,20 +868,30 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
     public abstract void close();
 
     public void applyFilter(Set<String> selectedDataset) {
+        appliedFilters.clear();
+        appliedFilters.addAll(selectedColumns);
         Selection_Manager.setSelection("protein_selection", selectedDataset, filterId);
-    }
-
-    @Override
-    public void selectionChange(String type) {
-        if (type.equalsIgnoreCase("protein_selection")) {
-            System.out.println("at updated data");
-        }
     }
 
     @Override
     public Component getThumb() {
 
-        return thumbChartContainer;
+        return thumbFilterContainer;
+    }
+
+    public Map<String, Set<String>> getCalculatedMatrix() {
+        return calculatedMatrix;
+    }
+
+    @Override
+    public boolean isAppliedFilter() {
+        return !(appliedFilters.isEmpty() || appliedFilters.size() == calculatedMatrix.size());
+
+    }
+
+    @Override
+    public Set<Object> getSelectedCategories() {
+        return appliedFilters;
     }
 
 }

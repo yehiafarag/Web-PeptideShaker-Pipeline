@@ -11,8 +11,6 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * This class represent PeptideShaker view presenter which is responsible for
@@ -159,13 +157,26 @@ public class PeptideShakerViewPresenter extends VerticalLayout implements Viewab
         topToolsBtn.setSelected(true);
         this.btnContainer.addStyleName("visible");
         this.mobilebtnContainer.removeStyleName("hidepanel");
-        this.removeStyleName("hidepanel");
+        this.removeStyleName("hidepanel"); 
+        System.out.println("update the panels for peptideshaker");
+        Thread t = new Thread(() -> {
+            try {
+                Thread.sleep(500);
+                datasetOverviewLayout.setMargin(false);
+            } catch (InterruptedException ex) {
+               ex.printStackTrace();
+            }
+        });
+        t.start();
+         datasetOverviewLayout.setMargin(true);
+        
     }
     
     @Override
     public void layoutClick(LayoutEvents.LayoutClickEvent event) {
         BigSideBtn comp = (BigSideBtn) event.getComponent();
         Selection_Manager.selectBtn(comp);
+       
         
     }
     

@@ -4,6 +4,7 @@ import com.compomics.util.experiment.biology.AminoAcidPattern;
 import com.compomics.util.experiment.biology.Enzyme;
 import com.compomics.util.experiment.biology.EnzymeFactory;
 import com.compomics.util.preferences.SequenceMatchingPreferences;
+import com.google.common.collect.Sets;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +13,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,12 +29,15 @@ import uk.ac.ebi.pride.tools.braf.BufferedRandomAccessFile;
  */
 public class PeptideShakerVisualizationDataset extends SystemDataSet {
 
-    private Map<Object, ProteinObject> proteinsMap;
+    private Map<String, ProteinObject> proteinsMap;
     private final Map<Object, ProteinObject> fastaProteinsMap;
     private Map<String, Set<PeptideObject>> protein_peptide_Map;
     private Map<String, Set<ProteinObject>> protein_relatedProteins_Map;
     private Map<Object, PeptideObject> peptidesMap;
     private final Map<String, Set<String>> modificationMap;
+    private final Map<String, Set<String>> chromosomeMap;
+    private final Map<String, Set<String>> piMap;
+    private final Map<String, Set<String>> proteinValidationMap;
 
     private GalaxyFile peptideFile;
     private GalaxyFile fastaFile;
@@ -72,7 +77,11 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
 
     }
 
-    public Map<Object, ProteinObject> getProteinsMap() {
+    public Map<String, Set<String>> getChromosomeMap() {
+        return chromosomeMap;
+    }
+
+    public Map<String, ProteinObject> getProteinsMap() {
         if (proteinsMap != null) {
             return proteinsMap;
         }
@@ -80,6 +89,10 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
         proteinsMap = new LinkedHashMap<>();
         readFastaFile();
         BufferedRandomAccessFile bufferedRandomAccessFile = null;
+        //for testing
+        Random r = new Random();
+        String alphabet = "abcdefghijklmnopqrstuvwxyz".toUpperCase();
+
         try {//           
             bufferedRandomAccessFile = new BufferedRandomAccessFile(proteinFile.getFile(), "r", 1024 * 100);
             String line;
@@ -99,10 +112,19 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
                 }
                 protein.setAccession(arr[1]);
                 protein.setIndex(Integer.valueOf(arr[0]));
-
                 protein.setDescription(arr[2]);
                 protein.setGeneName(arr[3]);
                 protein.setChromosome(arr[4]);
+                protein.setChromosome(alphabet.charAt(r.nextInt(alphabet.length())) + "X");
+                if (protein.getChromosome().trim().isEmpty()) {
+                    protein.setChromosome("No Information");
+                    chromosomeMap.get(protein.getChromosome()).add(protein.getAccession());
+                } else {
+                    if (!chromosomeMap.containsKey(protein.getChromosome())) {
+                        chromosomeMap.put(protein.getChromosome(), new LinkedHashSet<>());
+                    }
+                    chromosomeMap.get(protein.getChromosome()).add(protein.getAccession());
+                }
 
                 protein.setMW(Double.valueOf(arr[5]));
                 protein.setPossibleCoverage(Double.valueOf(arr[6]));
@@ -113,6 +135,17 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
                 protein.setAmbiguouslyLocalizedModificationSites(arr[11]);
                 protein.setAmbiguouslyLocalizedModificationSitesNumber(arr[12]);
                 protein.setProteinInference(arr[13]);
+
+                if (protein.getProteinInference().trim().isEmpty()) {
+                    protein.setProteinInference("No Information");
+                    piMap.get(protein.getProteinInference()).add(protein.getAccession());
+                } else {
+                    if (!piMap.containsKey(protein.getProteinInference())) {
+                        piMap.put(protein.getProteinInference(), new LinkedHashSet<>());
+                    }
+                    piMap.get(protein.getProteinInference()).add(protein.getAccession());
+                }
+
                 protein.setSecondaryAccessions(arr[14]);
 
                 protein.setProteinGroup(arr[15]);
@@ -126,19 +159,27 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
                 protein.setPSMsNumber(Integer.valueOf(arr[23]));
                 protein.setConfidence(Double.valueOf(arr[24]));
                 protein.setValidation(arr[25]);
-                 boolean addModification = false;
-                for (String modification : modificationMap.keySet()) {
-                    if (protein.getConfidentlyLocalizedModificationSites().contains(modification) || protein.getAmbiguouslyLocalizedModificationSites().contains(modification)) {
-                        modificationMap.get(modification).add(protein.getAccession());
-                        addModification = true;
+                if (protein.getValidation().trim().isEmpty()) {
+                    protein.setValidation("No Information");
+                    proteinValidationMap.get(protein.getValidation()).add(protein.getAccession());
+                } else {
+                    if (!proteinValidationMap.containsKey(protein.getValidation())) {
+                        proteinValidationMap.put(protein.getValidation(), new LinkedHashSet<>());
                     }
-
-                }
-                if (!addModification) {
-                    modificationMap.get("No Modifications").add(protein.getAccession());
+                    proteinValidationMap.get(protein.getValidation()).add(protein.getAccession());
                 }
 
-                
+//                boolean addModification = false;
+//                for (String modification : modificationMap.keySet()) {
+//                    if (protein.getConfidentlyLocalizedModificationSites().contains(modification) || protein.getAmbiguouslyLocalizedModificationSites().contains(modification)) {
+//                        modificationMap.get(modification).add(protein.getAccession());
+//                        addModification = true;
+//                    }
+//
+//                }
+//                if (!addModification) {
+//                    modificationMap.get("No Modifications").add(protein.getAccession());
+//                }
 //                protein = fastaFileReader.updateProteinInformation(protein, protein.getAccession());
                 proteinsMap.put(protein.getAccession(), protein);
                 for (String acc : protein.getProteinGroupSet()) {
@@ -257,21 +298,31 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
                     }
                 }
 
-//                boolean addModification = false;
-//                for (String modification : modificationMap.keySet()) {
-//                    if (peptide.getVariableModifications().contains(modification) || peptide.getFixedModifications().contains(modification)) {
-//                        modificationMap.get(modification).addAll(peptide.getProteinsSet());
-//                        addModification = true;
-//                    }
-//
-//                }
-//                if (!addModification) {
-//                    modificationMap.get("No Modifications").addAll(peptide.getProteinsSet());
-//                }
+                for (String modification : modificationMap.keySet()) {
+                    if (peptide.getVariableModifications().contains(modification) || peptide.getFixedModifications().contains(modification)) {
+                       Set<String>intersectSet = new LinkedHashSet<>();
+                       intersectSet.addAll(Sets.intersection(peptide.getProteinsSet(), proteinsMap.keySet()));
+                        modificationMap.get(modification).addAll(intersectSet);
+                    }
+                }
 
                 peptidesMap.put(peptide.getModifiedSequence(), peptide);
 
             }
+            for (Object protAcc : proteinsMap.keySet()) {
+                String proteinAcc = protAcc + "";
+                boolean addModification = false;
+                for (Set<String> accSet : modificationMap.values()) {
+                    if (accSet.contains(proteinAcc)) {
+                        addModification = true;
+                        break;
+                    }
+
+                }
+                if (!addModification) {
+                    modificationMap.get("No Modifications").add(proteinAcc);
+                }
+            }  
             bufferedRandomAccessFile.close();
         } catch (IOException | NumberFormatException ex) {
             if (bufferedRandomAccessFile != null) {
@@ -288,7 +339,6 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
         if (protein_relatedProteins_Map.containsKey(proteinKey)) {
             return protein_relatedProteins_Map.get(proteinKey);
         }
-
         return new HashSet<>();
 
     }
@@ -297,7 +347,6 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
         if (protein_peptide_Map.containsKey(proteinKey)) {
             return protein_peptide_Map.get(proteinKey);
         }
-
         return null;
 
     }
@@ -344,10 +393,18 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
         return parameters;
     }
 
+    public Map<String, Set<String>> getPiMap() {
+        return piMap;
+    }
+
+    public Map<String, Set<String>> getProteinValidationMap() {
+        return proteinValidationMap;
+    }
+
     public String getVariableModification() {
         if (variableModification == null) {
             variableModification = (jsonToMap(parameters.get("protein_modification_options").toString())).get("variable_modifications").replace("[", "").replace("]", "");
-            if (variableModification != null&& !variableModification.equalsIgnoreCase("null")) {
+            if (variableModification != null && !variableModification.equalsIgnoreCase("null")) {
                 variableModification = variableModification.replace("\"", "");
                 String[] modArr = variableModification.split(",");
                 for (String mod : modArr) {
@@ -416,6 +473,12 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
         fastaProteinsMap = new LinkedHashMap<>();
         modificationMap = new LinkedHashMap<>();
         modificationMap.put("No Modifications", new LinkedHashSet<>());
+        chromosomeMap = new LinkedHashMap<>();
+        chromosomeMap.put("No Information", new LinkedHashSet<>());
+        piMap = new LinkedHashMap<>();
+        piMap.put("No Information", new LinkedHashSet<>());
+        proteinValidationMap = new LinkedHashMap<>();
+        proteinValidationMap.put("No Information", new LinkedHashSet<>());
     }
 
     public String getJobId() {

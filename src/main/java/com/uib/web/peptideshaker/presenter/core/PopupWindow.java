@@ -82,5 +82,8 @@ public class PopupWindow extends VerticalLayout implements LayoutEvents.LayoutCl
     window.setWidth(width,Unit.PERCENTAGE);
         window.setHeight(height,Unit.PERCENTAGE);
     }
+    public void addWindowStyle(String style){
+    window.addStyleName(style);
+    }
 
 }

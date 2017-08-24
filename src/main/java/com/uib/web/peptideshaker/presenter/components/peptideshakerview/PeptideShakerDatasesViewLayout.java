@@ -6,7 +6,6 @@ import com.uib.web.peptideshaker.presenter.components.peptideshakerview.componen
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
-import java.util.Map;
 
 /**
  * This class represents the layout that contains PeptideShaker datasets
@@ -35,6 +34,7 @@ public class PeptideShakerDatasesViewLayout extends HorizontalLayout {
 
         headerLabel = new PopupWindow("Dataset name");
         headerLabel.addStyleName("largetitle");
+        headerLabel.setWidthUndefined();
         container.addComponent(headerLabel);
         container.setExpandRatio(headerLabel, 1);
 
@@ -101,7 +101,7 @@ public class PeptideShakerDatasesViewLayout extends HorizontalLayout {
         }
     }
 
-    public void selectDataset(PeptideShakerVisualizationDataset peptideShakerVisualizationDataset) {
+    public void selectDataset(PeptideShakerVisualizationDataset peptideShakerVisualizationDataset) {          
         headerLabel.setLabelValue("Project: " + peptideShakerVisualizationDataset.getName());
         DatasetOverviewLayout dsOverview = new DatasetOverviewLayout((PeptideShakerVisualizationDataset) peptideShakerVisualizationDataset) {
             @Override
