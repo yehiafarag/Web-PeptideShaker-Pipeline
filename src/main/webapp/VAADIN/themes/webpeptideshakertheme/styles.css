@@ -14531,6 +14531,12 @@ div.v-layout.v-horizontal.v-widget {
 	overflow: hidden !important;
 	color: #1780E9 !important;
 	font-weight: bold;
+	text-decoration: underline !important;
+	text-decoration-color: #bad5f2 !important;
+}
+
+.webpeptideshakertheme .thumbchart {
+	margin-top: -12%;
 }
 
 .webpeptideshakertheme .horizontalcss .largetitle .v-label {

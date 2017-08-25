@@ -1,5 +1,6 @@
 package com.uib.web.peptideshaker.presenter.core.form;
 
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
@@ -86,10 +87,11 @@ public class SparkLine extends HorizontalLayout {
         label.setStyleName("smalltable");
         SparkLine.this.setSpacing(true);
 
-        Color selectedColor;
+        Color selectedColor =Color.WHITE;
 
         double factor = Math.max(max, Math.abs(min));
         factor = Math.log10((Double) factor);
+        
         if (value > 0) {
             value = Math.log10((Double) value);
             value = value * 100 / factor;
@@ -98,7 +100,7 @@ public class SparkLine extends HorizontalLayout {
             value = Math.log10((Double) value * -1.0);
             value = value * 100 / factor;
             selectedColor = Color.BLUE;
-        } else {
+        } else if(max != -100000){
             SparkLine.this.addComponent(new Label());
             SparkLine.this.addComponent(label);
             SparkLine.this.setComponentAlignment(label, Alignment.TOP_LEFT);
@@ -109,20 +111,36 @@ public class SparkLine extends HorizontalLayout {
         spark.setHeight(60, Unit.PERCENTAGE);
         spark.addStyleName("margintop5");
         spark.setWidth(Math.min(Math.max(Math.round(value), 5), 100), Unit.PERCENTAGE);
-        SparkLine.this.addComponent(spark);
-        SparkLine.this.setComponentAlignment(spark, Alignment.TOP_RIGHT);
-        SparkLine.this.setExpandRatio(spark, 50);
-        SparkLine.this.addComponent(label);
-        SparkLine.this.setComponentAlignment(label, Alignment.TOP_LEFT);
-        SparkLine.this.setExpandRatio(label, 50);
-        Label colorLegend = new Label("<div style='width: 13px;height: 13px;margin-top: 3px;border: 1px solid lightgray;background: rgb("+color.getRed()+","+color.getGreen()+","+color.getBlue()+");'></div>");
+
+        Label colorLegend = new Label("<div style='width: 13px;height: 13px;margin-top: 3px;border: 1px solid lightgray;background: rgb(" + color.getRed() + "," + color.getGreen() + "," + color.getBlue() + ");'></div>");
         colorLegend.setContentMode(ContentMode.HTML);
-        colorLegend.setWidthUndefined();
-        colorLegend.setHeightUndefined();
-        
-        SparkLine.this.addComponent(colorLegend);
-        SparkLine.this.setComponentAlignment(colorLegend, Alignment.TOP_LEFT);
-        SparkLine.this.setExpandRatio(colorLegend, 1);
+
+        if (max == -100000) {
+             SparkLine.this.setWidthUndefined();
+            colorLegend.setWidth(13,Unit.PIXELS);
+            colorLegend.setHeight(13,Unit.PIXELS);
+             SparkLine.this.setSpacing(true);
+            SparkLine.this.addComponent(colorLegend);
+            SparkLine.this.setComponentAlignment(colorLegend, Alignment.TOP_LEFT);
+            SparkLine.this.addComponent(label);
+            SparkLine.this.setComponentAlignment(label, Alignment.TOP_LEFT);
+            SparkLine.this.setExpandRatio(label, 90);
+            SparkLine.this.setExpandRatio(colorLegend, 10);
+
+        } else {
+            colorLegend.setWidthUndefined();
+            colorLegend.setHeightUndefined();
+            SparkLine.this.addComponent(spark);
+            SparkLine.this.setComponentAlignment(spark, Alignment.TOP_RIGHT);
+            SparkLine.this.setExpandRatio(spark, 50);
+            SparkLine.this.addComponent(label);
+            SparkLine.this.setComponentAlignment(label, Alignment.TOP_LEFT);
+            SparkLine.this.setExpandRatio(label, 50);
+            SparkLine.this.addComponent(colorLegend);
+            SparkLine.this.setComponentAlignment(colorLegend, Alignment.TOP_LEFT);
+            SparkLine.this.setExpandRatio(colorLegend, 1);
+        }
+
     }
 
 }

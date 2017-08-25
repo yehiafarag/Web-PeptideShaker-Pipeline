@@ -1156,7 +1156,7 @@
     .padding50{
         padding-left:50px;
     }
-     .padding55{
+    .padding55{
         padding-left:55px;
     }
     .node{
@@ -1546,8 +1546,13 @@
         overflow:hidden !important;
         color:#1780E9 !important;
         font-weight:bold;
+        text-decoration:underline !important;
+	text-decoration-color:#bad5f2 !important;
 
 
+    }
+    .thumbchart{
+        margin-top:-12%;
     }
 
     /****mobile css**/

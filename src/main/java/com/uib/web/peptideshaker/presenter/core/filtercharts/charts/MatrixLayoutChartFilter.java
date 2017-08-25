@@ -66,6 +66,8 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
     private String[] colors;
     private VerticalLayout chartContainer;
     private final VerticalLayout thumbFilterContainer;
+    private final VerticalLayout thumbChartContainer;
+    private final GridLayout thumblegendContainer;
     private final Label thumbTitle;
     private final String unselectedColor = "lightgray";
     private final String selectedColor = "#bad5f2";//"#1780E9";
@@ -200,7 +202,8 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
 
         thumbFilterContainer = new VerticalLayout();
         thumbFilterContainer.setStyleName("thumbFilterFrame");
-        thumbFilterContainer.setSizeFull();
+        thumbFilterContainer.setWidth(100, Unit.PERCENTAGE);
+        thumbFilterContainer.setHeight(100, Unit.PERCENTAGE);
         thumbFilterContainer.setSpacing(true);
         thumbFilterContainer.setMargin(new MarginInfo(false, false, false, false));
         thumbFilterContainer.setIcon(VaadinIcons.EXPAND_FULL);
@@ -215,17 +218,37 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
         thumbFilterContainer.addComponent(thumbTitle);
         thumbFilterContainer.setExpandRatio(thumbTitle, 1);
 
+        thumbChartContainer = new VerticalLayout();
+        thumbChartContainer.setStyleName("thumbchart");
+        thumbChartContainer.setWidth(100, Unit.PERCENTAGE);
+        thumbChartContainer.setHeight(95, Unit.PERCENTAGE);
+        thumbFilterContainer.addComponent(thumbChartContainer);
+        thumbFilterContainer.setExpandRatio(thumbChartContainer, 5);
+
         Panel thumbFilterPanel = new Panel();
         thumbFilterPanel.setHeight(100, Unit.PERCENTAGE);
         thumbFilterPanel.setWidth(95, Unit.PERCENTAGE);
         thumbFilterPanel.setStyleName(ValoTheme.PANEL_BORDERLESS);
         thumbFilterContainer.addComponent(thumbFilterPanel);
         thumbFilterContainer.setComponentAlignment(thumbFilterPanel, Alignment.TOP_CENTER);
-        thumbFilterContainer.setExpandRatio(thumbFilterPanel, 99);
+        thumbFilterContainer.setExpandRatio(thumbFilterPanel, 69);
 
         thumbNodeContainer = new GridLayout();
         thumbNodeContainer.setWidth(100, Unit.PERCENTAGE);
         thumbFilterPanel.setContent(thumbNodeContainer);
+
+        thumblegendContainer = new GridLayout();
+        thumblegendContainer.setWidth(95, Unit.PERCENTAGE);
+        thumblegendContainer.setHeight(100, Unit.PERCENTAGE);
+        thumblegendContainer.setMargin(new MarginInfo(false, false, true, false));
+        thumblegendContainer.setColumns(2);
+        thumblegendContainer.setRows(10);
+        thumblegendContainer.setSpacing(true);
+        thumblegendContainer.setHideEmptyRowsAndColumns(true);
+//        thumblegendContainer.setMargin(new MarginInfo(false, true, false , true));
+        thumbFilterContainer.addComponent(thumblegendContainer);
+        thumbFilterContainer.setComponentAlignment(thumblegendContainer, Alignment.TOP_CENTER);
+        thumbFilterContainer.setExpandRatio(thumblegendContainer, 25);
 
     }
 
@@ -368,14 +391,10 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
         //init color array
         int i = 0;
         List<String> dataLabels = new ArrayList<>();
+        List<Double> thumbData = new ArrayList<>();
         for (double d : data) {
-            if (d > 0) {
-                if (d < 10) {
-                    dataLabels.add("0" + (int) d);
-                } else {
-                    dataLabels.add("" + (int) d);
-                }
-            }
+            thumbData.add(0.0);
+            dataLabels.add("" + (int) d);
         }
         colors = new String[data.size()];
         for (int x = 0; x < colors.length; x++) {
@@ -386,7 +405,7 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
         barConfig.
                 data().labels(dataLabels.toArray(new String[dataLabels.size()]))
                 .addDataset(
-                        new BarDataset().backgroundColor(colors).borderColor("gray").label("Dataset 1").yAxisID("y-axis-1"))
+                        new BarDataset().backgroundColor(colors).borderColor("gray").label("#Proteins").yAxisID("y-axis-1"))
                 .and();
         barConfig.
                 options().maintainAspectRatio(false)
@@ -415,6 +434,19 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
         AbsoluteLayout container = new AbsoluteLayout();
         container.setWidth(100, Unit.PERCENTAGE);
         container.setHeight(100, Unit.PERCENTAGE);
+
+        thumbChartContainer.removeAllComponents();
+        BarChartConfig tcon = new BarChartConfig();
+        tcon.data().labels(dataLabels.toArray(new String[dataLabels.size()])).addDataset(
+                new BarDataset().dataAsList(thumbData).fill(false).backgroundColor(colors).borderColor("gray"));
+        tcon.options().scales().add(Axis.Y, new LinearScale().display(false)).add(Axis.X, new CategoryScale().display(true).gridLines().display(false).and())
+                .and().legend().display(false).and().done();
+        ChartJs thumbChart = new ChartJs(tcon);
+        thumbChart.setJsLoggingEnabled(true);
+
+        thumbChart.setWidth(100, Unit.PERCENTAGE);
+        thumbChart.setHeight(20, Unit.PIXELS);
+        thumbChartContainer.addComponent(thumbChart);
 
 //        labelContainer.removeAllComponents();
 //        labelContainer.setVisible(false);
@@ -488,7 +520,7 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
 
     private HorizontalLayout initGraph(double protNumber, Map<String, Set<String>> columns, Map<String, Integer> rows) {
 
-         while (protNumber % 10 != 0) {
+        while (protNumber % 10 != 0) {
             protNumber++;
         }
         HorizontalLayout graphLabelsContainer = new HorizontalLayout();
@@ -552,13 +584,32 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
 //        labelsContainer.addLayoutClickListener(listener);
         rowLabelsMap.clear();
         int x = 0;
+        thumblegendContainer.removeAllComponents();
+
+        int r = 0;
+        int c = 0;
         for (String rowKey : rows.keySet()) {
             SparkLine sl = new SparkLine(rowKey, rows.get(rowKey), 0, max, dataColors.get(rowKey));
             sl.setWidth(100, Unit.PERCENTAGE);
             sl.setHeight(50, Unit.PERCENTAGE);
-            sl.addStyleName("pointer");
+//            sl.addStyleName("pointer");
             sl.setData(x);
             sl.setDescription(rowKey);
+
+            SparkLine sl2 = new SparkLine(rowKey, 0.0, 0, -100000, dataColors.get(rowKey));
+            sl2.setWidth(100, Unit.PERCENTAGE);
+            sl2.setHeight(100, Unit.PERCENTAGE);
+            thumblegendContainer.addComponent(sl2, c++, r);
+            if (c % 2 == 0) {
+                thumblegendContainer.setComponentAlignment(sl2, Alignment.TOP_RIGHT);
+            } else {
+                thumblegendContainer.setComponentAlignment(sl2, Alignment.TOP_LEFT);
+            }
+            if (c == 2) {
+                c = 0;
+                r++;
+            }
+
             rowsLabelsLayoutContainer.addComponent(sl);
             rowsLabelsLayoutContainer.setComponentAlignment(sl, Alignment.MIDDLE_CENTER);
             rowLabelsMap.put(rowKey, sl);
@@ -637,7 +688,7 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
         for (int i = 0; i < nodeContainer.getRows(); i++) {
             for (int n = 0; n < nodeContainer.getColumns(); n++) {
                 SelectableNode node = (SelectableNode) nodeContainer.getComponent(n, i);
-                SelectableNode temNode = new SelectableNode(node.getId(), node.getColumnIndex(), columns.get(node.getDescription()).isEmpty(), dataColors.get(node.getId())) {
+                SelectableNode temNode = new SelectableNode(node.getId(), node.getColumnIndex(), node.isDisables(), node.getNodeColor()) {
                     @Override
                     public void selectNode(int columnIndex) {
                     }

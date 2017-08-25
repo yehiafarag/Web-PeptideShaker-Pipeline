@@ -26,9 +26,14 @@ public abstract class SelectableNode extends AbsoluteLayout implements LayoutEve
     private boolean selected;
     private final int columnIndex;
     private final VerticalLayout nodeContainer;
+    private final Color nodeColor;
 
     public String getNodeId() {
         return nodeId;
+    }
+
+    public Color getNodeColor() {
+        return nodeColor;
     }
 
     public boolean isDisables() {
@@ -38,6 +43,7 @@ public abstract class SelectableNode extends AbsoluteLayout implements LayoutEve
     public SelectableNode(String nodeId, int columnIndex, boolean disables, Color nodeColor) {
         this.nodeId = nodeId;
         this.columnIndex = columnIndex;
+        this.nodeColor=nodeColor;
         SelectableNode.this.setWidth(100, Unit.PERCENTAGE);
         SelectableNode.this.setHeight(100, Unit.PERCENTAGE);
         VerticalLayout lineContainers = new VerticalLayout();
