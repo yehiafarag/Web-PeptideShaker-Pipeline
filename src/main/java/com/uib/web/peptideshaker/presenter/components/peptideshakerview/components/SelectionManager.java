@@ -166,7 +166,7 @@ public class SelectionManager {
             if (filterId.equalsIgnoreCase("modifications_filter")) {
                 registeredAppliedFiltersMap.get(filterId).clear();
                 MatrixLayoutChartFilter filter = (MatrixLayoutChartFilter) registeredFiltersMap.get(filterId);
-                for (Object obj : filter.getSelectedCategories()) {
+                for (Object obj : filter.getSelectedCategories()) {                    
                     registeredAppliedFiltersMap.get(filterId).add(filter.getCalculatedMatrix().keySet().toArray()[(int) obj]);
                 }
             } else {
@@ -180,7 +180,6 @@ public class SelectionManager {
                 }
             }
             singleProteinsFilter = (usedFilter < 2);
-            System.out.println("at filter id "+filterId+"  "+registeredFiltersMap.get(filterId).getSelectedCategories()+"  singl "+singleProteinsFilter);
               
             if (usedFilter > 0 && registeredAppliedFiltersMap.get(filterId).isEmpty()) {
                 filterId = "";
@@ -219,9 +218,7 @@ public class SelectionManager {
     }
 
     private Set<String> filterProteinData() {
-        for (String exist : registeredAppliedFiltersMap.keySet()) {
-            System.out.println("at exist filters now " + exist + "   " + registeredAppliedFiltersMap.get(exist));
-        }
+        
 
         Set<String> filteredProtenSet = new LinkedHashSet<>(fullProteinSet);
         for (String filterId : registeredAppliedFiltersMap.keySet()) {
@@ -229,7 +226,7 @@ public class SelectionManager {
             if (filterId.equalsIgnoreCase("modifications_filter") && !selectedCategories.isEmpty()) {
                 Map<String, Set<String>> filteredMatrix = ((MatrixLayoutChartFilter) registeredFiltersMap.get(filterId)).getCalculatedMatrix();
                 for (String key : filteredMatrix.keySet()) {
-                    if (!selectedCategories.contains(key)) {
+                   if (!selectedCategories.contains(key)) {
                         filteredProtenSet.removeAll(filteredMatrix.get(key));
                     }
                 }
@@ -257,7 +254,6 @@ public class SelectionManager {
                 filteredProtenSet.addAll(selectedData);
             }
         }
-        System.out.println("at the total number left in "+filteredProtenSet.size());
 
         return filteredProtenSet;
 

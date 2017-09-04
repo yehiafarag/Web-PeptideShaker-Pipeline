@@ -320,7 +320,7 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
 
                 }
                 if (!addModification) {
-                    modificationMap.get("No Modifications").add(proteinAcc);
+                    modificationMap.get("No Modification").add(proteinAcc);
                 }
             }  
             bufferedRandomAccessFile.close();
@@ -472,7 +472,7 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
         enzymeFactory = EnzymeFactory.getInstance();
         fastaProteinsMap = new LinkedHashMap<>();
         modificationMap = new LinkedHashMap<>();
-        modificationMap.put("No Modifications", new LinkedHashSet<>());
+        modificationMap.put("No Modification", new LinkedHashSet<>());
         chromosomeMap = new LinkedHashMap<>();
         chromosomeMap.put("No Information", new LinkedHashSet<>());
         piMap = new LinkedHashMap<>();

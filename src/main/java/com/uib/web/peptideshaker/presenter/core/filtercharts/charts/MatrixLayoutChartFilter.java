@@ -14,9 +14,7 @@ import com.google.common.collect.Sets;
 import com.uib.web.peptideshaker.model.AlphanumComparator;
 import com.uib.web.peptideshaker.presenter.components.peptideshakerview.components.SelectionManager;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.components.SelectableNode;
-import com.uib.web.peptideshaker.presenter.core.form.ColorLabel;
 import com.uib.web.peptideshaker.presenter.core.form.SparkLine;
-import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -76,11 +74,11 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
     private final Label chartTitle;
     private final Set<String> selectedDataSet;
     private Map<String, Color> dataColors;
-    private final Set<Object> appliedFilters;
+    private int appliedFilters;
     private int totalItemsNumber;
     private final SelectionManager Selection_Manager;
     private final GridLayout thumbNodeContainer;
-    private final Set<Integer> selectedColumns;
+    private int selectedColumns;
     private LinearScale yAxisScale;
 //    private final HorizontalLayout labelContainer;
     private final Map<String, SparkLine> rowLabelsMap;
@@ -89,8 +87,7 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
         this.title = title;
         this.filterId = filterId;
         this.Selection_Manager = Selection_Manager;
-        this.appliedFilters = new LinkedHashSet<>();
-        this.selectedColumns = new LinkedHashSet<>();
+        this.appliedFilters = -1;
         this.rowLabelsMap = new LinkedHashMap<>();
 
 //        this.labelContainer = new HorizontalLayout();
@@ -116,13 +113,12 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
         cancelSelectionButton.setHeight(25, Unit.PIXELS);
         MatrixLayoutChartFilter.this.addComponent(cancelSelectionButton, "right: " + 20 + "px; top: " + 15 + "px");
         cancelSelectionButton.addClickListener((Button.ClickEvent event) -> {
-            if (appliedFilters.isEmpty()) {
+            if (appliedFilters == -1) {
                 unselectAll();
             } else {
-                for (Object i : appliedFilters) {
-                    colors[(int) i] = unselectedColor;
-                    selectColumn((int) i);
-                }
+                colors[appliedFilters] = unselectedColor;
+                selectColumn(appliedFilters);
+
             }
             close();
         });
@@ -201,7 +197,7 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
         this.Selection_Manager.RegistrFilter(MatrixLayoutChartFilter.this);
 
         thumbFilterContainer = new VerticalLayout();
-        thumbFilterContainer.setStyleName("thumbFilterFrame");
+        thumbFilterContainer.setStyleName("thumbfilterframe");
         thumbFilterContainer.setWidth(100, Unit.PERCENTAGE);
         thumbFilterContainer.setHeight(100, Unit.PERCENTAGE);
         thumbFilterContainer.setSpacing(true);
@@ -254,10 +250,10 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
 
     public void calculateChartData(Map<String, Set<String>> data, Map<String, Color> dataColors, Set<Object> selectedCategories, int totalNumber) {
         selectedDataSet.clear();
-        selectedColumns.clear();
+        selectedColumns = -1;
         rows.clear();
         rowLabelsMap.clear();
-        appliedFilters.clear();
+        appliedFilters = -1;
         this.dataColors = dataColors;
         columns = calculateMatrix(data);
         calculatedMatrix.clear();
@@ -285,9 +281,32 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
     }
 
     private Map<String, Set<String>> calculateMatrix(Map<String, Set<String>> data) {
-        //calculate matrix
+
+//        Map<TreeSet<String>, Set<String>> temMatrixData = new LinkedHashMap<>();
+//        for (String key : data.keySet()) {
+//            TreeSet<String> keySet = new TreeSet<>();
+//            keySet.add(key);
+//            temMatrixData.put(keySet, data.get(key));
+//
+//        }
+//        Map<TreeSet<String>, Set<String>> finalMatrixData = new LinkedHashMap<>(temMatrixData);
+//        for (String key : data.keySet()) {
+//            for (TreeSet<String> key2 : temMatrixData.keySet()) {
+//                Set<String> intersection = new LinkedHashSet<>();
+//                intersection.addAll(com.google.common.collect.Sets.intersection(temMatrixData.get(key2), data.get(key)));
+//                if (!key2.contains(key) && !intersection.isEmpty()) {
+//                    System.out.println("at ----- there is intersection " + key2 + "    " + key);
+//                    TreeSet<String> newkeySet = new TreeSet<>();
+//                    newkeySet.add(key);
+//                    newkeySet.addAll(key2);
+//                    finalMatrixData.put(newkeySet, intersection);
+//                }
+//
+//            }
+//        }
+//calculate matrix
         Map<String, Set<String>> matrixData = new LinkedHashMap<>();
-        TreeMap<AlphanumComparator, String> sortingMap = new TreeMap<>();
+        TreeMap<AlphanumComparator, String> sortingMap = new TreeMap<>(Collections.reverseOrder());
         for (String key : data.keySet()) {
             AlphanumComparator sortingKey = new AlphanumComparator(data.get(key).size() + "_" + key);
             sortingMap.put(sortingKey, key);
@@ -365,6 +384,9 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
                         matrixData.get(key2).removeAll(intersction);
                     } else if (key1.split(",").length < key2.split(",").length) {
                         matrixData.get(key1).removeAll(intersction);
+                    } else {
+                        matrixData.get(key1).removeAll(intersction);
+                        matrixData.get(key2).removeAll(intersction);
                     }
                 }
             }
@@ -691,6 +713,13 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
                 SelectableNode temNode = new SelectableNode(node.getId(), node.getColumnIndex(), node.isDisables(), node.getNodeColor()) {
                     @Override
                     public void selectNode(int columnIndex) {
+                        Iterator<Component> itr = rowsLabelsLayoutContainer.iterator();
+                        while (itr.hasNext()) {
+                            ((SparkLine) itr.next()).setSelected(false);
+                        }
+                        selectColumn(columnIndex);
+                        applyFilter(getSelectedDataSet());
+                        close();
                     }
                 };
                 temNode.setSelected(node.isSelected());
@@ -784,6 +813,11 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
             SelectableNode node = (SelectableNode) itr.next();
             node.setSelected(false);
         }
+        Iterator<Component> thumbItr = thumbNodeContainer.iterator();
+        while (thumbItr.hasNext()) {
+            SelectableNode node = (SelectableNode) thumbItr.next();
+            node.setSelected(false);
+        }
 
         boolean select;
         if (colors[columnIndex].equals(selectedColor)) {
@@ -813,10 +847,10 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
                 rowLabelsMap.get(rowTitle).addStyleName("highlightedtext");
             }
             selectedDataSet.addAll(columns.get(selectedColumnTitle));
-            selectedColumns.add(columnIndex);
+            selectedColumns = columnIndex;
         } else {
             selectedDataSet.removeAll(columns.get(selectedColumnTitle));
-            selectedColumns.remove(columnIndex);
+            selectedColumns = -1;
         }
 
         redrawChart();
@@ -857,8 +891,8 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
     @Override
     public void resetFilter() {
         selectedDataSet.clear();
-        selectedColumns.clear();
-        appliedFilters.clear();
+        selectedColumns = -1;
+        appliedFilters = -1;
         calculatedMatrix.clear();
         calculatedMatrix.putAll(columns);
         List<Double> barChartData = new ArrayList<>();
@@ -903,8 +937,7 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
         for (int i : selectedCategoriesIndexes) {
             selectColumn(i);
         }
-        appliedFilters.clear();
-        appliedFilters.addAll(selectedColumns);
+        appliedFilters = (selectedColumns);
         this.updateLabels();
         if (singleFilter && !selectedCategories.isEmpty()) {
             applyFilter(getSelectedDataSet());
@@ -919,8 +952,8 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
     public abstract void close();
 
     public void applyFilter(Set<String> selectedDataset) {
-        appliedFilters.clear();
-        appliedFilters.addAll(selectedColumns);
+
+        appliedFilters = (selectedColumns);
         Selection_Manager.setSelection("protein_selection", selectedDataset, filterId);
     }
 
@@ -936,13 +969,17 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
 
     @Override
     public boolean isAppliedFilter() {
-        return !(appliedFilters.isEmpty() || appliedFilters.size() == calculatedMatrix.size());
+        return !(appliedFilters == -1);
 
     }
 
     @Override
     public Set<Object> getSelectedCategories() {
-        return appliedFilters;
+        Set<Object> s = new HashSet<>();
+        if (appliedFilters != -1) {
+            s.add(appliedFilters);
+        }
+        return s;
     }
 
 }

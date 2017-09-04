@@ -158,7 +158,6 @@ public class PeptideShakerViewPresenter extends VerticalLayout implements Viewab
         this.btnContainer.addStyleName("visible");
         this.mobilebtnContainer.removeStyleName("hidepanel");
         this.removeStyleName("hidepanel"); 
-        System.out.println("update the panels for peptideshaker");
         Thread t = new Thread(() -> {
             try {
                 Thread.sleep(500);

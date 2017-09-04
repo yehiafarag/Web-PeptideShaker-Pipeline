@@ -14307,30 +14307,30 @@ div.v-layout.v-horizontal.v-widget {
 	text-align: center !important;
 }
 
-.webpeptideshakertheme .thumbFilterFrame {
+.webpeptideshakertheme .thumbfilterframe {
 	border: 2px solid lightgray;
 	border-radius: 5px;
-	cursor: pointer;
 	padding-top: 2%;
 	overflow: hidden;
 	padding-bottom: 6%;
 }
 
-.webpeptideshakertheme .v-caption-thumbFilterFrame .Vaadin-Icons {
+.webpeptideshakertheme .v-caption-thumbfilterframe .Vaadin-Icons {
 	float: right !important;
 	position: relative;
 	right: 10px;
 	top: 30px;
+	cursor: pointer;
 }
 
-.webpeptideshakertheme .v-slot-thumbFilterFrame {
+.webpeptideshakertheme .v-slot-thumbfilterframe {
 	color: gray !important;
 }
 
-.webpeptideshakertheme .v-slot-thumbFilterFrame:hover {
+.webpeptideshakertheme .thumbfilterframe:hover {
 	color: black !important;
-	font-weight: bold !important;
-	font-size: 14px !important;
+	border-color: gray !important;
+	cursor: default;
 }
 
 .webpeptideshakertheme .medpopupwindow {
@@ -14537,6 +14537,46 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .thumbchart {
 	margin-top: -12%;
+}
+
+.webpeptideshakertheme .v-verticallayout-highlightchartcontainer canvas {
+	z-index: 2 !important;
+	position: relative;
+}
+
+.webpeptideshakertheme .v-verticallayout-chartcontainer canvas {
+	z-index: 3 !important;
+	position: relative;
+}
+
+.webpeptideshakertheme .v-verticallayout-basicchartcontainer canvas {
+	z-index: 3 !important;
+	position: relative;
+}
+
+.webpeptideshakertheme .stackedlegend {
+	background-color: white !important;
+	border: 2px solid gray;
+	border-radius: 5px;
+	margin-top: -10px !important;
+	position: fixed;
+	z-index: 10000;
+	overflow: visible !important;
+	margin-left: -120px !important;
+	visibility: hidden;
+}
+
+.webpeptideshakertheme .thumbfilterframe:hover .stackedlegend {
+	visibility: visible !important;
+}
+
+.webpeptideshakertheme .filterframe .stackedlegend {
+	visibility: visible !important;
+}
+
+.webpeptideshakertheme .stackedlegend:hover {
+	background: blue !important;
+	visibility: visible !important;
 }
 
 .webpeptideshakertheme .horizontalcss .largetitle .v-label {
@@ -14784,4 +14824,8 @@ div.v-layout.v-horizontal.v-widget {
 	border-bottom-left-radius: 0px;
 	overflow: hidden;
 	z-index: 2 !important;
+}
+
+.webpeptideshakertheme .v-window {
+	overflow: visible !important;
 }

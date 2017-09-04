@@ -43,7 +43,7 @@ public abstract class SelectableNode extends AbsoluteLayout implements LayoutEve
     public SelectableNode(String nodeId, int columnIndex, boolean disables, Color nodeColor) {
         this.nodeId = nodeId;
         this.columnIndex = columnIndex;
-        this.nodeColor=nodeColor;
+        this.nodeColor = nodeColor;
         SelectableNode.this.setWidth(100, Unit.PERCENTAGE);
         SelectableNode.this.setHeight(100, Unit.PERCENTAGE);
         VerticalLayout lineContainers = new VerticalLayout();
@@ -137,10 +137,10 @@ public abstract class SelectableNode extends AbsoluteLayout implements LayoutEve
         if (selecatble) {
 //             nodeContainer.setVisible(true);
             SelectableNode.this.addStyleName("selectablebubble");
-        } else { 
+        } else {
 //             nodeContainer.setVisible(false);
             nodeContainer.removeAllComponents();
-           Label nodeComp = new Label("<center><div style='width: 16px;height: 16px;border-radius: 100%;border:2px solid lightgray;background-color:whitesmoke;'></div><center>");
+            Label nodeComp = new Label("<center><div style='width: 16px;height: 16px;border-radius: 100%;border:2px solid lightgray;background-color:whitesmoke;'></div><center>");
             nodeComp.setContentMode(ContentMode.HTML);
             nodeContainer.addComponent(nodeComp);
             nodeContainer.setComponentAlignment(nodeComp, Alignment.MIDDLE_CENTER);

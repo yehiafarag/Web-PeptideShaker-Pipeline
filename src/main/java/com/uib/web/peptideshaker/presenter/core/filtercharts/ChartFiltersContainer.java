@@ -3,10 +3,13 @@ package com.uib.web.peptideshaker.presenter.core.filtercharts;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.charts.DonutChartFilter;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.charts.MatrixLayoutChartFilter;
 import com.uib.web.peptideshaker.presenter.components.peptideshakerview.components.SelectionManager;
+import com.uib.web.peptideshaker.presenter.core.filtercharts.charts.DonutChartFilterUpdated;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.charts.RangeFilter;
+import com.vaadin.server.ExternalResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Link;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -219,11 +222,12 @@ public class ChartFiltersContainer extends HorizontalLayout {
         }
         chromosomeFilter.updateChartData(chromosomeMap, colorList.subList(0, chromosomeMap.size()).toArray(new Color[chromosomeMap.size()]));
         Selection_Manager.setChromosomeMap(chromosomeMap);
-        PIFilter.updateChartData(piMap, colorList.subList(0, piMap.size()).toArray(new Color[piMap.size()]));
+        PIFilter.updateChartData(piMap,new Color[]{Color.DARK_GRAY,new Color(4,180,95),Color.YELLOW,new Color(213,8,8),Color.ORANGE} );//colorList.subList(0, piMap.size()).toArray(new Color[piMap.size()])
         Selection_Manager.setPiMap(piMap);
         Selection_Manager.setProteinValidationMap(proteinValidationMap);
-        validationFilter.updateChartData(proteinValidationMap, colorList.subList(0, proteinValidationMap.size()).toArray(new Color[proteinValidationMap.size()]));
+        validationFilter.updateChartData(proteinValidationMap,new Color[]{Color.DARK_GRAY,new Color(213,8,8),new Color(4,180,95)} );//colorList.subList(0, proteinValidationMap.size()).toArray(new Color[proteinValidationMap.size()])
 
+       
     }
 
     private double[][] initRangeData(Set<String> filteredData) {

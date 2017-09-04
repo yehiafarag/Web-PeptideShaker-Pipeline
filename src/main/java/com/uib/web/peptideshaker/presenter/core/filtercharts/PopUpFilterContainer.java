@@ -38,8 +38,10 @@ public class PopUpFilterContainer extends VerticalLayout implements LayoutEvents
 
     @Override
     public void layoutClick(LayoutEvents.LayoutClickEvent event) {
-        filter.redrawChart();
-        window.setPopupVisible(true);
+        if (event.getClickedComponent() == null &&event.getRelativeY()>30&&event.getRelativeY()<55) {
+            filter.redrawChart();
+            window.setPopupVisible(true);
+        } 
     }
 
     public void setPopupVisible(boolean visible) {

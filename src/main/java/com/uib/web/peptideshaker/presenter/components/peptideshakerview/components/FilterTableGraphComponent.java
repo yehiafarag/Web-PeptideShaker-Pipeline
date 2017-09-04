@@ -104,9 +104,9 @@ public class FilterTableGraphComponent extends VerticalLayout implements Registr
         Map<String, Set<String>> modificationsMap = peptideShakerVisualizationDataset.getModificationMap();
         for (String mod : modificationsMap.keySet()) {
             if (PTM.containsPTM(mod)) {
-                ModificationColorMap.put(mod, PTM.getColor(mod));
+                ModificationColorMap.put(mod, PTMFactory.getDefaultColor(mod));
             }else{
-                 ModificationColorMap.put(mod, Color.BLACK);
+                 ModificationColorMap.put(mod, Color.LIGHT_GRAY);
             }
         }
         this.chartFiltersContainer.updateFiltersData(modificationsMap, ModificationColorMap, peptideShakerVisualizationDataset.getChromosomeMap(), peptideShakerVisualizationDataset.getPiMap(), peptideShakerVisualizationDataset.getProteinValidationMap());
