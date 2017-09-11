@@ -14305,14 +14305,13 @@ div.v-layout.v-horizontal.v-widget {
 .webpeptideshakertheme .centeredtext {
 	font-size: 13px;
 	text-align: center !important;
+	padding-left: 5px;
 }
 
 .webpeptideshakertheme .thumbfilterframe {
 	border: 2px solid lightgray;
 	border-radius: 5px;
-	padding-top: 2%;
 	overflow: hidden;
-	padding-bottom: 6%;
 }
 
 .webpeptideshakertheme .v-caption-thumbfilterframe .Vaadin-Icons {
@@ -14516,7 +14515,6 @@ div.v-layout.v-horizontal.v-widget {
 	color: gray;
 	border-radius: 5px;
 	cursor: pointer;
-	margin-top: 17px;
 	overflow: hidden;
 	padding-left: 5px;
 	padding-top: 2px !important;
@@ -14575,8 +14573,78 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .stackedlegend:hover {
-	background: blue !important;
 	visibility: visible !important;
+}
+
+.webpeptideshakertheme .v-window {
+	overflow: visible !important;
+}
+
+.webpeptideshakertheme .middledountchart {
+	border-radius: 50%;
+	border: 2px solid white;
+	background-color: white;
+	color: gray;
+	text-align: -webkit-center;
+	text-align: center;
+	box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
+	-webkit-box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
+	-moz-box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
+	border-radius: 50%;
+	-webkit-border-radius: 50%;
+	-moz-border-radius: 50%;
+	display: table-cell;
+	vertical-align: middle;
+	text-align: center;
+}
+
+.webpeptideshakertheme .middledountchart center {
+	text-align: center !important;
+	font-weight: bold !important;
+	font-size: 15px !important;
+}
+
+.webpeptideshakertheme .middledountchart div {
+	text-align: center !important;
+	font-weight: bold !important;
+	font-size: 20px !important;
+}
+
+.webpeptideshakertheme .middledountchart:hover {
+	background-color: whitesmoke;
+	color: black;
+}
+
+.webpeptideshakertheme .v-label-middledountchart.v-label-invisibletext center {
+	font-size: 11px !important;
+	font-weight: normal !important;
+}
+
+.webpeptideshakertheme .legendimg {
+	padding-left: 10px;
+	padding-top: 10px;
+}
+
+.webpeptideshakertheme .resizableimg img {
+	width: auto !important;
+	height: 100% !important;
+	border: 2px solid white;
+}
+
+.webpeptideshakertheme .resizableimg img:hover {
+	border-color: gray;
+	position: relative;
+	z-index: 2 !important;
+	border-top-right-radius: 5px;
+	border-top-left-radius: 5px;
+}
+
+.webpeptideshakertheme .resizableselectedimg img {
+	border-color: orange !important;
+	position: relative;
+	z-index: 2 !important;
+	border-top-right-radius: 5px;
+	border-top-left-radius: 5px;
 }
 
 .webpeptideshakertheme .horizontalcss .largetitle .v-label {
@@ -14824,8 +14892,4 @@ div.v-layout.v-horizontal.v-widget {
 	border-bottom-left-radius: 0px;
 	overflow: hidden;
 	z-index: 2 !important;
-}
-
-.webpeptideshakertheme .v-window {
-	overflow: visible !important;
 }

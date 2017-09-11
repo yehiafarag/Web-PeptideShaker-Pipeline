@@ -1,4 +1,4 @@
-package com.uib.web.peptideshaker.presenter.core.filtercharts.charts;
+package com.uib.web.peptideshaker.presenter.core.filtercharts;
 
 //import com.byteowls.vaadin.chartjs.ChartJs;
 //import com.byteowls.vaadin.chartjs.config.DonutChartConfig;
@@ -6,6 +6,7 @@ package com.uib.web.peptideshaker.presenter.core.filtercharts.charts;
 //import com.byteowls.vaadin.chartjs.data.PieDataset;
 //import com.byteowls.vaadin.chartjs.options.InteractionMode;
 //import com.byteowls.vaadin.chartjs.options.Position;
+import com.uib.web.peptideshaker.presenter.core.filtercharts.charts.*;
 import com.byteowls.vaadin.chartjs.ChartJs;
 import com.byteowls.vaadin.chartjs.config.DonutChartConfig;
 import com.byteowls.vaadin.chartjs.config.PieChartConfig;
@@ -15,17 +16,20 @@ import com.byteowls.vaadin.chartjs.options.Position;
 import com.byteowls.vaadin.chartjs.options.Tooltips;
 import com.google.common.collect.Sets;
 import com.uib.web.peptideshaker.presenter.components.peptideshakerview.components.SelectionManager;
-import com.uib.web.peptideshaker.presenter.core.CloseButton;
+import com.uib.web.peptideshaker.presenter.core.filtercharts.components.RangeColorGenerator;
 import com.uib.web.peptideshaker.presenter.core.form.ColorLabel;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
@@ -44,7 +48,9 @@ import java.util.TreeSet;
  *
  * @author Yehia Farag
  */
-public abstract class DonutChartFilter extends AbsoluteLayout implements RegistrableFilter {
+public abstract class ChromosomesFilter extends AbsoluteLayout implements RegistrableFilter {
+
+    private RangeColorGenerator colorGenerator;
 
     private final Panel donutChartContainerPanel;
     private final String title;
@@ -58,6 +64,7 @@ public abstract class DonutChartFilter extends AbsoluteLayout implements Registr
     private VerticalLayout chartContainer;
     private VerticalLayout highLightchartContainer;
     private final VerticalLayout thumbFilterContainer;
+    private final Panel thumbFilterPanel;
     private final Label thumbTitle;
 
     private final Label chartTitle;
@@ -76,27 +83,28 @@ public abstract class DonutChartFilter extends AbsoluteLayout implements Registr
     private final Map<String, String> chartColors;
     private final Map<String, String> highLightedChartColors;
     private final Map<String, String> chartBorderColors;
-    private final VerticalLayout thumbChartContainer;
+    private HorizontalLayout thumbChartContainer;
+    private final LayoutEvents.LayoutClickListener mainClickListener;
 
     @Override
     public boolean isAppliedFilter() {
         return !(selectedData.isEmpty() || selectedData.size() == totalItemsNumber);
     }
 
-    public DonutChartFilter(String title, String filterId, SelectionManager Selection_Manager) {
+    public ChromosomesFilter(String title, String filterId, SelectionManager Selection_Manager) {
 
         this.title = title;
         this.filterId = filterId;
         this.Selection_Manager = Selection_Manager;
         selectedData = new LinkedHashSet<>();
         this.appliedFilters = new LinkedHashSet<>();
-        DonutChartFilter.this.setWidth(100, Unit.PERCENTAGE);
-        DonutChartFilter.this.setHeight(100, Unit.PERCENTAGE);
-        DonutChartFilter.this.setStyleName("filterframe");
+        ChromosomesFilter.this.setWidth(100, Unit.PERCENTAGE);
+        ChromosomesFilter.this.setHeight(100, Unit.PERCENTAGE);
+        ChromosomesFilter.this.setStyleName("filterframe");
         VerticalLayout filterContainer = new VerticalLayout();
         filterContainer.setSizeFull();
         filterContainer.setMargin(new MarginInfo(true, true, false, true));
-        DonutChartFilter.this.addComponent(filterContainer);
+        ChromosomesFilter.this.addComponent(filterContainer);
 
         chartTitle = new Label("" + title + " (100000/1000000)");
         chartTitle.setContentMode(ContentMode.HTML);
@@ -104,13 +112,13 @@ public abstract class DonutChartFilter extends AbsoluteLayout implements Registr
         chartTitle.addStyleName(ValoTheme.LABEL_NO_MARGIN);
         chartTitle.setWidth(100, Unit.PERCENTAGE);
         chartTitle.setHeight(30, Unit.PIXELS);
-        DonutChartFilter.this.addComponent(chartTitle, "left: " + 20 + "px; top: " + 10 + "px");
+        ChromosomesFilter.this.addComponent(chartTitle, "left: " + 20 + "px; top: " + 10 + "px");
         Button cancelSelectionButton = new Button(VaadinIcons.CLOSE);
         cancelSelectionButton.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
         cancelSelectionButton.addStyleName(ValoTheme.BUTTON_TINY);
         cancelSelectionButton.setWidth(25, Unit.PIXELS);
         cancelSelectionButton.setHeight(25, Unit.PIXELS);
-        DonutChartFilter.this.addComponent(cancelSelectionButton, "right: " + 20 + "px; top: " + 15 + "px");
+        ChromosomesFilter.this.addComponent(cancelSelectionButton, "right: " + 20 + "px; top: " + 15 + "px");
         cancelSelectionButton.addClickListener((Button.ClickEvent event) -> {
             if (this.appliedFilters.isEmpty()) {
                 unselectAll();
@@ -128,7 +136,7 @@ public abstract class DonutChartFilter extends AbsoluteLayout implements Registr
         applySelectionButton.setWidth(25, Unit.PIXELS);
         applySelectionButton.setHeight(25, Unit.PIXELS);
         applySelectionButton.setDescription("Apply filter selection");
-        DonutChartFilter.this.addComponent(applySelectionButton, "right: " + 50 + "px; top: " + 15 + "px");
+        ChromosomesFilter.this.addComponent(applySelectionButton, "right: " + 50 + "px; top: " + 15 + "px");
         applySelectionButton.addClickListener((Button.ClickEvent event) -> {
             applyFilter(selectedData);
             close();
@@ -139,7 +147,7 @@ public abstract class DonutChartFilter extends AbsoluteLayout implements Registr
         resetSelectionButton.addStyleName(ValoTheme.BUTTON_TINY);
         resetSelectionButton.setWidth(25, Unit.PIXELS);//110
         resetSelectionButton.setHeight(25, Unit.PIXELS);
-        DonutChartFilter.this.addComponent(resetSelectionButton, "right: " + 80 + "px; top: " + 15 + "px");
+        ChromosomesFilter.this.addComponent(resetSelectionButton, "right: " + 80 + "px; top: " + 15 + "px");
         resetSelectionButton.addClickListener((Button.ClickEvent event) -> {
             unselectAll();
         });
@@ -159,13 +167,13 @@ public abstract class DonutChartFilter extends AbsoluteLayout implements Registr
         donutChartContainerPanel.setHeight(100, Unit.PERCENTAGE);
         donutChartContainerPanel.addStyleName("scrolspacer");
 
-        this.Selection_Manager.RegistrFilter(DonutChartFilter.this);
+        this.Selection_Manager.RegistrFilter(ChromosomesFilter.this);
         thumbFilterContainer = new VerticalLayout();
         thumbFilterContainer.setStyleName("thumbfilterframe");
         thumbFilterContainer.setSizeFull();
-        thumbFilterContainer.setSpacing(true);
+        thumbFilterContainer.setSpacing(false);
         thumbFilterContainer.setMargin(new MarginInfo(false, false, false, false));
-        thumbFilterContainer.setIcon(VaadinIcons.EXPAND_FULL);
+//        thumbFilterContainer.setIcon(VaadinIcons.EXPAND_FULL);
 
         thumbTitle = new Label();
         thumbTitle.setContentMode(ContentMode.HTML);
@@ -177,7 +185,7 @@ public abstract class DonutChartFilter extends AbsoluteLayout implements Registr
         thumbFilterContainer.addComponent(thumbTitle);
         thumbFilterContainer.setExpandRatio(thumbTitle, 1);
 
-        Panel thumbFilterPanel = new Panel();
+        thumbFilterPanel = new Panel();
         thumbFilterPanel.setHeight(100, Unit.PERCENTAGE);
         thumbFilterPanel.setWidth(95, Unit.PERCENTAGE);
         thumbFilterPanel.setStyleName(ValoTheme.PANEL_BORDERLESS);
@@ -185,13 +193,9 @@ public abstract class DonutChartFilter extends AbsoluteLayout implements Registr
         thumbFilterContainer.setComponentAlignment(thumbFilterPanel, Alignment.TOP_CENTER);
         thumbFilterContainer.setExpandRatio(thumbFilterPanel, 99);
 
-        thumbChartContainer = new VerticalLayout();
-        thumbChartContainer.setSizeFull();
-        thumbFilterPanel.setContent(thumbChartContainer);
-
         legendContainer = new VerticalLayout();
         legendContainer.setSizeFull();
-        donutChartPanel.setMargin(new MarginInfo(true, false, false, false));
+        donutChartPanel.setMargin(new MarginInfo(false, false, false, false));
         donutChartPanel.addComponent(legendContainer);
         donutChartPanel.setExpandRatio(legendContainer, 10);
         legendContainer.setVisible(false);
@@ -205,60 +209,120 @@ public abstract class DonutChartFilter extends AbsoluteLayout implements Registr
         this.filteredData = new LinkedHashMap<>();
         this.chartBorderColors = new LinkedHashMap<>();
 
+        this.mainClickListener = (LayoutEvents.LayoutClickEvent event) -> {
+            Component clickedComponent = event.getClickedComponent();
+            if (clickedComponent instanceof Label) {
+                if (clickedComponent.getDescription().equalsIgnoreCase("No Proteins")) {
+                    return;
+                }
+                if (clickedComponent.getStyleName().contains("resizableselectedimg")) {
+                    clickedComponent.removeStyleName("resizableselectedimg");
+                } else {
+                    clickedComponent.addStyleName("resizableselectedimg");
+                }
+
+                System.out.println("at clicked label " + ((Label) clickedComponent).getData() + "  " + clickedComponent.getStyleName());
+
+            }
+        };
+
     }
 
-    public void updateChartData(Map<String, Set<Comparable>> data, Color[] colorsArr) {
+    private HorizontalLayout initFilterLayout() {
+        HorizontalLayout filter = new HorizontalLayout();
+        filter.addLayoutClickListener(mainClickListener);
+        filter.setSpacing(false);
+        filter.setSizeFull();
+        int row = 0;
+        int column = 0;
+        for (int i = 0; i < 24; i++) {
+            String color = "lightgray";
+            String desc = "No proteins";
+            String cursor = "";
+            if (filteredData.containsKey(i + "") && !filteredData.get(i + "").isEmpty()) {
+                color = colorGenerator.getColor(filteredData.get(i + "").size());
+                desc = filteredData.get(i + "").size() + " Proteins";
+                cursor = "pointer";
+            }
+            Label img = new Label("<img style= 'background-color: " + color + ";' src='VAADIN/themes/webpeptideshakertheme/img/chromosoms/" + (i + 1) + ".png'>", ContentMode.HTML);
+            img.setHeight(85, Unit.PERCENTAGE);
+            img.setWidth(100, Unit.PERCENTAGE);
+            img.addStyleName(cursor);
+            img.addStyleName("resizableimg");
+            img.setData(i);
+            img.setDescription(desc);
+            filter.addComponent(img);
+            if (column == 24) {
+                column = 0;
+                row++;
+            }
+
+        }
+        filter.setSizeFull();
+
+        return filter;
+    }
+
+    public void updateChartData(Map<String, Set<Comparable>> data) {
         this.fullData = data;
         filteredData.clear();
         filteredData.putAll(data);
         appliedFilters.clear();
-
         selectedCategories.clear();
         colorsMap.clear();
-        List<Double> barChartData = new ArrayList<>();
-        totalItemsNumber = 0;
-
-        int index = 0;
-        for (String key : data.keySet()) {
-            int size = data.get(key).size();
-            totalItemsNumber += size;
-            barChartData.add((double) size);
-            Color c = colorsArr[index++];
-            colorsMap.put(key, c);
-            chartBorderColors.put(key, "white");
-            chartColors.put(key, String.format("#%02x%02x%02x", c.getRed(), c.getGreen(), c.getBlue()));
-            highLightedChartColors.put(key, "rgba(0,0,0,0)");
-        }
-        TreeSet<Double> barChartset = new TreeSet<>(barChartData);
-        double counter = 0;
-        List<Double> updatedBarChartData = new ArrayList<>();
-        for (double linar : barChartData) {
-            double sv = 0;
-            if (linar > 0.0) {
-                sv = scaleValues(linar, barChartset.last(), barChartset.first());
-            }
-            counter += sv;
-            updatedBarChartData.add(sv);
-        }
-        barChartData.clear();
-        for (double log : updatedBarChartData) {
-            barChartData.add((double) ((int) (log * 100.0 / counter)));
-
+        TreeSet<Integer> treeSet = new TreeSet<>();
+        for (Set<Comparable> set : data.values()) {
+            treeSet.add(set.size());
         }
 
-        legendContainer.setVisible(true);
-        thumbLegendContainer.setVisible(true);
-        HorizontalLayout legend = initLegend(data.keySet());
-        legendContainer.removeAllComponents();
-        legendContainer.addComponent(legend);
-        legendContainer.setComponentAlignment(legend, Alignment.MIDDLE_CENTER);
+        colorGenerator = new RangeColorGenerator(treeSet.last());
+        thumbChartContainer = initFilterLayout();
+        thumbFilterPanel.setContent(thumbChartContainer);
 
-        HorizontalLayout thumbLegend = initLegend(data.keySet());
-        thumbLegendContainer.removeAllComponents();
-        thumbLegendContainer.addComponent(thumbLegend);
-        thumbLegendContainer.setComponentAlignment(thumbLegend, Alignment.MIDDLE_CENTER);
-
-        donutChartContainerPanel.setContent(initDonutChartFilter(barChartData));
+//        List<Double> barChartData = new ArrayList<>();
+//        totalItemsNumber = 0;
+//
+//        int index = 0;
+//        for (String key : data.keySet()) {
+//            int size = data.get(key).size();
+//            totalItemsNumber += size;
+//            barChartData.add((double) size);
+//            Color c = colorsArr[index++];
+//            colorsMap.put(key, c);
+//            chartBorderColors.put(key, "white");
+//            chartColors.put(key, String.format("#%02x%02x%02x", c.getRed(), c.getGreen(), c.getBlue()));
+//            highLightedChartColors.put(key, "rgba(0,0,0,0)");
+//        }
+//        TreeSet<Double> barChartset = new TreeSet<>(barChartData);
+//        double counter = 0;
+//        List<Double> updatedBarChartData = new ArrayList<>();
+//        for (double linar : barChartData) {
+//            double sv = 0;
+//            if (linar > 0.0) {
+//                sv = scaleValues(linar, barChartset.last(), barChartset.first());
+//            }
+//            counter += sv;
+//            updatedBarChartData.add(sv);
+//        }
+//        barChartData.clear();
+//        for (double log : updatedBarChartData) {
+//            barChartData.add((double) ((int) (log * 100.0 / counter)));
+//
+//        }
+//
+//        legendContainer.setVisible(true);
+//        thumbLegendContainer.setVisible(true);
+//        HorizontalLayout legend = initLegend(data.keySet());
+//        legendContainer.removeAllComponents();
+//        legendContainer.addComponent(legend);
+//        legendContainer.setComponentAlignment(legend, Alignment.MIDDLE_CENTER);
+//
+//        HorizontalLayout thumbLegend = initLegend(data.keySet());
+//        thumbLegendContainer.removeAllComponents();
+//        thumbLegendContainer.addComponent(thumbLegend);
+//        thumbLegendContainer.setComponentAlignment(thumbLegend, Alignment.MIDDLE_CENTER);
+//
+//        donutChartContainerPanel.setContent(initDonutChartFilter(barChartData));
         updateLabels();
 
     }
@@ -500,48 +564,47 @@ public abstract class DonutChartFilter extends AbsoluteLayout implements Registr
     @Override
     public void redrawChart() {
 
-        String[] highLightedColorArr = highLightedChartColors.values().toArray(new String[chartColors.size()]);
-        String[] colorArr = chartColors.values().toArray(new String[chartColors.size()]);
-        String[] borderColorArr = chartBorderColors.values().toArray(new String[colorsMap.size()]);
-        ((PieDataset) donutConfig.data().getDatasetAtIndex(0)).borderColor(borderColorArr).hoverBorderColor(borderColorArr).backgroundColor(colorArr).hoverBackgroundColor(colorArr).borderWidth(5);
-        donutConfig.options().legend().display(!legendContainer.isVisible()).and().animation().duration(1).and().done();
-        chartContainer.removeAllComponents();
-        chart = new ChartJs(donutConfig);
-        chart.addClickListener((int datasetIndex, int dataIndex) -> {
-            selectCategory(colorsMap.keySet().toArray()[dataIndex] + "");
-        });
-        chart.setWidth(80, Unit.PERCENTAGE);
-        chart.setHeight(80, Unit.PERCENTAGE);
-
-        chartContainer.addComponent(chart);
-        chartContainer.setComponentAlignment(chart, Alignment.MIDDLE_CENTER);
-        ((PieDataset) highLightDonutConfig.data().getDatasetAtIndex(0)).borderColor("white").hoverBorderColor("white").backgroundColor(highLightedColorArr).hoverBackgroundColor(highLightedColorArr).borderWidth(10);
-        highLightDonutConfig.options().legend().display(!legendContainer.isVisible()).and().animation().duration(1).and().done();
-
-        highLightchartContainer.removeAllComponents();
-        ChartJs chart2 = new ChartJs(highLightDonutConfig);
-        chart2.addClickListener((int datasetIndex, int dataIndex) -> {
-            selectCategory(colorsMap.keySet().toArray()[dataIndex] + "");
-        });
-        chart2.setWidth(100, Unit.PERCENTAGE);
-        chart2.setHeight(100, Unit.PERCENTAGE);
-        highLightchartContainer.addComponent(chart2);
-
-        thumbChartContainer.removeAllComponents();
-        donutConfig.options().legend().display(false).and().done();
-        ChartJs thumbChart = new ChartJs(donutConfig);
-        thumbChart.addClickListener((int datasetIndex, int dataIndex) -> {
-            selectCategory(colorsMap.keySet().toArray()[dataIndex] + "");
-            applyFilter(selectedData);
-        });
-        thumbChart.setWidth(100, Unit.PERCENTAGE);
-        thumbChart.setHeight(100, Unit.PERCENTAGE);
-        thumbChartContainer.addComponent(thumbChart);
-        thumbChartContainer.setExpandRatio(thumbChart, 80);
-        thumbChartContainer.addComponent(thumbLegendContainer);
-        thumbChartContainer.setComponentAlignment(thumbLegendContainer, Alignment.MIDDLE_CENTER);
-        thumbChartContainer.setExpandRatio(thumbLegendContainer, 20);
-
+//        String[] highLightedColorArr = highLightedChartColors.values().toArray(new String[chartColors.size()]);
+//        String[] colorArr = chartColors.values().toArray(new String[chartColors.size()]);
+//        String[] borderColorArr = chartBorderColors.values().toArray(new String[colorsMap.size()]);
+//        ((PieDataset) donutConfig.data().getDatasetAtIndex(0)).borderColor(borderColorArr).hoverBorderColor(borderColorArr).backgroundColor(colorArr).hoverBackgroundColor(colorArr).borderWidth(5);
+//        donutConfig.options().legend().display(!legendContainer.isVisible()).and().animation().duration(1).and().done();
+//        chartContainer.removeAllComponents();
+//        chart = new ChartJs(donutConfig);
+//        chart.addClickListener((int datasetIndex, int dataIndex) -> {
+//            selectCategory(colorsMap.keySet().toArray()[dataIndex] + "");
+//        });
+//        chart.setWidth(80, Unit.PERCENTAGE);
+//        chart.setHeight(80, Unit.PERCENTAGE);
+//
+//        chartContainer.addComponent(chart);
+//        chartContainer.setComponentAlignment(chart, Alignment.MIDDLE_CENTER);
+//        ((PieDataset) highLightDonutConfig.data().getDatasetAtIndex(0)).borderColor("white").hoverBorderColor("white").backgroundColor(highLightedColorArr).hoverBackgroundColor(highLightedColorArr).borderWidth(10);
+//        highLightDonutConfig.options().legend().display(!legendContainer.isVisible()).and().animation().duration(1).and().done();
+//
+//        highLightchartContainer.removeAllComponents();
+//        ChartJs chart2 = new ChartJs(highLightDonutConfig);
+//        chart2.addClickListener((int datasetIndex, int dataIndex) -> {
+//            selectCategory(colorsMap.keySet().toArray()[dataIndex] + "");
+//        });
+//        chart2.setWidth(100, Unit.PERCENTAGE);
+//        chart2.setHeight(100, Unit.PERCENTAGE);
+//        highLightchartContainer.addComponent(chart2);
+//
+//        thumbChartContainer.removeAllComponents();
+//        donutConfig.options().legend().display(false).and().done();
+//        ChartJs thumbChart = new ChartJs(donutConfig);
+//        thumbChart.addClickListener((int datasetIndex, int dataIndex) -> {
+//            selectCategory(colorsMap.keySet().toArray()[dataIndex] + "");
+//            applyFilter(selectedData);
+//        });
+//        thumbChart.setWidth(100, Unit.PERCENTAGE);
+//        thumbChart.setHeight(100, Unit.PERCENTAGE);
+//        thumbChartContainer.addComponent(thumbChart);
+//        thumbChartContainer.setExpandRatio(thumbChart, 80);
+//        thumbChartContainer.addComponent(thumbLegendContainer);
+//        thumbChartContainer.setComponentAlignment(thumbLegendContainer, Alignment.MIDDLE_CENTER);
+//        thumbChartContainer.setExpandRatio(thumbLegendContainer, 20);
     }
 
     @Override
@@ -613,33 +676,35 @@ public abstract class DonutChartFilter extends AbsoluteLayout implements Registr
             filteredData.put(key, intersection);
             barChartData.add((double) intersection.size());
         }
-        TreeSet<Double> barChartset = new TreeSet<>(barChartData);
-        double counter = 0;
-        List<Double> updatedBarChartData = new ArrayList<>();
-        for (double linar : barChartData) {
-            double sv = 0;
-            if (linar > 0.0) {
-                sv = scaleValues(linar, barChartset.last(), barChartset.first());
-            }
-            counter += sv;
-            updatedBarChartData.add(sv);
-        }
-        barChartData.clear();
-        for (double log : updatedBarChartData) {
-            barChartData.add((double) ((int) (log * 100.0 / counter)));
-        }
-
-        donutChartContainerPanel.setContent(initDonutChartFilter(barChartData));
-        if (selection.size() == totalItemsNumber) {
-            unselectAll();
+        thumbChartContainer = initFilterLayout();
+        thumbFilterPanel.setContent(thumbChartContainer);
+//        TreeSet<Double> barChartset = new TreeSet<>(barChartData);
+//        double counter = 0;
+//        List<Double> updatedBarChartData = new ArrayList<>();
+//        for (double linar : barChartData) {
+//            double sv = 0;
+//            if (linar > 0.0) {
+//                sv = scaleValues(linar, barChartset.last(), barChartset.first());
+//            }
+//            counter += sv;
+//            updatedBarChartData.add(sv);
+//        }
+//        barChartData.clear();
+//        for (double log : updatedBarChartData) {
+//            barChartData.add((double) ((int) (log * 100.0 / counter)));
+//        }
+//
+//        donutChartContainerPanel.setContent(initDonutChartFilter(barChartData));
+//        if (selection.size() == totalItemsNumber) {
+//            unselectAll();
+////            applyFilter(selectedData);
+//        } else if (singleFilter && !selectedCategories.isEmpty()) {
 //            applyFilter(selectedData);
-        } else if (singleFilter && !selectedCategories.isEmpty()) {
-            applyFilter(selectedData);
-        } else {
-            for (Object cat : selectedCategories) {
-                selectCategory(cat + "");
-            }
-        }
+//        } else {
+//            for (Object cat : selectedCategories) {
+//                selectCategory(cat + "");
+//            }
+//        }
         updateLabels();
 
     }

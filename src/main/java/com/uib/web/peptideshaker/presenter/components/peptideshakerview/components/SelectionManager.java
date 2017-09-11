@@ -19,39 +19,39 @@ public class SelectionManager {
 
     private final Map<BigSideBtn, Component> btnsLayoutMap;
     private final Map<String, RegistrableFilter> registeredFiltersMap;
-    private final Set<String> fullProteinSet;
-    private Set<String> proteinSelectionValue;
+    private final Set<Comparable> fullProteinSet;
+    private Set<Comparable> proteinSelectionValue;
 
     private boolean singleProteinsFilter = false;
 
-    public Set<String> getFullProteinSet() {
+    public Set<Comparable> getFullProteinSet() {
         return fullProteinSet;
     }
-    private Map<String, Set<String>> modificationsMap;
-    private Map<String, Set<String>> chromosomeMap;
+    private Map<String, Set<Comparable>> modificationsMap;
+    private Map<String, Set<Comparable>> chromosomeMap;
     
-    private final Map<String, Set<String>> selectedModificationsMap;
-    private final Map<String, Set<String>> selectedChromosomeMap;
-    private Map<String, Set<String>> piMap;
-    private final Map<String, Set<String>> selectedPIMap;
+    private final Map<String, Set<Comparable>> selectedModificationsMap;
+    private final Map<String, Set<Comparable>> selectedChromosomeMap;
+    private Map<String, Set<Comparable>> piMap;
+    private final Map<String, Set<Comparable>> selectedPIMap;
     
     
-    private Map<String, Set<String>> proteinValidationMap;
-    private final Map<String, Set<String>> selectedProteinValidationMap;
+    private Map<String, Set<Comparable>> proteinValidationMap;
+    private final Map<String, Set<Comparable>> selectedProteinValidationMap;
     
     private final Map<String, Set<Object>> registeredAppliedFiltersMap;
 
-    public void setChromosomeMap(Map<String, Set<String>> chromosomeMap) {
+    public void setChromosomeMap(Map<String, Set<Comparable>> chromosomeMap) {
         this.selectedChromosomeMap.clear();
         this.chromosomeMap = chromosomeMap;
     }
 
-    public void setPiMap(Map<String, Set<String>> piMap) {
+    public void setPiMap(Map<String, Set<Comparable>> piMap) {
         this.selectedPIMap.clear();
         this.piMap = piMap;
     }
 
-    public Map<String, Set<String>> getPiMap() {
+    public Map<String, Set<Comparable>> getPiMap() {
         if (selectedPIMap.isEmpty()) {
             return piMap;
         } else {
@@ -59,7 +59,7 @@ public class SelectionManager {
         }
     }
 
-    public Map<String, Set<String>> getProteinValidationMap() {
+    public Map<String, Set<Comparable>> getProteinValidationMap() {
         if (selectedProteinValidationMap.isEmpty()) {
             return proteinValidationMap;
         } else {
@@ -67,14 +67,14 @@ public class SelectionManager {
         }
     }
 
-    public void setProteinValidationMap(Map<String, Set<String>> proteinValidationMap) {
+    public void setProteinValidationMap(Map<String, Set<Comparable>> proteinValidationMap) {
         this.selectedProteinValidationMap.clear();
         this.proteinValidationMap = proteinValidationMap;
     }
     
     
 
-    public Map<String, Set<String>> getChromosomeMap() {
+    public Map<String, Set<Comparable>> getChromosomeMap() {
         if (selectedChromosomeMap.isEmpty()) {
             return chromosomeMap;
         } else {
@@ -82,7 +82,7 @@ public class SelectionManager {
         }
     }
 
-    public Map<String, Set<String>> getModificationsMap() {
+    public Map<String, Set<Comparable>> getModificationsMap() {
         if (selectedModificationsMap.isEmpty()) {
             return modificationsMap;
         } else {
@@ -106,10 +106,10 @@ public class SelectionManager {
 
     }
 
-    public void setModificationsMap(Map<String, Set<String>> modificationsMap) {
+    public void setModificationsMap(Map<String, Set<Comparable>> modificationsMap) {
         selectedModificationsMap.clear();
         this.modificationsMap = modificationsMap;
-        for (Set<String> set : modificationsMap.values()) {
+        for (Set<Comparable> set : modificationsMap.values()) {
             fullProteinSet.addAll(set);
         }
     }
@@ -160,7 +160,7 @@ public class SelectionManager {
      * @param selectionValue set of selected value ids
      * @param filterId filter that create the event
      */
-    public void setSelection(String selectionType, Set<String> selectionValue, String filterId) {
+    public void setSelection(String selectionType, Set<Comparable> selectionValue, String filterId) {
         int usedFilter = 0;
         if (selectionType.equalsIgnoreCase("protein_selection")) {
             if (filterId.equalsIgnoreCase("modifications_filter")) {
@@ -188,22 +188,22 @@ public class SelectionManager {
             proteinSelectionValue = filterProteinData();
             selectedChromosomeMap.clear();
             for (String key : chromosomeMap.keySet()) {
-                Set<String> inter = new LinkedHashSet<>(Sets.intersection(proteinSelectionValue, chromosomeMap.get(key)));
+                Set<Comparable> inter = new LinkedHashSet<>(Sets.intersection(proteinSelectionValue, chromosomeMap.get(key)));
                 selectedChromosomeMap.put(key, inter);
             }
             selectedPIMap.clear();
             for (String key : piMap.keySet()) {
-                Set<String> inter = new LinkedHashSet<>(Sets.intersection(proteinSelectionValue, piMap.get(key)));
+                Set<Comparable> inter = new LinkedHashSet<>(Sets.intersection(proteinSelectionValue, piMap.get(key)));
                 selectedPIMap.put(key, inter);
             }
               selectedProteinValidationMap.clear();
             for (String key : proteinValidationMap.keySet()) {
-                Set<String> inter = new LinkedHashSet<>(Sets.intersection(proteinSelectionValue,proteinValidationMap.get(key)));
+                Set<Comparable> inter = new LinkedHashSet<>(Sets.intersection(proteinSelectionValue,proteinValidationMap.get(key)));
                 selectedProteinValidationMap.put(key, inter);
             }
             selectedModificationsMap.clear();
             for (String key : modificationsMap.keySet()) {
-                Set<String> inter = new LinkedHashSet<>();
+                Set<Comparable> inter = new LinkedHashSet<>();
                 inter.addAll(Sets.intersection(proteinSelectionValue, modificationsMap.get(key)));
                 if (!inter.isEmpty()) {
                     selectedModificationsMap.put(key, inter);
@@ -217,14 +217,14 @@ public class SelectionManager {
 
     }
 
-    private Set<String> filterProteinData() {
+    private Set<Comparable> filterProteinData() {
         
 
-        Set<String> filteredProtenSet = new LinkedHashSet<>(fullProteinSet);
+        Set<Comparable> filteredProtenSet = new LinkedHashSet<>(fullProteinSet);
         for (String filterId : registeredAppliedFiltersMap.keySet()) {
             Set<Object> selectedCategories = registeredAppliedFiltersMap.get(filterId);
             if (filterId.equalsIgnoreCase("modifications_filter") && !selectedCategories.isEmpty()) {
-                Map<String, Set<String>> filteredMatrix = ((MatrixLayoutChartFilter) registeredFiltersMap.get(filterId)).getCalculatedMatrix();
+                Map<String, Set<Comparable>> filteredMatrix = ((MatrixLayoutChartFilter) registeredFiltersMap.get(filterId)).getCalculatedMatrix();
                 for (String key : filteredMatrix.keySet()) {
                    if (!selectedCategories.contains(key)) {
                         filteredProtenSet.removeAll(filteredMatrix.get(key));
@@ -232,21 +232,21 @@ public class SelectionManager {
                 }
 
             } else if (filterId.equalsIgnoreCase("chromosome_filter") && !selectedCategories.isEmpty()) {
-                Set<String> selectedData = new LinkedHashSet<>();
+                Set<Comparable> selectedData = new LinkedHashSet<>();
                 for (Object cat : selectedCategories) {
                     selectedData.addAll(Sets.intersection(chromosomeMap.get(cat.toString()), filteredProtenSet));
                 }
                 filteredProtenSet.clear();
                 filteredProtenSet.addAll(selectedData);
             } else if (filterId.equalsIgnoreCase("PI_filter") && !selectedCategories.isEmpty()) {
-                Set<String> selectedData = new LinkedHashSet<>();
+                Set<Comparable> selectedData = new LinkedHashSet<>();
                 for (Object cat : selectedCategories) {
                     selectedData.addAll(Sets.intersection(piMap.get(cat.toString()), filteredProtenSet));
                 }
                 filteredProtenSet.clear();
                 filteredProtenSet.addAll(selectedData);
             }else if (filterId.equalsIgnoreCase("validation_filter") && !selectedCategories.isEmpty()) {
-                Set<String> selectedData = new LinkedHashSet<>();
+                Set<Comparable> selectedData = new LinkedHashSet<>();
                 for (Object cat : selectedCategories) {
                     selectedData.addAll(Sets.intersection(proteinValidationMap.get(cat.toString()), filteredProtenSet));
                 }
@@ -292,7 +292,7 @@ public class SelectionManager {
 
     }
 
-    public Set<String> getProteinSelectionValue() {
+    public Set<Comparable> getProteinSelectionValue() {
         if (proteinSelectionValue == null) {
             System.out.println("there is a null selected proted");
         }

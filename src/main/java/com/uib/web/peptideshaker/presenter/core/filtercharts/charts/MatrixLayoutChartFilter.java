@@ -51,9 +51,9 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
 
     private final Panel barChartContainerPanel;
     private final Panel graphChartContainerPanel;
-    private Map<String, Set<String>> columns;
+    private Map<String, Set<Comparable>> columns;
     private final Map<String, Integer> rows = new LinkedHashMap<>();
-    private final Map<String, Set<String>> calculatedMatrix = new LinkedHashMap<>();
+    private final Map<String, Set<Comparable>> calculatedMatrix = new LinkedHashMap<>();
 
     private final Set<String> keySorter = new TreeSet<>();
     private final Label setSizeLabel;
@@ -72,7 +72,7 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
     private GridLayout nodeContainer;
     private VerticalLayout rowsLabelsLayoutContainer;
     private final Label chartTitle;
-    private final Set<String> selectedDataSet;
+    private final Set<Comparable> selectedDataSet;
     private Map<String, Color> dataColors;
     private int appliedFilters;
     private int totalItemsNumber;
@@ -202,7 +202,7 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
         thumbFilterContainer.setHeight(100, Unit.PERCENTAGE);
         thumbFilterContainer.setSpacing(true);
         thumbFilterContainer.setMargin(new MarginInfo(false, false, false, false));
-        thumbFilterContainer.setIcon(VaadinIcons.EXPAND_FULL);
+//        thumbFilterContainer.setIcon(VaadinIcons.EXPAND_FULL);
 
         thumbTitle = new Label();
         thumbTitle.setContentMode(ContentMode.HTML);
@@ -248,7 +248,7 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
 
     }
 
-    public void calculateChartData(Map<String, Set<String>> data, Map<String, Color> dataColors, Set<Object> selectedCategories, int totalNumber) {
+    public void calculateChartData(Map<String, Set<Comparable>> data, Map<String, Color> dataColors, Set<Object> selectedCategories, int totalNumber) {
         selectedDataSet.clear();
         selectedColumns = -1;
         rows.clear();
@@ -261,7 +261,7 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
         totalItemsNumber = totalNumber;
 
         List<Double> barChartData = new ArrayList<>();
-        for (Set<String> set : columns.values()) {
+        for (Set<Comparable> set : columns.values()) {
             barChartData.add((double) set.size());
         }
         TreeSet<Double> ts = new TreeSet<>(barChartData);
@@ -280,7 +280,7 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
 
     }
 
-    private Map<String, Set<String>> calculateMatrix(Map<String, Set<String>> data) {
+    private Map<String, Set<Comparable>> calculateMatrix(Map<String, Set<Comparable>> data) {
 
 //        Map<TreeSet<String>, Set<String>> temMatrixData = new LinkedHashMap<>();
 //        for (String key : data.keySet()) {
@@ -305,22 +305,22 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
 //            }
 //        }
 //calculate matrix
-        Map<String, Set<String>> matrixData = new LinkedHashMap<>();
+        Map<String, Set<Comparable>> matrixData = new LinkedHashMap<>();
         TreeMap<AlphanumComparator, String> sortingMap = new TreeMap<>(Collections.reverseOrder());
         for (String key : data.keySet()) {
             AlphanumComparator sortingKey = new AlphanumComparator(data.get(key).size() + "_" + key);
             sortingMap.put(sortingKey, key);
         }
-        Map<String, Set<String>> sortedData = new LinkedHashMap<>();
+        Map<String, Set<Comparable>> sortedData = new LinkedHashMap<>();
         for (String key : sortingMap.values()) {
             int size = data.get(key).size();
             this.rows.put(key, size);
             sortedData.put(key, data.get(key));
         }
-        Map<String, Set<String>> rowsII = new LinkedHashMap<>(sortedData);
-        Map<String, Set<String>> tempColumns = new LinkedHashMap<>();
+        Map<String, Set<Comparable>> rowsII = new LinkedHashMap<>(sortedData);
+        Map<String, Set<Comparable>> tempColumns = new LinkedHashMap<>();
         tempColumns.putAll(sortedData);
-        Map<String, Set<String>> trows = new LinkedHashMap<>(sortedData);
+        Map<String, Set<Comparable>> trows = new LinkedHashMap<>(sortedData);
         for (String keyI : sortedData.keySet()) {
             for (String keyII : rowsII.keySet()) {
                 if (keyI.equals(keyII) || keyII.contains(keyI)) {
@@ -331,18 +331,18 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
                 key = keySorter.toString();
                 keySorter.clear();
                 if (trows.containsKey(key)) {
-                    Set<String> union = new LinkedHashSet<>();
+                    Set<Comparable> union = new LinkedHashSet<>();
                     union.addAll(com.google.common.collect.Sets.union(trows.get(key), com.google.common.collect.Sets.intersection(rowsII.get(keyII), sortedData.get(keyI))));
                     trows.put(key, union);
                 } else {
-                    Set<String> intersection = new LinkedHashSet<>();
+                    Set<Comparable> intersection = new LinkedHashSet<>();
                     intersection.addAll(com.google.common.collect.Sets.intersection(rowsII.get(keyII), sortedData.get(keyI)));
                     trows.put(key, intersection);
-                    Set<String> tempSetI = new LinkedHashSet<>();
+                    Set<Comparable> tempSetI = new LinkedHashSet<>();
                     tempSetI.addAll(rowsII.get(keyII));
                     tempSetI.removeAll(intersection);
                     rowsII.replace(keyII, tempSetI);
-                    Set<String> tempSetII = new LinkedHashSet<>();
+                    Set<Comparable> tempSetII = new LinkedHashSet<>();
                     tempSetII.addAll(sortedData.get(keyI));
                     tempSetII.removeAll(intersection);
                     sortedData.replace(keyI, tempSetII);
@@ -377,7 +377,7 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
 
         for (String key1 : matrixData.keySet()) {
             for (String key2 : matrixData.keySet()) {
-                HashSet<String> intersction = new HashSet<>();
+                HashSet<Comparable> intersction = new HashSet<>();
                 intersction.addAll(Sets.intersection(matrixData.get(key2), matrixData.get(key1)));
                 if (!intersction.isEmpty() && !key2.equalsIgnoreCase(key1)) {
                     if (key1.split(",").length > key2.split(",").length) {
@@ -392,7 +392,7 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
             }
         }
 
-        Map<String, Set<String>> tempMatrixData = new LinkedHashMap<>(matrixData);
+        Map<String, Set<Comparable>> tempMatrixData = new LinkedHashMap<>(matrixData);
         for (String key1 : tempMatrixData.keySet()) {
             if (matrixData.get(key1).isEmpty()) {
                 matrixData.remove(key1);
@@ -540,7 +540,7 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
         return container;
     }
 
-    private HorizontalLayout initGraph(double protNumber, Map<String, Set<String>> columns, Map<String, Integer> rows) {
+    private HorizontalLayout initGraph(double protNumber, Map<String, Set<Comparable>> columns, Map<String, Integer> rows) {
 
         while (protNumber % 10 != 0) {
             protNumber++;
@@ -896,7 +896,7 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
         calculatedMatrix.clear();
         calculatedMatrix.putAll(columns);
         List<Double> barChartData = new ArrayList<>();
-        for (Set<String> set : columns.values()) {
+        for (Set<Comparable> set : columns.values()) {
             barChartData.add((double) set.size());
         }
         TreeSet<Double> ts = new TreeSet<>(barChartData);
@@ -908,15 +908,15 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
     }
 
     @Override
-    public void updateFilter(Set<String> selection, Set<Object> selectedCategories, boolean singleFilter) {
+    public void updateFilter(Set<Comparable> selection, Set<Object> selectedCategories, boolean singleFilter) {
 
         List<Double> newDataValues = new ArrayList<>();
         List<String> newLabels = new ArrayList<>();
         List<Integer> selectedCategoriesIndexes = new ArrayList<>();
-        Map<String, Set<String>> updatedColumns = new LinkedHashMap<>();
+        Map<String, Set<Comparable>> updatedColumns = new LinkedHashMap<>();
         int index = 0;
         for (String colId : columns.keySet()) {
-            Set<String> intersection = new LinkedHashSet<>();
+            Set<Comparable> intersection = new LinkedHashSet<>();
             if (singleFilter && !selectedCategories.isEmpty()) {
                 intersection.addAll(columns.get(colId));
             } else {
@@ -945,13 +945,13 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
 
     }
 
-    public Set<String> getSelectedDataSet() {
+    public Set<Comparable> getSelectedDataSet() {
         return selectedDataSet;
     }
 
     public abstract void close();
 
-    public void applyFilter(Set<String> selectedDataset) {
+    public void applyFilter(Set<Comparable> selectedDataset) {
 
         appliedFilters = (selectedColumns);
         Selection_Manager.setSelection("protein_selection", selectedDataset, filterId);
@@ -963,7 +963,7 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
         return thumbFilterContainer;
     }
 
-    public Map<String, Set<String>> getCalculatedMatrix() {
+    public Map<String, Set<Comparable>> getCalculatedMatrix() {
         return calculatedMatrix;
     }
 

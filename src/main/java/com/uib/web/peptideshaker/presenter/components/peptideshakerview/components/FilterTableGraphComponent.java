@@ -7,7 +7,7 @@ import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDa
 import com.uib.web.peptideshaker.galaxy.dataobjects.ProteinObject;
 import com.uib.web.peptideshaker.presenter.core.SearchableTable;
 import com.uib.web.peptideshaker.presenter.core.TableColumnHeader;
-import com.uib.web.peptideshaker.presenter.core.filtercharts.ChartFiltersContainer;
+import com.uib.web.peptideshaker.presenter.core.filtercharts.UpdatedChartFiltersContainer;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.charts.RegistrableFilter;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
@@ -37,7 +37,7 @@ public class FilterTableGraphComponent extends VerticalLayout implements Registr
     private Label searchResultsLabel;
     
     private final SearchableTable proteinTableContainer;
-    private final ChartFiltersContainer chartFiltersContainer;
+    private final UpdatedChartFiltersContainer chartFiltersContainer;
     private final SelectionManager Selection_Manager;
     /**
      * The post translational modifications factory.
@@ -50,7 +50,7 @@ public class FilterTableGraphComponent extends VerticalLayout implements Registr
         FilterTableGraphComponent.this.setSpacing(true);
         FilterTableGraphComponent.this.addStyleName("scrollinsideframe");
         
-        this.chartFiltersContainer = new ChartFiltersContainer(Selection_Manager);
+        this.chartFiltersContainer = new UpdatedChartFiltersContainer(Selection_Manager);
         FilterTableGraphComponent.this.addComponent(chartFiltersContainer);
         
         TableColumnHeader headerI = new TableColumnHeader("Index", Integer.class, null, "", null, Table.Align.RIGHT);
@@ -101,7 +101,7 @@ public class FilterTableGraphComponent extends VerticalLayout implements Registr
 //        }
 ////        this.chartFiltersContainer.updateFiltersData(rows);
         Map<String, Color> ModificationColorMap = new LinkedHashMap<>();
-        Map<String, Set<String>> modificationsMap = peptideShakerVisualizationDataset.getModificationMap();
+        Map<String, Set<Comparable>> modificationsMap = peptideShakerVisualizationDataset.getModificationMap();
         for (String mod : modificationsMap.keySet()) {
             if (PTM.containsPTM(mod)) {
                 ModificationColorMap.put(mod, PTMFactory.getDefaultColor(mod));
@@ -128,7 +128,7 @@ public class FilterTableGraphComponent extends VerticalLayout implements Registr
     }
     
     @Override
-    public void updateFilter(Set<String> selection, Set<Object> selectedCategories, boolean singleFilter) {
+    public void updateFilter(Set<Comparable> selection, Set<Object> selectedCategories, boolean singleFilter) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

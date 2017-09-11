@@ -55,7 +55,7 @@ public abstract class RangeFilter extends VerticalLayout implements Property.Val
         RangeFilter.this.setSizeFull();
         RangeFilter.this.setStyleName("fixedFilterFrame");
         RangeFilter.this.setSpacing(true);
-        RangeFilter.this.setMargin(new MarginInfo(true, false, false, false));
+        RangeFilter.this.setMargin(new MarginInfo(false, false, false, false));
 
         Label thumbTitle = new Label("Kokowawa");
         thumbTitle.setContentMode(ContentMode.HTML);

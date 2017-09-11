@@ -16,7 +16,7 @@ public interface RegistrableFilter extends Layout {
 
     public void resetFilter();
 
-    public void updateFilter(Set<String> selection,Set<Object>selectedCategories,boolean singleFilter);
+    public void updateFilter(Set<Comparable> selection,Set<Object>selectedCategories,boolean singleFilter);
 
     public void selectionChange(String type);
 

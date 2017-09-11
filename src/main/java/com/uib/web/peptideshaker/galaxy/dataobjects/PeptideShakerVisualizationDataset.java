@@ -7,6 +7,7 @@ import com.compomics.util.preferences.SequenceMatchingPreferences;
 import com.google.common.collect.Sets;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -34,10 +35,10 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
     private Map<String, Set<PeptideObject>> protein_peptide_Map;
     private Map<String, Set<ProteinObject>> protein_relatedProteins_Map;
     private Map<Object, PeptideObject> peptidesMap;
-    private final Map<String, Set<String>> modificationMap;
-    private final Map<String, Set<String>> chromosomeMap;
-    private final Map<String, Set<String>> piMap;
-    private final Map<String, Set<String>> proteinValidationMap;
+    private final Map<String, Set<Comparable>> modificationMap;
+    private final Map<String, Set<Comparable>> chromosomeMap;
+    private final Map<String, Set<Comparable>> piMap;
+    private final Map<String, Set<Comparable>> proteinValidationMap;
 
     private GalaxyFile peptideFile;
     private GalaxyFile fastaFile;
@@ -77,7 +78,7 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
 
     }
 
-    public Map<String, Set<String>> getChromosomeMap() {
+    public Map<String, Set<Comparable>> getChromosomeMap() {
         return chromosomeMap;
     }
 
@@ -91,7 +92,7 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
         BufferedRandomAccessFile bufferedRandomAccessFile = null;
         //for testing
         Random r = new Random();
-        String alphabet = "abcdefghijklmnopqrstuvwxyz".toUpperCase();
+      int[] chrom = new int[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24};
 
         try {//           
             bufferedRandomAccessFile = new BufferedRandomAccessFile(proteinFile.getFile(), "r", 1024 * 100);
@@ -115,7 +116,7 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
                 protein.setDescription(arr[2]);
                 protein.setGeneName(arr[3]);
                 protein.setChromosome(arr[4]);
-                protein.setChromosome(alphabet.charAt(r.nextInt(alphabet.length())) + "X");
+                protein.setChromosome(chrom[r.nextInt(10)] + "");
                 if (protein.getChromosome().trim().isEmpty()) {
                     protein.setChromosome("No Information");
                     chromosomeMap.get(protein.getChromosome()).add(protein.getAccession());
@@ -134,7 +135,7 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
                 protein.setConfidentlyLocalizedModificationSitesNumber(arr[10]);
                 protein.setAmbiguouslyLocalizedModificationSites(arr[11]);
                 protein.setAmbiguouslyLocalizedModificationSitesNumber(arr[12]);
-                protein.setProteinInference(arr[13]);
+                protein.setProteinInference(arr[13].replace("Proteins", "").replace("and", "&"));
 
                 if (protein.getProteinInference().trim().isEmpty()) {
                     protein.setProteinInference("No Information");
@@ -312,7 +313,7 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
             for (Object protAcc : proteinsMap.keySet()) {
                 String proteinAcc = protAcc + "";
                 boolean addModification = false;
-                for (Set<String> accSet : modificationMap.values()) {
+                for (Set<Comparable> accSet : modificationMap.values()) {
                     if (accSet.contains(proteinAcc)) {
                         addModification = true;
                         break;
@@ -393,11 +394,11 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
         return parameters;
     }
 
-    public Map<String, Set<String>> getPiMap() {
+    public Map<String, Set<Comparable>> getPiMap() {
         return piMap;
     }
 
-    public Map<String, Set<String>> getProteinValidationMap() {
+    public Map<String, Set<Comparable>> getProteinValidationMap() {
         return proteinValidationMap;
     }
 
@@ -674,7 +675,7 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
         return aminoAcidPattern.getIndexes(sequence, sequenceMatchingPreferences);
     }
 
-    public Map<String, Set<String>> getModificationMap() {
+    public Map<String, Set<Comparable>> getModificationMap() {
         return modificationMap;
     }
 
