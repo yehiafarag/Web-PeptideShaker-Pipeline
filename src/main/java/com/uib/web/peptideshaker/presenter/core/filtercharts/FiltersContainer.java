@@ -1,11 +1,12 @@
 package com.uib.web.peptideshaker.presenter.core.filtercharts;
 
-import com.uib.web.peptideshaker.presenter.core.filtercharts.charts.DonutChartFilter;
-import com.uib.web.peptideshaker.presenter.core.filtercharts.charts.MatrixLayoutChartFilter;
+import com.uib.web.peptideshaker.model.core.ModificationMatrix;
+import com.uib.web.peptideshaker.presenter.core.filtercharts.updatedfilters.ChromosomesFilter;
+import com.uib.web.peptideshaker.presenter.core.filtercharts.updatedfilters.DivaMatrixLayoutChartFilter;
 import com.uib.web.peptideshaker.presenter.components.peptideshakerview.components.SelectionManager;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.charts.RangeFilter;
+import com.uib.web.peptideshaker.presenter.core.filtercharts.updatedfilters.DivaPieChartFilter;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import java.awt.Color;
@@ -24,19 +25,16 @@ import java.util.TreeMap;
  *
  * @author Yehia Farag
  */
-public class UpdatedChartFiltersContainer extends HorizontalLayout {
+public class FiltersContainer extends HorizontalLayout {
 
-    private final PopUpFilterContainer validation_filterContainer;
-    private final UpdatedDonutChartFilter validationFilter;
+    private final DivaMatrixLayoutChartFilter modificationFilter;
 
-    private final PopUpFilterContainer PI_filterContainer;
-    private final UpdatedDonutChartFilter PIFilter;
+    private final DivaPieChartFilter validationFilter;
 
-    private final PopUpFilterContainer chromosome_filterContainer;
+    private final DivaPieChartFilter PIFilter;
+
     private final ChromosomesFilter chromosomeFilter;
 
-    private final PopUpFilterContainer modificationFilterContainer;
-    private final MatrixLayoutChartFilter updatedModificationFilter;
     private final List<Color> colorList;
     /**
      * Array of default slice colors.
@@ -54,9 +52,9 @@ public class UpdatedChartFiltersContainer extends HorizontalLayout {
         "E00000", "00E000", "0000E0", "E0E000", "E000E0", "00E0E0", "E0E0E0",};
     private final SelectionManager Selection_Manager;
 
-    public UpdatedChartFiltersContainer(SelectionManager Selection_Manager) {
-        UpdatedChartFiltersContainer.this.setSizeFull();
-        UpdatedChartFiltersContainer.this.setSpacing(true);
+    public FiltersContainer(SelectionManager Selection_Manager) {
+        FiltersContainer.this.setSizeFull();
+        FiltersContainer.this.setSpacing(true);
 
         this.Selection_Manager = Selection_Manager;
         colorList = new ArrayList<>(Arrays.asList(defaultColors));
@@ -71,36 +69,18 @@ public class UpdatedChartFiltersContainer extends HorizontalLayout {
         HorizontalLayout filtersContainer = new HorizontalLayout();
         filtersContainer.setSizeFull();
         filtersContainer.setSpacing(true);
-//        filtersContainer.setColumnExpandRatio(0, 25);
-//        filtersContainer.setColumnExpandRatio(1, 50);
-//        filtersContainer.setColumnExpandRatio(2, 25);
-//
-//        filtersContainer.setRowExpandRatio(0, 33);
-//        filtersContainer.setRowExpandRatio(1, 66);
+        FiltersContainer.this.addComponent(filtersContainer);
 
-        UpdatedChartFiltersContainer.this.addComponent(filtersContainer);
-//String filterTitle, String filterId, int filterIndex, int filterWidth, int filterHeight
-        PIFilter = new UpdatedDonutChartFilter("Protein Inference", "pi_filter", Selection_Manager) {
-
-            @Override
-            public void close() {
-                PI_filterContainer.setPopupVisible(false);
-            }
-
+        PIFilter = new DivaPieChartFilter("Protein Inference", "pi_filter", Selection_Manager) {
             @Override
             public void selectionChange(String type) {
                 if (type.equalsIgnoreCase("protein_selection")) {
-                    updateFilter(Selection_Manager.getProteinSelectionValue(), Selection_Manager.getAppliedFilterCategories("pi_filter"), Selection_Manager.isSingleProteinsFilter());
+                    updateFilterSelection(Selection_Manager.getFilteredProteinsSet(), Selection_Manager.getAppliedFilterCategories("pi_filter"), false,false,false);
 
                 }
             }
 
         };
-//        HorizontalLayout topThumbContainer = new HorizontalLayout();
-//        topThumbContainer.setSizeFull();        
-//        topThumbContainer.setSpacing(true);
-//        filtersContainer.addComponent(topThumbContainer, 1, 0);
-//        filtersContainer.setComponentAlignment(topThumbContainer, Alignment.TOP_CENTER);
 
         VerticalLayout leftThumbContainer = new VerticalLayout();
         leftThumbContainer.setSizeFull();
@@ -108,72 +88,61 @@ public class UpdatedChartFiltersContainer extends HorizontalLayout {
         filtersContainer.addComponent(leftThumbContainer);
         filtersContainer.setExpandRatio(leftThumbContainer, 1);
 
-        PI_filterContainer = new PopUpFilterContainer("Protein Inference", PIFilter, "med");
-        leftThumbContainer.addComponent(PI_filterContainer);
-        leftThumbContainer.setComponentAlignment(PI_filterContainer, Alignment.TOP_CENTER);
+        leftThumbContainer.addComponent(PIFilter);
+        leftThumbContainer.setComponentAlignment(PIFilter, Alignment.TOP_CENTER);
 
-        validationFilter = new UpdatedDonutChartFilter("Protein Validation", "validation_filter", Selection_Manager) {
-            @Override
-            public void close() {
-                validation_filterContainer.setPopupVisible(false);
-            }
+        validationFilter = new DivaPieChartFilter("Protein Validation", "validation_filter", Selection_Manager) {
 
             @Override
             public void selectionChange(String type) {
                 if (type.equalsIgnoreCase("protein_selection")) {
-                    updateFilter(Selection_Manager.getProteinSelectionValue(), Selection_Manager.getAppliedFilterCategories("validation_filter"), Selection_Manager.isSingleProteinsFilter());
+                    updateFilterSelection(Selection_Manager.getFilteredProteinsSet(), Selection_Manager.getAppliedFilterCategories("validation_filter"),false, false,false);
 
                 }
             }
 
         };
 
-        validation_filterContainer = new PopUpFilterContainer("Protein Validation", validationFilter, "med");
-        leftThumbContainer.addComponent(validation_filterContainer);
-        leftThumbContainer.setComponentAlignment(validation_filterContainer, Alignment.TOP_CENTER);
+        leftThumbContainer.addComponent(validationFilter);
+        leftThumbContainer.setComponentAlignment(validationFilter, Alignment.TOP_CENTER);
 
         chromosomeFilter = new ChromosomesFilter("Chromosome", "chromosome_filter", Selection_Manager) {
-            @Override
-            public void close() {
-                chromosome_filterContainer.setPopupVisible(false);
-            }
 
             @Override
             public void selectionChange(String type) {
                 if (type.equalsIgnoreCase("protein_selection")) {
-                    updateFilter(Selection_Manager.getProteinSelectionValue(), Selection_Manager.getAppliedFilterCategories("chromosome_filter"), Selection_Manager.isSingleProteinsFilter());
+//                    updateFilterSelection(Selection_Manager.getActiveProteinsSet(), Selection_Manager.getAppliedFilterCategories("chromosome_filter"));
 
                 }
             }
 
+            @Override
+            public void updateFilterSelection(Set<Comparable> selection, Set<Comparable> selectedCategories,boolean topFilter, boolean selectOnly,boolean selfAction) {
+//                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
         };
 
-        chromosome_filterContainer = new PopUpFilterContainer("Chromosome", chromosomeFilter, "med");
-        leftThumbContainer.addComponent(chromosome_filterContainer);
-        leftThumbContainer.setComponentAlignment(chromosome_filterContainer, Alignment.TOP_CENTER);
-        chromosome_filterContainer.setSizeFull();
+//        chromosome_filterContainer = new PopUpFilterContainer("Chromosome", chromosomeFilter, "med");
+        leftThumbContainer.addComponent(chromosomeFilter.getThumb());
+        leftThumbContainer.setComponentAlignment(chromosomeFilter.getThumb(), Alignment.TOP_CENTER);
+//        chromosome_filterContainer.setSizeFull();
         chromosomeFilter.setSizeFull();
 
-        updatedModificationFilter = new MatrixLayoutChartFilter("Modifications", "modifications_filter", Selection_Manager) {
-            @Override
-            public void close() {
-                modificationFilterContainer.setPopupVisible(false);
-            }
+        modificationFilter = new DivaMatrixLayoutChartFilter("Modifications", "modifications_filter", Selection_Manager) {
 
             @Override
             public void selectionChange(String type) {
                 if (type.equalsIgnoreCase("protein_selection")) {
-                    updateFilter(Selection_Manager.getProteinSelectionValue(), Selection_Manager.getAppliedFilterCategories("modifications_filter"), Selection_Manager.isSingleProteinsFilter());
+//                    updateFilterSelection(Selection_Manager.getActiveProteinsSet(), Selection_Manager.getAppliedFilterCategories("modifications_filter"), Selection_Manager.isSingleProteinsFilter());
                 }
             }
 
         };
-        modificationFilterContainer = new PopUpFilterContainer("Modifications", updatedModificationFilter, "large");
-        filtersContainer.addComponent(modificationFilterContainer);
-        filtersContainer.setComponentAlignment(modificationFilterContainer, Alignment.TOP_CENTER);
-        filtersContainer.setExpandRatio(modificationFilterContainer, 2);
-        modificationFilterContainer.setSizeFull();
-        updatedModificationFilter.setSizeFull();
+        filtersContainer.addComponent(modificationFilter);
+        filtersContainer.setComponentAlignment(modificationFilter, Alignment.TOP_CENTER);
+        filtersContainer.setExpandRatio(modificationFilter, 2);
+        modificationFilter.setSizeFull();
 
         VerticalLayout rightThumbContainer = new VerticalLayout();
         rightThumbContainer.setSizeFull();
@@ -198,10 +167,6 @@ public class UpdatedChartFiltersContainer extends HorizontalLayout {
         };
         rightThumbContainer.addComponent(test);
 
-//        leftFiltersContainer.addComponent(test, 0, 1);
-//        leftFiltersContainer.setComponentAlignment(test, Alignment.BOTTOM_CENTER); 
-//        test.updateData(initRangeData(null));
-//        test.updateFilter();
         RangeFilter test2 = new RangeFilter("Decreased<br/>%", -100.0, "Increased<br/>%", 100.0, colors, 0.0, true) {
             @Override
             public void selectedRange(double min, double max, boolean filterApplied) {
@@ -217,8 +182,7 @@ public class UpdatedChartFiltersContainer extends HorizontalLayout {
         test2.updateData(initRangeData(null));
         test2.updateFilter();
         rightThumbContainer.addComponent(test2);
-//        leftFiltersContainer.addComponent(test2, 1, 1);
-//        leftFiltersContainer.setComponentAlignment(test2, Alignment.BOTTOM_CENTER);
+
         RangeFilter test3 = new RangeFilter("Decreased<br/>%", -100.0, "Increased<br/>%", 100.0, colors, 0.0, true) {
             @Override
             public void selectedRange(double min, double max, boolean filterApplied) {
@@ -234,26 +198,23 @@ public class UpdatedChartFiltersContainer extends HorizontalLayout {
         test3.updateData(initRangeData(null));
         test3.updateFilter();
         rightThumbContainer.addComponent(test3);
-//        leftFiltersContainer.addComponent(test3, 2, 1);
-//        leftFiltersContainer.setComponentAlignment(test3, Alignment.BOTTOM_CENTER);
-
     }
 
-    public void updateFiltersData(Map<String, Set<Comparable>> modificationsMap, Map<String, Color> modificationsColorMap, Map<String, Set<Comparable>> chromosomeMap, Map<String, Set<Comparable>> piMap, Map<String, Set<Comparable>> proteinValidationMap) {
+    public void updateFiltersData(ModificationMatrix modificationMatrix, Map<String, Color> modificationsColorMap, Map<String, Set<Comparable>> chromosomeMap, Map<String, Set<Comparable>> piMap, Map<String, Set<Comparable>> proteinValidationMap) {
         Selection_Manager.reset();
-        if (modificationsMap.size() < 10) {
-            Selection_Manager.setModificationsMap(modificationsMap);
-            updatedModificationFilter.calculateChartData(modificationsMap, modificationsColorMap, new HashSet<>(), Selection_Manager.getFullProteinSet().size());
+//        if (modificationMatrix.size() < 10) {
+        Selection_Manager.setModificationsMap(modificationMatrix);
+        modificationFilter.initializeFilterData(modificationMatrix, modificationsColorMap, new HashSet<>(), Selection_Manager.getFullProteinSet().size());
 
-        } else {
-            Selection_Manager.setModificationsMap(new HashMap<>());
-        }
+//        } else {
+//            Selection_Manager.setModificationsMap(new HashMap<>());
+//        }
         chromosomeFilter.updateChartData(chromosomeMap);
         Selection_Manager.setChromosomeMap(chromosomeMap);
-        PIFilter.updateChartData(piMap, new Color[]{Color.DARK_GRAY, new Color(4, 180, 95), Color.YELLOW, new Color(213, 8, 8), Color.ORANGE});//colorList.subList(0, piMap.size()).toArray(new Color[piMap.size()])
+        PIFilter.initializeFilterData(piMap, new Color[]{Color.DARK_GRAY, new Color(4, 180, 95), Color.YELLOW, new Color(213, 8, 8), Color.ORANGE});//colorList.subList(0, piMap.size()).toArray(new Color[piMap.size()])
         Selection_Manager.setPiMap(piMap);
         Selection_Manager.setProteinValidationMap(proteinValidationMap);
-        validationFilter.updateChartData(proteinValidationMap, new Color[]{Color.DARK_GRAY, new Color(213, 8, 8), new Color(4, 180, 95)});//colorList.subList(0, proteinValidationMap.size()).toArray(new Color[proteinValidationMap.size()])
+        validationFilter.initializeFilterData(proteinValidationMap, new Color[]{Color.DARK_GRAY, new Color(213, 8, 8), new Color(4, 180, 95)});//colorList.subList(0, proteinValidationMap.size()).toArray(new Color[proteinValidationMap.size()])
 
     }
 

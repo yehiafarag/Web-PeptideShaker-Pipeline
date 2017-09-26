@@ -249,10 +249,10 @@
 
     .activelayout {
         background-color: white;
-        -webkit-transition: all 0.5s ease-in-out;
-        -moz-transition: all 0.5s ease-in-out;
-        -o-transition: all 0.5s ease-in-out;
-        transition: all 0.5s ease-in-out;
+        -webkit-transition: all 1.0s ease-in-out;
+        -moz-transition: all 1.0s ease-in-out;
+        -o-transition: all 1.0s ease-in-out;
+        transition: all 1.0s ease-in-out;
     }
 
     .v-slot-leftsidebtncontainer {
@@ -1211,39 +1211,108 @@
     .selectednodeline{
         background-color:gray;
         border-radius:0px;       
-        max-width:4px;
-        min-width:3px;
+        /*max-width:4px;*/
+        width:3px !important;
         z-index: 2 !important;
         position:relative;
     }
     .unselectednodeline{
         opacity: 0;
     }
+    .v-verticallayout.sizelabel.v-verticallayout-sizelabel{	
+        width:100% !important;
+        height:100% !important;
+        border-bottom:4px solid gray;
+    }
+
     .sizelabel {
-        font-size: 12px;
-        color:gray;
-        font-weight:bold;
-        line-height: 15px !important;
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
+        margin-left: 5px;	
     }
-
+    .v-slot-sizelabel{	
+        color: gray;
+        font-weight: bold;
+        margin-top: -7px;
+        margin-right:-1px;
+    }
+    .v-label-sizelabel {
+        background-color:white;
+        border-bottom:3px solid white !important;
+    }
     .sizelabel font {
-        font-size: 12px !important;
-        line-height: 15px !important;
-        float: right !important;
+        font-size: 1.1vh !important;
+        line-height: 400% !important;
+        padding-top: 5px;
+        float: left !important;
+        left: 0px;
+        background-color: white;
+        padding-left:5px;
+        overflow: visible !important;
+        position: relative !important;
+        z-index: 2000000000 !important;
     }
 
-    .v-slot-sizelabel {
-        border-bottom: 2px solid gray;
-        line-height: 15px !important;
+    .sizelabel b {
+        float: right !important;
+        right: 0px;
+        font-size: 1.1vh  !important;
+        line-height: 400% !important;
+        padding-top: 5px;
+        text-align: left !important;
+        overflow: hidden !important;
+        position: absolute !important;
+        z-index: 2 !important;
+        border-right: 2px solid white;
+        background-color: white;
     }
+
+    .leftbottommatrexcorner{
+        padding-left:5px;
+        z-index:3 !important;
+        position:relative;
+
+    }
+    .sparklabel {
+        margin-left: 5px !important;
+        font-size: 12px !important;
+        line-height: 1vmax !important;
+        width:100% !important;
+        max-width:100%;
+        text-align:middle;
+    }
+    .selected{
+        font-weight:bold;
+        text-shadow: 1px 1px 1px #bad5f2, 0 0 1px #bad5f2;
+        text-decoration: underline !important;
+        text-decoration-color: #bad5f2 !important;
+        color:black;
+    }
+
+    /*    .sizelabel {
+            font-size: 12px;
+            color:gray;
+            font-weight:bold;
+            line-height: 15px !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+        }
+    
+        .sizelabel font {
+            font-size: 12px !important;
+            line-height: 15px !important;
+            float: right !important;
+        }
+    
+        .v-slot-sizelabel {
+            border-bottom: 2px solid gray;
+            line-height: 15px !important;
+        }*/
     .hilightcolumn {
         background-color:whitesmoke;
     }
     .barchartlabelcontainer {
         margin-top: -20px !important;
     }
+
     .barchartlabelcontainer .v-verticallayout{
         background-color:white;
         position: relative;
@@ -1591,46 +1660,42 @@
         overflow: visible !important;
     }
     .middledountchart {
-        border-radius: 50%;
+        border-radius: 100%;
         border: 2px solid white;
         background-color: white;
         color: gray;
         text-align: -webkit-center;
         text-align: center;
+        border-radius: 100%;
+        -webkit-border-radius:100%;
+        -moz-border-radius: 100%;
+        position:relative;
         box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
         -webkit-box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
         -moz-box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
-        border-radius: 50%;
-        -webkit-border-radius: 50%;
-        -moz-border-radius: 50%;
-        display: table-cell; 
-        vertical-align: middle; 
-        text-align: center;
+        font-size:1.5vh;
+        z-index: 2 !important;
+        cursor: pointer;
+        /*        border-radius: 50%;
+                -webkit-border-radius: 50%;
+                -moz-border-radius: 50%;*/
+        /*        display: table-cell; 
+                vertical-align: middle; 
+                text-align: center;*/
 
     }
 
-    .middledountchart center {
-        text-align: center !important;
-        font-weight: bold !important;
-        font-size: 15px !important;
 
-    }
-    .middledountchart div{
-        text-align: center !important;
-        font-weight:bold !important;
-        font-size:20px !important;
-
-
-
-    }
     .middledountchart:hover{
         background-color:whitesmoke;
         color:black;
     }
-    .v-label-middledountchart.v-label-invisibletext center{
-        font-size:11px !important;
-        font-weight:normal !important;
+    .middledountchart center{
+       top:2.5vh !important;
+	z-index:0;
+	position:relative;
     }
+
     .legendimg{
         padding-left:10px;
         padding-top:10px
@@ -1655,6 +1720,90 @@
         border-top-right-radius:5px;
         border-top-left-radius:5px;
     }
+    .stacked{
+        z-index:3;
+        position:relative;background-color:white !important;
+
+    }
+    .stacked center{
+        background-color:white ;
+    }
+    .v-gridlayout-slot .centeredtext{
+        padding-top:10px;
+        overflow:hidden;
+        text-overflow:ellipsis;
+        height:50px !important;
+    }
+    .whitesmokebackground{
+        background-color:whitesmoke;
+    }
+    .v-absolutelayout-ignorscrollspace .v-absolutelayout-margin {
+        overflow-y:  auto !important;
+    }
+    .barlayout{
+        cursor:pointer;
+        border-top-left-radius:5px;
+        border-top-right-radius:5px;
+        background-color:lightgray;
+
+    }
+    .barlayout:hover{
+        background-color:gray;
+    }
+    .selectedbarlayout{
+        background-color:#bad5f2 !important;
+    }
+    .selectedbubble{
+        background-color: #bad5f2 !important;
+    }
+
+    .selectedbarlayout:hover {
+        background-color: #bad5f2 !important;
+    }
+    .bordermarker{
+        border: 1px solid white;
+    }
+    .selectablenode div{
+        overflow: hidden !important;
+    }
+    .selectablenode .Vaadin-Icons{
+        min-width:10px !important;
+        font-size: 0.8vh;
+        vertical-align: middle !important;
+        margin-top:4px;
+    }
+    .bordermarker:hover{
+        border-color: lightgray;
+    }
+    .selectablenode center {
+
+        font-size:1vw;
+        z-index:3 !important;
+        position:relative;
+        text-shadow: 0 0 3px #000000, 0 0 3px #000000;
+
+    }
+    .margintop-4{
+        margin-top: -4px !important;
+    }
+    .resizeabletext{
+        font-size: 0.7vmax;
+    }
+    .legenditem {
+        font-size: 11px;
+        height:20px !important;
+    }
+    .v-slot-legenditem{
+        min-width:20px !important;
+        max-height: 20px;
+    }
+    .v-label-legenditem{
+        white-space: nowrap;
+        overflow:hidden !important;
+        text-overflow:ellipsis !important;	
+        position:relative !important;
+    }
+
 
     /****mobile css**/
     .horizontalcss  .largetitle .v-label{
@@ -1907,6 +2056,7 @@
         z-index: 2 !important;
 
     }
+
 
 
 

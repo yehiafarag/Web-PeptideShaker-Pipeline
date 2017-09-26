@@ -3,7 +3,7 @@ package com.uib.web.peptideshaker.galaxy.dataobjects;
 import com.compomics.util.experiment.identification.protein_sequences.FastaIndex;
 import com.compomics.util.io.SerializationUtils;
 import com.compomics.util.protein.Header;
-import com.uib.web.peptideshaker.model.SequenceFactory;
+import com.uib.web.peptideshaker.model.core.SequenceFactory;
 import com.vaadin.server.VaadinSession;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;

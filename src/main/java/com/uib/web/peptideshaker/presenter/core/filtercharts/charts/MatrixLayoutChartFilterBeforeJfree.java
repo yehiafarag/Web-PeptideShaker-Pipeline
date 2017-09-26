@@ -11,7 +11,7 @@ import com.byteowls.vaadin.chartjs.options.scale.CategoryScale;
 import com.byteowls.vaadin.chartjs.options.scale.LinearScale;
 import com.google.common.collect.Sets;
 
-import com.uib.web.peptideshaker.model.AlphanumComparator;
+import com.uib.web.peptideshaker.model.core.AlphanumComparator;
 import com.uib.web.peptideshaker.presenter.components.peptideshakerview.components.SelectionManager;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.components.SelectableNode;
 import com.uib.web.peptideshaker.presenter.core.form.SparkLine;
@@ -47,7 +47,7 @@ import java.util.TreeSet;
  *
  * @author Yehia Farag
  */
-public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements RegistrableFilter {
+public abstract class MatrixLayoutChartFilterBeforeJfree extends AbsoluteLayout implements RegistrableFilter {
 
     private final Panel barChartContainerPanel;
     private final Panel graphChartContainerPanel;
@@ -83,7 +83,7 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
 //    private final HorizontalLayout labelContainer;
     private final Map<String, SparkLine> rowLabelsMap;
 
-    public MatrixLayoutChartFilter(String title, String filterId, SelectionManager Selection_Manager) {
+    public MatrixLayoutChartFilterBeforeJfree(String title, String filterId, SelectionManager Selection_Manager) {
         this.title = title;
         this.filterId = filterId;
         this.Selection_Manager = Selection_Manager;
@@ -92,12 +92,12 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
 
 //        this.labelContainer = new HorizontalLayout();
 //        this.labelContainer.setSpacing(true);
-        MatrixLayoutChartFilter.this.setWidth(100, Unit.PERCENTAGE);
-        MatrixLayoutChartFilter.this.setHeight(100, Unit.PERCENTAGE);
+        MatrixLayoutChartFilterBeforeJfree.this.setWidth(100, Unit.PERCENTAGE);
+        MatrixLayoutChartFilterBeforeJfree.this.setHeight(100, Unit.PERCENTAGE);
         VerticalLayout filterContainer = new VerticalLayout();
         filterContainer.setSizeFull();
         filterContainer.setMargin(new MarginInfo(true, true, false, true));
-        MatrixLayoutChartFilter.this.addComponent(filterContainer);
+        MatrixLayoutChartFilterBeforeJfree.this.addComponent(filterContainer);
 
         chartTitle = new Label("" + title + " (100000/1000000)");
         chartTitle.setContentMode(ContentMode.HTML);
@@ -105,13 +105,13 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
         chartTitle.addStyleName(ValoTheme.LABEL_NO_MARGIN);
         chartTitle.setWidth(100, Unit.PERCENTAGE);
         chartTitle.setHeight(30, Unit.PIXELS);
-        MatrixLayoutChartFilter.this.addComponent(chartTitle, "left: " + 20 + "px; top: " + 10 + "px");
+        MatrixLayoutChartFilterBeforeJfree.this.addComponent(chartTitle, "left: " + 20 + "px; top: " + 10 + "px");
         Button cancelSelectionButton = new Button(VaadinIcons.CLOSE);
         cancelSelectionButton.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
         cancelSelectionButton.addStyleName(ValoTheme.BUTTON_TINY);
         cancelSelectionButton.setWidth(25, Unit.PIXELS);
         cancelSelectionButton.setHeight(25, Unit.PIXELS);
-        MatrixLayoutChartFilter.this.addComponent(cancelSelectionButton, "right: " + 20 + "px; top: " + 15 + "px");
+        MatrixLayoutChartFilterBeforeJfree.this.addComponent(cancelSelectionButton, "right: " + 20 + "px; top: " + 15 + "px");
         cancelSelectionButton.addClickListener((Button.ClickEvent event) -> {
             if (appliedFilters == -1) {
                 unselectAll();
@@ -129,7 +129,7 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
         applySelectionButton.setWidth(25, Unit.PIXELS);
         applySelectionButton.setHeight(25, Unit.PIXELS);
         applySelectionButton.setDescription("Apply filter selection");
-        MatrixLayoutChartFilter.this.addComponent(applySelectionButton, "right: " + 50 + "px; top: " + 15 + "px");
+        MatrixLayoutChartFilterBeforeJfree.this.addComponent(applySelectionButton, "right: " + 50 + "px; top: " + 15 + "px");
         applySelectionButton.addClickListener((Button.ClickEvent event) -> {
             applyFilter(getSelectedDataSet());
             close();
@@ -141,7 +141,7 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
         resetSelectionButton.addStyleName(ValoTheme.BUTTON_TINY);
         resetSelectionButton.setWidth(25, Unit.PIXELS);//110
         resetSelectionButton.setHeight(25, Unit.PIXELS);
-        MatrixLayoutChartFilter.this.addComponent(resetSelectionButton, "right: " + 80 + "px; top: " + 15 + "px");
+        MatrixLayoutChartFilterBeforeJfree.this.addComponent(resetSelectionButton, "right: " + 80 + "px; top: " + 15 + "px");
         resetSelectionButton.addClickListener((Button.ClickEvent event) -> {
             unselectAll();
         });
@@ -194,7 +194,7 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
         graphChartContainerPanel.addStyleName("scrolspacer");
         filterContainer.addComponent(graphChartContainerPanel);
 
-        this.Selection_Manager.RegistrFilter(MatrixLayoutChartFilter.this);
+        this.Selection_Manager.RegistrFilter(MatrixLayoutChartFilterBeforeJfree.this);
 
         thumbFilterContainer = new VerticalLayout();
         thumbFilterContainer.setStyleName("thumbfilterframe");
@@ -669,7 +669,6 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
             int endLineRange = sortingKeysList.indexOf(subArr[subArr.length - 1].trim());
             for (int i = 0; i < nodeContainer.getRows(); i++) {
                 SelectableNode node = (SelectableNode) nodeContainer.getComponent(z, i);
-
                 if (columnKey.contains(node.getNodeId())) {
                     node.setSelecatble(true);
                     node.setUpperSelected(true);
@@ -888,7 +887,7 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
         return filterId;
     }
 
-    @Override
+//    @Override
     public void resetFilter() {
         selectedDataSet.clear();
         selectedColumns = -1;
@@ -907,8 +906,8 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
         this.updateLabels();
     }
 
-    @Override
-    public void updateFilter(Set<Comparable> selection, Set<Object> selectedCategories, boolean singleFilter) {
+//    @Override
+    public void updateFilter(Set<Comparable> selection, Set<Comparable> selectedCategories, boolean singleFilter) {
 
         List<Double> newDataValues = new ArrayList<>();
         List<String> newLabels = new ArrayList<>();
@@ -954,10 +953,10 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
     public void applyFilter(Set<Comparable> selectedDataset) {
 
         appliedFilters = (selectedColumns);
-        Selection_Manager.setSelection("protein_selection", selectedDataset, filterId);
+        Selection_Manager.setSelection("protein_selection", selectedDataset,null, filterId);
     }
 
-    @Override
+//    @Override
     public Component getThumb() {
 
         return thumbFilterContainer;
@@ -967,13 +966,13 @@ public abstract class MatrixLayoutChartFilter extends AbsoluteLayout implements 
         return calculatedMatrix;
     }
 
-    @Override
+//    @Override
     public boolean isAppliedFilter() {
         return !(appliedFilters == -1);
 
     }
 
-    @Override
+//    @Override
     public Set<Object> getSelectedCategories() {
         Set<Object> s = new HashSet<>();
         if (appliedFilters != -1) {

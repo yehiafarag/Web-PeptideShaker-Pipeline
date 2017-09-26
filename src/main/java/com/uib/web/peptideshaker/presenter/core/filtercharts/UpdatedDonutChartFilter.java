@@ -50,7 +50,7 @@ public abstract class UpdatedDonutChartFilter extends AbsoluteLayout implements 
 
     private Map<String, Set<Comparable>> fullData;
 
-    @Override
+//    @Override
     public boolean isAppliedFilter() {
         return !(selectedCategories.isEmpty() || selectedCategories.size() == totalItemsNumber);
     }
@@ -86,7 +86,7 @@ public abstract class UpdatedDonutChartFilter extends AbsoluteLayout implements 
         cancelSelectionButton.addClickListener((Button.ClickEvent event) -> {
 //local update appliedSelectedCategories
 //chart.localUpdate(selectedDatasetIndexes, true);
-            close();
+//            close();
         });
 
         Button applySelectionButton = new Button(VaadinIcons.CHECK_SQUARE);
@@ -98,7 +98,7 @@ public abstract class UpdatedDonutChartFilter extends AbsoluteLayout implements 
         UpdatedDonutChartFilter.this.addComponent(applySelectionButton, "right: " + 50 + "px; top: " + 15 + "px");
         applySelectionButton.addClickListener((Button.ClickEvent event) -> {
             applyFilter(selectedCategories);
-            close();
+//            close();
         });
 
         Button resetSelectionButton = new Button(VaadinIcons.REFRESH);//"Unselect All",
@@ -251,7 +251,7 @@ public abstract class UpdatedDonutChartFilter extends AbsoluteLayout implements 
         return filterId;
     }
 
-    @Override
+//    @Override
     public void resetFilter() {
 //        filteredData.clear();
 //        filteredData.putAll(fullData);
@@ -284,7 +284,8 @@ public abstract class UpdatedDonutChartFilter extends AbsoluteLayout implements 
     }
 
     @Override
-    public void updateFilter(Set<Comparable> selection, Set<Object> selectedCategories, boolean singleFilter) {
+    public void updateFilterSelection(Set<Comparable> selection, Set<Comparable> selectedCategories,boolean topFilter, boolean reset,boolean selfAction) {
+        boolean singleFilter = true;
 
         System.out.println("at selection update " + selection + "   ----   " + selectedCategories + "  -----   " + singleFilter);
 
@@ -307,20 +308,18 @@ public abstract class UpdatedDonutChartFilter extends AbsoluteLayout implements 
 
     }
 
-    @Override
+//    @Override
     public Set<Object> getSelectedCategories() {
         return appliedSelectedCategories;
     }
 
-    public abstract void close();
-
     public void applyFilter(Set<Comparable> selectedCategories) {
         appliedSelectedCategories.clear();
         appliedSelectedCategories.addAll(selectedCategories);
-        Selection_Manager.setSelection("protein_selection", selectedCategories, filterId);
+        Selection_Manager.setSelection("protein_selection", selectedCategories, null, filterId);
     }
 
-    @Override
+//    @Override
     public Component getThumb() {
 
         return thumbFilterContainer;

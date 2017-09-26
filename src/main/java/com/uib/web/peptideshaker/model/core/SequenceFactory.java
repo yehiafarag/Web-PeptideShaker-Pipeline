@@ -1,5 +1,5 @@
 
-package com.uib.web.peptideshaker.model;
+package com.uib.web.peptideshaker.model.core;
 import com.compomics.util.Util;
 import com.compomics.util.exceptions.ExceptionHandler;
 import com.compomics.util.experiment.biology.Protein;

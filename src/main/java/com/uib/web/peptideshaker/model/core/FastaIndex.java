@@ -1,5 +1,5 @@
 
-package com.uib.web.peptideshaker.model;
+package com.uib.web.peptideshaker.model.core;
 
 import com.compomics.util.experiment.personalization.ExperimentObject;
 import com.compomics.util.protein.Header;

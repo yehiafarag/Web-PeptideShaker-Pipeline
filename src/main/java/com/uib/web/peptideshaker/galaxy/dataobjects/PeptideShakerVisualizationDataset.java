@@ -5,9 +5,9 @@ import com.compomics.util.experiment.biology.Enzyme;
 import com.compomics.util.experiment.biology.EnzymeFactory;
 import com.compomics.util.preferences.SequenceMatchingPreferences;
 import com.google.common.collect.Sets;
+import com.uib.web.peptideshaker.model.core.ModificationMatrix;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -58,6 +58,7 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
     private int psmNumber;
     private final SequenceMatchingPreferences sequenceMatchingPreferences;
     private final EnzymeFactory enzymeFactory;
+    private ModificationMatrix modificationMatrix;
 
     private int peptidesNumber;
     private Map<String, Object> parameters;
@@ -92,7 +93,7 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
         BufferedRandomAccessFile bufferedRandomAccessFile = null;
         //for testing
         Random r = new Random();
-      int[] chrom = new int[]{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24};
+        int[] chrom = new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24};
 
         try {//           
             bufferedRandomAccessFile = new BufferedRandomAccessFile(proteinFile.getFile(), "r", 1024 * 100);
@@ -301,8 +302,8 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
 
                 for (String modification : modificationMap.keySet()) {
                     if (peptide.getVariableModifications().contains(modification) || peptide.getFixedModifications().contains(modification)) {
-                       Set<String>intersectSet = new LinkedHashSet<>();
-                       intersectSet.addAll(Sets.intersection(peptide.getProteinsSet(), proteinsMap.keySet()));
+                        Set<String> intersectSet = new LinkedHashSet<>();
+                        intersectSet.addAll(Sets.intersection(peptide.getProteinsSet(), proteinsMap.keySet()));
                         modificationMap.get(modification).addAll(intersectSet);
                     }
                 }
@@ -323,7 +324,7 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
                 if (!addModification) {
                     modificationMap.get("No Modification").add(proteinAcc);
                 }
-            }  
+            }
             bufferedRandomAccessFile.close();
         } catch (IOException | NumberFormatException ex) {
             if (bufferedRandomAccessFile != null) {
@@ -675,8 +676,12 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
         return aminoAcidPattern.getIndexes(sequence, sequenceMatchingPreferences);
     }
 
-    public Map<String, Set<Comparable>> getModificationMap() {
-        return modificationMap;
+    public ModificationMatrix getModificationMatrix() {
+        if (modificationMatrix != null) {
+            return modificationMatrix;
+        }
+        modificationMatrix = new ModificationMatrix(modificationMap);
+        return modificationMatrix;
     }
 
     private HashMap<String, String> jsonToMap(String t) {

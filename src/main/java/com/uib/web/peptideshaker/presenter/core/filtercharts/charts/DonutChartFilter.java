@@ -15,7 +15,6 @@ import com.byteowls.vaadin.chartjs.options.Position;
 import com.byteowls.vaadin.chartjs.options.Tooltips;
 import com.google.common.collect.Sets;
 import com.uib.web.peptideshaker.presenter.components.peptideshakerview.components.SelectionManager;
-import com.uib.web.peptideshaker.presenter.core.CloseButton;
 import com.uib.web.peptideshaker.presenter.core.form.ColorLabel;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
@@ -78,7 +77,7 @@ public abstract class DonutChartFilter extends AbsoluteLayout implements Registr
     private final Map<String, String> chartBorderColors;
     private final VerticalLayout thumbChartContainer;
 
-    @Override
+//    @Override
     public boolean isAppliedFilter() {
         return !(selectedData.isEmpty() || selectedData.size() == totalItemsNumber);
     }
@@ -549,7 +548,7 @@ public abstract class DonutChartFilter extends AbsoluteLayout implements Registr
         return filterId;
     }
 
-    @Override
+//    @Override
     public void resetFilter() {
         filteredData.clear();
         filteredData.putAll(fullData);
@@ -596,8 +595,8 @@ public abstract class DonutChartFilter extends AbsoluteLayout implements Registr
 
     }
 
-    @Override
-    public void updateFilter(Set<Comparable> selection, Set<Object> selectedCategories, boolean singleFilter) {
+//    @Override
+    public void updateFilter(Set<Comparable> selection, Set<Comparable> selectedCategories, boolean singleFilter) {
         this.selectedCategories.clear();
         filteredData.clear();
         selectedData.clear();
@@ -644,7 +643,7 @@ public abstract class DonutChartFilter extends AbsoluteLayout implements Registr
 
     }
 
-    @Override
+//    @Override
     public Set<Object> getSelectedCategories() {
         return appliedFilters;
     }
@@ -654,10 +653,10 @@ public abstract class DonutChartFilter extends AbsoluteLayout implements Registr
     public void applyFilter(Set<Comparable> selectedDataset) {
         appliedFilters.clear();
         appliedFilters.addAll(selectedCategories);
-        Selection_Manager.setSelection("protein_selection", selectedDataset, filterId);
+        Selection_Manager.setSelection("protein_selection", selectedDataset,null, filterId);
     }
 
-    @Override
+//    @Override
     public Component getThumb() {
 
         return thumbFilterContainer;
