@@ -6,14 +6,15 @@ import com.uib.web.peptideshaker.presenter.core.filtercharts.updatedfilters.Diva
 import com.uib.web.peptideshaker.presenter.components.peptideshakerview.components.SelectionManager;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.charts.RangeFilter;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.updatedfilters.DivaPieChartFilter;
+import com.uib.web.peptideshaker.presenter.core.filtercharts.updatedfilters.DivaRangeFilter;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,6 +35,10 @@ public class FiltersContainer extends HorizontalLayout {
     private final DivaPieChartFilter PIFilter;
 
     private final ChromosomesFilter chromosomeFilter;
+
+    private final DivaRangeFilter prptidesNumberFilter;
+    private final DivaRangeFilter possibleCoverageFilter;
+    private final DivaRangeFilter psmNumberFilter;
 
     private final List<Color> colorList;
     /**
@@ -75,7 +80,7 @@ public class FiltersContainer extends HorizontalLayout {
             @Override
             public void selectionChange(String type) {
                 if (type.equalsIgnoreCase("protein_selection")) {
-                    updateFilterSelection(Selection_Manager.getFilteredProteinsSet(), Selection_Manager.getAppliedFilterCategories("pi_filter"), false,false,false);
+//                    updateFilterSelection(Selection_Manager.getFilteredProteinsSet(), Selection_Manager.getAppliedFilterCategories("pi_filter"), false, false, false);
 
                 }
             }
@@ -96,7 +101,7 @@ public class FiltersContainer extends HorizontalLayout {
             @Override
             public void selectionChange(String type) {
                 if (type.equalsIgnoreCase("protein_selection")) {
-                    updateFilterSelection(Selection_Manager.getFilteredProteinsSet(), Selection_Manager.getAppliedFilterCategories("validation_filter"),false, false,false);
+//                    updateFilterSelection(Selection_Manager.getFilteredProteinsSet(), Selection_Manager.getAppliedFilterCategories("validation_filter"),false, false,false);
 
                 }
             }
@@ -111,23 +116,21 @@ public class FiltersContainer extends HorizontalLayout {
             @Override
             public void selectionChange(String type) {
                 if (type.equalsIgnoreCase("protein_selection")) {
-//                    updateFilterSelection(Selection_Manager.getActiveProteinsSet(), Selection_Manager.getAppliedFilterCategories("chromosome_filter"));
+//                    updateFilterSelection(Selection_Manager.getFilteredProteinsSet(), Selection_Manager.getAppliedFilterCategories("chromosome_filter"),false,false,false);
 
                 }
             }
-
-            @Override
-            public void updateFilterSelection(Set<Comparable> selection, Set<Comparable> selectedCategories,boolean topFilter, boolean selectOnly,boolean selfAction) {
-//                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
+//
+//            @Override
+//            public void updateFilterSelection(Set<Comparable> selection, Set<Comparable> selectedCategories,boolean topFilter, boolean selectOnly,boolean selfAction) {
+////                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//            }
 
         };
 
 //        chromosome_filterContainer = new PopUpFilterContainer("Chromosome", chromosomeFilter, "med");
-        leftThumbContainer.addComponent(chromosomeFilter.getThumb());
-        leftThumbContainer.setComponentAlignment(chromosomeFilter.getThumb(), Alignment.TOP_CENTER);
-//        chromosome_filterContainer.setSizeFull();
-        chromosomeFilter.setSizeFull();
+        leftThumbContainer.addComponent(chromosomeFilter);
+        leftThumbContainer.setComponentAlignment(chromosomeFilter, Alignment.TOP_CENTER);
 
         modificationFilter = new DivaMatrixLayoutChartFilter("Modifications", "modifications_filter", Selection_Manager) {
 
@@ -152,55 +155,46 @@ public class FiltersContainer extends HorizontalLayout {
         filtersContainer.setExpandRatio(rightThumbContainer, 1);
 
 //add range filter
-        String[] colors = new String[]{"green", "red"};
-        RangeFilter test = new RangeFilter("Decreased<br/>%", -100.0, "Increased<br/>%", 100.0, colors, 0.0, true) {
+        prptidesNumberFilter = new DivaRangeFilter("#Peptides", "peptidesNum_filter", this.Selection_Manager) {
             @Override
-            public void selectedRange(double min, double max, boolean filterApplied) {
-
+            public void selectionChange(String type) {
+//                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
+         
 
-            @Override
-            public void selectedRange(double min, double max, double secMin, double secMax, boolean filterApplied) {
-
-            }
+           
 
         };
-        rightThumbContainer.addComponent(test);
+//        prptidesNumberFilter.initializeFilterData(initRangeData(null));
+//        prptidesNumberFilter.updateFilter();
+        rightThumbContainer.addComponent(prptidesNumberFilter);
 
-        RangeFilter test2 = new RangeFilter("Decreased<br/>%", -100.0, "Increased<br/>%", 100.0, colors, 0.0, true) {
-            @Override
-            public void selectedRange(double min, double max, boolean filterApplied) {
-
+        psmNumberFilter = new DivaRangeFilter("#PSM", "psmNum_filter", this.Selection_Manager) {
+             @Override
+            public void selectionChange(String type) {
+//                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
 
-            @Override
-            public void selectedRange(double min, double max, double secMin, double secMax, boolean filterApplied) {
-
-            }
 
         };
-        test2.updateData(initRangeData(null));
-        test2.updateFilter();
-        rightThumbContainer.addComponent(test2);
 
-        RangeFilter test3 = new RangeFilter("Decreased<br/>%", -100.0, "Increased<br/>%", 100.0, colors, 0.0, true) {
-            @Override
-            public void selectedRange(double min, double max, boolean filterApplied) {
-
+        possibleCoverageFilter = new DivaRangeFilter("Possible Coverage (%)", "possibleCoverage_filter", this.Selection_Manager) {
+             @Override
+            public void selectionChange(String type) {
+//                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
 
-            @Override
-            public void selectedRange(double min, double max, double secMin, double secMax, boolean filterApplied) {
-
-            }
 
         };
-        test3.updateData(initRangeData(null));
-        test3.updateFilter();
-        rightThumbContainer.addComponent(test3);
+
+//        test2.updateData(initRangeData(null));
+//        test2.updateFilter();
+        rightThumbContainer.addComponent(psmNumberFilter);
+
+        rightThumbContainer.addComponent(possibleCoverageFilter);
     }
 
-    public void updateFiltersData(ModificationMatrix modificationMatrix, Map<String, Color> modificationsColorMap, Map<String, Set<Comparable>> chromosomeMap, Map<String, Set<Comparable>> piMap, Map<String, Set<Comparable>> proteinValidationMap) {
+    public void updateFiltersData(ModificationMatrix modificationMatrix, Map<String, Color> modificationsColorMap, Map<String, Set<Comparable>> chromosomeMap, Map<String, Set<Comparable>> piMap, Map<String, Set<Comparable>> proteinValidationMap, TreeMap<Comparable, Set<Comparable>> proteinPeptidesNumberMap, TreeMap<Comparable, Set<Comparable>> proteinPSMNumberMap, TreeMap<Comparable, Set<Comparable>> proteinCoverageMap) {
         Selection_Manager.reset();
 //        if (modificationMatrix.size() < 10) {
         Selection_Manager.setModificationsMap(modificationMatrix);
@@ -209,38 +203,62 @@ public class FiltersContainer extends HorizontalLayout {
 //        } else {
 //            Selection_Manager.setModificationsMap(new HashMap<>());
 //        }
-        chromosomeFilter.updateChartData(chromosomeMap);
+        chromosomeFilter.initializeFilterData(chromosomeMap);
         Selection_Manager.setChromosomeMap(chromosomeMap);
-        PIFilter.initializeFilterData(piMap, new Color[]{Color.DARK_GRAY, new Color(4, 180, 95), Color.YELLOW, new Color(213, 8, 8), Color.ORANGE});//colorList.subList(0, piMap.size()).toArray(new Color[piMap.size()])
+        
+      
+        Color[]colorsArr =  new Color[]{Color.DARK_GRAY, new Color(4, 180, 95), Color.YELLOW, new Color(213, 8, 8), Color.ORANGE};
+        PIFilter.initializeFilterData(piMap, new ArrayList<>(Arrays.asList(colorsArr)));//colorList.subList(0, piMap.size()).toArray(new Color[piMap.size()])
         Selection_Manager.setPiMap(piMap);
         Selection_Manager.setProteinValidationMap(proteinValidationMap);
-        validationFilter.initializeFilterData(proteinValidationMap, new Color[]{Color.DARK_GRAY, new Color(213, 8, 8), new Color(4, 180, 95)});//colorList.subList(0, proteinValidationMap.size()).toArray(new Color[proteinValidationMap.size()])
-
+        colorsArr = new Color[]{Color.DARK_GRAY, new Color(213, 8, 8), new Color(4, 180, 95)};
+        validationFilter.initializeFilterData(proteinValidationMap,new ArrayList<>(Arrays.asList(colorsArr)));//colorList.subList(0, proteinValidationMap.size()).toArray(new Color[proteinValidationMap.size()])
+        Selection_Manager.setProteinCoverageMap(proteinCoverageMap);
+        Selection_Manager.setProteinPSMNumberMap(proteinPSMNumberMap);
+        Selection_Manager.setProteinPeptidesNumberMap(proteinPeptidesNumberMap);
+        prptidesNumberFilter.initializeFilterData(proteinPeptidesNumberMap);
+        psmNumberFilter.initializeFilterData(proteinPSMNumberMap);
+        possibleCoverageFilter.initializeFilterData(proteinCoverageMap);
     }
 
-    private double[][] initRangeData(Set<String> filteredData) {
-        Map<Double, Integer> dataMap = new TreeMap<>();
-        double max = Double.MIN_VALUE;
-        double min = Double.MAX_VALUE;
-        for (int x = 0; x < 100; x++) {
-            double value = Math.random() * 100;
-            if (!dataMap.containsKey(value)) {
-                dataMap.put(value, 0);
-            }
-            dataMap.put(value, (dataMap.get(value) + 1));
-            if (dataMap.get(value) >= max) {
-                max = dataMap.get(value);
-            }
-            if (dataMap.get(value) <= min) {
-                min = dataMap.get(value);
-            }
-        }
-        double[][] data = new double[dataMap.size()][2];
-        int i = 0;
-        for (double key : dataMap.keySet()) {
-            data[i] = new double[]{key, scaleValues((double) dataMap.get(key), max, min)};
-            i++;
-        }
+    private Integer[] initRangeData(Set<String> filteredData) {
+
+        Integer[] data = new Integer[10];
+        data[0] = 30;
+        data[1] = 50;
+        data[2] = 30;
+        data[3] = 10;
+        data[4] = 5;
+        data[5] = 30;
+        data[6] = 100;
+        data[7] = 11;
+        data[8] = 1;
+        data[9] = 70;
+
+//        for (int x = 0; x < data.length; x++) {
+//            int value = (int) (Math.random() * 1000);            
+//            data[value] = data[value] + 1;
+//
+//        }
+//        for (int x = 0; x < 100; x++) {
+//            double value = Math.random() * 100;
+//            if (!dataMap.containsKey(value)) {
+//                dataMap.put(value, 0);
+//            }
+//            dataMap.put(value, (dataMap.get(value) + 1));
+//            if (dataMap.get(value) >= max) {
+//                max = dataMap.get(value);
+//            }
+//            if (dataMap.get(value) <= min) {
+//                min = dataMap.get(value);
+//            }
+//        }
+//        double[][] data = new double[dataMap.size()][2];
+//        int i = 0;
+//        for (double key : dataMap.keySet()) {
+//            data[i] = new double[]{key, scaleValues((double) dataMap.get(key), max, min)};
+//            i++;
+//        }
         return data;
     }
 

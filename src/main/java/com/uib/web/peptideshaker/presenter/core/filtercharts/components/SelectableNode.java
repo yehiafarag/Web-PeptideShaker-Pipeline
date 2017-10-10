@@ -176,7 +176,6 @@ public abstract class SelectableNode extends AbsoluteLayout implements LayoutEve
 
     @Override
     public void layoutClick(LayoutEvents.LayoutClickEvent event) {
-        System.out.println("at layout clicked ------- "+selected+"   "+columnIndex);
         if (selected) {
             selectNode(-1);
         } else {

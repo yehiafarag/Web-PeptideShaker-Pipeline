@@ -16,6 +16,7 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.codehaus.jettison.json.JSONException;
@@ -39,6 +40,9 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
     private final Map<String, Set<Comparable>> chromosomeMap;
     private final Map<String, Set<Comparable>> piMap;
     private final Map<String, Set<Comparable>> proteinValidationMap;
+    private final TreeMap<Comparable, Set<Comparable>> proteinPeptidesNumberMap;
+    private final TreeMap<Comparable, Set<Comparable>> proteinPSMNumberMap;
+    private final TreeMap<Comparable, Set<Comparable>> proteinCoverageMap;
 
     private GalaxyFile peptideFile;
     private GalaxyFile fastaFile;
@@ -70,7 +74,7 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
     }
     private String enzyme;
 
-    public ProteinObject getProtein(Object proteinKey) {
+    public ProteinObject getProtein(String proteinKey) {
         if (proteinsMap.containsKey(proteinKey)) {
             return proteinsMap.get(proteinKey);
         } else {
@@ -131,6 +135,10 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
                 protein.setMW(Double.valueOf(arr[5]));
                 protein.setPossibleCoverage(Double.valueOf(arr[6]));
                 protein.setCoverage(Double.valueOf(arr[7]));
+                if (!proteinCoverageMap.containsKey((int)protein.getPossibleCoverage())) {
+                    proteinCoverageMap.put((int)protein.getPossibleCoverage(), new LinkedHashSet<>());
+                }
+                proteinCoverageMap.get((int)protein.getPossibleCoverage()).add(protein.getAccession());
                 protein.setSpectrumCounting(Double.valueOf(arr[8]));
                 protein.setConfidentlyLocalizedModificationSites(arr[9]);
                 protein.setConfidentlyLocalizedModificationSitesNumber(arr[10]);
@@ -151,14 +159,22 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
                 protein.setSecondaryAccessions(arr[14]);
 
                 protein.setProteinGroup(arr[15]);
-                protein.setValidatedPeptidesNumber(Integer.parseInt(arr[16]));
+                protein.setValidatedPeptidesNumber(Integer.parseInt(arr[16]));               
                 protein.setPeptidesNumber(Integer.parseInt(arr[17]));
+                 if (!proteinPeptidesNumberMap.containsKey(protein.getValidatedPeptidesNumber())) {
+                    proteinPeptidesNumberMap.put(protein.getValidatedPeptidesNumber(), new LinkedHashSet<>());
+                }
+                proteinPeptidesNumberMap.get(protein.getValidatedPeptidesNumber()).add(protein.getAccession());
                 protein.setUniqueNumber(Integer.parseInt(arr[18]));
                 protein.setValidatedUniqueNumber(Integer.parseInt(arr[19]));
                 protein.setUniqueToGroupNumber(Integer.parseInt(arr[20]));
                 protein.setValidatedUniqueToGroupNumber(Integer.valueOf(arr[21]));
                 protein.setValidatedPSMsNumber(Integer.valueOf(arr[22]));
                 protein.setPSMsNumber(Integer.valueOf(arr[23]));
+                if (!proteinPSMNumberMap.containsKey(protein.getValidatedPSMsNumber())) {
+                    proteinPSMNumberMap.put(protein.getValidatedPSMsNumber(), new LinkedHashSet<>());
+                }
+                proteinPSMNumberMap.get(protein.getValidatedPSMsNumber()).add(protein.getAccession());
                 protein.setConfidence(Double.valueOf(arr[24]));
                 protein.setValidation(arr[25]);
                 if (protein.getValidation().trim().isEmpty()) {
@@ -477,10 +493,25 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
         modificationMap.put("No Modification", new LinkedHashSet<>());
         chromosomeMap = new LinkedHashMap<>();
         chromosomeMap.put("No Information", new LinkedHashSet<>());
+        proteinPeptidesNumberMap = new TreeMap<>();
+        proteinPSMNumberMap = new TreeMap<>();
+        proteinCoverageMap = new TreeMap<>();
         piMap = new LinkedHashMap<>();
         piMap.put("No Information", new LinkedHashSet<>());
         proteinValidationMap = new LinkedHashMap<>();
         proteinValidationMap.put("No Information", new LinkedHashSet<>());
+    }
+
+    public TreeMap<Comparable, Set<Comparable>> getProteinPeptidesNumberMap() {
+        return proteinPeptidesNumberMap;
+    }
+
+    public TreeMap<Comparable, Set<Comparable>> getProteinPSMNumberMap() {
+        return proteinPSMNumberMap;
+    }
+
+    public TreeMap<Comparable, Set<Comparable>> getProteinCoverageMap() {
+        return proteinCoverageMap;
     }
 
     public String getJobId() {

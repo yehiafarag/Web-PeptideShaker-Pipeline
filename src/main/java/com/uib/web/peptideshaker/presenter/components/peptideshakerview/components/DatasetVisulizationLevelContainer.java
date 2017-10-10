@@ -10,6 +10,7 @@ import com.uib.web.peptideshaker.presenter.core.SearchableTable;
 import com.uib.web.peptideshaker.presenter.core.TableColumnHeader;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.FiltersContainer;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.charts.RegistrableFilter;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
@@ -27,7 +28,7 @@ import java.util.Set;
  *
  * @author Yehia Farag
  */
-public class FilterTableGraphComponent extends VerticalLayout implements RegistrableFilter {
+public class DatasetVisulizationLevelContainer extends VerticalLayout implements RegistrableFilter {
 
     private final GraphComponent graphLayout;
     private final Map<String, ProteinObject> proteinNodes;
@@ -39,7 +40,6 @@ public class FilterTableGraphComponent extends VerticalLayout implements Registr
 
     private final SearchableTable proteinTableContainer;
     private final FiltersContainer chartFiltersContainer;
-    private final SelectionManager Selection_Manager;
 
     Map<String, ProteinObject> unrelatedProt = new LinkedHashMap<>();
     Map<String, PeptideObject> unrelatedPeptides = new LinkedHashMap<>();
@@ -48,14 +48,27 @@ public class FilterTableGraphComponent extends VerticalLayout implements Registr
      */
     private final PTMFactory PTM = PTMFactory.getInstance();
 
-    public FilterTableGraphComponent(SelectionManager Selection_Manager) {
-        this.Selection_Manager = Selection_Manager;
-        FilterTableGraphComponent.this.setSizeFull();
-        FilterTableGraphComponent.this.setSpacing(true);
-        FilterTableGraphComponent.this.addStyleName("scrollinsideframe");
+    public DatasetVisulizationLevelContainer(SelectionManager Selection_Manager) {
+        DatasetVisulizationLevelContainer.this.setSizeFull();
+        DatasetVisulizationLevelContainer.this.setSpacing(false);
+        DatasetVisulizationLevelContainer.this.addStyleName("scrollinsideframe");
 
         this.chartFiltersContainer = new FiltersContainer(Selection_Manager);
-        FilterTableGraphComponent.this.addComponent(chartFiltersContainer);
+        DatasetVisulizationLevelContainer.this.addComponent(chartFiltersContainer);
+        DatasetVisulizationLevelContainer.this.setExpandRatio(chartFiltersContainer, 100f);
+
+//        //middle label and reset filter container
+//        VerticalLayout mainLabelContainer = new VerticalLayout();
+//        mainLabelContainer.setSizeFull();
+//        DatasetVisulizationLevelContainer.this.addComponent(mainLabelContainer);
+//        DatasetVisulizationLevelContainer.this.setExpandRatio(mainLabelContainer,0.5f);
+//        Label counter = new Label("10000/10000");
+//        counter.setStyleName("counterlabel");
+//        counter.setWidth(50, Unit.PERCENTAGE);
+//        counter.setHeight(100,Unit.PERCENTAGE);
+//        mainLabelContainer.addComponent(counter);
+//        mainLabelContainer.setComponentAlignment(counter, Alignment.TOP_CENTER);
+        
 
         TableColumnHeader headerI = new TableColumnHeader("Index", Integer.class, null, "", null, Table.Align.RIGHT);
         TableColumnHeader headerII = new TableColumnHeader("Accession", String.class, null, "Accession", null, Table.Align.CENTER);
@@ -69,15 +82,16 @@ public class FilterTableGraphComponent extends VerticalLayout implements Registr
 
         TableColumnHeader[] tableHeaders = new TableColumnHeader[]{headerI, headerII, headerIII, headerIV, headerV, headerVI, headerVII, headerVIII, headerIVV};
         this.proteinTableContainer = new SearchableTable("proteins", "Accssion or protein name", tableHeaders);
-        FilterTableGraphComponent.this.addComponent(proteinTableContainer);
+        DatasetVisulizationLevelContainer.this.addComponent(proteinTableContainer);
+        DatasetVisulizationLevelContainer.this.setExpandRatio(proteinTableContainer, 100f);
 
         graphLayout = new GraphComponent();
-//        FilterTableGraphComponent.this.addComponent(graphLayout);
+//        DatasetVisulizationLevelContainer.this.addComponent(graphLayout);
         proteinNodes = new LinkedHashMap<>();
         peptidesNodes = new LinkedHashMap<>();
         peptides = new LinkedHashSet<>();
         edges = new HashMap<>();
-        Selection_Manager.RegistrFilter(FilterTableGraphComponent.this);
+        Selection_Manager.RegistrFilter(DatasetVisulizationLevelContainer.this);
     }
 
     public void updateData(PeptideShakerVisualizationDataset peptideShakerVisualizationDataset) {
@@ -113,7 +127,7 @@ public class FilterTableGraphComponent extends VerticalLayout implements Registr
                 ModificationColorMap.put(mod, Color.LIGHT_GRAY);
             }
         }
-        this.chartFiltersContainer.updateFiltersData(modificationMatrix, ModificationColorMap, peptideShakerVisualizationDataset.getChromosomeMap(), peptideShakerVisualizationDataset.getPiMap(), peptideShakerVisualizationDataset.getProteinValidationMap());
+        this.chartFiltersContainer.updateFiltersData(modificationMatrix, ModificationColorMap, peptideShakerVisualizationDataset.getChromosomeMap(), peptideShakerVisualizationDataset.getPiMap(), peptideShakerVisualizationDataset.getProteinValidationMap(), peptideShakerVisualizationDataset.getProteinPeptidesNumberMap(), peptideShakerVisualizationDataset.getProteinPSMNumberMap(), peptideShakerVisualizationDataset.getProteinCoverageMap());
         // peptideShakerVisualizationDataset.getModificationMatrix()
 
     }
@@ -121,20 +135,27 @@ public class FilterTableGraphComponent extends VerticalLayout implements Registr
     @Override
     public void selectionChange(String type) {
         if (type.equalsIgnoreCase("protein_selection")) {
-            this.proteinTableContainer.filterTable(Selection_Manager.getFilteredProteinsSet());
+//            this.proteinTableContainer.filterTable(Selection_Manager.getFilteredProteinsSet());
         }
     }
+
     @Override
     public String getFilterId() {
         return "proteins_filter";
     }
+
     @Override
-    public void updateFilterSelection(Set<Comparable> selection, Set<Comparable> selectedCategories,boolean topFilter,boolean selectOnly,boolean selfAction) {
+    public void updateFilterSelection(Set<Comparable> selection, Set<Comparable> selectedCategories, boolean topFilter, boolean selectOnly, boolean selfAction) {
 //        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+
     @Override
     public void redrawChart() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void suspendFilter(boolean suspend) {
     }
 
 }

@@ -5,7 +5,6 @@ import com.ejt.vaadin.sizereporter.SizeReporter;
 import com.google.common.collect.Sets;
 import com.itextpdf.text.pdf.codec.Base64;
 
-import com.uib.web.peptideshaker.model.core.AlphanumComparator;
 import com.uib.web.peptideshaker.model.core.ModificationMatrix;
 import com.uib.web.peptideshaker.presenter.components.peptideshakerview.components.SelectionManager;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.charts.RegistrableFilter;
@@ -25,18 +24,15 @@ import com.vaadin.ui.themes.ValoTheme;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import org.jfree.chart.ChartRenderingInfo;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
@@ -48,6 +44,7 @@ import org.jfree.chart.entity.ChartEntity;
 import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.category.CategoryItemRendererState;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
@@ -77,11 +74,9 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
     private final Map<Integer, Double> barChartValues;
     private Label chartTitle;
     private Image mainChartImg;
-    private Label maxScaleLabel;
-    private Label minScaleLabel;
     private VerticalLayout leftBottomCorner;
     private AbsoluteLayout bottomLayoutContainer;
-    private final Map<Integer, List<SelectableNode>> nodesTable;
+    private final Map<Comparable, List<SelectableNode>> nodesTable;
     private AbsoluteLayout topLayoutPanel;
     private AbsoluteLayout bottomLayoutPanel;
     private boolean allowDrawing = false;
@@ -99,7 +94,7 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
     private AbsoluteLayout mainChartContainer;
     private final LayoutEvents.LayoutClickListener barListener;
     private AbsoluteLayout chartBarsContainer;
-    private final List<VerticalLayout> chartBarsList;
+    private final Map<Comparable, VerticalLayout> chartBarsList;
 //    private final Set<Comparable> selectedDataSet;
     private AbsoluteLayout columnsContainer;
     private final Map<String, SparkLine> rowLabelsMap;
@@ -115,7 +110,7 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
 //        this.selectedDataSet = new LinkedHashSet<>();
         this.Selection_Manager.RegistrFilter(DivaMatrixLayoutChartFilter.this);
         this.nodesTable = new LinkedHashMap<>();
-        this.chartBarsList = new ArrayList<>();
+        this.chartBarsList = new HashMap<>();
         this.barChartValues = new LinkedHashMap<>();
         this.fullItemsSet = new LinkedHashSet<>();
         this.barListener = (LayoutEvents.LayoutClickEvent event) -> {
@@ -126,12 +121,7 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
             if (clickedComponent instanceof VerticalLayout && !clickedComponent.getStyleName().contains("selectedbarlayout")) {
                 int columnIndx = (int) ((VerticalLayout) clickedComponent).getData();
                 applyFilter(columnIndx);
-            } //            else if (clickedComponent instanceof Label && !clickedComponent.getStyleName().contains("selectedbubble")) {
-            //                int columnIndx = (int) ((Label) clickedComponent).getData();
-            //                applyFilter(columnIndx);
-            //            } 
-            else {
-                System.out.println("---clickedComponent ---------" + clickedComponent + " ---  " + clickedComponent.getStyleName());
+            } else {
                 applyFilter(-1);
             }
         };
@@ -156,41 +146,14 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
         topLeftCornerLayout.setMargin(new MarginInfo(false, false, false, false));
         topLayoutPanel.addComponent(topLeftCornerLayout, "left:0px;top:0px;");
 
-        chartTitle = new Label("<font style='padding-left: 10px;padding-top: 3%;position: absolute;'>" + title + "</font>", ContentMode.HTML);
+        chartTitle = new Label("<font style='padding-top: 10px;position: absolute;'>" + title + "</font>", ContentMode.HTML);
         chartTitle.setStyleName(ValoTheme.LABEL_BOLD);
         chartTitle.setWidth(100, Unit.PERCENTAGE);
-        chartTitle.setHeight(100, Unit.PERCENTAGE);
+        chartTitle.setHeight(300, Unit.PIXELS);
         chartTitle.addStyleName("resizeabletext");
         topLeftCornerLayout.addComponent(chartTitle);
-        topLeftCornerLayout.setComponentAlignment(chartTitle, Alignment.MIDDLE_LEFT);
+        topLeftCornerLayout.setComponentAlignment(chartTitle, Alignment.TOP_LEFT);
 
-//        HorizontalLayout scaleLayout = new HorizontalLayout();
-//        scaleLayout.setWidth(100, Unit.PERCENTAGE);
-//        scaleLayout.setHeight(30, Unit.PIXELS);
-//        topLeftCornerLayout.addComponent(scaleLayout);
-//        topLeftCornerLayout.setComponentAlignment(scaleLayout, Alignment.BOTTOM_LEFT);
-//        VerticalLayout v1 = new VerticalLayout();
-////        v1.addStyleName("sizelabel");
-//        scaleLayout.addComponent(v1);
-//        scaleLayout.setExpandRatio(v1, 0.2f);
-//        
-//        maxScaleLabel = new Label("<b>10000</b>");
-//        maxScaleLabel.setContentMode(ContentMode.HTML);
-//        maxScaleLabel.setHeight(100, Unit.PERCENTAGE);
-//        maxScaleLabel.setWidth(100, Unit.PERCENTAGE);
-//        maxScaleLabel.setStyleName(ValoTheme.LABEL_NO_MARGIN);
-//        maxScaleLabel.addStyleName("sizelabel");
-//        scaleLayout.addComponent(maxScaleLabel);
-//        scaleLayout.setExpandRatio(maxScaleLabel, 1.8f);
-//
-//        minScaleLabel = new Label();
-//        minScaleLabel.setContentMode(ContentMode.HTML);
-//        minScaleLabel.setHeight(100, Unit.PERCENTAGE);
-//        minScaleLabel.setWidth(100, Unit.PERCENTAGE);
-//        minScaleLabel.setStyleName(ValoTheme.LABEL_NO_MARGIN);
-//        minScaleLabel.addStyleName("sizelabel");
-//        scaleLayout.addComponent(minScaleLabel);
-//        scaleLayout.setExpandRatio(minScaleLabel, 8);
         mainChartContainer = new AbsoluteLayout();
         mainChartContainer.setWidth(100, Unit.PERCENTAGE);
         mainChartContainer.setHeight(100, Unit.PERCENTAGE);
@@ -199,8 +162,9 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
         mainChartImg = new Image();
         mainChartImg.setHeight(100, Unit.PERCENTAGE);
         mainChartImg.setWidth(100, Unit.PERCENTAGE);
+       
         mainChartContainer.addComponent(mainChartImg);
-
+        mainChartImg.addStyleName("hide");
         chartBarsContainer = new AbsoluteLayout();
         chartBarsContainer.setHeight(100, Unit.PERCENTAGE);
         chartBarsContainer.setWidth(100, Unit.PERCENTAGE);
@@ -247,8 +211,6 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
     public void initializeFilterData(ModificationMatrix modificationMatrix, Map<String, Color> dataColors, Set<Object> selectedCategories, int totalNumber) {
         index = 0;
         allowDrawing = false;
-
-//        selectedDataSet.clear();
         rows.clear();
         rowLabelsMap.clear();
         this.dataColors = dataColors;
@@ -262,7 +224,6 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
             barChartValues.put(coulmnIndx++, (double) columns.get(key).size());
         }
         updateChartDataset(barChartValues);
-
         int totHehight = ((rows.size() + 1) * 30);
         float expandingRatio = DivaMatrixLayoutChartFilter.this.getExpandRatio(topLayoutPanel);
         double containerHeight = mainHeight * 100.00 / expandingRatio;
@@ -282,112 +243,6 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
         allowDrawing = true;
     }
 
-//    private Map<String, Set<Comparable>> calculateMatrix(Map<String, Set<Comparable>> data) {
-//        //calculate matrix
-//        Map<String, Set<Comparable>> matrixData = new LinkedHashMap<>();
-//        TreeMap<AlphanumComparator, String> sortingMap = new TreeMap<>(Collections.reverseOrder());
-//        for (String key : data.keySet()) {
-//            AlphanumComparator sortingKey = new AlphanumComparator(data.get(key).size() + "_" + key);
-//            sortingMap.put(sortingKey, key);
-//        }
-//        Map<String, Set<Comparable>> sortedData = new LinkedHashMap<>();
-//        for (String key : sortingMap.values()) {
-//            int size = data.get(key).size();
-//            this.rows.put(key, size);
-//            sortedData.put(key, data.get(key));
-//        }
-//        Map<String, Set<Comparable>> rowsII = new LinkedHashMap<>(sortedData);
-//        Map<String, Set<Comparable>> tempColumns = new LinkedHashMap<>();
-//        tempColumns.putAll(sortedData);
-//        Map<String, Set<Comparable>> trows = new LinkedHashMap<>(sortedData);
-//        for (String keyI : sortedData.keySet()) {
-//            for (String keyII : rowsII.keySet()) {
-//                if (keyI.equals(keyII) || keyII.contains(keyI)) {
-//                    continue;
-//                }
-//                String key = (keyII + "," + keyI).replace("[", "").replace("]", "");//.replace(" ", "");
-//                keySorter.addAll(Arrays.asList(key.split(",")));
-//                key = keySorter.toString();
-//                keySorter.clear();
-//                if (trows.containsKey(key)) {
-//                    Set<Comparable> union = new LinkedHashSet<>();
-//                    union.addAll(com.google.common.collect.Sets.union(trows.get(key), com.google.common.collect.Sets.intersection(rowsII.get(keyII), sortedData.get(keyI))));
-//                    trows.put(key, union);
-//                } else {
-//                    Set<Comparable> intersection = new LinkedHashSet<>();
-//                    intersection.addAll(com.google.common.collect.Sets.intersection(rowsII.get(keyII), sortedData.get(keyI)));
-//                    trows.put(key, intersection);
-//                    Set<Comparable> tempSetI = new LinkedHashSet<>();
-//                    tempSetI.addAll(rowsII.get(keyII));
-//                    tempSetI.removeAll(intersection);
-//                    rowsII.replace(keyII, tempSetI);
-//                    Set<Comparable> tempSetII = new LinkedHashSet<>();
-//                    tempSetII.addAll(sortedData.get(keyI));
-//                    tempSetII.removeAll(intersection);
-//                    sortedData.replace(keyI, tempSetII);
-//                }
-//            }
-//            rowsII.clear();
-//            rowsII.putAll(trows);
-//            tempColumns.putAll(trows);
-//        }
-//        Map<AlphanumComparator, String> sortingMap2 = new TreeMap<>(Collections.reverseOrder());
-//        for (String key : tempColumns.keySet()) {
-//            AlphanumComparator sortingKey = new AlphanumComparator(tempColumns.get(key).size() + "_" + key);
-//            sortingMap2.put(sortingKey, key);
-//        }
-//        List<String> sortingKeysList = new ArrayList<>(rows.keySet());
-//        Map<Integer, String> sortingKysMap = new TreeMap<>();
-//        for (String key : sortingMap2.values()) {
-//            String[] arr = key.split(",");
-//            String updatedKey = key;
-//            if (arr.length > 1) {
-//                sortingKysMap.clear();
-//                for (String sub : arr) {
-//                    sub = sub.replace("]", "").replace("[", "").trim();
-//                    sortingKysMap.put(sortingKeysList.indexOf(sub), sub);
-//                }
-//                updatedKey = sortingKysMap.values().toString();
-//            }
-//            if (!tempColumns.get(key).isEmpty()) {
-//                matrixData.put(updatedKey, tempColumns.get(key));
-//            }
-//        }
-//        for (String key1 : matrixData.keySet()) {
-//            for (String key2 : matrixData.keySet()) {
-//                HashSet<Comparable> intersction = new HashSet<>();
-//                intersction.addAll(Sets.intersection(matrixData.get(key2), matrixData.get(key1)));
-//                if (!intersction.isEmpty() && !key2.equalsIgnoreCase(key1)) {
-//                    if (key1.split(",").length > key2.split(",").length) {
-//                        matrixData.get(key2).removeAll(intersction);
-//                    } else if (key1.split(",").length < key2.split(",").length) {
-//                        matrixData.get(key1).removeAll(intersction);
-//                    } else {
-//                        matrixData.get(key1).removeAll(intersction);
-//                        matrixData.get(key2).removeAll(intersction);
-//                    }
-//                }
-//            }
-//        }
-//
-//        Map<String, Set<Comparable>> tempMatrixData = new LinkedHashMap<>(matrixData);
-//        for (String key1 : tempMatrixData.keySet()) {
-//            if (matrixData.get(key1).isEmpty()) {
-//                matrixData.remove(key1);
-//            }
-//        }
-//
-//        TreeMap<AlphanumComparator, String> sortingKeyColumnsMap = new TreeMap<>(Collections.reverseOrder());
-//        for (String key : matrixData.keySet()) {
-//            AlphanumComparator sortKey = new AlphanumComparator(matrixData.get(key).size() + "_" + key);
-//            sortingKeyColumnsMap.put(sortKey, key);
-//        }
-//        tempMatrixData.clear();
-//        for (String key : sortingKeyColumnsMap.values()) {
-//            tempMatrixData.put(key, matrixData.get(key));
-//        }
-//        return tempMatrixData;
-//    }
     private void reDrawLayout(int width, ChartRenderingInfo chartRenderingInfo) {
         //80% == width then 20% ==??
         int x = 28 * width / 72;
@@ -416,21 +271,20 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
                 columnsContainer.addComponent(column, "left:" + rect.x + "px; top:" + 0 + "px;");
                 //init basic nodes
                 int columnIndex = reIndexing[columnPreIndex++];
+                String columnKey = columns.keySet().toArray()[columnIndex] + "";
+                if (!nodesTable.containsKey(columnKey)) {
+                    nodesTable.put(columnKey, new ArrayList<>());
+                }
                 for (String rowKey : rows.keySet()) {
-                    String columnKey = columns.keySet().toArray()[columnIndex] + "";
-                    if (!nodesTable.containsKey(columnIndex)) {
-                        nodesTable.put(columnIndex, new ArrayList<>());
-                    }
                     SelectableNode node = new SelectableNode(rowKey, columnIndex, columns.get(columnKey).isEmpty(), dataColors.get(rowKey)) {
                         @Override
                         public void selectNode(int columnIndex) {
-//                            System.out.println("at selected node style " + this.getStyleName());
                             applyFilter(columnIndex);
                         }
                     };
                     node.setData(columns.get(columnKey).size());
                     node.setDescription(columnKey);
-                    nodesTable.get(columnIndex).add(node);
+                    nodesTable.get(columnKey).add(node);
                     column.addComponent(node);
                     column.setComponentAlignment(node, Alignment.TOP_LEFT);
 
@@ -443,7 +297,7 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
                 bar.setData(columnIndex);
                 bar.setDescription(columns.keySet().toArray()[columnIndex++] + "");
                 chartBarsContainer.addComponent(bar, "left:" + rect.x + "px; top:" + rect.y + "px;");
-                chartBarsList.add(bar);
+                chartBarsList.put(columnKey, bar);
 
             }
 
@@ -458,8 +312,6 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
                 min = i;
             }
         }
-//        maxScaleLabel.setValue("<b>" + max + "</b>");
-//        minScaleLabel.setValue(" <font>" + min + "</font>");
         int rowIndex = 0;
         for (String rowKey : rows.keySet()) {
             SparkLine sl = new SparkLine(rowKey, rows.get(rowKey), 0, max, dataColors.get(rowKey));
@@ -475,11 +327,11 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
                 String[] subArr = columnKey.replace("]", "").replace("[", "").trim().split(",");
                 int startLineRange = sortingKeysList.indexOf(subArr[0]);
                 int endLineRange = sortingKeysList.indexOf(subArr[subArr.length - 1].trim());
-                if (!nodesTable.containsKey(columnIndex) || nodesTable.get(columnIndex).get(rowIndex) == null) {
+                if (!nodesTable.containsKey(columnKey) || nodesTable.get(columnKey).get(rowIndex) == null) {
                     columnPreIndex++;
                     continue;
                 }
-                SelectableNode node = nodesTable.get(columnIndex).get(rowIndex);
+                SelectableNode node = nodesTable.get(columnKey).get(rowIndex);
                 if (columnKey.contains(node.getNodeId())) {
                     node.setSelecatble(true);
                     node.setUpperSelected(true);
@@ -513,52 +365,30 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
 
     }
 
-    private void selectColumn(int columnIndex) {
-        String columnId = columns.keySet().toArray()[columnIndex] + "";
-        Set<Comparable> columnIds = new LinkedHashSet<>();
-        columnIds.add(columnId);
-        selectColumn(columnIds, columnIndex);
-    }
-
     private void selectColumn(Set<Comparable> columnIds) {
-        if (columnIds.isEmpty()) {
-            unselectAll();
-            return;
-        }
-        List<String> indexer = new ArrayList<>();
-        for (int i : barChartValues.keySet()) {
-            indexer.add(columns.keySet().toArray()[i] + "");
-        }
-
-        selectColumn(columnIds, indexer.indexOf(columnIds.iterator().next()));
-    }
-
-    private void selectColumn(Set<Comparable> columnId, int columnIndex) {
-
-        if (nodesTable.get(columnIndex).get(0).isSelected()) {
-            unselectAll();
-            return;
-        }
         unselectAll();
+        if (columnIds.isEmpty()) {
+            return;
+        }
+        String columnId = columnIds.iterator().next() + "";
+        if (nodesTable.get(columnId).get(0).isSelected()) {
+            return;
+        }
         for (SparkLine sL : rowLabelsMap.values()) {
             sL.setSelected(columnId.contains(sL.getDescription()));
         }
-        for (SelectableNode sN : nodesTable.get(columnIndex)) {
+        for (SelectableNode sN : nodesTable.get(columnId)) {
             sN.setSelected(true);
         }
-        chartBarsList.get(columnIndex).addStyleName("selectedbarlayout");
-        System.out.println("¨at column index " + columnId + "  " + columnIndex + "   " + chartBarsList.get(columnIndex).getStyleName());
+        chartBarsList.get(columnId).addStyleName("selectedbarlayout");
 
-        {
-
-        }
     }
 
     private void unselectAll() {
         for (SparkLine sL : rowLabelsMap.values()) {
             sL.setSelected(false);
         }
-        for (VerticalLayout bar : chartBarsList) {
+        for (VerticalLayout bar : chartBarsList.values()) {
             bar.removeStyleName("selectedbarlayout");
         }
         for (List<SelectableNode> lSN : nodesTable.values()) {
@@ -570,10 +400,16 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
     }
 
     @Override
+    public void suspendFilter(boolean suspend) {
+    }
+
+    @Override
     public void redrawChart() {
         if (allowDrawing && index++ > 0) {
             mainChartImg.setSource(new ExternalResource(saveToFile(chart, mainChartRenderingInfo, mainWidth, mainHeight)));
+             mainChartImg.removeStyleName("hide");
             reDrawLayout(mainWidth, mainChartRenderingInfo);
+
         }
     }
 
@@ -587,16 +423,16 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
 
         //case 1 self selection (select coulmn or unselect all)
         if (!selfAction) {
+            barChartValues.clear();
             if (singleProteinsFilter && !selfAction && !selectedCategories.isEmpty()) {
-                 barChartValues.clear();
-                 int coulmnIndex = 0;
+                int coulmnIndex = 0;
                 for (String key : columns.keySet()) {
                     double d = (double) columns.get(key).size();
                     barChartValues.put(coulmnIndex, d);
                     coulmnIndex++;
                 }
-                updateChartDataset(barChartValues);
-                redrawChart();
+//                updateChartDataset(barChartValues);
+//                redrawChart();
 
             } else {
                 Map<Integer, Double> tbarChartValues = new LinkedHashMap<>();
@@ -608,18 +444,23 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
                     }
                     coulmnIndex++;
                 }
-                barChartValues.clear();
+//                barChartValues.clear();
                 barChartValues.putAll(tbarChartValues);
-                updateChartDataset(barChartValues);
-                redrawChart();//
-            }
-        }
 
+            }
+            updateChartDataset(barChartValues);
+            redrawChart();
+//            unselectAll();
+        }
         selectColumn(selectedCategories);
 
     }
 
     public void applyFilter(int columnIndex) {
+        if (chartBarsList.size() == 1) {
+            return;
+        }
+
         Set<Comparable> appliedFilter = new LinkedHashSet<>();
         if (columnIndex == -1) {
             Selection_Manager.setSelection("protein_selection", appliedFilter, null, filterId);
@@ -644,6 +485,14 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
         }
         byte imageData[];
         try {
+//            BarRenderer renderer = ((BarRenderer) ((CategoryPlot) chart.getPlot()).getRenderer());
+            if (((CategoryPlot) chart.getPlot()).getDataset().getColumnCount() == 1) {
+                System.out.println("single bar persentage "+(50.0/(double)width));
+                ((BarRenderer) ((CategoryPlot) chart.getPlot()).getRenderer()).setMaximumBarWidth((50.0/(double)width));
+            } else {
+                ((BarRenderer) ((CategoryPlot) chart.getPlot()).getRenderer()).setMaximumBarWidth(1.0);
+            }
+//            ((CategoryPlot) chart.getPlot()).setRenderer(renderer);
             chart.getLegend().setVisible(false);
             imageData = ChartUtilities.encodeAsPNG(chart.createBufferedImage(width, height, chartRenderingInfo));
             String base64 = Base64.encodeBytes(imageData);
@@ -661,6 +510,7 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
     private void initChart() {
         // create the dataset...
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
         CategoryAxis domainAxis = new CategoryAxis();
         Font labelFont = new Font("\"Open Sans\", sans-serif", Font.BOLD, 11);
 
@@ -672,7 +522,7 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
         NumberAxis rangeAxis = new NumberAxis();
         rangeAxis.setTickLabelFont(labelFont);
         rangeAxis.setTickLabelPaint(Color.GRAY);
-        rangeAxis.setUpperMargin(0.3);
+        rangeAxis.setUpperMargin(0.16);
         rangeAxis.setTickLabelsVisible(false);
         rangeAxis.setTickMarksVisible(false);
         rangeAxis.setVisible(false);
@@ -687,6 +537,7 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
                 return ((int) ((double) barChartValues.get(key))) + "";//super.generateLabel(dataset, row, column); //To change body of generated methods, choose Tools | Templates.
             }
         });
+
         renderer.setBaseItemLabelsVisible(true);
         renderer.setBarPainter(new StandardBarPainter());
         renderer.setSeriesPaint(0, Color.WHITE);

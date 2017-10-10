@@ -18,5 +18,7 @@ public interface RegistrableFilter extends Layout {
     public void selectionChange(String type);
 
     public void redrawChart();
+    
+    public void suspendFilter(boolean suspend);
 
 }

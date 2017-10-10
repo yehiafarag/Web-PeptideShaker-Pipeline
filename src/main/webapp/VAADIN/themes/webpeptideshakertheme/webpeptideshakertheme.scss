@@ -109,6 +109,9 @@
     .margintop5{
         margin-top:5px;
     }
+     .margintop10{
+        margin-top:10px;
+    }
     .autooverflow{
         overflow: auto;
     }
@@ -517,6 +520,13 @@
     .maxwidth600{
         max-width: 600px;
     }
+    .maxhight20{
+	max-height:20px;
+        line-height:0.5vh !important;
+	font-size:1vh;        
+	padding-left:5px;
+	padding-right:5px;
+}
 
     .bottomformlayout{
         margin-left:20px;
@@ -1407,6 +1417,8 @@
         border-radius: 5px;
         /*padding-top: 2%;*/
         overflow: hidden;
+        padding-left:10px;
+	padding-right:10px;
         /*padding-bottom: 6%;*/
     }
     .v-caption-thumbfilterframe .Vaadin-Icons{
@@ -1552,7 +1564,11 @@
         height: 20px;
         border-radius: 11px;
         margin-left: 0px;
-        margin-right:0px !important
+        margin-right:0px !important;
+            overflow:visible !important;
+	position:fixed !important;
+	z-index:3 !important;
+	
     }
 
 
@@ -1722,7 +1738,9 @@
     }
     .stacked{
         z-index:3;
-        position:relative;background-color:white !important;
+        position:relative;
+        background-color:white !important;
+        margin-top: 4px;
 
     }
     .stacked center{
@@ -2058,6 +2076,21 @@
     }
 
 
-
+.counterlabel{
+	width:47.55% !important;
+	height:50px;
+	text-align:center;
+	font-size:  2.0vh;
+	font-weight:bold;
+	color:gray;
+	background-color:whitesmoke;
+	border:2px solid lightgray;
+	border-radius:5px;
+	position:absolute !important;
+	margin-top:2px;
+	z-index:2 !important;
+	line-height:50px;
+	margin-left:-361px !important;
+}
 
 }

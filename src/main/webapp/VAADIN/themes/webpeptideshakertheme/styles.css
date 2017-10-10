@@ -13075,6 +13075,10 @@ div.v-layout.v-horizontal.v-widget {
 	margin-top: 5px;
 }
 
+.webpeptideshakertheme .margintop10 {
+	margin-top: 10px;
+}
+
 .webpeptideshakertheme .autooverflow {
 	overflow: auto;
 }
@@ -13490,6 +13494,14 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .maxwidth600 {
 	max-width: 600px;
+}
+
+.webpeptideshakertheme .maxhight20 {
+	max-height: 20px;
+	line-height: 0.5vh !important;
+	font-size: 1vh;
+	padding-left: 5px;
+	padding-right: 5px;
 }
 
 .webpeptideshakertheme .bottomformlayout {
@@ -14363,6 +14375,8 @@ div.v-layout.v-horizontal.v-widget {
 	border: 2px solid lightgray;
 	border-radius: 5px;
 	overflow: hidden;
+	padding-left: 10px;
+	padding-right: 10px;
 }
 
 .webpeptideshakertheme .v-caption-thumbfilterframe .Vaadin-Icons {
@@ -14514,6 +14528,9 @@ div.v-layout.v-horizontal.v-widget {
 	border-radius: 11px;
 	margin-left: 0px;
 	margin-right: 0px !important;
+	overflow: visible !important;
+	position: fixed !important;
+	z-index: 3 !important;
 }
 
 .webpeptideshakertheme .rangeslider.upper .v-slider-base {
@@ -14692,6 +14709,7 @@ div.v-layout.v-horizontal.v-widget {
 	z-index: 3;
 	position: relative;
 	background-color: white !important;
+	margin-top: 4px;
 }
 
 .webpeptideshakertheme .stacked center {
@@ -15032,4 +15050,21 @@ div.v-layout.v-horizontal.v-widget {
 	border-bottom-left-radius: 0px;
 	overflow: hidden;
 	z-index: 2 !important;
+}
+
+.webpeptideshakertheme .counterlabel {
+	width: 47.55% !important;
+	height: 50px;
+	text-align: center;
+	font-size: 2vh;
+	font-weight: bold;
+	color: gray;
+	background-color: whitesmoke;
+	border: 2px solid lightgray;
+	border-radius: 5px;
+	position: absolute !important;
+	margin-top: 2px;
+	z-index: 2 !important;
+	line-height: 50px;
+	margin-left: -361px !important;
 }
