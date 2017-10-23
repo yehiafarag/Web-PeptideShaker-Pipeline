@@ -11,6 +11,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -26,7 +27,7 @@ import java.util.TreeMap;
  *
  * @author Yehia Farag
  */
-public class SearchableTable extends VerticalLayout implements Property.ValueChangeListener {
+public abstract class SearchableTable extends VerticalLayout implements Property.ValueChangeListener {
 
     private Label searchResultsLabel;
     private final String tableMainTitle;
@@ -92,9 +93,10 @@ public class SearchableTable extends VerticalLayout implements Property.ValueCha
 
         searchBtn.addClickListener((Button.ClickEvent event) -> {
             searchforKeyword(searchField.getSelectedValue().trim());
-            nextBtn.setEnabled(!tableSearchingResults.isEmpty());
+             nextBtn.setEnabled(!tableSearchingResults.isEmpty());
             resetSearching = true;
             nextBtn.click();
+            nextBtn.setEnabled(tableSearchingResults.size()>1);                     
         });
 
         nextBtn.addClickListener(new Button.ClickListener() {
@@ -102,6 +104,7 @@ public class SearchableTable extends VerticalLayout implements Property.ValueCha
 
             @Override
             public void buttonClick(Button.ClickEvent event) {
+
                 if (itr == null || !itr.hasNext() || resetSearching) {
                     itr = tableSearchingResults.keySet().iterator();
                 }
@@ -121,6 +124,7 @@ public class SearchableTable extends VerticalLayout implements Property.ValueCha
             nextBtn.setEnabled(!tableSearchingResults.isEmpty());
             resetSearching = true;
             nextBtn.click();
+            nextBtn.setEnabled(tableSearchingResults.size()>1);
         });
         return searchContainer;
     }
@@ -140,6 +144,9 @@ public class SearchableTable extends VerticalLayout implements Property.ValueCha
             if (key.contains(keyWord)) {
                 tableSearchingResults.put(index++, key);
             }
+        }
+        if (tableSearchingResults.isEmpty()) {
+            Notification.show("<i>No results</i>", Notification.Type.TRAY_NOTIFICATION);
         }
 
     }
@@ -186,9 +193,13 @@ public class SearchableTable extends VerticalLayout implements Property.ValueCha
         return table;
     }
 
-    private Map<String, Object[]> tableData;
+    private Map<Comparable, Object[]> tableData;
 
-    public void upateTableData(Map<String, Object[]> tableData, int[] searchingIndexes, int keyIndex) {
+    public Map<Comparable, Object[]> getTableData() {
+        return tableData;
+    }
+
+    public void upateTableData(Map<Comparable, Object[]> tableData, int[] searchingIndexes, int keyIndex) {
         this.tableData = tableData;
         this.tableSearchingMap.clear();
         mainTable.removeValueChangeListener(SearchableTable.this);
@@ -199,15 +210,18 @@ public class SearchableTable extends VerticalLayout implements Property.ValueCha
             for (int i : searchingIndexes) {
                 searchKey += data[i] + "_";
             }
-            this.tableSearchingMap.put(searchKey, data[keyIndex] + "");
+            this.tableSearchingMap.put(searchKey.toLowerCase().replace(",", "_"), data[keyIndex] + "");
         }
-        mainTable.setCaption("<b>" + tableMainTitle + "</b> ( " + mainTable.getItemIds().size() + " )");
+        mainTable.setCaption("<b>" + tableMainTitle + " ( " + mainTable.getItemIds().size() + " / " + tableData.size() + " )</b>");
+
         mainTable.addValueChangeListener(SearchableTable.this);
     }
 
     @Override
     public void valueChange(Property.ValueChangeEvent event) {
         Object objcetId = mainTable.getValue();//"P01889";
+        System.out.println("at selected item "+objcetId);
+        itemSelected(objcetId);
 //        proteinNodes.clear();
 //        peptidesNodes.clear();
 //        peptides.clear();
@@ -253,12 +267,13 @@ public class SearchableTable extends VerticalLayout implements Property.ValueCha
 //        graphLayout.updateGraphData(protein, proteinNodes, peptidesNodes, edges);
 
     }
+    public abstract void itemSelected(Object itemId);
 
     public void filterTable(Set<Comparable> objectIds) {
         if ((objectIds == null || objectIds.isEmpty()) && this.mainTable.getItemIds().size() == tableData.size()) {
             return;
         }
-        if (objectIds != null && objectIds.size() == mainTable.getItemIds().size()) {           
+        if (objectIds != null && objectIds.size() == mainTable.getItemIds().size()) {
             return;
         }
 
@@ -274,12 +289,12 @@ public class SearchableTable extends VerticalLayout implements Property.ValueCha
                 }
             }
         } else if ((objectIds == null || objectIds.isEmpty()) && this.mainTable.getItemIds().size() != tableData.size()) {
-            for (String data : tableData.keySet()) {
+            for (Comparable data : tableData.keySet()) {
                 this.mainTable.addItem(tableData.get(data), data);
             }
 
         }
-        mainTable.setCaption("<b>" + tableMainTitle + "</b> ( " + mainTable.getItemIds().size() + " )");
+        mainTable.setCaption("<b>" + tableMainTitle + " ( " + mainTable.getItemIds().size() + " / " + tableData.size() + " )</b>");
         mainTable.addValueChangeListener(SearchableTable.this);
 
     }

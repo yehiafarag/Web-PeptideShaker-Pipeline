@@ -1,23 +1,17 @@
 package com.uib.web.peptideshaker.presenter.components.peptideshakerview.components;
 
 import com.compomics.util.experiment.biology.PTMFactory;
-import com.uib.web.peptideshaker.presenter.core.graph.GraphComponent;
-import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideObject;
 import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDataset;
 import com.uib.web.peptideshaker.galaxy.dataobjects.ProteinObject;
 import com.uib.web.peptideshaker.model.core.ModificationMatrix;
+import com.uib.web.peptideshaker.presenter.components.peptideshakerview.SelectionManager;
 import com.uib.web.peptideshaker.presenter.core.SearchableTable;
 import com.uib.web.peptideshaker.presenter.core.TableColumnHeader;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.FiltersContainer;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.charts.RegistrableFilter;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import java.awt.Color;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -28,47 +22,27 @@ import java.util.Set;
  *
  * @author Yehia Farag
  */
-public class DatasetVisulizationLevelContainer extends VerticalLayout implements RegistrableFilter {
+public class DatasetVisulizationLevelComponent extends VerticalLayout implements RegistrableFilter {
 
-    private final GraphComponent graphLayout;
-    private final Map<String, ProteinObject> proteinNodes;
-    private final Map<String, PeptideObject> peptidesNodes;
-    private final Set<PeptideObject> peptides;
-
-    private final HashMap<String, ArrayList<String>> edges;
-    private Label searchResultsLabel;
+   
 
     private final SearchableTable proteinTableContainer;
     private final FiltersContainer chartFiltersContainer;
 
-    Map<String, ProteinObject> unrelatedProt = new LinkedHashMap<>();
-    Map<String, PeptideObject> unrelatedPeptides = new LinkedHashMap<>();
+ 
     /**
      * The post translational modifications factory.
      */
     private final PTMFactory PTM = PTMFactory.getInstance();
 
-    public DatasetVisulizationLevelContainer(SelectionManager Selection_Manager) {
-        DatasetVisulizationLevelContainer.this.setSizeFull();
-        DatasetVisulizationLevelContainer.this.setSpacing(false);
-        DatasetVisulizationLevelContainer.this.addStyleName("scrollinsideframe");
+    public DatasetVisulizationLevelComponent(SelectionManager Selection_Manager) {
+        DatasetVisulizationLevelComponent.this.setSizeFull();
+        DatasetVisulizationLevelComponent.this.setSpacing(false);
+        DatasetVisulizationLevelComponent.this.addStyleName("scrollinsideframe");
 
         this.chartFiltersContainer = new FiltersContainer(Selection_Manager);
-        DatasetVisulizationLevelContainer.this.addComponent(chartFiltersContainer);
-        DatasetVisulizationLevelContainer.this.setExpandRatio(chartFiltersContainer, 100f);
-
-//        //middle label and reset filter container
-//        VerticalLayout mainLabelContainer = new VerticalLayout();
-//        mainLabelContainer.setSizeFull();
-//        DatasetVisulizationLevelContainer.this.addComponent(mainLabelContainer);
-//        DatasetVisulizationLevelContainer.this.setExpandRatio(mainLabelContainer,0.5f);
-//        Label counter = new Label("10000/10000");
-//        counter.setStyleName("counterlabel");
-//        counter.setWidth(50, Unit.PERCENTAGE);
-//        counter.setHeight(100,Unit.PERCENTAGE);
-//        mainLabelContainer.addComponent(counter);
-//        mainLabelContainer.setComponentAlignment(counter, Alignment.TOP_CENTER);
-        
+        DatasetVisulizationLevelComponent.this.addComponent(chartFiltersContainer);
+        DatasetVisulizationLevelComponent.this.setExpandRatio(chartFiltersContainer, 100f);
 
         TableColumnHeader headerI = new TableColumnHeader("Index", Integer.class, null, "", null, Table.Align.RIGHT);
         TableColumnHeader headerII = new TableColumnHeader("Accession", String.class, null, "Accession", null, Table.Align.CENTER);
@@ -81,43 +55,33 @@ public class DatasetVisulizationLevelContainer extends VerticalLayout implements
         TableColumnHeader headerIVV = new TableColumnHeader("protein_group", String.class, null, "Protein Group", null, Table.Align.LEFT);
 
         TableColumnHeader[] tableHeaders = new TableColumnHeader[]{headerI, headerII, headerIII, headerIV, headerV, headerVI, headerVII, headerVIII, headerIVV};
-        this.proteinTableContainer = new SearchableTable("proteins", "Accssion or protein name", tableHeaders);
-        DatasetVisulizationLevelContainer.this.addComponent(proteinTableContainer);
-        DatasetVisulizationLevelContainer.this.setExpandRatio(proteinTableContainer, 100f);
+        this.proteinTableContainer = new SearchableTable("Proteins", "Accssion or protein name", tableHeaders){
+           private final Set<Comparable>selectedIds = new LinkedHashSet<>();
+           @Override
+            public void itemSelected(Object itemId) {
+                selectedIds.clear();
+                selectedIds.add(itemId+"");
+               Selection_Manager.setSelection("protein_selection", selectedIds, null, getFilterId());
+            
+            }
+        
+        };
+        DatasetVisulizationLevelComponent.this.addComponent(proteinTableContainer);
+        DatasetVisulizationLevelComponent.this.setExpandRatio(proteinTableContainer, 100f);
 
-        graphLayout = new GraphComponent();
-//        DatasetVisulizationLevelContainer.this.addComponent(graphLayout);
-        proteinNodes = new LinkedHashMap<>();
-        peptidesNodes = new LinkedHashMap<>();
-        peptides = new LinkedHashSet<>();
-        edges = new HashMap<>();
-        Selection_Manager.RegistrFilter(DatasetVisulizationLevelContainer.this);
+        Selection_Manager.RegistrDatasetsFilter(DatasetVisulizationLevelComponent.this);
     }
 
     public void updateData(PeptideShakerVisualizationDataset peptideShakerVisualizationDataset) {
         Map<String, ProteinObject> proteinTableMap = peptideShakerVisualizationDataset.getProteinsMap();
-        Map<String, Object[]> proteinTableData = new LinkedHashMap<>();
+        Map<Comparable, Object[]> proteinTableData = new LinkedHashMap<>();
         for (ProteinObject protein : proteinTableMap.values()) {
             proteinTableData.put(protein.getAccession(), new Object[]{protein.getIndex(), protein.getAccession(), protein.getDescription(), protein.getGeneName(), protein.getProteinInference(), protein.getMW(), protein.getPossibleCoverage(), protein.getValidatedPeptidesNumber(), protein.getProteinGroup()});
         }
-        int[] searchingIndexes = {2, 8};
+        int[] searchingIndexes = {1, 2, 8};
         int keyIndex = 1;
         this.proteinTableContainer.upateTableData(proteinTableData, searchingIndexes, keyIndex);
         peptideShakerVisualizationDataset.getPeptidesMap();
-//        Map<String, Set<String>> rows = new LinkedHashMap<>();
-//        Random r = new Random();
-//        String alphabet = "abcdefghijklmnopqrstuvwxyz";
-//        String alphabet2 = "ABCDEF";
-//        for (int i = 0; i < alphabet2.length(); i++) {
-//            String key = "" + alphabet2.charAt(i);
-//            rows.put(key, new HashSet<>());
-//            int protNum = r.nextInt(alphabet2.length());
-//            for (int y = 0; y < protNum; y++) {
-//                rows.get(key).add("" + alphabet.charAt(r.nextInt(alphabet.length())));
-//                rows.get(key).add("ZzZ");
-//            }
-//        }
-////        this.chartFiltersContainer.updateFiltersData(rows);
         Map<String, Color> ModificationColorMap = new LinkedHashMap<>();
         ModificationMatrix modificationMatrix = peptideShakerVisualizationDataset.getModificationMatrix();
         for (String mod : modificationMatrix.getRows().keySet()) {
@@ -128,25 +92,25 @@ public class DatasetVisulizationLevelContainer extends VerticalLayout implements
             }
         }
         this.chartFiltersContainer.updateFiltersData(modificationMatrix, ModificationColorMap, peptideShakerVisualizationDataset.getChromosomeMap(), peptideShakerVisualizationDataset.getPiMap(), peptideShakerVisualizationDataset.getProteinValidationMap(), peptideShakerVisualizationDataset.getProteinPeptidesNumberMap(), peptideShakerVisualizationDataset.getProteinPSMNumberMap(), peptideShakerVisualizationDataset.getProteinCoverageMap());
-        // peptideShakerVisualizationDataset.getModificationMatrix()
+   
 
     }
 
     @Override
     public void selectionChange(String type) {
-        if (type.equalsIgnoreCase("protein_selection")) {
-//            this.proteinTableContainer.filterTable(Selection_Manager.getFilteredProteinsSet());
+        if (type.equalsIgnoreCase("dataset_filter_selection")) {
+//            
         }
     }
 
     @Override
     public String getFilterId() {
-        return "proteins_filter";
+        return "proteins_table_filter";
     }
 
     @Override
     public void updateFilterSelection(Set<Comparable> selection, Set<Comparable> selectedCategories, boolean topFilter, boolean selectOnly, boolean selfAction) {
-//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        this.proteinTableContainer.filterTable(selection);
     }
 
     @Override

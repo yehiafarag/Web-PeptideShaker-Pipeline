@@ -2,7 +2,8 @@ package com.uib.web.peptideshaker.presenter.core.filtercharts.updatedfilters;
 
 import com.uib.web.peptideshaker.presenter.core.filtercharts.charts.*;
 import com.google.common.collect.Sets;
-import com.uib.web.peptideshaker.presenter.components.peptideshakerview.components.SelectionManager;
+import com.uib.web.peptideshaker.presenter.components.peptideshakerview.SelectionManager;
+import com.uib.web.peptideshaker.presenter.core.FilterButton;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.components.RangeColorGenerator;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.shared.ui.MarginInfo;
@@ -39,6 +40,8 @@ public abstract class ChromosomesFilter extends VerticalLayout implements Regist
     private final HorizontalLayout topPanelContainer;
     private final Panel mainFilterPanel;
     private final Label chartTitle;
+    
+    private final  FilterButton removeFilterIcon ;
 
     private final Set<Object> selectedCategories;
     private final Set<Comparable> appliedFilters;
@@ -72,7 +75,7 @@ public abstract class ChromosomesFilter extends VerticalLayout implements Regist
         ChromosomesFilter.this.setMargin(new MarginInfo(false, false, false, false));
 
         this.selectedCategories = new LinkedHashSet<>();
-        this.Selection_Manager.RegistrFilter(ChromosomesFilter.this);
+        this.Selection_Manager.RegistrDatasetsFilter(ChromosomesFilter.this);
 
         topPanelContainer = new HorizontalLayout();
         topPanelContainer.setHeight(30, Unit.PIXELS);
@@ -88,7 +91,28 @@ public abstract class ChromosomesFilter extends VerticalLayout implements Regist
         chartTitle.setHeight(30, Unit.PIXELS);
         chartTitle.addStyleName("resizeabletext");
         topPanelContainer.addComponent(chartTitle);
-        topPanelContainer.setComponentAlignment(chartTitle, Alignment.TOP_LEFT);
+        topPanelContainer.setComponentAlignment(chartTitle, Alignment.TOP_CENTER);
+           topPanelContainer.setExpandRatio(chartTitle,40);
+        
+//        removeFilterIcon = new FilterButton() {
+//            @Override
+//            public void layoutClick(LayoutEvents.LayoutClickEvent event) {
+//                applyFilter(null);
+//                
+//            }
+//        };
+//        removeFilterIcon.setWidth(25, Unit.PIXELS);
+//        removeFilterIcon.setHeight(25, Unit.PIXELS);
+//        removeFilterIcon.addStyleName("nomargin");
+//        removeFilterIcon.setVisible(false);
+//        removeFilterIcon.setActiveBtn(true);
+//        
+//        topPanelContainer.addComponent(removeFilterIcon);
+//        topPanelContainer.setComponentAlignment(removeFilterIcon, Alignment.TOP_LEFT);
+//        topPanelContainer.setExpandRatio(removeFilterIcon,20);
+        
+        
+        
 
         mainFilterPanel = new Panel();
         mainFilterPanel.setHeight(90, Unit.PERCENTAGE);
@@ -111,11 +135,6 @@ public abstract class ChromosomesFilter extends VerticalLayout implements Regist
                 if (clickedComponent.getDescription().equalsIgnoreCase("No Proteins")) {
                     return;
                 }
-//                if (clickedComponent.getStyleName().contains("resizableselectedimg")) {
-//                    clickedComponent.removeStyleName("resizableselectedimg");
-//                } else {
-//                    clickedComponent.addStyleName("resizableselectedimg");
-//                }
                 applyFilter(((Label) clickedComponent).getData() + "");
 
             } else {
@@ -125,6 +144,26 @@ public abstract class ChromosomesFilter extends VerticalLayout implements Regist
         mainChartContainer = initFilterLayout();
         mainFilterPanel.setContent(mainChartContainer);
         topPanelContainer.addLayoutClickListener(mainClickListener);
+        
+          removeFilterIcon = new FilterButton() {
+            @Override
+            public void layoutClick(LayoutEvents.LayoutClickEvent event) {
+                applyFilter(null);
+
+            }
+        };
+        removeFilterIcon.setWidth(25, Unit.PIXELS);
+        removeFilterIcon.setHeight(25, Unit.PIXELS);
+        removeFilterIcon.setVisible(false);
+//        removeFilterIcon.setActiveBtn(true);
+        removeFilterIcon.addStyleName("btninframe");
+
+//        topLeftContainer.addComponent(removeFilterIcon);
+//        topLeftContainer.setComponentAlignment(removeFilterIcon, Alignment.TOP_CENTER);
+      ChromosomesFilter.this.addComponent(removeFilterIcon);
+        ChromosomesFilter.this.setComponentAlignment(removeFilterIcon, Alignment.TOP_RIGHT);
+        ChromosomesFilter.this.setExpandRatio(removeFilterIcon, 0.1f);
+        
 
     }
 
@@ -197,6 +236,7 @@ public abstract class ChromosomesFilter extends VerticalLayout implements Regist
         colorGenerator = new RangeColorGenerator(treeSet.last());
         topPanelContainer.addComponent(colorGenerator.getColorScale());
         topPanelContainer.setComponentAlignment(colorGenerator.getColorScale(), Alignment.TOP_RIGHT);
+         topPanelContainer.setExpandRatio(colorGenerator.getColorScale(),40);
         updateChromosomesLabelsColor();
 
 //        List<Double> barChartData = new ArrayList<>();
@@ -380,11 +420,13 @@ public abstract class ChromosomesFilter extends VerticalLayout implements Regist
                 colorGenerator = new RangeColorGenerator(treeSet.last());
                 topPanelContainer.addComponent(colorGenerator.getColorScale());
                 topPanelContainer.setComponentAlignment(colorGenerator.getColorScale(), Alignment.TOP_RIGHT);
+                topPanelContainer.setExpandRatio(colorGenerator.getColorScale(),40);
                 updateChromosomesLabelsColor();
 
             }
         }
         selectCategory(selectedCategories);
+         setMainAppliedFilter(topFilter && !selectedCategories.isEmpty());
 
 //        selectAllLabel.setValue("<center>" + selectedItems.size() + "</center>");
     }
@@ -619,7 +661,7 @@ public abstract class ChromosomesFilter extends VerticalLayout implements Regist
         }
 //        appliedFilters.clear();
 //        appliedFilters.addAll(selectedCategories);
-//        Selection_Manager.setSelection("protein_selection", selectedDataset, null, filterId);
+//        Selection_Manager.setSelection("dataset_filter_selection", selectedDataset, null, filterId);
 
         if (chromosome != null) {
             if (appliedFilters.contains(chromosome)) {
@@ -631,7 +673,7 @@ public abstract class ChromosomesFilter extends VerticalLayout implements Regist
             appliedFilters.clear();
         }
 
-        Selection_Manager.setSelection("protein_selection", appliedFilters, null, filterId);
+        Selection_Manager.setSelection("dataset_filter_selection", appliedFilters, null, filterId);
 
     }
 
@@ -661,5 +703,14 @@ public abstract class ChromosomesFilter extends VerticalLayout implements Regist
 
     @Override
     public void suspendFilter(boolean suspend) {
+    }
+     private void setMainAppliedFilter(boolean mainAppliedFilter) {
+        removeFilterIcon.setVisible(mainAppliedFilter);
+        if (mainAppliedFilter) {
+            this.addStyleName("highlightfilter");
+        } else {
+            this.removeStyleName("highlightfilter");
+        }
+        
     }
 }

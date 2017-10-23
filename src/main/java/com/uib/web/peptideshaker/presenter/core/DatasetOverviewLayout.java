@@ -1,4 +1,4 @@
-package com.uib.web.peptideshaker.presenter.components.peptideshakerview;
+package com.uib.web.peptideshaker.presenter.core;
 
 import com.compomics.util.experiment.biology.PTMFactory;
 import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDataset;

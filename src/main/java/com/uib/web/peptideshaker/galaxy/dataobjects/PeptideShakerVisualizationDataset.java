@@ -78,7 +78,10 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
         if (proteinsMap.containsKey(proteinKey)) {
             return proteinsMap.get(proteinKey);
         } else {
-            return null;
+            ProteinObject newRelatedProt = updateProteinInformation(null, proteinKey);
+//            proteinsMap.put(proteinKey, newRelatedProt);
+            System.out.println("we found pnull protein key "+newRelatedProt.getDescription());
+            return newRelatedProt;
         }
 
     }
@@ -234,24 +237,23 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
             String fastaHeader = "";
             String sequence = "";
             while ((line = bufferedRandomAccessFile.getNextLine()) != null) {
-
                 if (line.startsWith(">")) {
                     if (!fastaHeader.equalsIgnoreCase("")) {
                         ProteinObject protein = new ProteinObject();
                         String accss = fastaHeader.split("\\|")[1];
+                        String desc = fastaHeader.split("\\|")[2].split("OS=")[0];
+                        desc = desc.replace(desc.split(" ")[0], "").trim();
+                        protein.setDescription(desc);
                         protein.setAccession(accss);
                         protein.setSequence(sequence);
                         protein.setProteinEvidence(proteinEvedence[Integer.parseInt(fastaHeader.split("PE=")[1].split(" ")[0])]);
                         fastaProteinsMap.put(protein.getAccession(), protein);
-
                     }
-
                     fastaHeader = line;
                     sequence = "";
                     continue;
                 }
                 sequence += line;
-
             }
             bufferedRandomAccessFile.close();
         } catch (IOException | NumberFormatException ex) {
@@ -269,7 +271,6 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
         if (peptidesMap != null) {
             return peptidesMap;
         }
-
         peptidesMap = new LinkedHashMap<>();
         protein_peptide_Map = new HashMap<>();
         BufferedRandomAccessFile bufferedRandomAccessFile = null;

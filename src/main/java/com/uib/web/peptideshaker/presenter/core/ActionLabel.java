@@ -51,6 +51,21 @@ public abstract class ActionLabel extends HorizontalLayout implements LayoutEven
 //        ActionLabel.this.addLayoutClickListener(ActionLabel.this);
 
     }
+     public ActionLabel(String description, Resource url) {
+        ActionLabel.this.setSizeUndefined();
+        Link label = new Link();
+        label.setResource(url);
+        label.setCaption(description);
+        ActionLabel.this.setStyleName("actionlabel");
+        ActionLabel.this.setDescription(description);
+        label.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
+        label.setDescription(description);
+        label.setTargetName("_blank");
+        label.setStyleName(ValoTheme.LINK_SMALL);
+        ActionLabel.this.addComponent(label);
+        ActionLabel.this.setComponentAlignment(label, Alignment.TOP_CENTER);
+
+    }
 
     public ActionLabel(Resource icon, String description) {
         ActionLabel.this.setSizeUndefined();

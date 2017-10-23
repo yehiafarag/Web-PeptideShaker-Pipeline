@@ -5,8 +5,10 @@ import com.ejt.vaadin.sizereporter.ComponentResizeEvent;
 import com.ejt.vaadin.sizereporter.SizeReporter;
 import com.google.common.collect.Sets;
 import com.itextpdf.text.pdf.codec.Base64;
-import com.uib.web.peptideshaker.presenter.components.peptideshakerview.components.SelectionManager;
+import com.uib.web.peptideshaker.presenter.components.peptideshakerview.SelectionManager;
+import com.uib.web.peptideshaker.presenter.core.FilterButton;
 import com.vaadin.data.Property;
+import com.vaadin.event.LayoutEvents;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -59,6 +61,8 @@ public abstract class DivaRangeFilter extends VerticalLayout implements Property
     private int chartHeight;
     private final JFreeChart mainChart;
     private final GridLayout filterGridContainer;
+    private final FilterButton removeFilterIcon;
+    private int imageRepaintCounter = 0;
 
     public DivaRangeFilter(String title, String filterId, SelectionManager Selection_Manager) {
 
@@ -84,14 +88,14 @@ public abstract class DivaRangeFilter extends VerticalLayout implements Property
         filterGridContainer.setSizeFull();
         filterGridContainer.setSpacing(false);
         filterGridContainer.setRowExpandRatio(0, 1.5f);
-        filterGridContainer.setRowExpandRatio(1, 0.3f);
+        filterGridContainer.setRowExpandRatio(1, 0.5f);
         filterGridContainer.setColumnExpandRatio(0, 10);
         filterGridContainer.setColumnExpandRatio(1, 80);
         filterGridContainer.setColumnExpandRatio(2, 10);
 
         DivaRangeFilter.this.addComponent(filterGridContainer);
         DivaRangeFilter.this.setExpandRatio(filterGridContainer, 90);
-        this.Selection_Manager.RegistrFilter(DivaRangeFilter.this);
+        this.Selection_Manager.RegistrDatasetsFilter(DivaRangeFilter.this);
 
         chartContainer = new VerticalLayout();
         chartContainer.setWidth(100, Unit.PERCENTAGE);
@@ -103,11 +107,21 @@ public abstract class DivaRangeFilter extends VerticalLayout implements Property
         SizeReporter reporter = new SizeReporter(chartContainer);
         mainChart = initChart();
         reporter.addResizeListener((ComponentResizeEvent event) -> {
-            chartWidth = event.getWidth();
-            chartHeight = event.getHeight();
-            if (chartWidth <= 0 || chartHeight <= 0) {
+            int tChartWidth = event.getWidth();
+            int tChartHeight = event.getHeight();
+            if (tChartWidth <= 0 || tChartHeight <= 0) {
                 return;
             }
+            if ((tChartWidth == chartWidth || Math.abs(tChartWidth - chartWidth) < 10) && (chartHeight == tChartHeight || Math.abs(tChartHeight - chartHeight) < 10)) {
+                return;
+            }
+            if (imageRepaintCounter < 4) {
+                imageRepaintCounter++;
+                return;
+            }
+            imageRepaintCounter = 3;
+            chartWidth = tChartWidth;
+            chartHeight = tChartHeight;
             chartImage.setSource(new ExternalResource(saveToFile(mainChart, chartWidth, chartHeight)));
         });
 
@@ -140,6 +154,25 @@ public abstract class DivaRangeFilter extends VerticalLayout implements Property
         upperLabelValueComponent = initLabel("");
         filterGridContainer.addComponent(upperLabelValueComponent, 2, 1);
         filterGridContainer.setComponentAlignment(upperLabelValueComponent, Alignment.MIDDLE_CENTER);
+
+        removeFilterIcon = new FilterButton() {
+            @Override
+            public void layoutClick(LayoutEvents.LayoutClickEvent event) {
+                applyFilter(lowerRangeSlider.getMin(), lowerRangeSlider.getMax());
+
+            }
+        };
+        removeFilterIcon.setWidth(25, Unit.PIXELS);
+        removeFilterIcon.setHeight(25, Unit.PIXELS);
+        removeFilterIcon.setVisible(false);
+//        removeFilterIcon.setActiveBtn(true);
+        removeFilterIcon.addStyleName("btninframe");
+
+//        topLeftContainer.addComponent(removeFilterIcon);
+//        topLeftContainer.setComponentAlignment(removeFilterIcon, Alignment.TOP_CENTER);
+        DivaRangeFilter.this.addComponent(removeFilterIcon);
+        DivaRangeFilter.this.setComponentAlignment(removeFilterIcon, Alignment.TOP_RIGHT);
+        DivaRangeFilter.this.setExpandRatio(removeFilterIcon, 0.1f);
 
     }
 
@@ -193,7 +226,7 @@ public abstract class DivaRangeFilter extends VerticalLayout implements Property
             if (activeData.containsKey(index)) {
                 series1.add(index, scaleValues(activeData.get(index).size(), 100, 10));
             } else {
-                series1.add( index, 0);
+                series1.add(index, 0);
             }
 
         }
@@ -252,7 +285,6 @@ public abstract class DivaRangeFilter extends VerticalLayout implements Property
     private String saveToFile(final JFreeChart chart, int width, int height) {
         byte imageData[];
         try {
-            System.out.println("at chart width is "+width);
             chart.getLegend().setVisible(false);
             imageData = ChartUtilities.encodeAsPNG(chart.createBufferedImage(width, height));
             String base64 = Base64.encodeBytes(imageData);
@@ -302,7 +334,7 @@ public abstract class DivaRangeFilter extends VerticalLayout implements Property
         if (min != lowerRangeSlider.getMin() || max != lowerRangeSlider.getMax()) {
             filter.addAll(Arrays.asList(new Comparable[]{min, max}));
         }
-        Selection_Manager.setSelection("protein_selection", filter, null, filterId);
+        Selection_Manager.setSelection("dataset_filter_selection", filter, null, filterId);
     }
 
     @Override
@@ -345,6 +377,7 @@ public abstract class DivaRangeFilter extends VerticalLayout implements Property
 
             renderer.setSeriesPaint(0, new Color(211, 211, 211), true);
             chartImage.setSource(new ExternalResource(saveToFile(mainChart, chartWidth, chartHeight)));
+            setMainAppliedFilter(false);
             return;
         }
         double min = Math.min(lowerRangeSlider.getValue(), upperRangeSlider.getValue());
@@ -359,8 +392,8 @@ public abstract class DivaRangeFilter extends VerticalLayout implements Property
         }
         min = Math.max(min, tmin);
         max = Math.min(max, tmax);
-
         redrawRangeOnChart(min, max);
+        setMainAppliedFilter(topFilter);
 //        selectSlice(selectedCategories);
     }
 
@@ -411,7 +444,7 @@ public abstract class DivaRangeFilter extends VerticalLayout implements Property
 //
 //        }
         for (int index = 0; index < series2.getItemCount(); index++) {
-          double value = series2.getDataItem(index).getXValue();
+            double value = series2.getDataItem(index).getXValue();
             if (value >= start && value <= end) {
                 series1.add(value, series2.getDataItem(index).getYValue());
             }
@@ -478,6 +511,24 @@ public abstract class DivaRangeFilter extends VerticalLayout implements Property
 
     @Override
     public void suspendFilter(boolean suspend) {
+    }
+
+    private void setMainAppliedFilter(boolean mainAppliedFilter) {
+        removeFilterIcon.setVisible(mainAppliedFilter);
+        if (mainAppliedFilter) {
+            this.addStyleName("highlightfilter");
+        } else {
+            this.removeStyleName("highlightfilter");
+
+            upperRangeSlider.removeValueChangeListener(DivaRangeFilter.this);
+            lowerRangeSlider.removeValueChangeListener(DivaRangeFilter.this);
+            lowerRangeSlider.setValue(lowerRangeSlider.getMin());
+            upperRangeSlider.setValue(lowerRangeSlider.getMax());
+
+            upperRangeSlider.addValueChangeListener(DivaRangeFilter.this);
+            lowerRangeSlider.addValueChangeListener(DivaRangeFilter.this);
+        }
+
     }
 
 }

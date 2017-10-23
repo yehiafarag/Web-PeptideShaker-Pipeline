@@ -3,7 +3,7 @@ package com.uib.web.peptideshaker.presenter.core.filtercharts;
 import com.uib.web.peptideshaker.model.core.ModificationMatrix;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.updatedfilters.ChromosomesFilter;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.updatedfilters.DivaMatrixLayoutChartFilter;
-import com.uib.web.peptideshaker.presenter.components.peptideshakerview.components.SelectionManager;
+import com.uib.web.peptideshaker.presenter.components.peptideshakerview.SelectionManager;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.charts.RangeFilter;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.updatedfilters.DivaPieChartFilter;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.updatedfilters.DivaRangeFilter;
@@ -79,7 +79,7 @@ public class FiltersContainer extends HorizontalLayout {
         PIFilter = new DivaPieChartFilter("Protein Inference", "pi_filter", Selection_Manager) {
             @Override
             public void selectionChange(String type) {
-                if (type.equalsIgnoreCase("protein_selection")) {
+                if (type.equalsIgnoreCase("dataset_filter_selection")) {
 //                    updateFilterSelection(Selection_Manager.getFilteredProteinsSet(), Selection_Manager.getAppliedFilterCategories("pi_filter"), false, false, false);
 
                 }
@@ -100,7 +100,7 @@ public class FiltersContainer extends HorizontalLayout {
 
             @Override
             public void selectionChange(String type) {
-                if (type.equalsIgnoreCase("protein_selection")) {
+                if (type.equalsIgnoreCase("dataset_filter_selection")) {
 //                    updateFilterSelection(Selection_Manager.getFilteredProteinsSet(), Selection_Manager.getAppliedFilterCategories("validation_filter"),false, false,false);
 
                 }
@@ -115,7 +115,7 @@ public class FiltersContainer extends HorizontalLayout {
 
             @Override
             public void selectionChange(String type) {
-                if (type.equalsIgnoreCase("protein_selection")) {
+                if (type.equalsIgnoreCase("dataset_filter_selection")) {
 //                    updateFilterSelection(Selection_Manager.getFilteredProteinsSet(), Selection_Manager.getAppliedFilterCategories("chromosome_filter"),false,false,false);
 
                 }
@@ -136,7 +136,7 @@ public class FiltersContainer extends HorizontalLayout {
 
             @Override
             public void selectionChange(String type) {
-                if (type.equalsIgnoreCase("protein_selection")) {
+                if (type.equalsIgnoreCase("dataset_filter_selection")) {
 //                    updateFilterSelection(Selection_Manager.getActiveProteinsSet(), Selection_Manager.getAppliedFilterCategories("modifications_filter"), Selection_Manager.isSingleProteinsFilter());
                 }
             }

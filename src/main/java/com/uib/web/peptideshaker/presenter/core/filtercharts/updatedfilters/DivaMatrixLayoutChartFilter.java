@@ -6,7 +6,8 @@ import com.google.common.collect.Sets;
 import com.itextpdf.text.pdf.codec.Base64;
 
 import com.uib.web.peptideshaker.model.core.ModificationMatrix;
-import com.uib.web.peptideshaker.presenter.components.peptideshakerview.components.SelectionManager;
+import com.uib.web.peptideshaker.presenter.components.peptideshakerview.SelectionManager;
+import com.uib.web.peptideshaker.presenter.core.FilterButton;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.charts.RegistrableFilter;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.components.SelectableNode;
 import com.uib.web.peptideshaker.presenter.core.form.SparkLine;
@@ -73,6 +74,7 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
     private final SelectionManager Selection_Manager;
     private final Map<Integer, Double> barChartValues;
     private Label chartTitle;
+    private FilterButton removeFilterIcon;
     private Image mainChartImg;
     private VerticalLayout leftBottomCorner;
     private AbsoluteLayout bottomLayoutContainer;
@@ -108,7 +110,7 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
         this.Selection_Manager = Selection_Manager;
         this.rowLabelsMap = new LinkedHashMap<>();
 //        this.selectedDataSet = new LinkedHashSet<>();
-        this.Selection_Manager.RegistrFilter(DivaMatrixLayoutChartFilter.this);
+        this.Selection_Manager.RegistrDatasetsFilter(DivaMatrixLayoutChartFilter.this);
         this.nodesTable = new LinkedHashMap<>();
         this.chartBarsList = new HashMap<>();
         this.barChartValues = new LinkedHashMap<>();
@@ -154,6 +156,21 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
         topLeftCornerLayout.addComponent(chartTitle);
         topLeftCornerLayout.setComponentAlignment(chartTitle, Alignment.TOP_LEFT);
 
+//          removeFilterIcon = new FilterButton() {
+//            @Override
+//            public void layoutClick(LayoutEvents.LayoutClickEvent event) {
+////                applyFilter(null);
+//                
+//            }
+//        };
+//        removeFilterIcon.setWidth(25, Unit.PIXELS);
+//        removeFilterIcon.setHeight(25, Unit.PIXELS);
+//        removeFilterIcon.addStyleName("nomargin");
+//        removeFilterIcon.setVisible(true);
+//        removeFilterIcon.setActiveBtn(true);
+//        
+//        topLeftCornerLayout.addComponent(removeFilterIcon);
+//        topLeftCornerLayout.setComponentAlignment(removeFilterIcon, Alignment.TOP_CENTER);
         mainChartContainer = new AbsoluteLayout();
         mainChartContainer.setWidth(100, Unit.PERCENTAGE);
         mainChartContainer.setHeight(100, Unit.PERCENTAGE);
@@ -162,7 +179,7 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
         mainChartImg = new Image();
         mainChartImg.setHeight(100, Unit.PERCENTAGE);
         mainChartImg.setWidth(100, Unit.PERCENTAGE);
-       
+
         mainChartContainer.addComponent(mainChartImg);
         mainChartImg.addStyleName("hide");
         chartBarsContainer = new AbsoluteLayout();
@@ -175,14 +192,31 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
         SizeReporter mainSizeReporter = new SizeReporter(mainChartContainer);
         mainSizeReporter.addResizeListener((ComponentResizeEvent event) -> {
 
-            int tWidth = event.getWidth();
-            int tHeight = event.getHeight();
-            if (mainWidth == tWidth && mainHeight == tHeight) {
+//           
+            int tChartWidth = event.getWidth();
+            int tChartHeight = event.getHeight();
+            if (tChartWidth <= 0 || tChartHeight <= 0) {
                 return;
             }
-            mainWidth = tWidth;
-            mainHeight = tHeight;
+            if ((tChartWidth == mainWidth || Math.abs(tChartWidth - mainWidth) < 10) && (mainHeight == tChartHeight || Math.abs(tChartHeight - mainHeight) < 10)) {
+                return;
+            }
+//            if (imageRepaintCounter < 2) {
+//                imageRepaintCounter++;
+//                return;
+//            }
+
+            mainWidth = tChartWidth;
+            mainHeight = tChartHeight;
             redrawChart();
+//                int tWidth = event.getWidth();
+//            int tHeight = event.getHeight();
+//            if (mainWidth == tWidth && mainHeight == tHeight) {
+//                return;
+//            }
+//            mainWidth = tWidth;
+//            mainHeight = tHeight;
+//            redrawChart();
         });
         initChart();
         /**
@@ -206,6 +240,26 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
         columnsContainer.setHeight(100, Unit.PERCENTAGE);
         columnsContainer.setWidth(100, Unit.PERCENTAGE);
         columnsContainer.addStyleName("pointer");
+
+        removeFilterIcon = new FilterButton() {
+            @Override
+            public void layoutClick(LayoutEvents.LayoutClickEvent event) {
+                System.out.println("at clicked reset");
+                applyFilter(-1);
+
+            }
+        };
+        removeFilterIcon.setWidth(25, Unit.PIXELS);
+        removeFilterIcon.setHeight(25, Unit.PIXELS);
+        removeFilterIcon.setVisible(false);
+//        removeFilterIcon.setActiveBtn(true);
+        removeFilterIcon.addStyleName("btninframe");
+
+//        topLeftContainer.addComponent(removeFilterIcon);
+//        topLeftContainer.setComponentAlignment(removeFilterIcon, Alignment.TOP_CENTER);
+        DivaMatrixLayoutChartFilter.this.addComponent(removeFilterIcon);
+        DivaMatrixLayoutChartFilter.this.setComponentAlignment(removeFilterIcon, Alignment.TOP_RIGHT);
+        DivaMatrixLayoutChartFilter.this.setExpandRatio(removeFilterIcon, 0.1f);
     }
 
     public void initializeFilterData(ModificationMatrix modificationMatrix, Map<String, Color> dataColors, Set<Object> selectedCategories, int totalNumber) {
@@ -405,9 +459,10 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
 
     @Override
     public void redrawChart() {
+
         if (allowDrawing && index++ > 0) {
             mainChartImg.setSource(new ExternalResource(saveToFile(chart, mainChartRenderingInfo, mainWidth, mainHeight)));
-             mainChartImg.removeStyleName("hide");
+            mainChartImg.removeStyleName("hide");
             reDrawLayout(mainWidth, mainChartRenderingInfo);
 
         }
@@ -452,7 +507,9 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
             redrawChart();
 //            unselectAll();
         }
+        setMainAppliedFilter(topFilter && !selectedCategories.isEmpty());
         selectColumn(selectedCategories);
+//       
 
     }
 
@@ -463,11 +520,11 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
 
         Set<Comparable> appliedFilter = new LinkedHashSet<>();
         if (columnIndex == -1) {
-            Selection_Manager.setSelection("protein_selection", appliedFilter, null, filterId);
+            Selection_Manager.setSelection("dataset_filter_selection", appliedFilter, null, filterId);
             return;
         }
         appliedFilter.add((columns.keySet().toArray()[columnIndex] + ""));
-        Selection_Manager.setSelection("protein_selection", appliedFilter, null, filterId);
+        Selection_Manager.setSelection("dataset_filter_selection", appliedFilter, null, filterId);
     }
 
     /**
@@ -487,8 +544,8 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
         try {
 //            BarRenderer renderer = ((BarRenderer) ((CategoryPlot) chart.getPlot()).getRenderer());
             if (((CategoryPlot) chart.getPlot()).getDataset().getColumnCount() == 1) {
-                System.out.println("single bar persentage "+(50.0/(double)width));
-                ((BarRenderer) ((CategoryPlot) chart.getPlot()).getRenderer()).setMaximumBarWidth((50.0/(double)width));
+                System.out.println("single bar persentage " + (50.0 / (double) width));
+                ((BarRenderer) ((CategoryPlot) chart.getPlot()).getRenderer()).setMaximumBarWidth((50.0 / (double) width));
             } else {
                 ((BarRenderer) ((CategoryPlot) chart.getPlot()).getRenderer()).setMaximumBarWidth(1.0);
             }
@@ -594,6 +651,16 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
         return logValue;
 
 //        return Math.min(logValue, max);
+    }
+
+    private void setMainAppliedFilter(boolean mainAppliedFilter) {
+        removeFilterIcon.setVisible(mainAppliedFilter);
+        if (mainAppliedFilter) {
+            this.addStyleName("highlightfilter");
+        } else {
+            this.removeStyleName("highlightfilter");
+        }
+
     }
 
 }

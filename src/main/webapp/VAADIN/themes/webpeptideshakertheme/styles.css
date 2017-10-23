@@ -1629,6 +1629,21 @@ div.v-layout.v-horizontal.v-widget {
 	}
 	}
 
+@keyframes shake {
+		10%, 90% {
+		transform: translate3d(-1px, 0, 0);
+	}
+		20%, 80% {
+		transform: translate3d(2px, 0, 0);
+	}
+		30%, 50%, 70% {
+		transform: translate3d(-4px, 0, 0);
+	}
+		40%, 60% {
+		transform: translate3d(4px, 0, 0);
+	}
+	}
+
 @font-face {
 	font-family: "Vaadin-Icons";
 	src: url(../../../VAADIN/addons/vaadin-icons/fonts/Vaadin-Icons.eot);
@@ -13253,6 +13268,8 @@ div.v-layout.v-horizontal.v-widget {
 	-moz-transition: all 0.5s ease-in-out;
 	-o-transition: all 0.5s ease-in-out;
 	transition: all 0.5s ease-in-out;
+	z-index: 10 !important;
+	position: relative !important;
 }
 
 .webpeptideshakertheme .bigmenubtn img {
@@ -13293,7 +13310,7 @@ div.v-layout.v-horizontal.v-widget {
 	border-bottom-right-radius: 0px;
 	position: relative;
 	z-index: 10 !important;
-	padding: 10%;
+	padding: 0.2vh;
 }
 
 .webpeptideshakertheme .selectedbiglbtn img {
@@ -13301,6 +13318,24 @@ div.v-layout.v-horizontal.v-widget {
 	-webkit-box-shadow: 0 0px 20px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
 	-moz-box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
 	border-color: rgba(18, 120, 239, 0.96) !important;
+	animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+	transform: translate3d(0, 0, 0);
+	backface-visibility: hidden;
+	perspective: 1000px;
+}
+
+.webpeptideshakertheme .shake {
+	animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+	transform: translate3d(0, 0, 0);
+	backface-visibility: hidden;
+	perspective: 1000px;
+}
+
+.webpeptideshakertheme .reshake {
+	animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+	transform: translate3d(0, 0, 0);
+	backface-visibility: hidden;
+	perspective: 1000px;
 }
 
 .webpeptideshakertheme .bigmenubtn :hover {
@@ -13502,6 +13537,10 @@ div.v-layout.v-horizontal.v-widget {
 	font-size: 1vh;
 	padding-left: 5px;
 	padding-right: 5px;
+}
+
+.webpeptideshakertheme .v-slot-minhight30 {
+	min-height: 30px;
 }
 
 .webpeptideshakertheme .bottomformlayout {
@@ -13762,15 +13801,29 @@ div.v-layout.v-horizontal.v-widget {
 	color: #3d84dc !important;
 }
 
-.webpeptideshakertheme .largetitle .v-label {
+.webpeptideshakertheme .largetitle .v-label, .webpeptideshakertheme .v-link-largetitle {
 	margin-top: 10px;
 	margin-left: 25px;
 	font-size: 18px !important;
 	font-weight: normal !important;
+	text-decoration: none !important;
 }
 
 .webpeptideshakertheme .v-slot-largetitle {
 	min-height: 30px;
+}
+
+.webpeptideshakertheme .v-link-largetitle:hover, .webpeptideshakertheme .largetitle .v-label:hover {
+	color: blue !important;
+	text-decoration: underline !important;
+	-webkit-transition: all 0s ease-in-out;
+	-moz-transition: all 0s ease-in-out;
+	-o-transition: all 0s ease-in-out;
+	transition: all 0s ease-in-out;
+}
+
+.webpeptideshakertheme .v-link-largetitle.v-disabled {
+	opacity: 1 !important;
 }
 
 .webpeptideshakertheme .scrollinsideframe {
@@ -14374,7 +14427,6 @@ div.v-layout.v-horizontal.v-widget {
 .webpeptideshakertheme .thumbfilterframe {
 	border: 2px solid lightgray;
 	border-radius: 5px;
-	overflow: hidden;
 	padding-left: 10px;
 	padding-right: 10px;
 }
@@ -14393,7 +14445,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .thumbfilterframe:hover {
 	color: black !important;
-	border-color: gray !important;
+	border-color: gray;
 	cursor: default;
 }
 
@@ -14515,6 +14567,13 @@ div.v-layout.v-horizontal.v-widget {
 .webpeptideshakertheme .rangeslider .v-slider-handle:before {
 	height: 20px !important;
 	width: 5px !important;
+}
+
+.webpeptideshakertheme .btninframe {
+	margin-top: -12.5px !important;
+	margin-left: -17px !important;
+	position: absolute;
+	top: 0;
 }
 
 .webpeptideshakertheme .rangeslider .v-slider-handle:before, .webpeptideshakertheme .rangeslider .v-slider-handle:after {
@@ -14803,6 +14862,290 @@ div.v-layout.v-horizontal.v-widget {
 	overflow: hidden !important;
 	text-overflow: ellipsis !important;
 	position: relative !important;
+}
+
+.webpeptideshakertheme .btnlayout {
+	background-color: whitesmoke;
+	padding: 2px;
+	border: 2px solid lightgray;
+	border-radius: 5px;
+	margin-top: 10px;
+}
+
+.webpeptideshakertheme .btnlayout:hover {
+	background-color: lightgray;
+	border-color: gray;
+}
+
+.webpeptideshakertheme .nomargin {
+	margin: 0 !important;
+}
+
+.webpeptideshakertheme .highlightfilter {
+	border-color: orange !important;
+	animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+	transform: translate3d(0, 0, 0);
+	backface-visibility: hidden;
+	perspective: 1000px;
+}
+
+.webpeptideshakertheme .highlightfilter:hover {
+	border-color: orange !important;
+}
+
+.webpeptideshakertheme .graphframeframe {
+	border-top: 2px solid lightgray;
+	border-bottom: 2px solid lightgray;
+	border-radius: 5px;
+}
+
+.webpeptideshakertheme .inframe {
+	background-color: white;
+	border: 2px solid lightgray;
+	font-size: 12px !important;
+	border-radius: 5px;
+	overflow: visible !important;
+	padding-left: 5px;
+	padding-right: 5px;
+	line-height: 25px;
+	z-index: 3 !important;
+	height: 30px !important;
+	font-weight: normal !important;
+}
+
+.webpeptideshakertheme .graphframeframe .v-absolutelayout-margin {
+	overflow: visible !important;
+}
+
+.webpeptideshakertheme .inframe .v-button-link {
+	text-decoration: none;
+}
+
+.webpeptideshakertheme .inframe .v-button-link:hover {
+	text-decoration: underline;
+}
+
+.webpeptideshakertheme .v-verticallayout-inframe .v-select-optiongroup {
+	font-size: 12px !important;
+}
+
+.webpeptideshakertheme .v-verticallayout-inframe {
+	min-height: 65px !important;
+}
+
+.webpeptideshakertheme .inframe .v-button-link:focus:after, .webpeptideshakertheme .v-button:focus:after {
+	border: 3px solid white !important;
+}
+
+.webpeptideshakertheme .proteincoverage {
+	background-color: whitesmoke;
+	border: 1px solid #cc9e9e;
+	border-radius: 5px;
+}
+
+.webpeptideshakertheme .v-absolutelayout-wrapper-proteincoverage {
+	padding-left: 20px !important;
+	padding-right: 20px !important;
+	background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='15px' width='20px'><text  x='0' y='12' fill='gray' font-size='15px'>N</text></svg>"), url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='15px' width='20px'><text x='5' y='12' fill='gray' font-size='15px'>C</text></svg>");
+	background-repeat: no-repeat;
+	background-position: 5px 50%, right 0px top 50%;
+}
+
+.webpeptideshakertheme .peptidecoverage {
+	border: 1px solid rgba(255, 255, 255, 0);
+	border-radius: 5px;
+}
+
+.webpeptideshakertheme .v-absolutelayout-wrapper-peptidecoverage {
+	padding-left: 20px !important;
+	padding-right: 20px !important;
+	padding-top: 5px;
+}
+
+.webpeptideshakertheme .peptidelayout {
+	min-width: 5px;
+	z-index: 2 !important;
+	position: relative;
+}
+
+.webpeptideshakertheme .blackborder {
+	border: 1px solid black;
+}
+
+.webpeptideshakertheme .lightbluelayout {
+	background-color: #529add;
+}
+
+.webpeptideshakertheme .selectedpeptide {
+	opacity: 1 !important;
+}
+
+.webpeptideshakertheme .transparent {
+	opacity: 0.2;
+}
+
+.webpeptideshakertheme .peptidelayout.greenbackground {
+	background-color: #097728 !important;
+}
+
+.webpeptideshakertheme .peptidelayout.lightgraybackground {
+	background-color: lightgray !important;
+}
+
+.webpeptideshakertheme .peptidelayout.orangebackground {
+	background-color: orange !important;
+}
+
+.webpeptideshakertheme .peptidelayout.seabluebackground {
+	background-color: #529add !important;
+}
+
+.webpeptideshakertheme .peptidelayout.purplebackground {
+	background-color: #b87fd0 !important;
+}
+
+.webpeptideshakertheme .peptidelayout.redbackground {
+	background-color: #e90000 !important;
+}
+
+.webpeptideshakertheme .proteincoverage.greenbackground {
+	border-color: #097728 !important;
+}
+
+.webpeptideshakertheme .proteincoverage.lightgraybackground {
+	border-color: lightgray !important;
+}
+
+.webpeptideshakertheme .proteincoverage.orangebackground {
+	border-color: orange !important;
+}
+
+.webpeptideshakertheme .proteincoverage.seabluebackground {
+	border-color: #529add !important;
+}
+
+.webpeptideshakertheme .proteincoverage.purplebackground {
+	border-color: #b87fd0 !important;
+}
+
+.webpeptideshakertheme .proteincoverage.redbackground {
+	border-color: #e90000 !important;
+}
+
+.webpeptideshakertheme .proteincoverage.graybackground {
+	border-color: gray !important;
+}
+
+.webpeptideshakertheme .v-popupview-popuptext, .webpeptideshakertheme .v-horizontallayout-actionlabel .v-link {
+	clear: both !important;
+	display: inline-block !important;
+	overflow: hidden !important;
+	white-space: nowrap !important;
+	overflow: hidden !important;
+	text-decoration: none !important;
+	text-overflow: ellipsis !important;
+	width: 100% !important;
+	font-size: 12px !important;
+	line-height: 14px !important;
+	font-weight: normal !important;
+}
+
+.webpeptideshakertheme .v-popupview-popuptext:hover {
+	color: blue !important;
+}
+
+.webpeptideshakertheme .v-popupview-popup-popuptext {
+	background-color: gray !important;
+	border: 2px solid black;
+	color: white !important;
+	min-height: 50px;
+	padding-top: 10px !important;
+	padding-left: 10px !important;
+	padding-right: 10px !important;
+	padding-bottom: 0 !important;
+	font-size: 1.1vmax;
+	font-weight: bold;
+	line-height: 200% !important;
+}
+
+.webpeptideshakertheme .v-horizontallayout-actionlabel .v-link:hover {
+	text-decoration: underline;
+	font-weight: bold;
+	color: blue;
+}
+
+.webpeptideshakertheme .v-table-cell-wrapper .v-horizontallayout-actionlabel .v-caption-icon-only {
+	margin-top: 1vh !important;
+	height: 30px !important;
+	text-decoration: none;
+	font-weight: normal;
+	padding-left: 2px;
+	line-height: 44px;
+}
+
+.webpeptideshakertheme .dottedborder {
+	border: 2px dashed black;
+}
+
+.webpeptideshakertheme .v-horizontallayout-inframe {
+	z-index: 2 !important;
+	position: relative;
+}
+
+.webpeptideshakertheme .v-popupview-popup-protlegend {
+	background-color: whitesmoke !important;
+}
+
+.webpeptideshakertheme .v-popupview-popup .v-verticallayout-viewframecontent {
+	padding-left: 15px !important;
+	padding-right: 15px;
+	min-width: 310px;
+	min-height: 200px;
+	background-color: whitesmoke;
+}
+
+.webpeptideshakertheme .v-slot-protlegend {
+	visibility: hidden !important;
+	max-width: 0px !important;
+}
+
+.webpeptideshakertheme .defaultcursor {
+	cursor: default !important;
+}
+
+.webpeptideshakertheme .v-popupview-popup-protlegend .v-label {
+	margin-left: 5px !important;
+	line-height: 25px;
+	font-size: 14px;
+	font-weight: bold;
+}
+
+.webpeptideshakertheme .v-popupview-popup-protlegend .v-verticallayout-peptidenode {
+	margin-top: 7px;
+	margin-left: 10px;
+}
+
+.webpeptideshakertheme .v-popupview-popup-protlegend .dottedborder {
+	margin-left: -30px;
+	padding-right: 95px;
+	border-width: 2px;
+}
+
+.webpeptideshakertheme .v-popupview-popup-protlegend .solidborder {
+	margin-left: -30px;
+	padding-right: 95px;
+	border: 2px solid black;
+}
+
+.webpeptideshakertheme .v-popupview-popup-protlegend .v-captiontext {
+	padding-bottom: 10px;
+	font-size: 17px;
+}
+
+.webpeptideshakertheme .v-popupview-popup-protlegend .v-verticallayout-viewframecontent .v-button {
+	position: absolute;
+	top: 15px !important;
+	right: 15px;
 }
 
 .webpeptideshakertheme .horizontalcss .largetitle .v-label {

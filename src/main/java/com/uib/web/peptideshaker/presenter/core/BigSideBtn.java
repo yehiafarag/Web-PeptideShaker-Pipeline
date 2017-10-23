@@ -1,13 +1,11 @@
-
 package com.uib.web.peptideshaker.presenter.core;
 
-import com.vaadin.server.ThemeResource;
-import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.event.LayoutEvents;
+import com.vaadin.server.ExternalResource;
+import com.vaadin.server.Resource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
 
 /**
  * This class represent the top right small button
@@ -16,35 +14,80 @@ import com.vaadin.ui.VerticalLayout;
  */
 public class BigSideBtn extends HorizontalLayout {
 
-    public BigSideBtn(String iconUrl,String text) {
-        Image icon = new Image();
-        icon.setSource(new ThemeResource(iconUrl));
+    private final Image icon;
+    private final MobileSideBtn mobileModeBtn;
+
+    public BigSideBtn(String text) {
+        icon = new Image();
         icon.setSizeFull();
         BigSideBtn.this.addComponent(icon);
-        BigSideBtn.this.setComponentAlignment(icon,Alignment.MIDDLE_CENTER);
-//         BigSideBtn.this.setExpandRatio(icon,1);
+        BigSideBtn.this.setComponentAlignment(icon, Alignment.MIDDLE_CENTER);
         BigSideBtn.this.setSizeFull();
         BigSideBtn.this.setStyleName("bigmenubtn");
-        
-        
-//        
-//        Label textLabel = new Label(text);
-//        textLabel.setStyleName("bigbtnText");
-//         BigSideBtn.this.addComponent(textLabel);
-//          BigSideBtn.this.setExpandRatio(textLabel,2);
-//         BigSideBtn.this.setComponentAlignment(textLabel,Alignment.MIDDLE_LEFT);
-        
-        
-        
-        
+
+        mobileModeBtn = new MobileSideBtn(text);
+
+    }
+
+    @Override
+    public void setData(Object data) {
+        mobileModeBtn.setData(data);
+        super.setData(data); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public MobileSideBtn getMobileModeBtn() {
+        return mobileModeBtn;
+    }
+
+    public void updateIcon(Resource imageURL) {
+        this.setVisible(!(imageURL == null));
+        if (imageURL == null || icon.getSource()==imageURL) {
+            return;
+        }
+
+        icon.setSource(imageURL);
+        mobileModeBtn.updateIcon(imageURL);
+        if (this.getStyleName().contains("reshake")) {
+            this.removeStyleName("reshake");
+            this.addStyleName("shake");
+            mobileModeBtn.removeStyleName("reshake");
+            mobileModeBtn.addStyleName("shake");
+        } else {
+            this.removeStyleName("shake");
+            this.addStyleName("reshake");
+            mobileModeBtn.removeStyleName("shake");
+            mobileModeBtn.addStyleName("reshake");
+
+        }
     }
 
     public void setSelected(boolean selected) {
         if (selected) {
+            this.mobileModeBtn.addStyleName("selectedbiglbtn");
             BigSideBtn.this.addStyleName("selectedbiglbtn");
         } else {
+
+            this.mobileModeBtn.removeStyleName("selectedbiglbtn");
             BigSideBtn.this.removeStyleName("selectedbiglbtn");
         }
+    }
+
+    @Override
+    public void setVisible(boolean visible) {
+        if (visible) {
+            this.mobileModeBtn.removeStyleName("hide");
+            this.removeStyleName("hide");
+        } else {
+            this.mobileModeBtn.addStyleName("hide");
+            this.addStyleName("hide");
+        }
+        //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void addLayoutClickListener(LayoutEvents.LayoutClickListener listener) {
+        this.mobileModeBtn.addLayoutClickListener(listener);
+        super.addLayoutClickListener(listener); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

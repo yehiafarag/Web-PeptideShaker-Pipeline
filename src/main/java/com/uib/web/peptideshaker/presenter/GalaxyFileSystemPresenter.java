@@ -6,6 +6,7 @@ import com.uib.web.peptideshaker.presenter.components.DataViewLayout;
 import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
 import com.uib.web.peptideshaker.presenter.core.SmallSideBtn;
 import com.vaadin.event.LayoutEvents;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
@@ -75,7 +76,8 @@ public abstract class GalaxyFileSystemPresenter extends VerticalLayout implement
         btnContainer.setSpacing(true);
         btnContainer.setMargin(new MarginInfo(false, false, true, false));
 //
-        BigSideBtn viewDataBtn = new BigSideBtn("img/jobs2.png", "Show Data");
+        BigSideBtn viewDataBtn = new BigSideBtn("Show Data");
+        viewDataBtn.updateIcon(new ThemeResource("img/jobs2.png"));
         viewDataBtn.setData("datasetoverview");
         btnContainer.addComponent(viewDataBtn);
         btnContainer.setComponentAlignment(viewDataBtn, Alignment.TOP_CENTER);
@@ -103,13 +105,9 @@ public abstract class GalaxyFileSystemPresenter extends VerticalLayout implement
         mobilebtnContainer.setSpacing(true);
         mobilebtnContainer.setStyleName("bottomsidebtncontainer");
 
-        BigSideBtn viewDataBtnM = new BigSideBtn("img/jobs2.png", "Show Data");
-        viewDataBtnM.setData("datasetoverview");
-        viewDataBtnM.addStyleName("zeropadding");
-        mobilebtnContainer.addComponent(viewDataBtnM);
-        mobilebtnContainer.setComponentAlignment(viewDataBtnM, Alignment.TOP_CENTER);
-        viewDataBtnM.addLayoutClickListener(GalaxyFileSystemPresenter.this);
-        viewDataBtnM.setSelected(true);
+        mobilebtnContainer.addComponent(viewDataBtn.getMobileModeBtn());
+        mobilebtnContainer.setComponentAlignment(viewDataBtn.getMobileModeBtn(), Alignment.TOP_CENTER);
+      
         viewDataBtn.setSelected(true);
 
     }

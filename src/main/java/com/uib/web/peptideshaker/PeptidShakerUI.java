@@ -1,7 +1,5 @@
 package com.uib.web.peptideshaker;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Range;
 import javax.servlet.annotation.WebServlet;
@@ -14,6 +12,7 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import java.util.Set;
@@ -62,6 +61,8 @@ public class PeptidShakerUI extends UI {
             }
         });
 
+//        Component grid = new BasicPlot().getGrid();
+//        setContent(grid);
         setContent(webPeptideShakerApp);
         mimicNelsLogin();
         if (VaadinSession.getCurrent().getAttribute("ApiKey") != null && VaadinSession.getCurrent().getAttribute("galaxyUrl") != null) {
@@ -93,7 +94,6 @@ public class PeptidShakerUI extends UI {
 //        }
 //        filter3.updateChartData(rows);
     }
-    
 
     private void mimicNelsLogin() {
         // Create a new cookie
@@ -141,21 +141,4 @@ public class PeptidShakerUI extends UI {
         return builder.build();
     }
 
-    /**
-     * Given a 2-length array representing a closed integer range, and an array
-     * of discrete instances (each pair of which therefore represents a closed
-     * range) return the set of ranges overlapping the first range. Example: the
-     * instances array [1,2,3,4] maps to the ranges [1,2],[2,3],[3,4].
-     */
-    public Set<Range<Integer>> getIntersectingContinuousRanges(int[] intersects,
-            int[] instances) {
-        Preconditions.checkArgument(intersects.length == 2);
-        Preconditions.checkArgument(instances.length >= 2);
-        ImmutableList.Builder<Range<Integer>> builder = ImmutableList.builder();
-        for (int i = 0; i < instances.length - 1; i++) {
-            builder.add(Range.closed(instances[i], instances[i + 1]));
-        }
-        return getIntersectingRanges(Range.closed(intersects[0], intersects[1]),
-                builder.build());
-    }
 }

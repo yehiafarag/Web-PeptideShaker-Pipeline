@@ -5,7 +5,8 @@ import com.ejt.vaadin.sizereporter.SizeReporter;
 import com.google.common.collect.Sets;
 import com.itextpdf.text.pdf.codec.Base64;
 
-import com.uib.web.peptideshaker.presenter.components.peptideshakerview.components.SelectionManager;
+import com.uib.web.peptideshaker.presenter.components.peptideshakerview.SelectionManager;
+import com.uib.web.peptideshaker.presenter.core.FilterButton;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.charts.RegistrableFilter;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.components.LegendItem;
 import com.vaadin.event.LayoutEvents;
@@ -86,8 +87,9 @@ public abstract class DivaPieChartFilter extends HorizontalLayout implements Reg
      * contain all the chart information.
      */
     private final ChartRenderingInfo mainChartRenderingInfo = new ChartRenderingInfo();
+    private FilterButton removeFilterIcon;
     private VerticalLayout rightLayout;
-    private int redrawIndex;
+    private int imageRepaintCounter;
     private final List<ComponentResizeEvent> eventList = new ArrayList<>();
 
     private AbsoluteLayout mainChartContainer;
@@ -102,7 +104,7 @@ public abstract class DivaPieChartFilter extends HorizontalLayout implements Reg
         this.title = title;
         this.filterId = filterId;
         this.Selection_Manager = Selection_Manager;
-        this.Selection_Manager.RegistrFilter(DivaPieChartFilter.this);
+        this.Selection_Manager.RegistrDatasetsFilter(DivaPieChartFilter.this);
         this.fullItemsSet = new LinkedHashSet<>();
         this.appliedFilter = new LinkedHashSet<>();
         this.dountChartListener = (LayoutEvents.LayoutClickEvent event) -> {
@@ -130,14 +132,22 @@ public abstract class DivaPieChartFilter extends HorizontalLayout implements Reg
         DivaPieChartFilter.this.setStyleName("thumbfilterframe");
         DivaPieChartFilter.this.setSpacing(true);
 
+        VerticalLayout topLeftContainer = new VerticalLayout();
+        topLeftContainer.setSpacing(false);
+        topLeftContainer.setHeightUndefined();
+        topLeftContainer.setWidth(100, Unit.PERCENTAGE);
+        DivaPieChartFilter.this.addComponent(topLeftContainer);
+        DivaPieChartFilter.this.setComponentAlignment(topLeftContainer, Alignment.TOP_LEFT);
+        DivaPieChartFilter.this.setExpandRatio(topLeftContainer, 15);
+
         chartTitle = new Label("<font style='padding-top: 10px;position: absolute;'>" + title + "</font>", ContentMode.HTML);
         chartTitle.setStyleName(ValoTheme.LABEL_BOLD);
         chartTitle.setWidth(100, Unit.PERCENTAGE);
         chartTitle.setHeight(60, Unit.PIXELS);
         chartTitle.addStyleName("resizeabletext");
-        DivaPieChartFilter.this.addComponent(chartTitle);
-        DivaPieChartFilter.this.setComponentAlignment(chartTitle, Alignment.TOP_LEFT);
-        DivaPieChartFilter.this.setExpandRatio(chartTitle, 15);
+        topLeftContainer.addComponent(chartTitle);
+        topLeftContainer.setComponentAlignment(chartTitle, Alignment.TOP_LEFT);
+//        topLeftContainer.setExpandRatio(chartTitle, 15);
 
         mainChartContainer = new AbsoluteLayout();
 
@@ -182,38 +192,76 @@ public abstract class DivaPieChartFilter extends HorizontalLayout implements Reg
         SizeReporter mainSizeReporter = new SizeReporter(mainChartContainer);
         mainSizeReporter.addResizeListener((ComponentResizeEvent event) -> {
             try {
-                if (redrawIndex < 4) {
-                    redrawIndex++;
+
+                int tChartWidth = event.getWidth();
+                int tChartHeight = event.getHeight();
+                if (tChartWidth <= 0 || tChartHeight <= 0) {
                     return;
                 }
-                mainChartImg.setVisible(false);
-                middleDountLayout.setVisible(false);
-                eventList.add(event);
-                redrawTimer.schedule(
-                        new java.util.TimerTask() {
-                    @Override
-                    public void run() {
-                        redrawTimer.cancel();
-                        redrawTimer = new Timer();
-                        ComponentResizeEvent event = eventList.get(eventList.size() - 1);
-                        eventList.clear();
-                        mainWidth = event.getWidth();
-                        mainHeight = event.getHeight();
-                        redrawChart();
-                        mainChartImg.setVisible(true);
-                        middleDountLayout.setVisible(true);
+                if ((tChartWidth == mainWidth || Math.abs(tChartWidth - mainWidth) < 10) && (mainHeight == tChartHeight || Math.abs(tChartHeight - mainHeight) < 10)) {
+                    return;
+                }
+                if (imageRepaintCounter < 1) {
+                    imageRepaintCounter++;
+                    return;
+                }
+                mainWidth = tChartWidth;
+                mainHeight = tChartHeight;
+                redrawChart();
+                mainChartImg.setVisible(true);
+                middleDountLayout.setVisible(true);
 
-                    }
-                },
-                        2000
-                );
-
+//                if (imageRepaintCounter < 4) {
+//                    imageRepaintCounter++;
+//                    return;
+//                }
+//                mainChartImg.setVisible(false);
+//                middleDountLayout.setVisible(false);
+//                eventList.add(event);
+//                redrawTimer.schedule(
+//                        new java.util.TimerTask() {
+//                    @Override
+//                    public void run() {
+//                        redrawTimer.cancel();
+//                        redrawTimer = new Timer();
+//                        ComponentResizeEvent event = eventList.get(eventList.size() - 1);
+//                        eventList.clear();
+//                        mainWidth = event.getWidth();
+//                        mainHeight = event.getHeight();
+//                        redrawChart();
+//                        mainChartImg.setVisible(true);
+//                        middleDountLayout.setVisible(true);
+//
+//                    }
+//                },
+//                        1000
+//                );
             } catch (Exception ex) {
                 System.out.println("at error " + this.getClass().getName() + "  " + ex);
             }
         });
 
         initChart();
+
+        removeFilterIcon = new FilterButton() {
+            @Override
+            public void layoutClick(LayoutEvents.LayoutClickEvent event) {
+                appliedFilter.clear();
+                applyFilter(null);
+
+            }
+        };
+        removeFilterIcon.setWidth(25, Unit.PIXELS);
+        removeFilterIcon.setHeight(25, Unit.PIXELS);
+        removeFilterIcon.setVisible(false);
+//        removeFilterIcon.setActiveBtn(true);
+        removeFilterIcon.addStyleName("btninframe");
+
+//        topLeftContainer.addComponent(removeFilterIcon);
+//        topLeftContainer.setComponentAlignment(removeFilterIcon, Alignment.TOP_CENTER);
+        DivaPieChartFilter.this.addComponent(removeFilterIcon);
+        DivaPieChartFilter.this.setComponentAlignment(removeFilterIcon, Alignment.TOP_RIGHT);
+        DivaPieChartFilter.this.setExpandRatio(removeFilterIcon, 1);
 
     }
 
@@ -288,6 +336,7 @@ public abstract class DivaPieChartFilter extends HorizontalLayout implements Reg
             redrawChart();
         }
         selectSlice(selectedCategories);
+        setMainAppliedFilter(topFilter && !selectedCategories.isEmpty());
 
 //        selectAllLabel.setValue("<center>" + selectedItems.size() + "</center>");
     }
@@ -330,8 +379,7 @@ public abstract class DivaPieChartFilter extends HorizontalLayout implements Reg
         if (pieSlice == null && appliedFilter.size() == rightLayout.getComponentCount()) {
 //            appliedFilter.clear();
         }
-        System.out.println("update selection manahger " + appliedFilter.size());
-        Selection_Manager.setSelection("protein_selection", new LinkedHashSet<>(appliedFilter), null, filterId);
+        Selection_Manager.setSelection("dataset_filter_selection", new LinkedHashSet<>(appliedFilter), null, filterId);
     }
 
     /**
@@ -368,7 +416,7 @@ public abstract class DivaPieChartFilter extends HorizontalLayout implements Reg
         plot.setNoDataMessage("No data available");
         plot.setCircular(true);
         plot.setLabelGap(0);
-        plot.setBackgroundPaint(Color.WHITE);
+        plot.setBackgroundPaint(new Color(0, 0, 0, 0));
         plot.setShadowPaint(Color.WHITE);
         plot.setOutlineVisible(false);
         plot.setBaseSectionOutlinePaint(Color.WHITE);
@@ -429,6 +477,16 @@ public abstract class DivaPieChartFilter extends HorizontalLayout implements Reg
         double logValue = (Math.log(linearValue) / Math.log(2));
         logValue = ((max / logMax) * logValue) + lowerLimit;
         return logValue;
+    }
+
+    private void setMainAppliedFilter(boolean mainAppliedFilter) {
+        removeFilterIcon.setVisible(mainAppliedFilter);
+        if (mainAppliedFilter) {
+            this.addStyleName("highlightfilter");
+        } else {
+            this.removeStyleName("highlightfilter");
+        }
+
     }
 
     @Override

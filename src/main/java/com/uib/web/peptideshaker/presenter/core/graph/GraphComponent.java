@@ -2,14 +2,17 @@ package com.uib.web.peptideshaker.presenter.core.graph;
 
 import com.ejt.vaadin.sizereporter.ComponentResizeEvent;
 import com.ejt.vaadin.sizereporter.SizeReporter;
+import com.itextpdf.text.pdf.codec.Base64;
 import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideObject;
 import com.uib.web.peptideshaker.galaxy.dataobjects.ProteinObject;
+import com.uib.web.peptideshaker.presenter.components.peptideshakerview.components.coverage.Legend;
 import com.vaadin.data.Property;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.event.dd.DragAndDropEvent;
 import com.vaadin.event.dd.DropHandler;
 import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
+import com.vaadin.server.ExternalResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.AbsoluteLayout.ComponentPosition;
@@ -20,6 +23,7 @@ import com.vaadin.ui.DragAndDropWrapper;
 import com.vaadin.ui.DragAndDropWrapper.WrapperTargetDetails;
 import com.vaadin.ui.DragAndDropWrapper.WrapperTransferable;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.PopupView;
@@ -30,13 +34,24 @@ import edu.uci.ics.jung.graph.UndirectedSparseGraph;
 import edu.uci.ics.jung.visualization.VisualizationViewer;
 import edu.uci.ics.jung.visualization.control.CrossoverScalingControl;
 import edu.uci.ics.jung.visualization.control.ScalingControl;
+import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.Shape;
+import java.awt.Stroke;
+import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import org.jfree.chart.encoders.ImageEncoder;
+import org.jfree.chart.encoders.ImageEncoderFactory;
+import org.jfree.chart.encoders.ImageFormat;
 import org.vaadin.hezamu.canvas.Canvas;
 
 /**
@@ -44,11 +59,13 @@ import org.vaadin.hezamu.canvas.Canvas;
  *
  * @author Yehia Farag
  */
-public class GraphComponent extends VerticalLayout {
+public abstract class GraphComponent extends VerticalLayout {
 
-    private final Canvas canvas;
+    private final AbsoluteLayout canvas;
     private int liveWidth;
     private int liveHeight;
+    private Image edgesImage;
+    private final Stroke dashLineStroke;
 
     /**
      * The graph.
@@ -90,8 +107,23 @@ public class GraphComponent extends VerticalLayout {
     private final Set<Object> selectedProteins;
     private final Set<Object> selectedPeptides;
 
+    private final PopupView legendLayout;
+
+    private String thumbImgeUrl;
+
+    private final Property.ValueChangeListener proteinsControlListener;
+
+    public String getThumbImgeUrl() {
+        return thumbImgeUrl;
+    }
+
     public GraphComponent() {
-        GraphComponent.this.setMargin(new MarginInfo(false, false, true, false));
+        GraphComponent.this.setMargin(new MarginInfo(false, false, false, false));
+        this.dashLineStroke = new BasicStroke(1.0f, // Width
+                BasicStroke.CAP_SQUARE, // End cap
+                BasicStroke.JOIN_MITER, // Join style
+                10.0f, new float[]{10.0f}, 0.0f);
+
         nodesMap = new HashMap<>();
         edgesMap = new HashSet<>();
         styles = new HashMap<>();
@@ -122,13 +154,13 @@ public class GraphComponent extends VerticalLayout {
                 return;
             }
             ignorResize = true;
-            liveWidth = tWidth - 100;
-            liveHeight = tHeight - 100;
-            reDrawGraph();
+            liveWidth = tWidth;
+            liveHeight = tHeight;
+            updateGraphLayout();
         });
         mainContainer.setSizeFull();
         mainContainer.addLayoutClickListener((LayoutEvents.LayoutClickEvent event) -> {
-            if (event.getClickedComponent() instanceof Canvas) {
+            if (event.getClickedComponent() instanceof AbsoluteLayout) {
                 selectNodes(new Object[]{});
             }
         });
@@ -136,14 +168,18 @@ public class GraphComponent extends VerticalLayout {
         bottomRightPanel = new HorizontalLayout();
         bottomRightPanel.setSpacing(false);
         bottomRightPanel.setWidth(300, Unit.PIXELS);
+        bottomRightPanel.setStyleName("inframe");
 
         rightBottomPanel = new HorizontalLayout();
         rightBottomPanel.setSpacing(true);
+//        rightBottomPanel.setStyleName("inframe");
 
         graphInfo = new Label();
         graphInfo.setStyleName(ValoTheme.LABEL_LIGHT);
         graphInfo.addStyleName(ValoTheme.LABEL_SMALL);
         graphInfo.addStyleName(ValoTheme.LABEL_TINY);
+
+        graphInfo.addStyleName("inframe");
         rightBottomPanel.addComponent(graphInfo);
 
         Button updateLayoutBtn = new Button("Update layout");
@@ -160,7 +196,14 @@ public class GraphComponent extends VerticalLayout {
             selectAll();
         });
 
-        PopupView legendLayout = new PopupView(null, new VerticalLayout()) {
+        Legend informationLegend = new Legend() {
+            @Override
+            public void close() {
+                legendLayout.setPopupVisible(false);
+            }
+
+        };
+        legendLayout = new PopupView(null, informationLegend) {
             @Override
             public void setPopupVisible(boolean visible) {
                 this.setVisible(visible);
@@ -168,6 +211,8 @@ public class GraphComponent extends VerticalLayout {
             }
 
         };
+        legendLayout.setHideOnMouseOut(false);
+        legendLayout.addStyleName("protlegend");
         legendLayout.addStyleName(ValoTheme.BUTTON_TINY);
         legendLayout.addStyleName(ValoTheme.BUTTON_LINK);
         legendLayout.setVisible(false);
@@ -185,10 +230,11 @@ public class GraphComponent extends VerticalLayout {
         bottomRightPanel.setComponentAlignment(updateLayoutBtn, Alignment.TOP_CENTER);
         bottomRightPanel.addComponent(legendLayoutBtn);
         bottomRightPanel.setComponentAlignment(legendLayoutBtn, Alignment.TOP_CENTER);
-//        bottomRightPanel.addComponent(legendLayout);
+        mainContainer.addComponent(legendLayout, "left: " + 50 + "%; top: " + 50 + "%");
         leftBottomPanel = new VerticalLayout();
         leftBottomPanel.setSpacing(false);
-        leftBottomPanel.setWidth(400, Unit.PIXELS);
+        leftBottomPanel.setWidthUndefined();
+        leftBottomPanel.addStyleName("inframe");
         //init controls
 
         proteinsControl = new OptionGroup();
@@ -201,9 +247,11 @@ public class GraphComponent extends VerticalLayout {
         proteinsControl.addItem("Molecule Type");
         proteinsControl.setValue("Molecule Type");
         leftBottomPanel.addComponent(proteinsControl);
-        proteinsControl.addValueChangeListener((Property.ValueChangeEvent event) -> {
+
+        proteinsControlListener = (Property.ValueChangeEvent event) -> {
             updateNodeColourType(proteinsControl.getValue() + "");
-        });
+        };
+        proteinsControl.addValueChangeListener(proteinsControlListener);
 
         nodeControl = new OptionGroup();
         nodeControl.setMultiSelect(false);
@@ -215,22 +263,23 @@ public class GraphComponent extends VerticalLayout {
         nodeControl.setValue("All Neighbors");
         nodeControl.addValueChangeListener((Property.ValueChangeEvent event) -> {
             uniqueOnly = nodeControl.getValue().equals("Unique Only");
-
             selectNodes(selectedProteins.toArray());
         });
         leftBottomPanel.addComponent(nodeControl);
 
         //calculate graph
+        edgesImage = new Image();
+        GraphComponent.this.edgesImage.setSizeFull();
+
         //draw graph     
-        canvas = new Canvas();
+        canvas = new AbsoluteLayout();
         GraphComponent.this.canvas.setSizeFull();
         GraphComponent.this.setSizeFull();
-
+        mainContainer.addStyleName("graphframeframe");
 // Wrap the layout to allow handling drops
         DragAndDropWrapper layoutWrapper
-                = new DragAndDropWrapper(mainContainer);
-        layoutWrapper.addStyleName("subframe");
-        GraphComponent.this.addComponent(layoutWrapper);
+                = new DragAndDropWrapper(canvas);
+        GraphComponent.this.addComponent(mainContainer);
         layoutWrapper.setSizeFull();
 // Handle moving components within the AbsoluteLayout
 
@@ -243,7 +292,7 @@ public class GraphComponent extends VerticalLayout {
 
             @Override
             public void drop(DragAndDropEvent event) {
-
+                edgesImage.addStyleName("hide");
                 Component component = event.getTransferable().getSourceComponent();
                 if (component instanceof WrappedComponent) {
                     WrappedComponent node = (WrappedComponent) component;
@@ -253,7 +302,7 @@ public class GraphComponent extends VerticalLayout {
                     int xChange = details.getMouseEvent().getClientX() - t.getMouseDownEvent().getClientX();
                     int yChange = details.getMouseEvent().getClientY() - t.getMouseDownEvent().getClientY();
                     // Move the component in the absolute layout
-                    ComponentPosition pos = mainContainer.getPosition(t.getSourceComponent());
+                    ComponentPosition pos = canvas.getPosition(t.getSourceComponent());
                     pos.setLeftValue(pos.getLeftValue() + xChange);
                     pos.setTopValue(pos.getTopValue() + yChange);
 
@@ -267,32 +316,44 @@ public class GraphComponent extends VerticalLayout {
             }
         };
         layoutWrapper.setDropHandler(dropHandler);
+
+        mainContainer.addComponent(edgesImage, "left: 0px; top: 0px");
+        mainContainer.addComponent(bottomRightPanel, "right: " + 50 + "px; bottom: " + -15 + "px");
+        mainContainer.addComponent(leftBottomPanel, "left: " + 30 + "px; top: " + -50 + "px");
+        mainContainer.addComponent(rightBottomPanel, "right: " + 50 + "px; top: " + -15 + "px");
+        mainContainer.addComponent(layoutWrapper, "left: 0px; top: 0px");
+
     }
 
     private void updateGraphLayout() {
+        if (graph == null) {
+            return;
+        }
         ScalingControl scaler = new CrossoverScalingControl();
+        graphLayout = new FRLayout<>(graph);
+        visualizationViewer = new VisualizationViewer<>(graphLayout, new Dimension(liveWidth, liveHeight));
         scaler.scale(visualizationViewer, 0.9f, visualizationViewer.getCenter());
         reDrawGraph();
     }
 
-    private void updateNodeColourType(String updatingType) {
+    private void updateNodeColourType(String modeType) {
 
         for (Object key : nodesMap.keySet()) {
-            nodesMap.get(key).setNodeStatues(updatingType);
+            nodesMap.get(key).setNodeStatues(modeType);
         }
+        updateProteinsMode(modeType);
 
     }
 
     public void updateGraphData(ProteinObject selectedProtein, Map<String, ProteinObject> proteinNodes, Map<String, PeptideObject> peptidesNodes, HashMap<String, ArrayList<String>> edges) {
         uniqueOnly = nodeControl.getValue().equals("Unique Only");
-        mainContainer.removeAllComponents();
+        canvas.removeAllComponents();
         nodesMap.clear();
         edgesMap.clear();
-        mainContainer.addComponent(canvas);
-        mainContainer.addComponent(bottomRightPanel, "right: " + 5 + "px; bottom: " + 5 + "px");
-        mainContainer.addComponent(leftBottomPanel, "left: " + 5 + "px; bottom: " + 5 + "px");
-        mainContainer.addComponent(rightBottomPanel, "right: " + 5 + "px; top: " + 5 + "px");
-        canvas.clear();
+        selectedProteins.clear();
+        selectedPeptides.clear();
+
+//        canvas.clear();
         //calculate graph
         if (selectedProtein == null) {
             graphInfo.setValue("#Proteins: 0  || #Peptides: 0");
@@ -308,6 +369,7 @@ public class GraphComponent extends VerticalLayout {
                 @Override
                 public void selected(String id) {
                     selectNodes(new Object[]{id});
+
                 }
             };
             n.setX(graphLayout.getX(node));
@@ -329,6 +391,7 @@ public class GraphComponent extends VerticalLayout {
                     n.setValidationStatuesStyle(styles.get("Not Available"));
                     n.setProteinEvidenceStyle(styles.get("Not Available"));
                 }
+
                 n.setDefaultStyleName("proteinnode");
                 n.setType(0);
                 if (selectedProtein.getProteinGroupSet().contains(node)) {
@@ -341,7 +404,7 @@ public class GraphComponent extends VerticalLayout {
             wrapper.setSizeUndefined();
             wrapper.setData(node);
             wrapper.setDescription(node);
-            mainContainer.addComponent(wrapper, "left: " + n.getX() + "px; top: " + n.getY() + "px");
+            canvas.addComponent(wrapper, "left: " + n.getX() + "px; top: " + n.getY() + "px");
         }
         for (String key : edges.keySet()) {
             ArrayList<String> edg = edges.get(key);
@@ -356,24 +419,37 @@ public class GraphComponent extends VerticalLayout {
 
         }
         selectNodes(selectedProtein.getProteinGroupSet().toArray());
-        updateNodeColourType(proteinsControl.getValue() + "");
+        proteinsControl.removeValueChangeListener(proteinsControlListener);
+        proteinsControl.setValue("Molecule Type");
+        proteinsControl.addValueChangeListener(proteinsControlListener);
+        thumbImgeUrl = generateThumbImg();
 
     }
 
     private void reDrawGraph() {
+
         if (visualizationViewer != null) {
+//            visualizationViewer.setSize(new Dimension(liveWidth, liveHeight));
+            edgesImage.addStyleName("hide");
             setUpGraph();
-            Iterator<Component> itr = mainContainer.iterator();
+            Iterator<Component> itr = canvas.iterator();
             while (itr.hasNext()) {
                 Component component = itr.next();
                 if (component instanceof WrappedComponent) {
                     WrappedComponent wComp = (WrappedComponent) component;
                     String nodeName = wComp.getData() + "";
-                    AbsoluteLayout.ComponentPosition newPosition = mainContainer.getPosition(wComp);
+                    AbsoluteLayout.ComponentPosition newPosition = canvas.getPosition(wComp);
                     double x = graphLayout.getX(nodeName);
                     double y = graphLayout.getY(nodeName);
                     nodesMap.get(nodeName).setX(x);
                     nodesMap.get(nodeName).setY(y);
+                    if (y > liveHeight) {
+                        System.out.println("at -------------- here comes error  y " + y + "   " + liveHeight);
+                    } else if (x > liveWidth) {
+                        System.out.println("at -------------- here comes error x  " + x + "   " + liveWidth);
+                    } else {
+                        System.out.println("at -------------- non found  x  " + x + "   " + liveWidth + "  y " + y + "   " + liveHeight);
+                    }
                     newPosition.setCSSString("left: " + x + "px; top: " + y + "px");
 
                 }
@@ -383,44 +459,14 @@ public class GraphComponent extends VerticalLayout {
     }
 
     private void selectNodes(Object[] ids) {
-        for (Node node : nodesMap.values()) {
-            node.setSelected(false);
-        }
-        this.selectedPeptides.clear();
-        this.selectedProteins.clear();
-        for (Object id : ids) {
-            Node n = nodesMap.get(id);
-            if (uniqueOnly && n.getType() == 1) {
-                n.setSelected(true);
-                selectedPeptides.add(id);
-            } else if (n.getType() == 0) {
-                n.setSelected(true);
-                selectedProteins.add(id);
-            } else if (n.getType() == 1) {
-                n.setSelected(true);
-                selectedPeptides.add(id);
-            }
-
-            for (Edge edge : edgesMap) {
-                edge.select(n, uniqueOnly);
-                if (edge.getN2().isSelected()) {
-                    selectedProteins.add(edge.getN2().getNodeId());
-                }
-                if (edge.getN1().isSelected()) {
-                    selectedPeptides.add(edge.getN1().getNodeId());
-                }
-            }
-        }
-        drawEdges();
-        graphInfo.setValue("#Proteins: " + selectedProteins.size() + "  || #Peptides: " + selectedPeptides.size() + "");
+        redrawSelection(ids, true);
+        selectedItem(selectedProteins, selectedPeptides);
 
     }
 
     private void selectAll() {
-        for (Node node : nodesMap.values()) {
-            node.setSelected(true);
-        }
-        drawEdges();
+        selectNodes(nodesMap.keySet().toArray());
+
     }
 
     /**
@@ -453,48 +499,100 @@ public class GraphComponent extends VerticalLayout {
     }
 
     private void drawEdges() {
-        canvas.clear();
-        canvas.setLineWidth(1);
-        canvas.setLineCap("round");
-        canvas.setStrokeStyle("lightgray");
-        canvas.beginPath();
+        if (liveWidth < 1 || liveHeight < 1) {
+            return;
+        }
+        BufferedImage image = new BufferedImage(liveWidth, liveHeight, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = image.createGraphics();
         for (Edge edge : edgesMap) {
-            if (edge.isSelected() && !edge.isDotted()) {
-                canvas.moveTo(edge.getStartX(), edge.getStartY());
-                canvas.lineTo(edge.getEndX(), edge.getEndY());
+            Shape edgeLine = drawEdge((int) edge.getStartX(), (int) edge.getStartY(), (int) edge.getEndX(), (int) edge.getEndY());
+            System.out.println("edge x " + edge.getStartX() + "  node y " + edge.getStartY() + "    x2 " + edge.getEndX() + "   y2 " + edge.getStartY());
+            if (edge.isSelected()) {
+                g2.setPaint(Color.GRAY);
+            } else {
+                g2.setPaint(Color.LIGHT_GRAY);
+            }
+            if (edge.isDotted()) {
+                g2.draw(dashLineStroke.createStrokedShape(edgeLine));
+            } else {
+                g2.draw(edgeLine);
+            }
+        }
+//        for (String node : graph.getVertices()) {
+//
+//            Shape circle;
+//            if (peptidesNodes.containsKey(node)) {
+//                g2.setPaint(Color.GRAY);
+//                g2.setPaint(new Color(25, 125, 225));
+//
+//                circle = new Ellipse2D.Double((int) tgraphlayout.getX(node) - 5 + 10, tgraphlayout.getY(node) - 5 + 10, 10, 10);
+//            } else {
+//                g2.setPaint(Color.LIGHT_GRAY);
+//                g2.setPaint(new Color(233, 0, 0));
+//
+//                circle = new Ellipse2D.Double((int) tgraphlayout.getX(node) - 10 + 10, tgraphlayout.getY(node) - 10 + 10, 20, 20);
+//            }
+//            g2.fill(circle);
+//            g2.setPaint(Color.WHITE);
+//            g2.draw(circle);
+//        }
 
-            }
+        g2.dispose();
+        byte[] imageData = null;
+        try {
+            ImageEncoder in = ImageEncoderFactory.newInstance(ImageFormat.PNG, 1);
+            imageData = in.encode(image);
+        } catch (Exception e) {
+            System.out.println(e.getLocalizedMessage());
         }
-        canvas.stroke();
-        canvas.setStrokeStyle("#c10a1e");
-        canvas.beginPath();
-        for (Edge edge : edgesMap) {
-            if (edge.isSelected() && edge.isDotted()) {
-                canvas.moveTo(edge.getStartX(), edge.getStartY());
-                canvas.lineTo(edge.getEndX(), edge.getEndY());
 
-            }
-        }
-        canvas.stroke();
-        canvas.setStrokeStyle("whitesmoke");
-        canvas.beginPath();
-        for (Edge edge : edgesMap) {
-            if (!edge.isSelected() && !edge.isDotted()) {
-                canvas.moveTo(edge.getStartX(), edge.getStartY());
-                canvas.lineTo(edge.getEndX(), edge.getEndY());
-            }
-        }
-        canvas.stroke();
-        canvas.setStrokeStyle("#ea9ea6");
-        canvas.beginPath();
-        for (Edge edge : edgesMap) {
-            if (!edge.isSelected() && edge.isDotted()) {
-                canvas.moveTo(edge.getStartX(), edge.getStartY());
-                canvas.lineTo(edge.getEndX(), edge.getEndY());
+        String base64 = Base64.encodeBytes(imageData);
+        base64 = "data:image/png;base64," + base64;
+        edgesImage.setSource(new ExternalResource(base64));
+        edgesImage.removeStyleName("hide");
 
-            }
-        }
-        canvas.stroke();
+//        canvas.clear();
+//        canvas.setLineWidth(1);
+//        canvas.setLineCap("round");
+//        canvas.setStrokeStyle("lightgray");
+//        canvas.beginPath();
+//        for (Edge edge : edgesMap) {
+//            if (edge.isSelected() && !edge.isDotted()) {
+//                canvas.moveTo(edge.getStartX(), edge.getStartY());
+//                canvas.lineTo(edge.getEndX(), edge.getEndY());
+//
+//            }
+//        }
+//        canvas.stroke();
+//        canvas.setStrokeStyle("#c10a1e");
+//        canvas.beginPath();
+//        for (Edge edge : edgesMap) {
+//            if (edge.isSelected() && edge.isDotted()) {
+//                canvas.moveTo(edge.getStartX(), edge.getStartY());
+//                canvas.lineTo(edge.getEndX(), edge.getEndY());
+//
+//            }
+//        }
+//        canvas.stroke();
+//        canvas.setStrokeStyle("whitesmoke");
+//        canvas.beginPath();
+//        for (Edge edge : edgesMap) {
+//            if (!edge.isSelected() && !edge.isDotted()) {
+//                canvas.moveTo(edge.getStartX(), edge.getStartY());
+//                canvas.lineTo(edge.getEndX(), edge.getEndY());
+//            }
+//        }
+//        canvas.stroke();
+//        canvas.setStrokeStyle("#ea9ea6");
+//        canvas.beginPath();
+//        for (Edge edge : edgesMap) {
+//            if (!edge.isSelected() && edge.isDotted()) {
+//                canvas.moveTo(edge.getStartX(), edge.getStartY());
+//                canvas.lineTo(edge.getEndX(), edge.getEndY());
+//
+//            }
+//        }
+//        canvas.stroke();
     }
 
     /**
@@ -504,10 +602,12 @@ public class GraphComponent extends VerticalLayout {
      * @author Yehia Farag
      */
     class WrappedComponent extends DragAndDropWrapper {
+
         /**
          * The layout drop handler.
          */
         private final DropHandler dropHandler;
+
         /**
          * Constructor to initialize the main attributes.
          *
@@ -525,6 +625,113 @@ public class GraphComponent extends VerticalLayout {
             return dropHandler;
         }
 
+    }
+
+    private String generateThumbImg() {
+        FRLayout tgraphlayout = new FRLayout<>(graph);
+        VisualizationViewer vv = new VisualizationViewer<>(tgraphlayout, new Dimension(80, 80));
+        ScalingControl scaler = new CrossoverScalingControl();
+        scaler.scale(vv, 0.9f, vv.getCenter());
+
+        BufferedImage image = new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = image.createGraphics();
+        g2.setPaint(Color.GRAY);
+        for (String edge : graph.getEdges()) {
+            Shape line = drawLine((int) tgraphlayout.getX(graph.getEndpoints(edge).getFirst()) + 10, (int) tgraphlayout.getY(graph.getEndpoints(edge).getFirst()) + 10, (int) tgraphlayout.getX(graph.getEndpoints(edge).getSecond()) + 10, (int) tgraphlayout.getY(graph.getEndpoints(edge).getSecond()) + 10);
+            g2.draw(line);
+        }
+        for (String node : graph.getVertices()) {
+
+            Shape circle;
+            if (peptidesNodes.containsKey(node)) {
+                g2.setPaint(Color.GRAY);
+                g2.setPaint(new Color(25, 125, 225));
+
+                circle = new Ellipse2D.Double((int) tgraphlayout.getX(node) - 5 + 10, tgraphlayout.getY(node) - 5 + 10, 10, 10);
+            } else {
+                g2.setPaint(Color.LIGHT_GRAY);
+                g2.setPaint(new Color(233, 0, 0));
+
+                circle = new Ellipse2D.Double((int) tgraphlayout.getX(node) - 10 + 10, tgraphlayout.getY(node) - 10 + 10, 20, 20);
+            }
+            g2.fill(circle);
+            g2.setPaint(Color.WHITE);
+            g2.draw(circle);
+        }
+
+        g2.dispose();
+        byte[] imageData = null;
+        try {
+            ImageEncoder in = ImageEncoderFactory.newInstance(ImageFormat.PNG, 1);
+            imageData = in.encode(image);
+        } catch (Exception e) {
+            System.out.println(e.getLocalizedMessage());
+        }
+
+        String base64 = Base64.encodeBytes(imageData);
+        base64 = "data:image/png;base64," + base64;
+        return base64;
+
+    }
+
+    private Shape drawLine(int x1, int y1, int x2, int y2) {
+        return new Line2D.Double(x1, y1, x2, y2);
+    }
+
+    private Shape drawEdge(int x1, int y1, int x2, int y2) {
+        return new Line2D.Double(x1, y1, x2, y2);
+    }
+
+    public abstract void selectedItem(Set<Object> selectedParentItems, Set<Object> selectedChildsItems);
+
+    public abstract void updateProteinsMode(String modeType);
+
+    public void selectChildItem(Object parentId, Object childId) {
+        redrawSelection(new Object[]{parentId, childId}, false);
+
+    }
+
+    private void redrawSelection(Object[] ids, boolean selectRelatedNodes) {
+        edgesImage.addStyleName("hide");
+        for (Node node : nodesMap.values()) {
+            node.setSelected(false);
+        }
+        this.selectedPeptides.clear();
+        this.selectedProteins.clear();
+        for (Object id : ids) {
+            Node n = nodesMap.get(id);
+            if (uniqueOnly && n.getType() == 1) {
+                n.setSelected(true);
+                selectedPeptides.add(id);
+            } else if (n.getType() == 0) {
+                n.setSelected(true);
+                selectedProteins.add(id);
+            } else if (n.getType() == 1) {
+                n.setSelected(true);
+                selectedPeptides.add(id);
+            }
+            if (selectRelatedNodes) {
+                for (Edge edge : edgesMap) {
+                    edge.select(n, uniqueOnly);
+                    if (edge.getN2().isSelected()) {
+                        selectedProteins.add(edge.getN2().getNodeId());
+                    }
+                    if (edge.getN1().isSelected()) {
+                        selectedPeptides.add(edge.getN1().getNodeId());
+                    }
+                }
+            }
+        }
+        drawEdges();
+        graphInfo.setValue("#Proteins: " + selectedProteins.size() + "  || #Peptides: " + selectedPeptides.size() + "");
+    }
+
+    public Set<Object> getSelectedProteins() {
+        return selectedProteins;
+    }
+
+    public Set<Object> getSelectedPeptides() {
+        return selectedPeptides;
     }
 
 }

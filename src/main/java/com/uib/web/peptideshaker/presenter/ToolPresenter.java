@@ -7,6 +7,7 @@ import com.uib.web.peptideshaker.presenter.components.WorkFlowLayout;
 import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
 import com.uib.web.peptideshaker.presenter.core.SmallSideBtn;
 import com.vaadin.event.LayoutEvents;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
@@ -102,14 +103,16 @@ public abstract class ToolPresenter extends VerticalLayout implements ViewableFr
         };
         VerticalLayout nelsLayout = new VerticalLayout();
 
-        BigSideBtn nelsBtn = new BigSideBtn("img/NeLS2.png", "Get Data");
+        BigSideBtn nelsBtn = new BigSideBtn("Get Data");
+        nelsBtn.updateIcon(new ThemeResource("img/NeLS2.png"));
         nelsBtn.setData("nels");
         btnContainer.addComponent(nelsBtn);
         btnContainer.setComponentAlignment(nelsBtn, Alignment.TOP_CENTER);
         nelsBtn.addLayoutClickListener(ToolPresenter.this);
         btnsLayoutMap.put(nelsBtn, nelsLayout);
 
-        BigSideBtn workFlowBtn = new BigSideBtn("img/workflow.png", "Work-Flow");
+        BigSideBtn workFlowBtn = new BigSideBtn("Work-Flow");
+         workFlowBtn.updateIcon(new ThemeResource("img/workflow.png"));
         workFlowBtn.setData("workflow");
         workFlowBtn.addStyleName("zeropadding");
         btnContainer.addComponent(workFlowBtn);
@@ -139,21 +142,13 @@ public abstract class ToolPresenter extends VerticalLayout implements ViewableFr
         mobilebtnContainer.setSpacing(true);
         mobilebtnContainer.setStyleName("bottomsidebtncontainer");
 
-        BigSideBtn nelsBtnM = new BigSideBtn("img/NeLS.png", "Get Data");
-        nelsBtnM.setData("nels");
-        mobilebtnContainer.addComponent(nelsBtnM);
-        mobilebtnContainer.setComponentAlignment(nelsBtnM, Alignment.TOP_CENTER);
-        nelsBtnM.addLayoutClickListener(ToolPresenter.this);
-        btnsLayoutMap.put(nelsBtnM, nelsLayout);
+       
+        mobilebtnContainer.addComponent(nelsBtn.getMobileModeBtn());
+        mobilebtnContainer.setComponentAlignment(nelsBtn.getMobileModeBtn(), Alignment.TOP_CENTER);
 
-        BigSideBtn workFlowBtnM = new BigSideBtn("img/workflow3.png", "Work-Flow");
-        workFlowBtnM.setData("workflow");
-        workFlowBtnM.addStyleName("zeropadding");
-        mobilebtnContainer.addComponent(workFlowBtnM);
-        mobilebtnContainer.setComponentAlignment(workFlowBtnM, Alignment.TOP_CENTER);
-        workFlowBtnM.addLayoutClickListener(ToolPresenter.this);
-        workFlowBtnM.setSelected(true);
-        btnsLayoutMap.put(workFlowBtnM, workflowLayout);
+        mobilebtnContainer.addComponent(workFlowBtn.getMobileModeBtn());
+        mobilebtnContainer.setComponentAlignment(workFlowBtn.getMobileModeBtn(), Alignment.TOP_CENTER);
+     
 
     }
 
