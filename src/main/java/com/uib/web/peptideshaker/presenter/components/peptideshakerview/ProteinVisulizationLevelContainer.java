@@ -23,7 +23,7 @@ import java.util.Set;
 public class ProteinVisulizationLevelContainer extends HorizontalLayout implements RegistrableFilter {
 
     private final VerticalLayout container;
-    private final Link headerLabel;
+    private final Label headerLabel;
     private final ProteinsPeptidesGraphComponent selectedProteinGraph;
     private final SelectionManager Selection_Manager;
     private final BigSideBtn proteinoverviewBtn;
@@ -41,7 +41,7 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
 
         container = new VerticalLayout();
         container.setSizeFull();
-        container.setSpacing(true);
+        container.setSpacing(false);
         ProteinVisulizationLevelContainer.this.addComponent(container);
 
         HorizontalLayout topLabelContainer = new HorizontalLayout();
@@ -54,13 +54,12 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
         topLeftLabelContainer.setWidthUndefined();
         topLeftLabelContainer.setHeight(100, Unit.PERCENTAGE);
         topLabelContainer.addComponent(topLeftLabelContainer);
-        headerLabel = new Link();
-        headerLabel.setCaption("Protein name");
+        headerLabel = new Label();
+        headerLabel.setValue("Proteins overview");
         headerLabel.addStyleName("largetitle");
         headerLabel.setWidthUndefined();
-        headerLabel.setTargetName("_blank");
         topLeftLabelContainer.setSpacing(true);
-//        topLeftLabelContainer.addComponent(headerLabel);
+        topLeftLabelContainer.addComponent(headerLabel);
 
         Label commentLabel = new Label("<i style='padding-right: 50px;'>* Click in the graph to select proteins and peptides</i>", ContentMode.HTML);
         commentLabel.setWidthUndefined();

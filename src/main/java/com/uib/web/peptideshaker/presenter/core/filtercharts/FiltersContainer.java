@@ -160,9 +160,6 @@ public class FiltersContainer extends HorizontalLayout {
             public void selectionChange(String type) {
 //                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
-         
-
-           
 
         };
 //        prptidesNumberFilter.initializeFilterData(initRangeData(null));
@@ -170,20 +167,18 @@ public class FiltersContainer extends HorizontalLayout {
         rightThumbContainer.addComponent(prptidesNumberFilter);
 
         psmNumberFilter = new DivaRangeFilter("#PSM", "psmNum_filter", this.Selection_Manager) {
-             @Override
+            @Override
             public void selectionChange(String type) {
 //                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
-
 
         };
 
         possibleCoverageFilter = new DivaRangeFilter("Possible Coverage (%)", "possibleCoverage_filter", this.Selection_Manager) {
-             @Override
+            @Override
             public void selectionChange(String type) {
 //                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
-
 
         };
 
@@ -205,14 +200,15 @@ public class FiltersContainer extends HorizontalLayout {
 //        }
         chromosomeFilter.initializeFilterData(chromosomeMap);
         Selection_Manager.setChromosomeMap(chromosomeMap);
-        
-      
-        Color[]colorsArr =  new Color[]{Color.DARK_GRAY, new Color(4, 180, 95), Color.YELLOW, new Color(213, 8, 8), Color.ORANGE};
+
+        Color[] colorsArr = new Color[]{Color.DARK_GRAY, new Color(4, 180, 95), Color.YELLOW, new Color(213, 8, 8), Color.ORANGE};
         PIFilter.initializeFilterData(piMap, new ArrayList<>(Arrays.asList(colorsArr)));//colorList.subList(0, piMap.size()).toArray(new Color[piMap.size()])
         Selection_Manager.setPiMap(piMap);
         Selection_Manager.setProteinValidationMap(proteinValidationMap);
-        colorsArr = new Color[]{Color.DARK_GRAY, new Color(213, 8, 8), new Color(4, 180, 95)};
-        validationFilter.initializeFilterData(proteinValidationMap,new ArrayList<>(Arrays.asList(colorsArr)));//colorList.subList(0, proteinValidationMap.size()).toArray(new Color[proteinValidationMap.size()])
+
+        colorsArr = new Color[]{Color.DARK_GRAY, new Color(4, 180, 95), new Color(213, 8, 8)};
+
+        validationFilter.initializeFilterData(proteinValidationMap, new ArrayList<>(Arrays.asList(colorsArr)));//colorList.subList(0, proteinValidationMap.size()).toArray(new Color[proteinValidationMap.size()])
         Selection_Manager.setProteinCoverageMap(proteinCoverageMap);
         Selection_Manager.setProteinPSMNumberMap(proteinPSMNumberMap);
         Selection_Manager.setProteinPeptidesNumberMap(proteinPeptidesNumberMap);

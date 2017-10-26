@@ -31,10 +31,11 @@ public abstract class ProteinCoverageContainer extends VerticalLayout {
         proteinCoverageTable = new Table(" ");
         proteinCoverageTable.setStyleName(ValoTheme.TABLE_COMPACT);
         proteinCoverageTable.addStyleName(ValoTheme.TABLE_SMALL);
-        proteinCoverageTable.addStyleName(ValoTheme.TABLE_NO_HEADER);
+        proteinCoverageTable.addStyleName("inframetable");
         proteinCoverageTable.addStyleName(ValoTheme.TABLE_NO_STRIPES);
         proteinCoverageTable.setSelectable(false);
-        proteinCoverageTable.setSizeFull();
+        proteinCoverageTable.setWidth(100,Unit.PERCENTAGE);
+        proteinCoverageTable.setHeight(95,Unit.PERCENTAGE);
         proteinCoverageTable.addContainerProperty("info", ActionLabel.class, null, "", null, Table.Align.LEFT);
         proteinCoverageTable.addContainerProperty("acc", ActionLabel.class, null, "Accession", null, Table.Align.LEFT);
         proteinCoverageTable.addContainerProperty("name", PopupLabel.class, null, "Name", null, Table.Align.LEFT);

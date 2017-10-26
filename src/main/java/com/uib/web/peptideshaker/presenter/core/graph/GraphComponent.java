@@ -52,7 +52,6 @@ import java.util.Set;
 import org.jfree.chart.encoders.ImageEncoder;
 import org.jfree.chart.encoders.ImageEncoderFactory;
 import org.jfree.chart.encoders.ImageFormat;
-import org.vaadin.hezamu.canvas.Canvas;
 
 /**
  * This class represents Graph layout component
@@ -90,13 +89,14 @@ public abstract class GraphComponent extends VerticalLayout {
     private final AbsoluteLayout mainContainer;
     private final DropHandler dropHandler;
 
+    private final  SizeReporter sizeReporter;
     private final Map<String, String> styles;
     private boolean ignorResize = true;
     private final Label graphInfo;
     private final HorizontalLayout bottomRightPanel;
     private final HorizontalLayout rightBottomPanel;
 
-    private final VerticalLayout leftBottomPanel;
+    private final VerticalLayout lefTtopPanel;
     private final Map<Object, Node> nodesMap;
     private final Set<Edge> edgesMap;
 
@@ -145,15 +145,15 @@ public abstract class GraphComponent extends VerticalLayout {
         //init main layout
         //calculate canavas dimension 
         mainContainer = new AbsoluteLayout();
-        SizeReporter sizeReporter = new SizeReporter(GraphComponent.this.mainContainer);
+        sizeReporter = new SizeReporter(GraphComponent.this.mainContainer);
         sizeReporter.addResizeListener((ComponentResizeEvent event) -> {
             int tWidth = event.getWidth();
             int tHeight = event.getHeight();
-            if (liveWidth == tWidth && liveHeight == tHeight || ignorResize) {
-                ignorResize = false;
-                return;
-            }
-            ignorResize = true;
+//            if (liveWidth == tWidth && liveHeight == tHeight || ignorResize) {
+//                ignorResize = false;
+//                return;
+//            }
+//            ignorResize = true;
             liveWidth = tWidth;
             liveHeight = tHeight;
             updateGraphLayout();
@@ -231,10 +231,10 @@ public abstract class GraphComponent extends VerticalLayout {
         bottomRightPanel.addComponent(legendLayoutBtn);
         bottomRightPanel.setComponentAlignment(legendLayoutBtn, Alignment.TOP_CENTER);
         mainContainer.addComponent(legendLayout, "left: " + 50 + "%; top: " + 50 + "%");
-        leftBottomPanel = new VerticalLayout();
-        leftBottomPanel.setSpacing(false);
-        leftBottomPanel.setWidthUndefined();
-        leftBottomPanel.addStyleName("inframe");
+        lefTtopPanel = new VerticalLayout();
+        lefTtopPanel.setSpacing(false);
+        lefTtopPanel.setWidthUndefined();
+        lefTtopPanel.addStyleName("inframe");
         //init controls
 
         proteinsControl = new OptionGroup();
@@ -246,13 +246,17 @@ public abstract class GraphComponent extends VerticalLayout {
         proteinsControl.addItem("Protein Evidence");
         proteinsControl.addItem("Molecule Type");
         proteinsControl.setValue("Molecule Type");
-        leftBottomPanel.addComponent(proteinsControl);
+        lefTtopPanel.addComponent(proteinsControl);
 
         proteinsControlListener = (Property.ValueChangeEvent event) -> {
             updateNodeColourType(proteinsControl.getValue() + "");
         };
         proteinsControl.addValueChangeListener(proteinsControlListener);
 
+        VerticalLayout  leftBottomPanel = new VerticalLayout();
+        leftBottomPanel.setSpacing(false);
+        leftBottomPanel.setWidthUndefined();
+        leftBottomPanel.addStyleName("inframe");
         nodeControl = new OptionGroup();
         nodeControl.setMultiSelect(false);
         nodeControl.setStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
@@ -319,8 +323,9 @@ public abstract class GraphComponent extends VerticalLayout {
 
         mainContainer.addComponent(edgesImage, "left: 0px; top: 0px");
         mainContainer.addComponent(bottomRightPanel, "right: " + 50 + "px; bottom: " + -15 + "px");
-        mainContainer.addComponent(leftBottomPanel, "left: " + 30 + "px; top: " + -50 + "px");
+        mainContainer.addComponent(lefTtopPanel, "left: " + 30 + "px; top: " + -15 + "px");
         mainContainer.addComponent(rightBottomPanel, "right: " + 50 + "px; top: " + -15 + "px");
+          mainContainer.addComponent(leftBottomPanel, "left: " + 30 + "px; bottom: " + -15 + "px");
         mainContainer.addComponent(layoutWrapper, "left: 0px; top: 0px");
 
     }
@@ -329,6 +334,11 @@ public abstract class GraphComponent extends VerticalLayout {
         if (graph == null) {
             return;
         }
+//        if(liveWidth<20|| liveHeight<20){
+//            liveWidth =  sizeReporter.getWidth()+21;
+//            liveHeight= sizeReporter.getHeight()+21;
+//            
+//        }
         ScalingControl scaler = new CrossoverScalingControl();
         graphLayout = new FRLayout<>(graph);
         visualizationViewer = new VisualizationViewer<>(graphLayout, new Dimension(liveWidth, liveHeight));
@@ -423,6 +433,7 @@ public abstract class GraphComponent extends VerticalLayout {
         proteinsControl.setValue("Molecule Type");
         proteinsControl.addValueChangeListener(proteinsControlListener);
         thumbImgeUrl = generateThumbImg();
+//        updateGraphLayout();
 
     }
 
@@ -447,8 +458,6 @@ public abstract class GraphComponent extends VerticalLayout {
                         System.out.println("at -------------- here comes error  y " + y + "   " + liveHeight);
                     } else if (x > liveWidth) {
                         System.out.println("at -------------- here comes error x  " + x + "   " + liveWidth);
-                    } else {
-                        System.out.println("at -------------- non found  x  " + x + "   " + liveWidth + "  y " + y + "   " + liveHeight);
                     }
                     newPosition.setCSSString("left: " + x + "px; top: " + y + "px");
 
@@ -506,7 +515,6 @@ public abstract class GraphComponent extends VerticalLayout {
         Graphics2D g2 = image.createGraphics();
         for (Edge edge : edgesMap) {
             Shape edgeLine = drawEdge((int) edge.getStartX(), (int) edge.getStartY(), (int) edge.getEndX(), (int) edge.getEndY());
-            System.out.println("edge x " + edge.getStartX() + "  node y " + edge.getStartY() + "    x2 " + edge.getEndX() + "   y2 " + edge.getStartY());
             if (edge.isSelected()) {
                 g2.setPaint(Color.GRAY);
             } else {

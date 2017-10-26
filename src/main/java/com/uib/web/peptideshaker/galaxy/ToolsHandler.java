@@ -349,8 +349,8 @@ public class ToolsHandler {
             json = json.replace("SearchGUI_Label", projectName + " (SearchGUI Results)").replace("ZIP_Label", projectName + " (ZIP)").replace("PSM_Label", projectName + " (PSM)").replace("Proteins_Label", projectName + " (Proteins)").replace("Peptides_Label", projectName + " (Peptides)");
             //protein_database_options
             json = json.replace("\"create_decoy\\\\\\\": \\\\\\\"true\\\\\\\"", "\"create_decoy\\\\\\\": \\\\\\\"" + (Boolean.valueOf(searchParameters.getFastaFile().getName().split("__")[2])) + "\\\\\\\"");
-//json = json.replace("\"update_gene_mapping\\\\\\\": \\\\\\\"false\\\\\\\"", "\"update_gene_mapping\\\\\\\": \\\\\\\"" + (Boolean.valueOf(searchParameters.getFastaFile().getName().split("__")[2])) + "\\\\\\\"");
-            //json = json.replace("\"use_gene_mapping\\\\\\\": \\\\\\\"false\\\\\\\"", "\"use_gene_mapping\\\\\\\": \\\\\\\"" + (Boolean.valueOf(searchParameters.getFastaFile().getName().split("__")[2])) + "\\\\\\\"");
+//json = json.replace("\"update_gene_mapping\\\\\\\": \\\\\\\"false\\\\\\\"", "\"update_gene_mapping\\\\\\\": \\\\\\\"true\\\\\\\"");
+//            json = json.replace("\"use_gene_mapping\\\\\\\": \\\\\\\"false\\\\\\\"", "\"use_gene_mapping\\\\\\\": \\\\\\\" true\\\\\\\"");
 
             //search_engines_options
             String searchEngJson = "";

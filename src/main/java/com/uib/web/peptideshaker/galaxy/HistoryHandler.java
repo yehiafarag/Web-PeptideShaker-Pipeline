@@ -389,16 +389,16 @@ public abstract class HistoryHandler {
             /**
              * **Temp until we find another re indexer**
              */
-            SystemDataSet tds = new SystemDataSet();
-            tds.setName("qExactive01819.mgf.cui");
-            tds.setType("Index File");
-            tds.setHistoryId("btoot");
-            tds.setGalaxyId("qExactive01819.mgf.cui");
-            String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
-            tds.setDownloadUrl(basepath + "/VAADIN/qExactive01819.mgf.cui");
-            GalaxyFile file = new GalaxyFile(userFolder.getParentFile(), tds, false);
-            file.setDownloadUrl(basepath + "/VAADIN/qExactive01819.mgf.cui");
-            this.indexFilesMap.put(tds.getName().replace(".cui", ""), file);
+//            SystemDataSet tds = new SystemDataSet();
+//            tds.setName("qExactive01819.mgf.cui");
+//            tds.setType("Index File");
+//            tds.setHistoryId("btoot");
+//            tds.setGalaxyId("qExactive01819.mgf.cui");
+//            String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
+//            tds.setDownloadUrl(basepath + "/VAADIN/qExactive01819.mgf.cui");
+//            GalaxyFile file = new GalaxyFile(userFolder.getParentFile(), tds, false);
+//            file.setDownloadUrl(basepath + "/VAADIN/qExactive01819.mgf.cui");
+//            this.indexFilesMap.put(tds.getName().replace(".cui", ""), file);
 
             /**
              * **end**

@@ -97,9 +97,9 @@ public class PeptidShakerUI extends UI {
 
     private void mimicNelsLogin() {
         // Create a new cookie
-        initCookie("SimpleSAMLAuthToken", "_b2a5dc90062df4afe96340aabcaa83cb63aba0088d");
-        initCookie("PHPSESSID", "c96b2f39f0e7e6ffd44ae3339192f3a8");
-        initCookie("AuthMemCookie", "_ca646df0314db57f7217cb8a449e9715bf93a034c1");
+        initCookie("SimpleSAMLAuthToken", "_bdf887a4276b6eaf728bdc9234cba2c370b28d87cb");
+//        initCookie("PHPSESSID", "5ff92840ca235709497f8ba4fcc1a0e7");
+        initCookie("AuthMemCookie", "_cba251b42b45e328de95da43bd84bb3634da532e94");
     }
 
     private void initCookie(String name, String value) {

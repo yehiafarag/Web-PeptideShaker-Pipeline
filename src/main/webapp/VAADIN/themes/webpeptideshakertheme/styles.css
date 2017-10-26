@@ -13310,7 +13310,7 @@ div.v-layout.v-horizontal.v-widget {
 	border-bottom-right-radius: 0px;
 	position: relative;
 	z-index: 10 !important;
-	padding: 0.2vh;
+	padding: 0.5vh;
 }
 
 .webpeptideshakertheme .selectedbiglbtn img {
@@ -13801,12 +13801,20 @@ div.v-layout.v-horizontal.v-widget {
 	color: #3d84dc !important;
 }
 
-.webpeptideshakertheme .largetitle .v-label, .webpeptideshakertheme .v-link-largetitle {
+.webpeptideshakertheme .largetitle .v-label, .webpeptideshakertheme .v-link-largetitle, .webpeptideshakertheme .v-label-largetitle {
 	margin-top: 10px;
 	margin-left: 25px;
 	font-size: 18px !important;
 	font-weight: normal !important;
 	text-decoration: none !important;
+	color: #3d84dc !important;
+}
+
+.webpeptideshakertheme .v-slot-graphframeframe, .webpeptideshakertheme .v-slot-inframetable {
+	margin-right: 25px;
+	margin-left: 25px;
+	margin-top: 0px !important;
+	margin-bottom: 0px !important;
 }
 
 .webpeptideshakertheme .v-slot-largetitle {
@@ -14894,8 +14902,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .graphframeframe {
-	border-top: 2px solid lightgray;
-	border-bottom: 2px solid lightgray;
+	border: 2px solid lightgray;
 	border-radius: 5px;
 }
 
@@ -14927,10 +14934,13 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .v-verticallayout-inframe .v-select-optiongroup {
 	font-size: 12px !important;
+	margin-top: -3px !important;
+	z-index: 2 !important;
+	position: relative !important;
 }
 
 .webpeptideshakertheme .v-verticallayout-inframe {
-	min-height: 65px !important;
+	min-height: 30px !important;
 }
 
 .webpeptideshakertheme .inframe .v-button-link:focus:after, .webpeptideshakertheme .v-button:focus:after {
@@ -14944,9 +14954,9 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .v-absolutelayout-wrapper-proteincoverage {
-	padding-left: 20px !important;
-	padding-right: 20px !important;
-	background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='15px' width='20px'><text  x='0' y='12' fill='gray' font-size='15px'>N</text></svg>"), url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='15px' width='20px'><text x='5' y='12' fill='gray' font-size='15px'>C</text></svg>");
+	padding-left: 25px !important;
+	padding-right: 25px !important;
+	background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='15px' width='25px'><text  x='0' y='12' fill='gray' font-size='15px'>N  </text></svg>"), url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='15px' width='25px'><text x='10' y='12' fill='gray' font-size='15px'>C</text></svg>");
 	background-repeat: no-repeat;
 	background-position: 5px 50%, right 0px top 50%;
 }
@@ -14957,8 +14967,8 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .v-absolutelayout-wrapper-peptidecoverage {
-	padding-left: 20px !important;
-	padding-right: 20px !important;
+	padding-left: 25px !important;
+	padding-right: 25px !important;
 	padding-top: 5px;
 }
 

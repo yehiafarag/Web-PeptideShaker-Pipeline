@@ -121,10 +121,11 @@ public abstract class DataViewLayout extends Panel {
         bottomDataTable.addComponent(headerRow2);
         int i = 1;
         for (SystemDataSet ds : historyFilesMap.values()) {
-            if (ds.getName() == null) {
+           
+            if (ds.getName() == null || ds.getType().equalsIgnoreCase("FASTA File")) {
                 continue;
             }
-
+            System.out.println("at history "+ ds.getType());
             Component viewLabel;
             StatusLabel statusLabel = new StatusLabel();
             statusLabel.setStatus(ds.getStatus());

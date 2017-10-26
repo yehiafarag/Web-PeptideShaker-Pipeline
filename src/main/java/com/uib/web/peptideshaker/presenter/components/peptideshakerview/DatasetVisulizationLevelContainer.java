@@ -95,7 +95,7 @@ public class DatasetVisulizationLevelContainer extends HorizontalLayout {
     }
 
     public void selectDataset(PeptideShakerVisualizationDataset peptideShakerVisualizationDataset) {
-        headerLabel.setLabelValue("Project: " + peptideShakerVisualizationDataset.getName());
+        headerLabel.setLabelValue("Dataset: " + peptideShakerVisualizationDataset.getName());
         DatasetOverviewLayout dsOverview = new DatasetOverviewLayout((PeptideShakerVisualizationDataset) peptideShakerVisualizationDataset) {
             @Override
             public void close() {

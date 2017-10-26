@@ -501,6 +501,8 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
         piMap.put("No Information", new LinkedHashSet<>());
         proteinValidationMap = new LinkedHashMap<>();
         proteinValidationMap.put("No Information", new LinkedHashSet<>());
+         proteinValidationMap.put("Confident", new LinkedHashSet<>());
+          proteinValidationMap.put("Doubtful", new LinkedHashSet<>());
     }
 
     public TreeMap<Comparable, Set<Comparable>> getProteinPeptidesNumberMap() {

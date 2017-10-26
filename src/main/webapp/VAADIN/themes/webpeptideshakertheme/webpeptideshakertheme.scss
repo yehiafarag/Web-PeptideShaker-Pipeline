@@ -348,7 +348,7 @@
         border-bottom-right-radius:0px;
         position: relative;
         z-index: 10 !important;
-        padding:0.2vh;
+        padding:0.5vh;
     }
 
     .selectedbiglbtn img {
@@ -817,13 +817,21 @@
     .v-button-centerbackground:hover {
         color: #3d84dc !important;
     }
-    .largetitle .v-label,.v-link-largetitle {
+    .largetitle .v-label,.v-link-largetitle, .v-label-largetitle {
         margin-top: 10px;
         margin-left: 25px;
         font-size: 18px !important;
         font-weight: normal !important;
         text-decoration:none !important;
+        color: #3d84dc !important;
     }
+    .v-slot-graphframeframe,.v-slot-inframetable{
+        margin-right:25px;
+        margin-left:25px;
+        margin-top:0px !important;
+        margin-bottom:0px !important;
+    }
+   
 
     .v-slot-largetitle {
         min-height: 30px;
@@ -1910,8 +1918,7 @@
         /*background-color:#dfebf9*/
     }
     .graphframeframe{
-        border-top:2px solid lightgray;
-        border-bottom:2px solid lightgray;
+        border:2px solid lightgray;
         border-radius:5px;
     }
     .inframe{
@@ -1940,10 +1947,13 @@
     }
     .v-verticallayout-inframe .v-select-optiongroup{
         font-size:12px !important;
+        margin-top:-3px !important;
+        z-index: 2 !important;
+	position:relative !important;
 
     }
     .v-verticallayout-inframe{
-        min-height:65px !important;
+        min-height:30px !important;
     }
     .inframe .v-button-link:focus:after, .v-button:focus:after{
         border:3px solid white !important;
@@ -1955,9 +1965,9 @@
         border-radius: 5px;
     }
     .v-absolutelayout-wrapper-proteincoverage{
-        padding-left:20px !important;
-        padding-right:20px !important;
-        background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='15px' width='20px'><text  x='0' y='12' fill='gray' font-size='15px'>N</text></svg>"),url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='15px' width='20px'><text x='5' y='12' fill='gray' font-size='15px'>C</text></svg>");
+        padding-left:25px !important;
+        padding-right:25px !important;
+        background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='15px' width='25px'><text  x='0' y='12' fill='gray' font-size='15px'>N  </text></svg>"),url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='15px' width='25px'><text x='10' y='12' fill='gray' font-size='15px'>C</text></svg>");
         background-repeat:no-repeat;
         background-position:5px 50%, right 0px top 50%;
 
@@ -1967,8 +1977,8 @@
         border-radius: 5px;
     }
     .v-absolutelayout-wrapper-peptidecoverage {
-        padding-left: 20px !important;
-        padding-right: 20px !important;	
+        padding-left: 25px !important;
+        padding-right: 25px !important;	
         padding-top:5px;
     }
     .peptidelayout {
@@ -2104,11 +2114,11 @@
 
     }
     .v-popupview-popup .v-verticallayout-viewframecontent{
-       padding-left: 15px !important;
-	padding-right: 15px;
-	min-width: 310px;
-	min-height:200px;
-	background-color:whitesmoke;
+        padding-left: 15px !important;
+        padding-right: 15px;
+        min-width: 310px;
+        min-height:200px;
+        background-color:whitesmoke;
 
     } .protlegend{}
 
@@ -2130,36 +2140,36 @@
         margin-top:7px;
         margin-left:10px;
     }
-    
-.v-popupview-popup-protlegend .dottedborder{
-	margin-left:-30px;
-	padding-right:95px;
-	border-width:2px;
-}
-.v-popupview-popup-protlegend .solidborder{
-	margin-left:-30px;
-	padding-right:95px;
-	border:2px solid black;
-}
-.v-popupview-popup-protlegend .v-captiontext{
-	padding-bottom: 10px;
-	font-size:17px;
-}
-.v-popupview-popup-protlegend .v-verticallayout-viewframecontent .v-button{
-	position:absolute;
-	top:15px !important;
-	right:15px;
-}
-/*.v-popupview-popup-protlegend {
-	background-color: rgba(245, 245, 245, 0.55) !important;
-	border:2px solid lightgray;
-	width:100%;
-	height:100%;
-	top:0 !important;
-	left:0px !important;
-	
 
-}*/
+    .v-popupview-popup-protlegend .dottedborder{
+        margin-left:-30px;
+        padding-right:95px;
+        border-width:2px;
+    }
+    .v-popupview-popup-protlegend .solidborder{
+        margin-left:-30px;
+        padding-right:95px;
+        border:2px solid black;
+    }
+    .v-popupview-popup-protlegend .v-captiontext{
+        padding-bottom: 10px;
+        font-size:17px;
+    }
+    .v-popupview-popup-protlegend .v-verticallayout-viewframecontent .v-button{
+        position:absolute;
+        top:15px !important;
+        right:15px;
+    }
+    /*.v-popupview-popup-protlegend {
+            background-color: rgba(245, 245, 245, 0.55) !important;
+            border:2px solid lightgray;
+            width:100%;
+            height:100%;
+            top:0 !important;
+            left:0px !important;
+            
+    
+    }*/
 
     /****mobile css**/
     .horizontalcss  .largetitle .v-label{

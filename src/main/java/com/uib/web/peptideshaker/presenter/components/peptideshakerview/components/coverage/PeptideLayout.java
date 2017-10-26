@@ -46,6 +46,9 @@ public class PeptideLayout extends VerticalLayout implements Comparable<PeptideL
     public int getStartIndex() {
         return startIndex;
     }
+     public int getEndIndex() {
+        return startIndex+peptide.getSequence().length();
+    }
 
     public float getX() {
         return x;
