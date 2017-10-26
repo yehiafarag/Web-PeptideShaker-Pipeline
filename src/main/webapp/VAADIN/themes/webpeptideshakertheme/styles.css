@@ -13541,6 +13541,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .v-slot-minhight30 {
 	min-height: 30px;
+	max-height: 35px;
 }
 
 .webpeptideshakertheme .bottomformlayout {
@@ -13813,8 +13814,10 @@ div.v-layout.v-horizontal.v-widget {
 .webpeptideshakertheme .v-slot-graphframeframe, .webpeptideshakertheme .v-slot-inframetable {
 	margin-right: 25px;
 	margin-left: 25px;
-	margin-top: 0px !important;
-	margin-bottom: 0px !important;
+}
+
+.webpeptideshakertheme .v-slot-inframetable {
+	margin-top: 10px !important;
 }
 
 .webpeptideshakertheme .v-slot-largetitle {
@@ -14904,6 +14907,7 @@ div.v-layout.v-horizontal.v-widget {
 .webpeptideshakertheme .graphframeframe {
 	border: 2px solid lightgray;
 	border-radius: 5px;
+	margin-top: 20px;
 }
 
 .webpeptideshakertheme .inframe {
