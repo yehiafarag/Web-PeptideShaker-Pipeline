@@ -565,7 +565,8 @@
         padding-right:5px;
     }
     .v-slot-minhight30{
-        min-height:30px;
+        min-height: 30px;
+        max-height: 35px;
     }
 
     .bottomformlayout{
@@ -828,10 +829,11 @@
     .v-slot-graphframeframe,.v-slot-inframetable{
         margin-right:25px;
         margin-left:25px;
-        margin-top:0px !important;
-        margin-bottom:0px !important;
     }
-   
+    .v-slot-inframetable {
+        margin-top:10px !important;
+    }
+
 
     .v-slot-largetitle {
         min-height: 30px;
@@ -1920,6 +1922,7 @@
     .graphframeframe{
         border:2px solid lightgray;
         border-radius:5px;
+        margin-top: 20px;
     }
     .inframe{
         background-color: white;
@@ -1949,7 +1952,7 @@
         font-size:12px !important;
         margin-top:-3px !important;
         z-index: 2 !important;
-	position:relative !important;
+        position:relative !important;
 
     }
     .v-verticallayout-inframe{
