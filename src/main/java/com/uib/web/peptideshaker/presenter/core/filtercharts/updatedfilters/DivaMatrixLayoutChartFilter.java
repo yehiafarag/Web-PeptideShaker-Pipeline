@@ -278,22 +278,22 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
             barChartValues.put(coulmnIndx++, (double) columns.get(key).size());
         }
         updateChartDataset(barChartValues);
-        int totHehight = ((rows.size() + 1) * 30);
-        float expandingRatio = DivaMatrixLayoutChartFilter.this.getExpandRatio(topLayoutPanel);
-        double containerHeight = mainHeight * 100.00 / expandingRatio;
-        double currentBottomActualRatio = (double) (totHehight / containerHeight * 100.0) + 5.0;
-        double bottomPanelRatio;
-        if (currentBottomActualRatio >= 70) {
-            bottomPanelRatio = 70f;
-        } else if (currentBottomActualRatio > 50 && currentBottomActualRatio < 70) {
-            bottomPanelRatio = currentBottomActualRatio;
-        } else {
-            bottomPanelRatio = 50;
-        }
-
-        double topPanelRation = 100 - bottomPanelRatio;
-        DivaMatrixLayoutChartFilter.this.setExpandRatio(topLayoutPanel, (float) topPanelRation);
-        DivaMatrixLayoutChartFilter.this.setExpandRatio(bottomLayoutPanel, (float) bottomPanelRatio);
+//        int totHehight = ((rows.size() + 1) * 30);
+//        float expandingRatio = DivaMatrixLayoutChartFilter.this.getExpandRatio(topLayoutPanel);
+//        double containerHeight = mainHeight * 100.00 / expandingRatio;
+//        double currentBottomActualRatio = (double) (totHehight / containerHeight * 100.0) + 5.0;
+//        double bottomPanelRatio;
+//        if (currentBottomActualRatio >= 70) {
+//            bottomPanelRatio = 70f;
+//        } else if (currentBottomActualRatio > 50 && currentBottomActualRatio < 70) {
+//            bottomPanelRatio = currentBottomActualRatio;
+//        } else {
+//            bottomPanelRatio = 50;
+//        }
+//
+//        double topPanelRation = 100 - bottomPanelRatio;
+//        DivaMatrixLayoutChartFilter.this.setExpandRatio(topLayoutPanel, (float) topPanelRation);
+//        DivaMatrixLayoutChartFilter.this.setExpandRatio(bottomLayoutPanel, (float) bottomPanelRatio);
         allowDrawing = true;
     }
 
@@ -544,7 +544,6 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
         try {
 //            BarRenderer renderer = ((BarRenderer) ((CategoryPlot) chart.getPlot()).getRenderer());
             if (((CategoryPlot) chart.getPlot()).getDataset().getColumnCount() == 1) {
-                System.out.println("single bar persentage " + (50.0 / (double) width));
                 ((BarRenderer) ((CategoryPlot) chart.getPlot()).getRenderer()).setMaximumBarWidth((50.0 / (double) width));
             } else {
                 ((BarRenderer) ((CategoryPlot) chart.getPlot()).getRenderer()).setMaximumBarWidth(1.0);

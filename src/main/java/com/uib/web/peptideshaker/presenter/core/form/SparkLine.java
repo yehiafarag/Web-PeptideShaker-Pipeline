@@ -105,9 +105,12 @@ public class SparkLine extends HorizontalLayout {
             value = value * 100 / factor;
 //            selectedColor = Color.BLUE;
         } else if (max != -100000) {
-            SparkLine.this.addComponent(new Label());
+            Label empty = new Label();
+            SparkLine.this.addComponent(empty);
+             SparkLine.this.setExpandRatio(empty, 20);
             SparkLine.this.addComponent(textLabel);
             SparkLine.this.setComponentAlignment(textLabel, Alignment.MIDDLE_LEFT);
+            SparkLine.this.setExpandRatio(textLabel, 80);
             return;
         }
 
@@ -128,7 +131,6 @@ public class SparkLine extends HorizontalLayout {
             SparkLine.this.setComponentAlignment(textLabel, Alignment.MIDDLE_LEFT);
             SparkLine.this.setExpandRatio(textLabel, 90);
 //            SparkLine.this.setExpandRatio(colorLegend, 10);
-
         } else {
             VerticalLayout spacer = new VerticalLayout();
             spacer.setSizeFull();

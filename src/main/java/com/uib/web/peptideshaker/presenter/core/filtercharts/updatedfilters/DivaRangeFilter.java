@@ -21,7 +21,6 @@ import com.vaadin.ui.Slider;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import java.awt.Color;
-import java.awt.geom.Ellipse2D;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -115,11 +114,11 @@ public abstract class DivaRangeFilter extends VerticalLayout implements Property
             if ((tChartWidth == chartWidth || Math.abs(tChartWidth - chartWidth) < 10) && (chartHeight == tChartHeight || Math.abs(tChartHeight - chartHeight) < 10)) {
                 return;
             }
-            if (imageRepaintCounter < 4) {
-                imageRepaintCounter++;
-                return;
-            }
-            imageRepaintCounter = 3;
+//            if (imageRepaintCounter < 4) {
+//                imageRepaintCounter++;
+//                return;
+//            }
+//            imageRepaintCounter = 3;
             chartWidth = tChartWidth;
             chartHeight = tChartHeight;
             chartImage.setSource(new ExternalResource(saveToFile(mainChart, chartWidth, chartHeight)));
@@ -179,7 +178,6 @@ public abstract class DivaRangeFilter extends VerticalLayout implements Property
     public void initializeFilterData(TreeMap<Comparable, Set<Comparable>> data) {
         activeData.clear();
         if (data.isEmpty()) {
-
             upperRangeSlider.setEnabled(false);
             lowerRangeSlider.setEnabled(false);
             chartContainer.removeAllComponents();
@@ -235,7 +233,9 @@ public abstract class DivaRangeFilter extends VerticalLayout implements Property
         renderer.setSeriesPaint(0, new Color(211, 211, 211), true);
         if (lowerRangeSlider.getMin() > 0) {
             ((NumberAxis) plot.getDomainAxis()).setAutoRangeMinimumSize(lowerRangeSlider.getMin());
+            
         }
+         ((NumberAxis) plot.getDomainAxis()).setFixedAutoRange(lowerRangeSlider.getMax()-lowerRangeSlider.getMin());
 
     }
 
@@ -244,7 +244,7 @@ public abstract class DivaRangeFilter extends VerticalLayout implements Property
         XYSeriesCollection dataset = new XYSeriesCollection();
         final NumberAxis domainAxis = new NumberAxis();
         domainAxis.setVisible(false);
-        domainAxis.setAutoRange(true);
+        domainAxis.setAutoRange(true);        
         domainAxis.setAutoRangeIncludesZero(false);
 
         final NumberAxis rangeAxis = new NumberAxis() {

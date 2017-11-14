@@ -11,6 +11,7 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
@@ -57,12 +58,13 @@ public class WelcomePage extends VerticalLayout implements ViewableFrame {
      * The top home button .
      */
     private SmallSideBtn topHomeBtn;
+    
 
     /**
      * Constructor to initialize the layout.
      * @param galaxyConnectionLayout The Galaxy server connection layout 
      */
-    public WelcomePage(Layout galaxyConnectionLayout ) {
+    public WelcomePage(Layout galaxyConnectionLayout,Link nelsGalaxyConnectionBtn ) {
         WelcomePage.this.setSizeFull();
         WelcomePage.this.setStyleName("activelayout");
         headerPanel = new VerticalLayout();
@@ -85,7 +87,7 @@ public class WelcomePage extends VerticalLayout implements ViewableFrame {
         bodyContent.setSizeFull();
         bodyContent.setSpacing(true);
         bodyContent.setWidth(405, Unit.PIXELS);
-        bodyContent.setHeight(130, Unit.PIXELS);
+        bodyContent.setHeight(200, Unit.PIXELS);
         bodyPanel.addComponent(bodyContent);
         bodyPanel.setComponentAlignment(bodyContent, Alignment.TOP_CENTER);
 
@@ -99,7 +101,11 @@ public class WelcomePage extends VerticalLayout implements ViewableFrame {
         bodyContent.setComponentAlignment(welcomeText, Alignment.TOP_LEFT);
 
         bodyContent.addComponent(galaxyConnectionLayout);
-        bodyContent.setComponentAlignment(galaxyConnectionLayout, Alignment.TOP_LEFT);
+        bodyContent.setComponentAlignment(galaxyConnectionLayout, Alignment.TOP_LEFT);        
+    
+         
+         bodyContent.addComponent(nelsGalaxyConnectionBtn);        
+        bodyContent.setComponentAlignment(nelsGalaxyConnectionBtn, Alignment.TOP_RIGHT);
 //
         homeBtn = new SmallSideBtn("img/home-o.svg");
         homeBtn.setData(WelcomePage.this.getViewId());

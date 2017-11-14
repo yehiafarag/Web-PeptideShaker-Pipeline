@@ -54,9 +54,9 @@ public class HorizontalLabelTextField extends HorizontalLayout {
         textField.addStyleName(ValoTheme.TEXTFIELD_ALIGN_CENTER);
         textField.setWidth(100, Unit.PERCENTAGE);
         textField.addStyleName(ValoTheme.TEXTFIELD_TINY);
-//        textField.setNullRepresentation(this.defaultValue);
+        textField.setNullRepresentation(this.defaultValue);
         textField.setInputPrompt(this.defaultValue);
-//        textField.setValue(this.defaultValue);
+        textField.setValue(this.defaultValue);
 
         textField.setWidth(100, Unit.PERCENTAGE);
         textField.setHeight(25, Unit.PIXELS);
@@ -97,10 +97,10 @@ public class HorizontalLabelTextField extends HorizontalLayout {
 
     public String getSelectedValue() {
         if (textField.getValue() == null) {
-            return defaultValue;
+            return defaultValue.replace(" ","_");
 
         }
-        return textField.getValue();
+        return textField.getValue().replace(" ","_");
 
     }
 

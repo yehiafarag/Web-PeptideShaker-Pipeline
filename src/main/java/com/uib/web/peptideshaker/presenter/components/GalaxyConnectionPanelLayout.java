@@ -1,5 +1,7 @@
 package com.uib.web.peptideshaker.presenter.components;
 
+import com.github.jmchilton.blend4j.galaxy.DefaultWebResourceFactoryImpl;
+import com.github.jmchilton.blend4j.galaxy.GalaxyAuthWebResourceFactoryImpl;
 import com.github.jmchilton.blend4j.galaxy.GalaxyInstance;
 import com.github.jmchilton.blend4j.galaxy.GalaxyInstanceFactory;
 import com.vaadin.data.Property;
@@ -7,6 +9,7 @@ import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinServletRequest;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -164,7 +167,7 @@ public abstract class GalaxyConnectionPanelLayout extends VerticalLayout impleme
         userInputPanelLayout.setComponentAlignment(galaxyLinkContainer, Alignment.BOTTOM_CENTER);
         userInputPanelLayout.setExpandRatio(galaxyLinkContainer, 12);
 
-        galaxyLink.setValue("http://129.177.123.195:8080/");//https://usegalaxyp.org
+        galaxyLink.setValue("https://test-fe.cbu.uib.no/galaxy");//"http://129.177.123.195:8080/");//https://usegalaxyp.org
 
         inputTabSheet = new TabSheet();
         inputTabSheet.setWidth(100, Unit.PERCENTAGE);
@@ -219,7 +222,7 @@ public abstract class GalaxyConnectionPanelLayout extends VerticalLayout impleme
         APIKey.addStyleName(ValoTheme.TEXTFIELD_TINY);
         APIKey.addStyleName("nomargin");
         APIKey.setInputPrompt("Galaxy API Key");
-        APIKey.setValue("abba9538dfd38d10c71aab67bbd30cfe");//admin 6abed6a0b5021096631350a0b89c5155   --71821f0c14cf63a2609f59d821bc1df3--61062cd3acb2433c1e1ed66d6560357f
+        APIKey.setValue("9228c9cd3eccff77b6fc2e8d6f3c7d48");//"abba9538dfd38d10c71aab67bbd30cfe"  admin 6abed6a0b5021096631350a0b89c5155   --71821f0c14cf63a2609f59d821bc1df3--61062cd3acb2433c1e1ed66d6560357f
         userAPIKeyPanel.addComponent(APIKey);
         APIKey.setWidth(100, Unit.PERCENTAGE);
         APIKey.setHeight(50, Unit.PERCENTAGE);
@@ -255,7 +258,7 @@ public abstract class GalaxyConnectionPanelLayout extends VerticalLayout impleme
         galaxyLink.addValueChangeListener((Property.ValueChangeEvent event) -> {
             if (galaxyLink.getValue().toString().equalsIgnoreCase("https://test-fe.cbu.uib.no/galaxy")) {
                 APIKey.setValue("9228c9cd3eccff77b6fc2e8d6f3c7d48");
-            } else if (galaxyLink.getValue().toString().equalsIgnoreCase("http://129.177.123.195/")) {
+            } else if (galaxyLink.getValue().toString().equalsIgnoreCase("http://129.177.123.195:8080/")) {
                 APIKey.setValue("abba9538dfd38d10c71aab67bbd30cfe");//71821f0c14cf63a2609f59d821bc1df3
             } else if (galaxyLink.getValue().toString().equalsIgnoreCase("https://usegalaxy.org/")) {
                 APIKey.setValue("75d32d7c17f3bca57f78b725c2fc1565");
@@ -280,14 +283,16 @@ public abstract class GalaxyConnectionPanelLayout extends VerticalLayout impleme
         galaxyLinkContainer.setEnabled(!galaxyConnected);
         inputTabSheet.setEnabled(!galaxyConnected);
         galaxyInstance = null;
+       
     }
 
     private boolean tryToConnect() {
-        Cookie[] cookies = ((VaadinServletRequest) VaadinService.getCurrentRequest()).getCookies();
-        for (Cookie cookie : cookies) {
-            cookiesRequestProperty += ";" + cookie.getName() + "=" + cookie.getValue();
-        }
-        cookiesRequestProperty = cookiesRequestProperty.replaceFirst(";", "");
+//        Cookie[] cookies = ((VaadinServletRequest) VaadinService.getCurrentRequest()).getCookies();
+//        for (Cookie cookie : cookies) {
+//            cookiesRequestProperty += ";" + cookie.getName() + "=" + cookie.getValue();
+//        }
+//        cookiesRequestProperty = cookiesRequestProperty.replaceFirst("null;", "");
+//        VaadinSession.getCurrent().setAttribute("cookies",cookiesRequestProperty); 
 
         if (((HorizontalLayout) inputTabSheet.getSelectedTab()).getData().toString().equalsIgnoreCase("Email & Password")) {
             userEmail.setRequired(true);
@@ -324,6 +329,7 @@ public abstract class GalaxyConnectionPanelLayout extends VerticalLayout impleme
             }
             galaxyInstance = GalaxyInstanceFactory.getFromCredentials(galaxyLink.getValue().toString(), userEmail.getValue(), password.getValue());
         } else {
+
             galaxyLink.setRequired(true);
             APIKey.setRequired(true);
 
@@ -347,7 +353,6 @@ public abstract class GalaxyConnectionPanelLayout extends VerticalLayout impleme
             }
 
             try {
-                System.out.println("at we reach 3");
                 galaxyInstance = GalaxyInstanceFactory.get(galaxyLink.getValue().toString(), APIKey.getValue());
                 System.out.println("at we reach 4");
             } catch (Exception e) {

@@ -15,7 +15,38 @@ public class SystemDataSet {
     private String downloadUrl;
     private String status;
     private String type;
+    private String nelsKey;
+
+    public String getNelsKey() {        
+        return nelsKey;
+    }
+
+    public void setNelsKey(String nelsKey, String exitType) {
+        if (nelsKey.endsWith(exitType)) {
+            this.nelsKey = nelsKey;
+        } else {
+            this.nelsKey = nelsKey + "." + exitType;
+        }
+    }
+
+    public boolean isAvailableOnGalaxy() {
+        return availableOnGalaxy;
+    }
+
+    public void setAvailableOnGalaxy(boolean availableOnGalaxy) {
+        this.availableOnGalaxy = availableOnGalaxy;
+    }
     private double size;
+    private boolean availableOnNels;
+    private boolean availableOnGalaxy=true;
+
+    public boolean isAvailableOnNels() {
+        return availableOnNels;
+    }
+
+    public void setAvailableOnNels(boolean availableOnNels) {
+        this.availableOnNels = availableOnNels;
+    }
 
     public String getStatus() {
         return status;
@@ -40,7 +71,6 @@ public class SystemDataSet {
     public void setSize(double size) {
         this.size = size;
     }
-    
 
     public String getDownloadUrl() {
         return downloadUrl;

@@ -57,6 +57,7 @@ public class GalaxyFile extends SystemDataSet {
                 URL downloadableFile = new URL(dataset.getDownloadUrl());
                 URLConnection conn = downloadableFile.openConnection();
                 conn.addRequestProperty("Cookie", VaadinSession.getCurrent().getAttribute("cookies") + "");
+                System.out.println("at cookies exist "+VaadinSession.getCurrent().getAttribute("cookies"));
                 conn.addRequestProperty("Accept", "*/*");
                 conn.addRequestProperty("Accept-Encoding", "gzip, deflate, sdch, br");
                 conn.addRequestProperty("Accept-Language", "ar,en-US;q=0.8,en;q=0.6,en-GB;q=0.4");

@@ -5,6 +5,7 @@ import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDa
 import com.uib.web.peptideshaker.galaxy.dataobjects.SystemDataSet;
 import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
 import com.github.jmchilton.blend4j.galaxy.GalaxyInstance;
+import com.github.jmchilton.blend4j.galaxy.beans.User;
 import com.uib.web.peptideshaker.presenter.components.GalaxyConnectionPanelLayout;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
@@ -21,6 +22,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import java.io.File;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -61,9 +63,9 @@ public abstract class GalaxyLayer {
     private File userFolder;
 
     private String galaxyURL;
-    
-    private final    GalaxyConnectionPanelLayout galaxyConnectionSettingsPanel ;
-    
+
+    private final GalaxyConnectionPanelLayout galaxyConnectionSettingsPanel;
+
     private final Button connectionBtn;
 
     /**
@@ -72,13 +74,14 @@ public abstract class GalaxyLayer {
     public GalaxyLayer() {
 
         galaxyConnectionPanel = new HorizontalLayout();
-        galaxyConnectionPanel.setSizeFull();
+        galaxyConnectionPanel.setHeight(60, Sizeable.Unit.PIXELS);
+        galaxyConnectionPanel.setWidth(100, Sizeable.Unit.PERCENTAGE);
         galaxyConnectionPanel.setSpacing(true);
 
         Label connectionStatuesLabel = new Label("Galaxy is<font color='red'>  not connected </font><font size='3' color='red'> &#128528;</font>");
         connectionStatuesLabel.setContentMode(ContentMode.HTML);
 
-        connectionStatuesLabel.setHeight(20, Sizeable.Unit.PIXELS);
+        connectionStatuesLabel.setHeight(25, Sizeable.Unit.PIXELS);
         connectionStatuesLabel.setWidth(160, Sizeable.Unit.PIXELS);
         connectionStatuesLabel.setStyleName(ValoTheme.LABEL_SMALL);
         connectionStatuesLabel.addStyleName(ValoTheme.LABEL_BOLD);
@@ -139,12 +142,19 @@ public abstract class GalaxyLayer {
 
                         galaxyURL = Galaxy_Instance.getGalaxyUrl();
 
-                        toolsHandler = new ToolsHandler(Galaxy_Instance.getToolsClient(), Galaxy_Instance.getWorkflowsClient(), Galaxy_Instance.getHistoriesClient());
-                        historyHandler = new HistoryHandler(Galaxy_Instance, userFolder) {
+                        toolsHandler = new ToolsHandler(Galaxy_Instance.getToolsClient(), Galaxy_Instance.getWorkflowsClient(), Galaxy_Instance.getHistoriesClient()) {
                             @Override
-                            public String reIndexFile(String id, String historyId, String workHistoryId) {
-                                return GalaxyLayer.this.reIndexFile(id, historyId, workHistoryId);
+                            public void updateHistoryDatastructure(  PeptideShakerVisualizationDataset tempWorkflowOutput) {
+                                historyHandler.updateHistory(tempWorkflowOutput);
                             }
+
+                        };
+
+                        historyHandler = new HistoryHandler(Galaxy_Instance, userFolder) {
+//                            @Override
+//                            public String reIndexFile(String id, String historyId, String workHistoryId) {
+////                                return GalaxyLayer.this.reIndexFile(id, historyId, workHistoryId);
+//                            }
 
                             @Override
                             public void systemIsBusy(boolean busy, Map<String, SystemDataSet> historyFilesMap) {
@@ -167,11 +177,19 @@ public abstract class GalaxyLayer {
 //
                     connectionBtn.setEnabled(true);
                 } catch (Exception exp) {
-                    exp.printStackTrace();
-                    System.out.println("at err .connectedToGalaxy()");
+                    Thread t = new Thread(() -> {
+                        try {
+                            Thread.sleep(1000);
+
+                        } catch (InterruptedException ex) {
+                            ex.printStackTrace();
+                        }
+                    });
+                    t.start();
                     historyHandler = null;
                     toolsHandler = null;
                     systemDisconnected();
+                    Page.getCurrent().open("http://localhost:8084/NelsGalaxyRedirectForm/", "_self");
 
                 }
             }
@@ -319,15 +337,14 @@ public abstract class GalaxyLayer {
      * @return new re-indexed file id on galaxy
      *
      */
-    public String reIndexFile(String id, String historyId, String workHistoryId) {
-
-        if (toolsHandler != null) {
-            return toolsHandler.reIndexFile(id, historyId, workHistoryId);
-        }
-
-        return null;
-    }
-
+//    public String reIndexFile(String id, String historyId, String workHistoryId) {
+//
+//        if (toolsHandler != null) {
+//            return toolsHandler.reIndexFile(id, historyId, workHistoryId);
+//        }
+//
+//        return null;
+//    }
     /**
      * Save search settings file into galaxy
      *
@@ -352,8 +369,12 @@ public abstract class GalaxyLayer {
      * @param historyId galaxy history id that will store the results
      */
     public void executeWorkFlow(String projectName, String fastaFileId, Set<String> mgfIdsList, Set<String> searchEnginesList, SearchParameters searchParameters, Map<String, Boolean> otherSearchParameters) {
-        PeptideShakerVisualizationDataset tempWorkflowOutput = toolsHandler.executeWorkFlow(projectName, fastaFileId, mgfIdsList, searchEnginesList, historyHandler.getWorkingHistoryId(), searchParameters, otherSearchParameters);
-        historyHandler.updateHistoryDatastructure(userFolder, tempWorkflowOutput);
+        Map<String, String> mgfMap = new LinkedHashMap<>();
+        for (String mgfId : mgfIdsList) {
+            mgfMap.put(mgfId, historyHandler.getMgfFilesMap().get(mgfId).getName());
+        }
+        PeptideShakerVisualizationDataset tempWorkflowOutput = toolsHandler.executeWorkFlow(projectName, fastaFileId, mgfMap, searchEnginesList, historyHandler.getWorkingHistoryId(), searchParameters, otherSearchParameters);
+        toolsHandler.updateHistoryDatastructure(tempWorkflowOutput);
     }
 
     public void deleteDataset(SystemDataSet ds) {
@@ -369,15 +390,27 @@ public abstract class GalaxyLayer {
             toolsHandler.deleteDataset(galaxyURL, ds.getHistoryId(), ds.getGalaxyId());
         }
 
-        historyHandler.updateHistoryDatastructure(userFolder, null);
+        historyHandler.updateHistory(null);
+    }
+
+    public boolean sendDataToNels(String historyId, String datasetGalaxyId) {
+         boolean check= toolsHandler.sendToNels(historyId, datasetGalaxyId, galaxyURL);
+         toolsHandler.updateHistoryDatastructure(null);
+         return check;
+
+    }
+
+    public boolean getFromNels(String historyId, String datasetGalaxyId) {
+        return toolsHandler.getFromNels(historyId, datasetGalaxyId);
+
     }
 
     public abstract void jobsInProgress(boolean inprogress, Map<String, SystemDataSet> historyFilesMap);
-    
-    public void reConnectToGalaxy(String APIKEy, String galaxyUrl ){
+
+    public void reConnectToGalaxy(String APIKEy, String galaxyUrl) {
         galaxyConnectionSettingsPanel.reConnectToGalaxy(APIKEy, galaxyUrl);
         connectionBtn.click();
-    
+
     }
 
 }

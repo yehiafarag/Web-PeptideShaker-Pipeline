@@ -57,15 +57,17 @@ public abstract class GalaxyFileSystemPresenter extends VerticalLayout implement
 
     }
 
-    public void setBusy(boolean busy,Map<String, SystemDataSet> historyFilesMap) {
+    public void setBusy(boolean busy, Map<String, SystemDataSet> historyFilesMap) {
         if (busy) {
             toolsBtn.updateIconURL("img/loading.gif");
             topToolsBtn.updateIconURL("img/loading.gif");
+            return;
         } else {
             toolsBtn.updateIconURL("img/jobs2.png");
             topToolsBtn.updateIconURL("img/jobs2.png");
         }
         this.dataLayout.updateDatasetsTable(historyFilesMap);
+        System.out.println("at updated presenter ---->>> set busy ");
     }
 
     private void initLayout() {
@@ -107,7 +109,7 @@ public abstract class GalaxyFileSystemPresenter extends VerticalLayout implement
 
         mobilebtnContainer.addComponent(viewDataBtn.getMobileModeBtn());
         mobilebtnContainer.setComponentAlignment(viewDataBtn.getMobileModeBtn(), Alignment.TOP_CENTER);
-      
+
         viewDataBtn.setSelected(true);
 
     }
@@ -193,17 +195,26 @@ public abstract class GalaxyFileSystemPresenter extends VerticalLayout implement
         container.setStyleName("subframe");
         container.addStyleName("padding25");
 //        container.setMargin(new MarginInfo(true, true, true, true));
-        dataLayout = new DataViewLayout(){
+        dataLayout = new DataViewLayout() {
             @Override
             public void deleteDataset(SystemDataSet ds) {
-               GalaxyFileSystemPresenter.this.deleteDataset(ds);
+                GalaxyFileSystemPresenter.this.deleteDataset(ds);
             }
 
             @Override
             public void viewDataset(PeptideShakerVisualizationDataset ds) {
-               GalaxyFileSystemPresenter.this.viewDataset(ds);
+                GalaxyFileSystemPresenter.this.viewDataset(ds);
             }
-        
+
+            @Override
+            public boolean sendToNeLS(SystemDataSet ds) {
+                return GalaxyFileSystemPresenter.this.sendToNeLS(ds);
+            }
+             @Override
+            public boolean getFromNels(SystemDataSet ds) {
+                return GalaxyFileSystemPresenter.this.getFromNels(ds);
+            }
+
         };
         container.addComponent(dataLayout);
         container.setComponentAlignment(dataLayout, Alignment.MIDDLE_CENTER);
@@ -211,15 +222,22 @@ public abstract class GalaxyFileSystemPresenter extends VerticalLayout implement
         return container;
     }
 
-    public void updatePresenter(Map<String, SystemDataSet> historyFilesMap) {
-
-        if (this.dataLayout != null) {
-            this.dataLayout.updateDatasetsTable(historyFilesMap);
-        }
-
-    }
+//    public void updatePresenter(Map<String, SystemDataSet> historyFilesMap) {
+//
+//        if (this.dataLayout != null) {
+//            this.dataLayout.updateDatasetsTable(historyFilesMap);
+//            System.out.println("at updated presenter ---->>>  ");
+//        }
+//
+//    }
     public abstract void deleteDataset(SystemDataSet ds);
-    
+
     public abstract void viewDataset(PeptideShakerVisualizationDataset ds);
+
+    public abstract boolean sendToNeLS(SystemDataSet ds);
+     
+    public abstract boolean getFromNels(SystemDataSet ds);
+    
+    
 
 }

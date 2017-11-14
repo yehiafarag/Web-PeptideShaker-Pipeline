@@ -44,19 +44,39 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
     private final TreeMap<Comparable, Set<Comparable>> proteinPSMNumberMap;
     private final TreeMap<Comparable, Set<Comparable>> proteinCoverageMap;
 
+
     private GalaxyFile peptideFile;
     private GalaxyFile fastaFile;
+    private GalaxyFile proteinFile;
+    private GalaxyFile psmFile;
 
     private String proteinFileId;
     private String peptideFileId;
     private String cpsId;
     private String psmFileId;
-    private final String jobId;
+    private String jobId;
     private String searchGUIFileId;
     private final Map<String, String> mgfFiles;
     private final Map<String, String> mgfFilesIndexes;
     private String fastaFileName;
     private String fastaFileId;
+    private String zipFileId;
+
+    public String getZipFileId() {
+        return zipFileId;
+    }
+
+    public GalaxyFile getPsmFile() {
+        return psmFile;
+    }
+
+    public void setPsmFile(GalaxyFile psmFile) {
+        this.psmFile = psmFile;
+    }
+
+    public void setZipFileId(String zipFileId) {
+        this.zipFileId = zipFileId;
+    }
     private GalaxyFastaFileReader fastaFileReader;
     private int proteinsNumber;
     private int psmNumber;
@@ -80,7 +100,7 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
         } else {
             ProteinObject newRelatedProt = updateProteinInformation(null, proteinKey);
 //            proteinsMap.put(proteinKey, newRelatedProt);
-            System.out.println("we found pnull protein key "+newRelatedProt.getDescription());
+            System.out.println("we found pnull protein key " + newRelatedProt.getDescription());
             return newRelatedProt;
         }
 
@@ -100,7 +120,7 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
         BufferedRandomAccessFile bufferedRandomAccessFile = null;
         //for testing
         Random r = new Random();
-        int[] chrom = new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24};
+//        int[] chrom = new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24};
 
         try {//           
             bufferedRandomAccessFile = new BufferedRandomAccessFile(proteinFile.getFile(), "r", 1024 * 100);
@@ -124,7 +144,7 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
                 protein.setDescription(arr[2]);
                 protein.setGeneName(arr[3]);
                 protein.setChromosome(arr[4]);
-                protein.setChromosome(chrom[r.nextInt(10)] + "");
+//                protein.setChromosome(chrom[r.nextInt(10)] + "");
                 if (protein.getChromosome().trim().isEmpty()) {
                     protein.setChromosome("No Information");
                     chromosomeMap.get(protein.getChromosome()).add(protein.getAccession());
@@ -138,10 +158,11 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
                 protein.setMW(Double.valueOf(arr[5]));
                 protein.setPossibleCoverage(Double.valueOf(arr[6]));
                 protein.setCoverage(Double.valueOf(arr[7]));
-                if (!proteinCoverageMap.containsKey((int)protein.getPossibleCoverage())) {
-                    proteinCoverageMap.put((int)protein.getPossibleCoverage(), new LinkedHashSet<>());
+                int pc = (int) Math.round(protein.getPossibleCoverage());
+                if (!proteinCoverageMap.containsKey(pc)) {
+                    proteinCoverageMap.put(pc, new LinkedHashSet<>());
                 }
-                proteinCoverageMap.get((int)protein.getPossibleCoverage()).add(protein.getAccession());
+                proteinCoverageMap.get(pc).add(protein.getAccession());
                 protein.setSpectrumCounting(Double.valueOf(arr[8]));
                 protein.setConfidentlyLocalizedModificationSites(arr[9]);
                 protein.setConfidentlyLocalizedModificationSitesNumber(arr[10]);
@@ -162,9 +183,9 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
                 protein.setSecondaryAccessions(arr[14]);
 
                 protein.setProteinGroup(arr[15]);
-                protein.setValidatedPeptidesNumber(Integer.parseInt(arr[16]));               
+                protein.setValidatedPeptidesNumber(Integer.parseInt(arr[16]));
                 protein.setPeptidesNumber(Integer.parseInt(arr[17]));
-                 if (!proteinPeptidesNumberMap.containsKey(protein.getValidatedPeptidesNumber())) {
+                if (!proteinPeptidesNumberMap.containsKey(protein.getValidatedPeptidesNumber())) {
                     proteinPeptidesNumberMap.put(protein.getValidatedPeptidesNumber(), new LinkedHashSet<>());
                 }
                 proteinPeptidesNumberMap.get(protein.getValidatedPeptidesNumber()).add(protein.getAccession());
@@ -382,8 +403,6 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
         this.peptideFile = peptideFile;
     }
 
-    private GalaxyFile proteinFile;
-
     public GalaxyFile getFastaFile() {
         return fastaFile;
     }
@@ -483,8 +502,19 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
         return fastaFileName;
     }
 
-    public PeptideShakerVisualizationDataset(String jobId) {
+    public void setJobId(String jobId) {
         this.jobId = jobId;
+    }
+    
+    private final String projectName;
+
+    public String getProjectName() {
+        return projectName;
+    }
+    
+
+    public PeptideShakerVisualizationDataset(String projectName) {
+        this.projectName = projectName;
         this.mgfFiles = new LinkedHashMap<>();
         mgfFilesIndexes = new LinkedHashMap<>();
         sequenceMatchingPreferences = SequenceMatchingPreferences.getDefaultSequenceMatching();
@@ -501,8 +531,8 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
         piMap.put("No Information", new LinkedHashSet<>());
         proteinValidationMap = new LinkedHashMap<>();
         proteinValidationMap.put("No Information", new LinkedHashSet<>());
-         proteinValidationMap.put("Confident", new LinkedHashSet<>());
-          proteinValidationMap.put("Doubtful", new LinkedHashSet<>());
+        proteinValidationMap.put("Confident", new LinkedHashSet<>());
+        proteinValidationMap.put("Doubtful", new LinkedHashSet<>());
     }
 
     public TreeMap<Comparable, Set<Comparable>> getProteinPeptidesNumberMap() {
@@ -518,7 +548,7 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
     }
 
     public String getJobId() {
-        return jobId;
+        return jobId.replace("_PS_", "");
     }
 
     public String getProteinFileId() {
@@ -546,7 +576,8 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
     }
 
     public boolean isValidFile() {
-        return !(proteinFileId == null || peptideFileId == null || searchGUIFileId == null || psmFileId == null || mgfFiles.isEmpty() || fastaFileName == null || mgfFilesIndexes.isEmpty());
+        System.out.println("at files "+(proteinFileId == null )+"  "+(peptideFileId == null )+"||"+(searchGUIFileId == null )+"||"+( psmFileId == null )+"||"+( mgfFiles.isEmpty() )+"||"+( fastaFileName == null )+"||"+(mgfFilesIndexes.isEmpty()));
+        return !(proteinFileId == null || peptideFileId == null || fastaFileName == null/*|| searchGUIFileId == null || psmFileId == null || mgfFiles.isEmpty()  || mgfFilesIndexes.isEmpty()*/);
     }
 
     public String getPsmFileId() {
@@ -736,6 +767,30 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
             Logger.getLogger(PeptideShakerVisualizationDataset.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
+    }
+
+    @Override
+    public void setAvailableOnNels(boolean availableOnNels) {
+        super.setAvailableOnNels(availableOnNels); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean isAvailableOnNels() {
+        if (proteinFile != null && peptideFile != null && psmFile != null) {
+            return (proteinFile.isAvailableOnNels() && peptideFile.isAvailableOnNels() && psmFile.isAvailableOnNels()); //To change body of generated methods, choose Tools | Templates.
+        }
+        return false;
+
+    }
+
+    @Override
+    public void setAvailableOnGalaxy(boolean availableOnGalaxy) {
+        super.setAvailableOnGalaxy(availableOnGalaxy); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public boolean isAvailableOnGalaxy() {
+        return super.isAvailableOnGalaxy(); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

@@ -13130,6 +13130,7 @@ div.v-layout.v-horizontal.v-widget {
 	color: white;
 	cursor: pointer;
 	text-decoration: none !important;
+	max-width: 115px;
 }
 
 .webpeptideshakertheme .galaxybtn:hover {
@@ -13160,6 +13161,7 @@ div.v-layout.v-horizontal.v-widget {
 .webpeptideshakertheme .disconnect {
 	color: white !important;
 	background-color: #4f9d13 !important;
+	font-size: 14px;
 }
 
 .webpeptideshakertheme .hide {
@@ -15160,6 +15162,42 @@ div.v-layout.v-horizontal.v-widget {
 	position: absolute;
 	top: 15px !important;
 	right: 15px;
+}
+
+.webpeptideshakertheme .nelslogo {
+	font-weight: bold;
+	color: #273F7B;
+}
+
+.webpeptideshakertheme .v-link-nelslogo {
+	position: relative !important;
+	font-style: italic;
+	text-decoration: none !important;
+	font-size: 14px;
+	border: 2px solid #273f7b;
+	background-color: #273f7b;
+	color: white !important;
+	border-radius: 5px;
+	min-width: 100px;
+	padding-left: 5px;
+	left: -145px;
+	top: -36px;
+}
+
+.webpeptideshakertheme .activate {
+	color: green;
+}
+
+.webpeptideshakertheme .activatenels {
+	color: #2e457f;
+}
+
+.webpeptideshakertheme .deactivate {
+	color: gray;
+}
+
+.webpeptideshakertheme .row {
+	color: black;
 }
 
 .webpeptideshakertheme .horizontalcss .largetitle .v-label {

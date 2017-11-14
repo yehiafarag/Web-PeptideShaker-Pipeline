@@ -7,7 +7,6 @@ import com.uib.web.peptideshaker.presenter.components.peptideshakerview.Selectio
 import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
 import com.uib.web.peptideshaker.presenter.core.SmallSideBtn;
 import com.vaadin.event.LayoutEvents;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
@@ -34,8 +33,8 @@ public class PeptideShakerViewPresenter extends VerticalLayout implements Viewab
     private HorizontalLayout mobilebtnContainer;
 
     private DatasetVisulizationLevelContainer datasetVisulizationLevelContainer;
-    private final SelectionManager Selection_Manager;
-    private ProteinVisulizationLevelContainer proteinsVisulizationLevelContainer ;
+    private  SelectionManager Selection_Manager;
+    private ProteinVisulizationLevelContainer proteinsVisulizationLevelContainer;
 
     /**
      * Initialize the web tool main attributes
@@ -67,26 +66,25 @@ public class PeptideShakerViewPresenter extends VerticalLayout implements Viewab
         btnContainer.setMargin(new MarginInfo(false, false, true, false));
 //
 
-        BigSideBtn datasetsOverviewBtn = new BigSideBtn( "Dataset overview");        
+        BigSideBtn datasetsOverviewBtn = new BigSideBtn("Dataset overview");
         datasetsOverviewBtn.setData("datasetoverview");
         btnContainer.addComponent(datasetsOverviewBtn);
         btnContainer.setComponentAlignment(datasetsOverviewBtn, Alignment.TOP_CENTER);
         datasetsOverviewBtn.addLayoutClickListener(PeptideShakerViewPresenter.this);
         Selection_Manager.addBtnLayout(datasetsOverviewBtn, datasetVisulizationLevelContainer);
-        datasetVisulizationLevelContainer = new DatasetVisulizationLevelContainer(Selection_Manager,datasetsOverviewBtn);
+        datasetVisulizationLevelContainer = new DatasetVisulizationLevelContainer(Selection_Manager, datasetsOverviewBtn);
         datasetVisulizationLevelContainer.setSizeFull();
         Selection_Manager.addBtnLayout(datasetsOverviewBtn, datasetVisulizationLevelContainer);
-        
-        
+
 //"img/peptides_3.png",
-        BigSideBtn proteinoverviewBtn = new BigSideBtn( "Peptides Overview");
+        BigSideBtn proteinoverviewBtn = new BigSideBtn("Peptides Overview");
         proteinoverviewBtn.updateIcon(null);
         proteinoverviewBtn.setData("proteinoverview");
         btnContainer.addComponent(proteinoverviewBtn);
         btnContainer.setComponentAlignment(proteinoverviewBtn, Alignment.TOP_CENTER);
         proteinoverviewBtn.addLayoutClickListener(PeptideShakerViewPresenter.this);
 
-        proteinsVisulizationLevelContainer = new ProteinVisulizationLevelContainer(Selection_Manager,proteinoverviewBtn);
+        proteinsVisulizationLevelContainer = new ProteinVisulizationLevelContainer(Selection_Manager, proteinoverviewBtn);
         Selection_Manager.addBtnLayout(proteinoverviewBtn, proteinsVisulizationLevelContainer);
 
         VerticalLayout toolViewFrame = new VerticalLayout();
@@ -110,14 +108,12 @@ public class PeptideShakerViewPresenter extends VerticalLayout implements Viewab
         mobilebtnContainer.setSpacing(true);
         mobilebtnContainer.setStyleName("bottomsidebtncontainer");
 
-     
         mobilebtnContainer.addComponent(datasetsOverviewBtn.getMobileModeBtn());
         mobilebtnContainer.setComponentAlignment(datasetsOverviewBtn.getMobileModeBtn(), Alignment.TOP_CENTER);
         datasetsOverviewBtn.setSelected(true);
 //        BigSideBtn proteinoverviewBtnM = new BigSideBtn("img/peptides_3.png", "Peptides Overview");       
         mobilebtnContainer.addComponent(proteinoverviewBtn.getMobileModeBtn());
         mobilebtnContainer.setComponentAlignment(proteinoverviewBtn.getMobileModeBtn(), Alignment.TOP_CENTER);
-        
 
     }
 
@@ -197,6 +193,7 @@ public class PeptideShakerViewPresenter extends VerticalLayout implements Viewab
     public void setSelectedDataset(PeptideShakerVisualizationDataset ds) {
         this.topToolsBtn.setEnabled(ds != null);
         this.toolsBtn.setEnabled(ds != null);
+        Selection_Manager.reset();
         Selection_Manager.selectBtn(0);
         datasetVisulizationLevelContainer.selectDataset(ds);
         this.proteinsVisulizationLevelContainer.selectDataset(ds);

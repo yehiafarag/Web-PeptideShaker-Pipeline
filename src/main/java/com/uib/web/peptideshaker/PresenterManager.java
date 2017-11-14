@@ -148,6 +148,19 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
      * @param view visualization layout.
      */
     public void registerView(ViewableFrame view) {
+        if (visualizationMap.containsKey(view.getViewId())) {
+            ViewableFrame tview = visualizationMap.get(view.getViewId());
+            tview.getRightView().removeLayoutClickListener(PresenterManager.this);
+            tview.getTopView().removeLayoutClickListener(PresenterManager.this);
+            
+            topLayoutBtnsContainer.removeComponent(tview.getTopView());
+            leftLayoutContainer.removeComponent(tview.getLeftView());
+            leftLayoutContainer.removeComponent(tview.getLeftView());
+            topMiddleLayoutContainer.removeComponent(tview.getMainView());
+            rightLayoutBtnsContainer.removeComponent(tview.getRightView());
+            bottomLayoutContainer.removeComponent(tview.getBottomView());
+
+        }
         view.getRightView().addLayoutClickListener(PresenterManager.this);
         view.getTopView().addLayoutClickListener(PresenterManager.this);
 

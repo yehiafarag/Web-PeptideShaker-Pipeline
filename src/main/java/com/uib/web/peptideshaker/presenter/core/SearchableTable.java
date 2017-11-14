@@ -93,10 +93,10 @@ public abstract class SearchableTable extends VerticalLayout implements Property
 
         searchBtn.addClickListener((Button.ClickEvent event) -> {
             searchforKeyword(searchField.getSelectedValue().trim());
-             nextBtn.setEnabled(!tableSearchingResults.isEmpty());
+            nextBtn.setEnabled(!tableSearchingResults.isEmpty());
             resetSearching = true;
             nextBtn.click();
-            nextBtn.setEnabled(tableSearchingResults.size()>1);                     
+            nextBtn.setEnabled(tableSearchingResults.size() > 1);
         });
 
         nextBtn.addClickListener(new Button.ClickListener() {
@@ -124,7 +124,7 @@ public abstract class SearchableTable extends VerticalLayout implements Property
             nextBtn.setEnabled(!tableSearchingResults.isEmpty());
             resetSearching = true;
             nextBtn.click();
-            nextBtn.setEnabled(tableSearchingResults.size()>1);
+            nextBtn.setEnabled(tableSearchingResults.size() > 1);
         });
         return searchContainer;
     }
@@ -215,12 +215,17 @@ public abstract class SearchableTable extends VerticalLayout implements Property
         mainTable.setCaption("<b>" + tableMainTitle + " ( " + mainTable.getItemIds().size() + " / " + tableData.size() + " )</b>");
 
         mainTable.addValueChangeListener(SearchableTable.this);
+        if (mainTable.getItemIds().size() == 1) {
+            mainTable.select(mainTable.getCurrentPageFirstItemId());
+        } else {
+            mainTable.select(null);
+            itemSelected(null);
+        }
     }
 
     @Override
     public void valueChange(Property.ValueChangeEvent event) {
         Object objcetId = mainTable.getValue();//"P01889";
-        System.out.println("at selected item "+objcetId);
         itemSelected(objcetId);
 //        proteinNodes.clear();
 //        peptidesNodes.clear();
@@ -267,6 +272,7 @@ public abstract class SearchableTable extends VerticalLayout implements Property
 //        graphLayout.updateGraphData(protein, proteinNodes, peptidesNodes, edges);
 
     }
+
     public abstract void itemSelected(Object itemId);
 
     public void filterTable(Set<Comparable> objectIds) {
@@ -296,6 +302,12 @@ public abstract class SearchableTable extends VerticalLayout implements Property
         }
         mainTable.setCaption("<b>" + tableMainTitle + " ( " + mainTable.getItemIds().size() + " / " + tableData.size() + " )</b>");
         mainTable.addValueChangeListener(SearchableTable.this);
+        if (mainTable.getItemIds().size() == 1) {
+            mainTable.select(mainTable.getCurrentPageFirstItemId());
+        } else {
+            mainTable.select(null);
+             itemSelected(null);
+        }
 
     }
 

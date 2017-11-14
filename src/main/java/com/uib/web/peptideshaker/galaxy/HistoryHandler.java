@@ -11,29 +11,16 @@ import com.github.jmchilton.blend4j.galaxy.beans.HistoryContentsProvenance;
 import com.github.wolfie.refresher.Refresher;
 import com.uib.web.peptideshaker.PeptidShakerUI;
 import com.uib.web.peptideshaker.galaxy.dataobjects.GalaxyFastaFileReader;
-import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Notification;
 
 import com.vaadin.ui.UI;
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 
 /**
  * This class represents Galaxy history (galaxy file system) in Peptide-Shaker
@@ -81,6 +68,8 @@ public abstract class HistoryHandler {
      * The Working galaxy history.
      */
     private History workingHistory;
+    private final LinkedHashMap<String, String> NeLSFilesMap;
+    ;
     private final Set<String> historiesIds;
     private final File userFolder;
     /**
@@ -116,38 +105,13 @@ public abstract class HistoryHandler {
         this.searchGUIFilesMap = new LinkedHashMap<>();
         this.historyFilesMap = new LinkedHashMap<>();
         this.historiesIds = new HashSet<>();
+        this.NeLSFilesMap = new LinkedHashMap<>();
         this.fastaFileReader = new GalaxyFastaFileReader();
 
         REFRESHER = new Refresher();
         ((PeptidShakerUI) UI.getCurrent()).addExtension(REFRESHER);
-
-//        this.progressWindow = new Window() {
-//            @Override
-//            public void setVisible(boolean visible) {
-//                if (this.getStyleName().contains("blinkII")) {
-//                    this.removeStyleName("blinkII");
-//                    this.addStyleName("blink");
-//                } else {
-//                    this.removeStyleName("blink");
-//                    this.addStyleName("blinkII");
-//                }
-//                super.setVisible(visible); //To change body of generated methods, choose Tools | Templates.
-//            }
-//
-//        };
-//        this.progressWindow.setWidth(30, Unit.PIXELS);
-//        this.progressWindow.setHeight(30, Unit.PIXELS);
-//        progressWindow.setStyleName("progress");
-//        progressWindow.center();
-//        progressWindow.setWindowMode(WindowMode.NORMAL);
-//        progressWindow.setClosable(false);
-//        progressWindow.setResizable(false);
-//        progressWindow.setDraggable(false);
-//        progressWindow.setDescription("Galaxy is still processing data");
-//        progressWindow.setVisible(false);
-//        UI.getCurrent().addWindow(progressWindow);
         this.userFolder = userFolder;
-        this.updateHistoryDatastructure(userFolder, null);
+        this.updateHistoryDatastructure(null);
 
     }
 
@@ -182,14 +146,30 @@ public abstract class HistoryHandler {
         return historyFilesMap;
     }
 
+    public void updateHistory(PeptideShakerVisualizationDataset tempWorkflowOutput) {
+        systemIsBusy(true, historyFilesMap);
+        int mSec = 4000;
+        if (tempWorkflowOutput != null) {
+            mSec = 30000;
+        }
+        if (!isReadyHistory(mSec)) {
+            System.out.println("it is not ready history keep waiting time");
+            return;
+        };
+        this.updateHistoryDatastructure(tempWorkflowOutput);
+
+    }
+
     /**
      * Update the FASTA and MGF and peptide Shaker Visualization maps
      *
      * @return mgfFilesMap
      */
-    public final void updateHistoryDatastructure(File userFolder, PeptideShakerVisualizationDataset tempWorkflowOutput) {
-        try {
+    private void updateHistoryDatastructure(PeptideShakerVisualizationDataset tempWorkflowOutput) {
 
+        try {
+            NeLSFilesMap.clear();
+            NeLSFilesMap.putAll((LinkedHashMap<String, String>) VaadinSession.getCurrent().getAttribute("nelsFilesMap"));
             fastaFilesMap.clear();
             mgfFilesMap.clear();
             searchGUIFilesMap.clear();
@@ -220,147 +200,200 @@ public abstract class HistoryHandler {
                 historiesIds.add(history.getId());
                 final String query = "select * from hda where history_id= '" + history.getId() + "'";
                 List<Map<String, Object>> results = Galaxy_Instance.getSearchClient().search(query).getResults();
+                for (Map<String, Object> map : results) {
+                    if (map.get("purged").toString().equalsIgnoreCase("true") || map.get("deleted").toString().equalsIgnoreCase("true")) {
+                        continue;
+                    }
+                    if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.binary.SearchGuiArchive")) {
+                        HistoryContentsProvenance prov = galaxyHistoriesClient.showProvenance(workingHistory.getId(), map.get("id").toString());
+                        searchGUIFilesMap.put(map.get("name").toString().replace("-SearchGUI Results", ""), prov);
+                    } else if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.tabular.Tabular") || map.get("data_type").toString().equalsIgnoreCase("abc.CompressedArchive") || map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.binary.CompressedZipArchive")) {
 
-                if (history.getId().equalsIgnoreCase(workingHistory.getId())) {
-                    for (Map<String, Object> map : results) {
-                        if (map.get("purged").toString().equalsIgnoreCase("true") || map.get("deleted").toString().equalsIgnoreCase("true")) {
-                            continue;
+                        String projectId = map.get("name").toString().split("-")[0];
+                        if (!peptideShakerVisualizationMap.containsKey(projectId)) {
+                            PeptideShakerVisualizationDataset vDs = new PeptideShakerVisualizationDataset(projectId);
+                            peptideShakerVisualizationMap.put(projectId, vDs);
+                            HistoryContentsProvenance prov = galaxyHistoriesClient.showProvenance(workingHistory.getId(), map.get("id").toString());
+                            vDs.setJobId("_PS_" + prov.getJobId());
+                            vDs.setGalaxyId("_PS_" + prov.getJobId());
+                            vDs.setHistoryId(history.getId());
+                            vDs.setType("Web Peptide Shaker Dataset");
+
                         }
-                        if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.binary.SearchGuiArchive")) {
-                            HistoryContentsProvenance prov = galaxyHistoriesClient.showProvenance(workingHistory.getId(), map.get("id").toString());
-
-                            searchGUIFilesMap.put(map.get("id").toString(), prov);
-                        } else if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.tabular.Tabular") || map.get("data_type").toString().equalsIgnoreCase("abc.CompressedArchive")) {
-                            HistoryContentsProvenance prov = galaxyHistoriesClient.showProvenance(workingHistory.getId(), map.get("id").toString());
-
-                            String jobId = prov.getJobId();
-
-                            if (!peptideShakerVisualizationMap.containsKey(jobId)) {
-                                PeptideShakerVisualizationDataset vDs = new PeptideShakerVisualizationDataset(jobId);
-                                peptideShakerVisualizationMap.put(jobId, vDs);
+                        PeptideShakerVisualizationDataset vDs = peptideShakerVisualizationMap.get(projectId);
+                        if (map.get("name").toString().endsWith("-Proteins")) {
+//                                if (!prov.getParameters().containsKey("searchgui_input")) {
+//                                    continue;
+//                                }
+                            vDs.setType("Web Peptide Shaker Dataset");
+//                                vDs.setSearchGUIFileId(prov.getParameters().get("searchgui_input").toString().split(",")[0].replace("{id=", ""));
+                            vDs.setName(map.get("name").toString().replace("-Proteins", ""));
+                            if (!map.get("misc_blurb").toString().equalsIgnoreCase("error")) {
+                                int i;
+                                try {
+                                    i = Integer.valueOf(map.get("misc_blurb").toString().replace(" lines", "").replace(",", "")) - 1;
+                                } catch (Exception exp) {
+                                    i = 0;
+                                }
+                                vDs.setProteinsNumber(i);
                             }
-                            PeptideShakerVisualizationDataset vDs = peptideShakerVisualizationMap.get(jobId);
-                            if (map.get("name").toString().endsWith("(Proteins)")) {
-                                if (!prov.getParameters().containsKey("searchgui_input")) {
-                                    continue;
-                                }
-                                vDs.setType("Web Peptide Shaker Dataset");
-                                vDs.setSearchGUIFileId(prov.getParameters().get("searchgui_input").toString().split(",")[0].replace("{id=", ""));
-                                vDs.setName(map.get("name").toString().replace("(Proteins)", ""));
-                                if (!map.get("misc_blurb").toString().equalsIgnoreCase("error")) {
-                                    int i;
-                                    try {
-                                        i = Integer.valueOf(map.get("misc_blurb").toString().replace(" lines", "").replace(",", "")) - 1;
-                                    } catch (Exception exp) {
-                                        i = 0;
-                                    }
-                                    vDs.setProteinsNumber(i);
-                                }
-                                vDs.setGalaxyId(jobId);
-                                vDs.setHistoryId(history.getId());
-                                vDs.setType("Web Peptide Shaker Dataset");
-                                vDs.setProteinFileId(map.get("id").toString());
-                                vDs.setSearchGUIFileId(prov.getParameters().get("searchgui_input").toString().split(",")[0].split("id=")[1]);
+                            vDs.setProteinFileId(map.get("id").toString());
 
-                                SystemDataSet ds = new SystemDataSet();
-                                ds.setName(map.get("name").toString());
-                                ds.setType("Proteins file");
-                                ds.setHistoryId(history.getId());
-                                ds.setGalaxyId(map.get("id").toString());
-                                ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + ds.getGalaxyId() + "/display");
-                                GalaxyFile file = new GalaxyFile(userFolder, ds, false);
-                                file.setDownloadUrl("to_ext=" + map.get("file_ext").toString());
-                                vDs.setProteinFile(file);
-
-                            } else if (map.get("name").toString().endsWith("(Peptides)")) {
-                                if (!map.get("misc_blurb").toString().equalsIgnoreCase("error")) {
-                                    int i;
-                                    try {
-                                        i = Integer.valueOf(map.get("misc_blurb").toString().replace(" lines", "").replace(",", "")) - 1;
-                                    } catch (Exception exp) {
-                                        i = 0;
-                                    }
-                                    vDs.setPeptidesNumber(i);
-                                }
-                                vDs.setPeptideFileId(map.get("id").toString());
-                                vDs.setSearchGUIFileId(prov.getParameters().get("searchgui_input").toString().split(",")[0].split("id=")[1]);
-                                SystemDataSet ds = new SystemDataSet();
-                                ds.setName(map.get("name").toString());
-                                ds.setType("Peptides file");
-                                ds.setHistoryId(history.getId());
-                                ds.setGalaxyId(map.get("id").toString());
-                                ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + ds.getGalaxyId() + "/display");
-                                GalaxyFile file = new GalaxyFile(userFolder, ds, false);
-                                file.setDownloadUrl("to_ext=" + map.get("file_ext").toString());
-                                vDs.setPeptideFile(file);
-                            } else if (map.get("name").toString().endsWith("(PSM)")) {
-                                vDs.setPsmFileId(map.get("id").toString());
-                                vDs.setSearchGUIFileId(prov.getParameters().get("searchgui_input").toString().split(",")[0].split("id=")[1]);
-                                if (!map.get("misc_blurb").toString().equalsIgnoreCase("error")) {
-                                    int i;
-                                    try {
-                                        i = Integer.valueOf(map.get("misc_blurb").toString().replace(" lines", "").replace(",", "")) - 1;
-                                    } catch (Exception exp) {
-                                        i = 0;
-                                    }
-                                    vDs.setPsmNumber(i);
-                                }
-                            } else if (map.get("name").toString().endsWith("(CPS)")) {
-                                vDs.setCpsId(map.get("id").toString());
-                                vDs.setDownloadUrl("to_ext=" + map.get("file_ext").toString());
-                                vDs.setSearchGUIFileId(prov.getParameters().get("searchgui_input").toString().split(",")[0].split("id=")[1]);
-                            } else {
-                                workHistoryData.put(map.get("name").toString(), map);
-                            }
-                        } else if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.text.Json") && map.get("name").toString().endsWith(".par")) {
+//                                vDs.setSearchGUIFileId(prov.getParameters().get("searchgui_input").toString().split(",")[0].split("id=")[1]);
                             SystemDataSet ds = new SystemDataSet();
                             ds.setName(map.get("name").toString());
-                            ds.setType("Search Paramerters File (JSON)");
+                            ds.setType("Proteins file");
                             ds.setHistoryId(history.getId());
                             ds.setGalaxyId(map.get("id").toString());
                             ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + ds.getGalaxyId() + "/display");
+                            ds.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
+
+                            ds.setAvailableOnNels(NeLSFilesMap.containsKey(ds.getNelsKey()));
                             GalaxyFile file = new GalaxyFile(userFolder, ds, false);
+                            file.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
+                            file.setAvailableOnNels(NeLSFilesMap.containsKey(file.getNelsKey()));
+                            NeLSFilesMap.remove(file.getNelsKey());
                             file.setDownloadUrl("to_ext=" + map.get("file_ext").toString());
-                            this.searchSetiingsFilesMap.put(ds.getGalaxyId(), file);
-                        } else if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.data.Data") && map.get("name").toString().endsWith(".cui")) {
+                            vDs.setProteinFile(file);
+
+                        } else if (map.get("name").toString().endsWith("-Peptides")) {
+                            if (!map.get("misc_blurb").toString().equalsIgnoreCase("error")) {
+                                int i;
+                                try {
+                                    i = Integer.valueOf(map.get("misc_blurb").toString().replace(" lines", "").replace(",", "")) - 1;
+                                } catch (Exception exp) {
+                                    i = 0;
+                                }
+                                vDs.setPeptidesNumber(i);
+                            }
+                            vDs.setPeptideFileId(map.get("id").toString());
+//                                vDs.setSearchGUIFileId(prov.getParameters().get("searchgui_input").toString().split(",")[0].split("id=")[1]);
                             SystemDataSet ds = new SystemDataSet();
                             ds.setName(map.get("name").toString());
-                            ds.setType("Index File");
+                            ds.setType("Peptides file");
                             ds.setHistoryId(history.getId());
                             ds.setGalaxyId(map.get("id").toString());
                             ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + ds.getGalaxyId() + "/display");
+
                             GalaxyFile file = new GalaxyFile(userFolder, ds, false);
                             file.setDownloadUrl("to_ext=" + map.get("file_ext").toString());
-                            this.indexFilesMap.put(ds.getName().replace(".cui", ""), file);
-                        } else if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.binary.CompressedZipArchive") && map.get("name").toString().endsWith("(ZIP)")) {
-
+                            file.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
+                            file.setAvailableOnNels(NeLSFilesMap.containsKey(file.getNelsKey()));
+                            vDs.setPeptideFile(file);
+                            ds.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
+                            ds.setAvailableOnNels(NeLSFilesMap.containsKey(ds.getNelsKey()));
+                            NeLSFilesMap.remove(ds.getNelsKey());
+                        } else if (map.get("name").toString().endsWith("-PSM")) {
+                            vDs.setPsmFileId(map.get("id").toString());
+//                                vDs.setSearchGUIFileId(prov.getParameters().get("searchgui_input").toString().split(",")[0].split("id=")[1]);
+                            if (!map.get("misc_blurb").toString().equalsIgnoreCase("error")) {
+                                int i;
+                                try {
+                                    i = Integer.valueOf(map.get("misc_blurb").toString().replace(" lines", "").replace(",", "")) - 1;
+                                } catch (Exception exp) {
+                                    i = 0;
+                                }
+                                vDs.setPsmNumber(i);
+                            }
                             SystemDataSet ds = new SystemDataSet();
-                            ds.setName(map.get("name").toString().replace("(ZIP)", " - FASTA"));
+                            ds.setName(map.get("name").toString());
+                            ds.setType("PSM file");
+                            ds.setHistoryId(history.getId());
+                            ds.setGalaxyId(map.get("id").toString());
+                            ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + ds.getGalaxyId() + "/display");
+
+                            GalaxyFile file = new GalaxyFile(userFolder, ds, false);
+                            file.setDownloadUrl("to_ext=" + map.get("file_ext").toString());
+                            file.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
+                            file.setAvailableOnNels(NeLSFilesMap.containsKey(file.getNelsKey()));
+                            vDs.setPsmFile(file);
+                            ds.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
+                            ds.setAvailableOnNels(NeLSFilesMap.containsKey(ds.getNelsKey()));
+                            NeLSFilesMap.remove(ds.getNelsKey());
+                        } else if (map.get("name").toString().endsWith("(CPS)")) {
+                            vDs.setCpsId(map.get("id").toString());
+                            vDs.setDownloadUrl("to_ext=" + map.get("file_ext").toString());
+//                                vDs.setSearchGUIFileId(prov.getParameters().get("searchgui_input").toString().split(",")[0].split("id=")[1]);
+                        } else if (map.get("name").toString().endsWith("-MGFFile")) {
+                            System.out.println("should add it to mgf file list");
+                            SystemDataSet ds = new SystemDataSet();
+                            ds.setName(map.get("name").toString());
+                            ds.setType("MGF");
+                            ds.setHistoryId(history.getId());
+                            ds.setGalaxyId(map.get("id").toString());
+                            ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + ds.getGalaxyId() + "/display");
+                            vDs.addMgfFiles(ds.getGalaxyId(), map.get("name").toString());
+                            ds.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
+                            ds.setAvailableOnNels(NeLSFilesMap.containsKey(ds.getNelsKey()));
+                            NeLSFilesMap.remove(ds.getNelsKey());
+
+                        } else if (map.get("name").toString().endsWith("-ZIP")) {
+                            System.out.println("found the zio file");
+                            vDs.setZipFileId(map.get("id").toString());
+                            SystemDataSet ds = new SystemDataSet();
+                            ds.setName(map.get("name").toString().replace("-ZIP", "- FASTA"));
                             ds.setType("FASTA File");
                             ds.setHistoryId(history.getId());
                             ds.setGalaxyId(map.get("id").toString() + "__data/input_database.fasta");
                             ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + map.get("id").toString() + "/display");
                             GalaxyFile file = new GalaxyFile(userFolder, ds, true);
                             file.setDownloadUrl("to_ext=" + map.get("file_ext").toString());
-                            this.indexFilesMap.put(ds.getName(), file);
-//                            
-                        }
-                    }
+                            file.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
+                            file.setAvailableOnNels(NeLSFilesMap.containsKey(file.getNelsKey()));
+//                                this.indexFilesMap.put(ds.getName(), file);
+                            vDs.setFastaFile(file);
+                            ds.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
+                            ds.setAvailableOnNels(NeLSFilesMap.containsKey(ds.getNelsKey()));
+                            NeLSFilesMap.remove(ds.getNelsKey());
 
-                } else {
-                    for (Map<String, Object> map : results) {
-                        if (map.get("purged").toString().equalsIgnoreCase("true") || map.get("deleted").toString().equalsIgnoreCase("true")) {
-                            continue;
+//                            
+                        } else {
+                            System.out.println("at here we should add the zip folder for index map for mgf " + map.get("name").toString() + "  ");
+                            workHistoryData.put(map.get("name").toString(), map);
                         }
+                    } else if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.text.Json") && map.get("name").toString().endsWith(".par")) {
+
+                        SystemDataSet ds = new SystemDataSet();
+                        ds.setName(map.get("name").toString());
+                        ds.setType("Search Paramerters File (JSON)");
+                        ds.setHistoryId(history.getId());
+                        ds.setGalaxyId(map.get("id").toString());
+                        ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + ds.getGalaxyId() + "/display");
+                        GalaxyFile file = new GalaxyFile(userFolder, ds, false);
+                        file.setDownloadUrl("to_ext=" + map.get("file_ext").toString());
+                        file.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
+                        file.setAvailableOnNels(NeLSFilesMap.containsKey(file.getNelsKey()));
+                        this.searchSetiingsFilesMap.put(ds.getGalaxyId(), file);
+                        ds.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
+                        ds.setAvailableOnNels(NeLSFilesMap.containsKey(ds.getNelsKey()));
+                        NeLSFilesMap.remove(ds.getNelsKey());
+                    } else if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.data.Data") && map.get("name").toString().endsWith(".cui")) {
+                        SystemDataSet ds = new SystemDataSet();
+                        ds.setName(map.get("name").toString());
+                        ds.setType("Index File");
+                        ds.setHistoryId(history.getId());
+                        ds.setGalaxyId(map.get("id").toString());
+                        ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + ds.getGalaxyId() + "/display");
+                        GalaxyFile file = new GalaxyFile(userFolder, ds, false);
+                        file.setDownloadUrl("to_ext=" + map.get("file_ext").toString());
+                        file.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
+                        file.setAvailableOnNels(NeLSFilesMap.containsKey(file.getNelsKey()));
+                        this.indexFilesMap.put(ds.getName().replace(".cui", ""), file);
+                        ds.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
+                        ds.setAvailableOnNels(NeLSFilesMap.containsKey(ds.getNelsKey()));
+                        NeLSFilesMap.remove(ds.getNelsKey());
+                    } else {
                         SystemDataSet ds = new SystemDataSet();
                         ds.setName(map.get("name").toString());
                         ds.setHistoryId(history.getId());
                         ds.setGalaxyId(map.get("id").toString());
-
+                        ds.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
+                        ds.setAvailableOnNels(NeLSFilesMap.containsKey(ds.getNelsKey()));
                         if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.sequence.Fasta")) {
                             ds.setType("Fasta");
                             this.fastaFilesMap.put(ds.getGalaxyId(), ds);
                             ds.setDownloadUrl("to_ext=" + map.get("file_ext").toString());
+
                         } else if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.proteomics.Mgf")) {
                             ds.setType("MGF");
                             ds.setDownloadUrl("to_ext=" + map.get("file_ext").toString());
@@ -370,6 +403,8 @@ public abstract class HistoryHandler {
                             ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + ds.getGalaxyId() + "/display");
                             GalaxyFile file = new GalaxyFile(userFolder, ds, false);
                             file.setDownloadUrl("to_ext=" + map.get("file_ext").toString());
+                            file.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
+                            file.setAvailableOnNels(NeLSFilesMap.containsKey(file.getNelsKey()));
                             this.searchSetiingsFilesMap.put(ds.getGalaxyId(), file);
                         } else if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.data.Data") && map.get("name").toString().endsWith(".cui")) {
                             ds.setType("Index File");
@@ -377,101 +412,63 @@ public abstract class HistoryHandler {
                             GalaxyFile file = new GalaxyFile(userFolder, ds, false);
                             file.setDownloadUrl("to_ext=" + map.get("file_ext").toString());
                             this.indexFilesMap.put(ds.getName().replace(".cui", ""), file);
+                            file.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
+                            file.setAvailableOnNels(NeLSFilesMap.containsKey(file.getNelsKey()));
                         } else if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.binary.CompressedZipArchive") && map.get("name").toString().endsWith("Archive")) {
 
                         }
+                        NeLSFilesMap.remove(ds.getNelsKey());
                     }
 
-                }
-
-            }
-
-            /**
-             * **Temp until we find another re indexer**
-             */
-//            SystemDataSet tds = new SystemDataSet();
-//            tds.setName("qExactive01819.mgf.cui");
-//            tds.setType("Index File");
-//            tds.setHistoryId("btoot");
-//            tds.setGalaxyId("qExactive01819.mgf.cui");
-//            String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
-//            tds.setDownloadUrl(basepath + "/VAADIN/qExactive01819.mgf.cui");
-//            GalaxyFile file = new GalaxyFile(userFolder.getParentFile(), tds, false);
-//            file.setDownloadUrl(basepath + "/VAADIN/qExactive01819.mgf.cui");
-//            this.indexFilesMap.put(tds.getName().replace(".cui", ""), file);
-
-            /**
-             * **end**
-             */
-            //if no search param file exist add default search param file 
-            for (SystemDataSet ds : fastaFilesMap.values()) {
-                ds.setReIndexedHistoryId(workingHistory.getId());
-                if (workHistoryData.containsKey(ds.getGalaxyId())) {
-                    ds.setReIndexedId(workHistoryData.get(ds.getGalaxyId()).get("id").toString());
-                } else {
-                    String reIndexId = this.reIndexFile(ds.getGalaxyId(), ds.getHistoryId(), workingHistory.getId());
-                    ds.setReIndexedId(reIndexId);
-                }
-
-            }
-            for (SystemDataSet ds : mgfFilesMap.values()) {
-                ds.setReIndexedHistoryId(workingHistory.getId());
-                if (workHistoryData.containsKey(ds.getGalaxyId())) {
-                    ds.setReIndexedId(workHistoryData.get(ds.getGalaxyId()).get("id").toString());
-                } else {
-                    String reIndexId = this.reIndexFile(ds.getGalaxyId(), ds.getHistoryId(), workingHistory.getId());
-                    ds.setReIndexedId(reIndexId);
                 }
 
             }
 
             for (String key : peptideShakerVisualizationMap.keySet()) {
                 PeptideShakerVisualizationDataset vDs = peptideShakerVisualizationMap.get(key);
-                if (vDs.getSearchGUIFileId() == null || !searchGUIFilesMap.containsKey(vDs.getSearchGUIFileId())) {
-                    continue;
-                }
-                vDs.setType("Web Peptide Shaker Dataset");
-                Map<String, Object> parameters = searchGUIFilesMap.get(vDs.getSearchGUIFileId()).getParameters();
+                vDs.setSearchGUIFileId(searchGUIFilesMap.get(vDs.getProjectName()).getId());
+//                vDs.setFastaFileId(fastaFilesMap.get(vDs.getProjectName()+"- FASTA").getGalaxyId());
+//                if (vDs.getSearchGUIFileId() == null || !searchGUIFilesMap.containsKey(vDs.getSearchGUIFileId())) {
+//                    continue;
+//                }
+//                vDs.setType("Web Peptide Shaker Dataset");
+                Map<String, Object> parameters = searchGUIFilesMap.get(vDs.getProjectName()).getParameters();
                 String fastaFileId = parameters.get("input_database").toString().split(",")[0].replace("{id=", "");
                 vDs.setFastaFileReader(fastaFileReader);
-                vDs.setFastaFile(indexFilesMap.get(vDs.getName()+" - FASTA"));
-                vDs.setFastaFileName(fastaFilesMap.get(fastaFileId).getName());
+                if (fastaFilesMap.containsKey(fastaFileId)) {
+                    vDs.setFastaFileName(fastaFilesMap.get(fastaFileId).getName());
+                } else {
+                    vDs.setFastaFileName("Name not available");
+                }
                 vDs.setFastaFileId(fastaFileId);
                 vDs.setParameters(parameters);
-                for (String paramKey : parameters.keySet()) {
-                    if (paramKey.contains("peak_list")) {
-                        String mgfFileId = parameters.get(paramKey).toString().split(",")[0].replace("{id=", "");
-                        vDs.addMgfFiles(mgfFileId, mgfFilesMap.get(mgfFileId).getName());
-                        vDs.addMGFFileIndex(mgfFileId, mgfFilesMap.get(mgfFileId).getReIndexedId());
-                    }
-                }
+//                for (String paramKey : parameters.keySet()) {
+//                    if (paramKey.contains("peak_list")) {
+//                        String mgfFileId = parameters.get(paramKey).toString().split(",")[0].replace("{id=", "");
+//                        vDs.addMgfFiles(mgfFileId, mgfFilesMap.get(mgfFileId).getName());
+//                        vDs.addMGFFileIndex(mgfFileId, mgfFilesMap.get(mgfFileId).getReIndexedId());
+//                    }
+//                }
 
             }
-
+            historyFilesMap.putAll(peptideShakerVisualizationMap);
             historyFilesMap.putAll(mgfFilesMap);
             historyFilesMap.putAll(fastaFilesMap);
             historyFilesMap.putAll(searchSetiingsFilesMap);
             historyFilesMap.putAll(indexFilesMap);
-            historyFilesMap.putAll(peptideShakerVisualizationMap);
             if (tempWorkflowOutput != null) {
                 historyFilesMap.put(tempWorkflowOutput.getJobId(), tempWorkflowOutput);
             }//
             updateDSStatus(false);
-            systemIsBusy(true, historyFilesMap);
-            checkNotReadyHistory();
+            systemIsBusy(false, historyFilesMap);
+//            checkNotReadyHistory();
 //
         } catch (Exception e) {
+            e.printStackTrace();
             if (e.toString().contains("Service Temporarily Unavailable")) {
                 Notification.show("Service Temporarily Unavailable", Notification.Type.ERROR_MESSAGE);
-//                UI.getCurrent().getSession().close();
-//                VaadinSession.getCurrent().getSession().invalidate();
-
             } else {
-                e.printStackTrace();
                 System.out.println("at history are not available");
-//                UI.getCurrent().getSession().close();
-//                VaadinSession.getCurrent().getSession().invalidate();
-//                Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
             }
         }
 
@@ -481,78 +478,74 @@ public abstract class HistoryHandler {
         return workingHistory.getId();
     }
 
-    /**
-     * Re-Index the files (FASTA or MGF files)
-     *
-     * @param id file id on galaxy server
-     * @param historyId the history id that the file belong to
-     * @param workHistoryId the history id that the new re-indexed file will be
-     * stored in
-     *
-     * @return new re-indexed file id on galaxy
-     *
-     */
-    public abstract String reIndexFile(String id, String historyId, String workHistoryId);
+    private boolean isReadyHistory(int mSecound) {
+        HistoriesClient loopGalaxyHistoriesClient = Galaxy_Instance.getHistoriesClient();
+        List<History> historiesList = Galaxy_Instance.getHistoriesClient().getHistories();
+        boolean ready = false;
+        for (History history : historiesList) {
+            ready = (loopGalaxyHistoriesClient.showHistory(history.getId()).isReady());
+            if (!ready) {
+                notReadyHistory(history.getId(), mSecound);
+                break;
+            }
+        }
+        return ready;
+    }
 
-//    /**
-//     * Add default search parameter file to the user account
-//     *
-//     * @param workHistoryId the history id that the new re-indexed file will be
-//     * stored in working history
-//     *
-//     * @return new dataset file from galaxy
-//     *
-//     */
-//    public abstract SystemDataSet storeSearchParamfile(String workHistoryId);
-    private void notReadyHistory(String name) {
-        if (name == null) {
-            updateDSStatus(true);
-            systemIsBusy(false, historyFilesMap);
+    private void notReadyHistory(String name, int mSecound) {
+        HistoriesClient loopGalaxyHistoriesClient = Galaxy_Instance.getHistoriesClient();
+        if (name == null || (loopGalaxyHistoriesClient.showHistory(name).isReady())) {
+//            updateDSStatus(true);
+//            systemIsBusy(false, historyFilesMap);
             return;
         }
-//        progressWindow.setVisible(true);
-        REFRESHER.setRefreshInterval(30000);
-
-        HistoriesClient loopGalaxyHistoriesClient = Galaxy_Instance.getHistoriesClient();
-        REFRESHER.addListener(new Refresher.RefreshListener() {
+        REFRESHER.setRefreshInterval(mSecound);
+        Refresher.RefreshListener listener = new Refresher.RefreshListener() {
             @Override
             public void refresh(Refresher source) {
                 boolean ready = (loopGalaxyHistoriesClient.showHistory(name).isReady());
                 if (ready) {
                     REFRESHER.removeListener(this);
-                    checkNotReadyHistory();
+                    updateHistory(null);
+                    systemIsBusy(false, historyFilesMap);
                 } else {
                     System.out.println("--------------------- at the history not ready --------------------- " + name + "   ");
-
                 }
             }
-        });
+        };
+        REFRESHER.addListener(listener);
 
-    }
-
-    private void checkNotReadyHistory() {
-
-        HistoriesClient loopGalaxyHistoriesClient = Galaxy_Instance.getHistoriesClient();
-        List<History> historiesList = Galaxy_Instance.getHistoriesClient().getHistories();
-        for (History history : historiesList) {
-            boolean ready = (loopGalaxyHistoriesClient.showHistory(history.getId()).isReady());
-            if (!ready) {
-                notReadyHistory(history.getId());
-                return;
-            }
-
-        }
-        notReadyHistory(null);
     }
 
     private void updateDSStatus(boolean readyHistory) {
 
         if (historyFilesMap.containsKey("tempID") && readyHistory) {
-            updateHistoryDatastructure(userFolder, null);
+//            updateHistoryDatastructure(userFolder, null);
         }
         HistoriesClient galaxyHistoriesClient = Galaxy_Instance.getHistoriesClient();
+
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
         for (String historyId : historiesIds) {
-            List<HistoryContents> hcList = galaxyHistoriesClient.showHistoryContents(historyId);
+            List<HistoryContents> hcList;
+            while (true) {
+                try {
+                    hcList = galaxyHistoriesClient.showHistoryContents(historyId);
+                    break;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.out.println("at error ");
+                    try {
+                        Thread.sleep(3000);
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+
+                }
+            }
             for (HistoryContents hc : hcList) {
                 if (!historyFilesMap.containsKey(hc.getId())) {
                     continue;
@@ -574,6 +567,7 @@ public abstract class HistoryHandler {
                 }
 
             }
+//to be checked if needed
             for (String key : peptideShakerVisualizationMap.keySet()) {
                 PeptideShakerVisualizationDataset ds = peptideShakerVisualizationMap.get(key);
                 ds.setStatus(Galaxy_Instance.getJobsClient().showJob(ds.getJobId()).getState());
@@ -581,6 +575,20 @@ public abstract class HistoryHandler {
 
                 historyFilesMap.replace(ds.getGalaxyId(), ds);
             }
+
+        }
+        for (String fileOnNels : NeLSFilesMap.keySet()) {
+            String[] fileInfoArr = NeLSFilesMap.get(fileOnNels).split("__");
+            SystemDataSet ds = new SystemDataSet();
+            ds.setAvailableOnGalaxy(false);
+            ds.setAvailableOnNels(true);
+            ds.setDownloadUrl(fileInfoArr[1]);
+            ds.setHistoryId(workingHistory.getId());
+            ds.setGalaxyId(fileOnNels);
+            ds.setName(fileOnNels);
+            ds.setType(fileInfoArr[2]);
+            ds.setStatus("OK");
+            historyFilesMap.put(ds.getName(), ds);
 
         }
 

@@ -135,15 +135,7 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
         ProteinCoverageComponent.this.setHeight(levelNum, Unit.PIXELS);
     }
 
-    private int checkPeptideLevel(int[] usedDistArr, PeptideLayout pep) {
-        int top = 0;
-        for (int i = pep.getStartIndex(); i < pep.getEndIndex(); i++) {
-            top = usedDistArr[i];
-            usedDistArr[i] = usedDistArr[i] + 1;
-        }
-
-        return top;
-    }
+   
 
     public void selectPeptides(Set<Object> peptidesId) {
         for (PeptideLayout peptide : peptideDistMap) {

@@ -197,17 +197,15 @@ public abstract class WorkFlowLayout extends Panel {
             String fastFileId = searchSettingsLayout.getFataFileId();
             Set<String> spectrumIds = mgfFileList.getSelectedValue();
             Set<String> searchEnginesIds = searchEngines.getSelectedValue();
-            String projectName = projectNameField.getSelectedValue();
+            String projectName = projectNameField.getSelectedValue().replace(" ", "_").replace("-", "_");
             if (!projectNameField.isValid() || fastFileId == null || spectrumIds == null || searchEnginesIds == null) {
                 return;
             }
             Map<String, Boolean> otherSearchParameters = new HashMap<>();
-
             for (String paramId : searchEngienList.keySet()) {
                 otherSearchParameters.put(paramId, searchEngines.getSelectedValue().contains(paramId));
             }
             executeWorkFlow(projectName, fastFileId, spectrumIds, searchEnginesIds, searchSettingsLayout.getSearchParameters(), otherSearchParameters);
-
         });
         mgfFileList.setEnabled(false);
         searchEngines.setEnabled(false);

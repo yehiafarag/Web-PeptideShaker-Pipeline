@@ -166,6 +166,7 @@
         color: white;
         cursor: pointer;
         text-decoration:none !important;
+        max-width:115px;
     }
 
     .galaxybtn:hover {
@@ -197,6 +198,7 @@
     .disconnect{
        	color: white !important;
         background-color: #4f9d13 !important;
+        font-size:14px;
     }
     .hide {
         visibility: hidden !important;
@@ -2173,6 +2175,123 @@
             
     
     }*/
+    .nelslogo{
+        font-weight: bold;                               
+        color: #273F7B;
+    }
+    .v-link-nelslogo {
+        position: relative !important;
+        font-style: italic;
+        text-decoration: none !important;
+        font-size: 14px;
+        border: 2px solid #273f7b;
+        background-color: #273f7b;
+        color: white !important;
+        border-radius: 5px;
+        min-width: 100px;
+        padding-left: 5px;
+        left: -145px;
+        top: -36px;
+    }
+    .activate{
+       color: green;
+    }
+    .activatenels{
+        
+       color: #2e457f;
+    }
+    .deactivate{
+        color: gray;
+    }
+    .row {
+        color:black;
+
+    }
+    /*    .readytoremove  {
+            color: green;
+            font-size: 16px;;
+            margin-top:-6px;
+    }
+    .readytoremove .v-caption-icon-only {	
+            color:#403f3f;
+            font-size: 14px;
+            max-height:1px;
+            z-index:2;
+            position:relative;
+            right:-10px;
+            top:10px;
+    
+    }
+    .notready {
+            color: #403f3f;
+            font-size: 16px;
+    }
+    
+    .poweroff .v-caption-icon-only, .poweron .v-caption-icon-only,.notready .v-caption-icon-only {
+            visibility: hidden;
+            display: none;
+    }
+    .poweron{
+            color:green;
+                    font-size: 16px;
+    }
+    
+     .poweroff {
+            color:red;
+            font-size: 16px;
+    }*/
+
+
+    /*    .ready .v-caption-icon-only.v-disabled {
+            color: #ffa500;
+            background-image: url("img/check-circle.png");
+            background-repeat: no-repeat;
+            background-size: 12px;
+            background-position: right 7px;
+            font-size: 16px;
+            min-width: 25px;
+        }
+        .ready .v-caption-icon-only{
+            background-repeat: no-repeat;
+            background-size: 12px;
+            background-position: right 7px;
+            font-size: 16px;
+            min-width: 25px;
+        }
+    
+        .poweroff .v-caption-icon-only {
+            background-repeat: no-repeat;
+            border: 1px solid red;
+    
+            max-height: 16px;
+            min-width: 14px;
+            padding-left: 1px;
+            border-radius: 5px;
+            line-height: 19px;
+        }
+    
+        .poweroff .v-caption-icon-only.v-disabled {
+            color: white;
+            background-repeat: no-repeat;
+            border: 1px solid #35ab41;
+            max-height: 16px;
+            min-width: 14px;
+            padding-left: 1px;
+            border-radius: 5px;
+            background-color: #35ab41;
+            line-height: 19px;
+        }
+        .ready .v-caption-icon-only .Vaadin-Icons{
+            visibility:hidden;
+            max-height:1px;
+    
+        }
+        .ready .v-caption-icon-only.v-disabled .Vaadin-Icons{
+            color:orange ;
+            font-size:12px;
+            visibility:visible;
+    
+        }*/
 
     /****mobile css**/
     .horizontalcss  .largetitle .v-label{

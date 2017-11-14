@@ -1,6 +1,7 @@
 package com.uib.web.peptideshaker.presenter.core;
 
 import com.vaadin.data.Property;
+import com.vaadin.server.Page;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.VerticalLayout;
@@ -100,9 +101,12 @@ public class DropDownList extends VerticalLayout {
     public void setSelected(Object objectId) {
         if (objectId == null || (objectId + "").equalsIgnoreCase("") || list == null || !list.getItemIds().contains(objectId)) {
             return;
-        }
+        }try{
         list.select(objectId);
         list.setData(list.getValue());
+        }catch(Exception e){
+//        Page.getCurrent().reload();
+        }
 
     }
 

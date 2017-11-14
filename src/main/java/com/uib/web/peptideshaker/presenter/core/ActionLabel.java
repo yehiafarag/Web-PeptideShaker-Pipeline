@@ -6,8 +6,11 @@
 package com.uib.web.peptideshaker.presenter.core;
 
 import com.vaadin.event.LayoutEvents;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ExternalResource;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -51,7 +54,8 @@ public abstract class ActionLabel extends HorizontalLayout implements LayoutEven
 //        ActionLabel.this.addLayoutClickListener(ActionLabel.this);
 
     }
-     public ActionLabel(String description, Resource url) {
+
+    public ActionLabel(String description, Resource url) {
         ActionLabel.this.setSizeUndefined();
         Link label = new Link();
         label.setResource(url);
@@ -66,14 +70,58 @@ public abstract class ActionLabel extends HorizontalLayout implements LayoutEven
         ActionLabel.this.setComponentAlignment(label, Alignment.TOP_CENTER);
 
     }
+    private Label label;
 
     public ActionLabel(Resource icon, String description) {
         ActionLabel.this.setSizeUndefined();
-        Label label = new Label();
+        label = new Label();
         ActionLabel.this.setStyleName("actionlabel");
         ActionLabel.this.setDescription(description);
 //        label.setSizeFull();
         label.setIcon(icon);
+        label.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
+        label.setDescription(description);
+        ActionLabel.this.addComponent(label);
+        ActionLabel.this.setComponentAlignment(label, Alignment.TOP_CENTER);
+        ActionLabel.this.addLayoutClickListener(ActionLabel.this);
+
+    }
+
+    public ActionLabel(FontAwesome icon, String description) {
+        ActionLabel.this.setSizeUndefined();
+        label = new Label();
+        ActionLabel.this.setStyleName("actionlabel");
+        ActionLabel.this.setDescription(description);
+//        label.setSizeFull();
+        label.setIcon(icon);
+        label.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
+        label.setDescription(description);
+        ActionLabel.this.addComponent(label);
+        ActionLabel.this.setComponentAlignment(label, Alignment.TOP_CENTER);
+        ActionLabel.this.addLayoutClickListener(ActionLabel.this);
+
+    }
+
+    public ActionLabel(FontAwesome icon, Resource icon_2, String description) {
+        ActionLabel.this.setSizeUndefined();
+        label = new Label(icon.getHtml(), ContentMode.HTML);
+        ActionLabel.this.setStyleName("actionlabel");
+        ActionLabel.this.setDescription(description);
+//        label.setSizeFull();
+        label.setIcon(icon_2);
+        label.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
+        label.setDescription(description);
+        ActionLabel.this.addComponent(label);
+        ActionLabel.this.setComponentAlignment(label, Alignment.TOP_CENTER);
+        ActionLabel.this.addLayoutClickListener(ActionLabel.this);
+
+    }
+    public ActionLabel(String text, String description) {
+        ActionLabel.this.setSizeUndefined();
+        label = new Label(text);
+        ActionLabel.this.setStyleName("actionlabel");
+        ActionLabel.this.setDescription(description);
+//        label.setSizeFull();
         label.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
         label.setDescription(description);
         ActionLabel.this.addComponent(label);
@@ -94,7 +142,7 @@ public abstract class ActionLabel extends HorizontalLayout implements LayoutEven
         wrapper.setSpacing(true);
         ActionLabel.this.addComponent(wrapper);
 
-        Label label = new Label(name);
+        label = new Label(name);
         label.setSizeFull();
 
 //        label.addStyleName(ValoTheme.LABEL_NO_MARGIN);
