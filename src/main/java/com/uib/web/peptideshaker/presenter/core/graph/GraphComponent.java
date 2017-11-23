@@ -89,7 +89,7 @@ public abstract class GraphComponent extends VerticalLayout {
     private final AbsoluteLayout mainContainer;
     private final DropHandler dropHandler;
 
-    private final  SizeReporter sizeReporter;
+    private final SizeReporter sizeReporter;
     private final Map<String, String> styles;
     private boolean ignorResize = true;
     private final Label graphInfo;
@@ -145,20 +145,8 @@ public abstract class GraphComponent extends VerticalLayout {
         //init main layout
         //calculate canavas dimension 
         mainContainer = new AbsoluteLayout();
-        sizeReporter = new SizeReporter(GraphComponent.this.mainContainer);
-        sizeReporter.addResizeListener((ComponentResizeEvent event) -> {
-            int tWidth = event.getWidth();
-            int tHeight = event.getHeight();
-//            if (liveWidth == tWidth && liveHeight == tHeight || ignorResize) {
-//                ignorResize = false;
-//                return;
-//            }
-//            ignorResize = true;
-            liveWidth = tWidth;
-            liveHeight = tHeight;
-            updateGraphLayout();
-        });
-        mainContainer.setSizeFull();
+        mainContainer.setWidth(100, Unit.PERCENTAGE);
+        mainContainer.setHeight(100, Unit.PERCENTAGE);
         mainContainer.addLayoutClickListener((LayoutEvents.LayoutClickEvent event) -> {
             if (event.getClickedComponent() instanceof AbsoluteLayout) {
                 selectNodes(new Object[]{});
@@ -253,7 +241,7 @@ public abstract class GraphComponent extends VerticalLayout {
         };
         proteinsControl.addValueChangeListener(proteinsControlListener);
 
-        VerticalLayout  leftBottomPanel = new VerticalLayout();
+        VerticalLayout leftBottomPanel = new VerticalLayout();
         leftBottomPanel.setSpacing(false);
         leftBottomPanel.setWidthUndefined();
         leftBottomPanel.addStyleName("inframe");
@@ -279,10 +267,25 @@ public abstract class GraphComponent extends VerticalLayout {
         canvas = new AbsoluteLayout();
         GraphComponent.this.canvas.setSizeFull();
         GraphComponent.this.setSizeFull();
+        sizeReporter = new SizeReporter(GraphComponent.this.canvas);
+        sizeReporter.addResizeListener((ComponentResizeEvent event) -> {
+            int tWidth = event.getWidth();
+            int tHeight = event.getHeight();
+//            if (liveWidth == tWidth && liveHeight == tHeight || ignorResize) {
+//                ignorResize = false;
+//                return;
+//            }
+//            ignorResize = true;
+            liveWidth = tWidth;
+            liveHeight = tHeight;
+            updateGraphLayout();
+        });
+
         mainContainer.addStyleName("graphframeframe");
 // Wrap the layout to allow handling drops
         DragAndDropWrapper layoutWrapper
                 = new DragAndDropWrapper(canvas);
+
         GraphComponent.this.addComponent(mainContainer);
         layoutWrapper.setSizeFull();
 // Handle moving components within the AbsoluteLayout
@@ -321,12 +324,20 @@ public abstract class GraphComponent extends VerticalLayout {
         };
         layoutWrapper.setDropHandler(dropHandler);
 
-        mainContainer.addComponent(edgesImage, "left: 0px; top: 0px");
+        VerticalLayout wrapper = new VerticalLayout();
+        wrapper.setSizeFull();
+        wrapper.setMargin(new MarginInfo(true, true, true, true));
+        wrapper.addComponent(edgesImage);
+        mainContainer.addComponent(wrapper, "left: 0px; top: 0px");
         mainContainer.addComponent(bottomRightPanel, "right: " + 50 + "px; bottom: " + -15 + "px");
         mainContainer.addComponent(lefTtopPanel, "left: " + 30 + "px; top: " + -15 + "px");
         mainContainer.addComponent(rightBottomPanel, "right: " + 50 + "px; top: " + -15 + "px");
-          mainContainer.addComponent(leftBottomPanel, "left: " + 30 + "px; bottom: " + -15 + "px");
-        mainContainer.addComponent(layoutWrapper, "left: 0px; top: 0px");
+        mainContainer.addComponent(leftBottomPanel, "left: " + 30 + "px; bottom: " + -15 + "px");
+        wrapper = new VerticalLayout();
+        wrapper.setSizeFull();
+        wrapper.setMargin(new MarginInfo(true, true, true, true));
+        wrapper.addComponent(layoutWrapper);
+        mainContainer.addComponent(wrapper, "left: 0px; top: 0px");
 
     }
 
@@ -342,7 +353,7 @@ public abstract class GraphComponent extends VerticalLayout {
         ScalingControl scaler = new CrossoverScalingControl();
         graphLayout = new FRLayout<>(graph);
         visualizationViewer = new VisualizationViewer<>(graphLayout, new Dimension(liveWidth, liveHeight));
-        scaler.scale(visualizationViewer, 0.9f, visualizationViewer.getCenter());
+        scaler.scale(visualizationViewer, 1f, visualizationViewer.getCenter());
         reDrawGraph();
     }
 

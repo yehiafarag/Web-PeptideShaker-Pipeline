@@ -2,6 +2,7 @@ package com.uib.web.peptideshaker.presenter.components.peptideshakerview;
 
 import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDataset;
 import com.uib.web.peptideshaker.presenter.components.peptideshakerview.components.ProteinCoverageContainer;
+import com.uib.web.peptideshaker.presenter.components.peptideshakerview.components.ProteinStructurePanel;
 import com.uib.web.peptideshaker.presenter.components.peptideshakerview.components.ProteinsPeptidesGraphComponent;
 import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.charts.RegistrableFilter;
@@ -10,7 +11,6 @@ import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Link;
 import com.vaadin.ui.VerticalLayout;
 import java.util.Set;
 
@@ -28,6 +28,7 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
     private final SelectionManager Selection_Manager;
     private final BigSideBtn proteinoverviewBtn;
     private final ProteinCoverageContainer proteinCoverageComponent;
+    private final  ProteinStructurePanel proteinStructurePanel;
 
     /**
      * Constructor to initialize the main layout and variables.
@@ -67,6 +68,13 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
         commentLabel.addStyleName("margintop10");
         topLabelContainer.addComponent(commentLabel);
         topLabelContainer.setComponentAlignment(commentLabel, Alignment.TOP_RIGHT);
+        
+        
+        HorizontalLayout middleContainer = new HorizontalLayout();
+        middleContainer.setSizeFull();
+        middleContainer.setSpacing(true);
+        container.addComponent(middleContainer);
+        container.setExpandRatio(middleContainer, 49);
 
         selectedProteinGraph = new ProteinsPeptidesGraphComponent() {
             @Override
@@ -74,6 +82,10 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
                 proteinCoverageComponent.setSelectedItems(selectedItems, selectedChildsItems);
                 if (selectedChildsItems.size() == 1) {
                     peptideSelection(selectedChildsItems.iterator().next());
+                }
+                 if (selectedItems.size() == 1) {
+                     System.out.println("select single protein u can show protein");
+                     proteinStructurePanel.updatePanel(selectedItems.iterator().next(),"",null);
                 }
             }
 
@@ -83,8 +95,15 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
             }
 
         };
-        container.addComponent(selectedProteinGraph);
-        container.setExpandRatio(selectedProteinGraph, 49);
+        middleContainer.addComponent(selectedProteinGraph);
+        middleContainer.setExpandRatio(selectedProteinGraph, 60);
+        
+        proteinStructurePanel = new ProteinStructurePanel();
+         middleContainer.addComponent(proteinStructurePanel);
+        middleContainer.setExpandRatio(proteinStructurePanel, 40);
+        
+        
+        
         Selection_Manager.RegistrProteinInformationComponent(ProteinVisulizationLevelContainer.this);
 
         proteinCoverageComponent = new ProteinCoverageContainer() {
@@ -125,6 +144,7 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
         } else {
             this.proteinoverviewBtn.updateIcon(null);
         }
+//        proteinStructurePanel.updatePanel(selectedProteinGraph.getSelectedProteins());
     }
 
     @Override

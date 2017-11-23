@@ -12,10 +12,6 @@ import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
 import javax.servlet.ServletContext;
 
 /**
@@ -40,9 +36,14 @@ public class PeptidShakerUI extends UI {
 
         PeptidShakerUI.this.setSizeFull();
         ServletContext scx = VaadinServlet.getCurrent().getServletContext();
+
+        String fullPath = scx.getRealPath("/VAADIN/jsmol/data/");
+        System.out.println("get real data folder path " + fullPath);
+
         String localFileSystemFolderPath = (scx.getInitParameter("filesURL"));
         VaadinSession.getCurrent().setAttribute("userDataFolderUrl", localFileSystemFolderPath);
         VaadinSession.getCurrent().getSession().setAttribute("userDataFolderUrl", localFileSystemFolderPath);
+        VaadinSession.getCurrent().setAttribute("ctxPath", vaadinRequest.getContextPath());
         /**
          * Check the visualization mode based on screen size small screen for
          * mobile browser or tablet.
@@ -77,6 +78,16 @@ public class PeptidShakerUI extends UI {
             webPeptideShakerApp.reConnectToGalaxyServer(VaadinSession.getCurrent().getAttribute("ApiKey") + "", VaadinSession.getCurrent().getAttribute("galaxyUrl") + "");
 
         }
+        System.out.println("at request address " + vaadinRequest.getHeaderNames() + "  " + vaadinRequest.getContextPath());
+
+//        ProteinStructurePanel proteinStructurePanel = new ProteinStructurePanel();
+//        Window testWindow = new Window("Test JSMOL");
+//        testWindow.setWidth(50, Unit.PERCENTAGE);
+//        testWindow.setHeight(50, Unit.PERCENTAGE);
+//        testWindow.center();
+//        testWindow.setContent(proteinStructurePanel);
+//        UI.getCurrent().addWindow(testWindow);
+//        testWindow.setVisible(true);
 
     }
 
@@ -89,7 +100,5 @@ public class PeptidShakerUI extends UI {
     @VaadinServletConfiguration(ui = PeptidShakerUI.class, productionMode = false)
     public static class PeptidShakerUIServlet extends VaadinServlet {
     }
-
-  
 
 }

@@ -1,0 +1,22 @@
+
+/* 
+    Created on : Nov 20, 2017, 1:52:43 PM
+    Author     : Yehia Farag
+*/
+html{
+    overflow: hidden !important;
+}
+#outerhtml table{
+  width:100% !important;
+}
+#appdiv canvas{
+    width:100% !important;
+}
+
+#jsmol_select, #jsmol_submit,#jsmol_query {
+    visibility:hidden !important;
+}
+#jsmol_canvas2d {
+  margin-left:-30px;
+  margin-top:-25px;
+}

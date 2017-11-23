@@ -1,19 +1,15 @@
 package com.uib.web.peptideshaker.galaxy.nelsgalaxy;
 
-import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Notification;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import static java.lang.System.out;
 import java.net.CookieHandler;
 import java.net.CookieManager;
 import java.net.CookiePolicy;
 import java.net.URL;
 import java.util.LinkedHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.http.Cookie;
 import org.jsoup.Jsoup;
@@ -34,6 +30,7 @@ public class NeLSGalaxy {
 
     public NeLSGalaxy() {
         NeLSFilesMap = new LinkedHashMap<>();
+         VaadinSession.getCurrent().setAttribute("nelsFilesMap", NeLSFilesMap);
     }
 
     /**
@@ -181,16 +178,17 @@ public class NeLSGalaxy {
 
         } catch (Exception e) {
 
-            Notification.show("Wrong Username and Password", Notification.Type.ERROR_MESSAGE);
+            Notification.show("Could not connect to all service - redirect to NeLsGalaxy login form", Notification.Type.ERROR_MESSAGE);
             Thread t = new Thread(() -> {
                 try {
                     Thread.currentThread().sleep(4000);
-                    Page.getCurrent().open("http://localhost:8084/NelsGalaxyRedirectForm/", "_self");
+//                    Page.getCurrent().open("http://localhost:8084/NelsGalaxyRedirectForm/", "_self");
                 } catch (InterruptedException ex) {
                     ex.printStackTrace();
                 }
             });
             t.start();
+            e.printStackTrace();
             System.out.println("at Error at line 1158 in class " + this.getClass().getName() + "  " + e.getMessage());
 
         }
@@ -246,6 +244,7 @@ public class NeLSGalaxy {
             VaadinSession.getCurrent().setAttribute("nelsFilesMap", NeLSFilesMap);
 
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println("at Error at line 215 in class " + this.getClass().getName() + "  " + e.getCause().getMessage());
         }
     }

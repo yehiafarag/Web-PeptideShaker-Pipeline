@@ -189,7 +189,7 @@ public abstract class GalaxyLayer {
                     historyHandler = null;
                     toolsHandler = null;
                     systemDisconnected();
-                    Page.getCurrent().open("http://localhost:8084/NelsGalaxyRedirectForm/", "_self");
+//                    Page.getCurrent().open("http://localhost:8084/NelsGalaxyRedirectForm/", "_self");
 
                 }
             }
