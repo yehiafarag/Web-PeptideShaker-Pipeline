@@ -4,8 +4,6 @@ import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideObject;
 import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDataset;
 import com.uib.web.peptideshaker.galaxy.dataobjects.ProteinObject;
 import com.uib.web.peptideshaker.presenter.core.graph.GraphComponent;
-import com.vaadin.server.ExternalResource;
-import com.vaadin.ui.Link;
 import com.vaadin.ui.VerticalLayout;
 import java.util.ArrayList;
 import java.util.HashMap;

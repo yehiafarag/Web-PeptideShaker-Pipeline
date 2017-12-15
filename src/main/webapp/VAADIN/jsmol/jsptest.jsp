@@ -1,18 +1,18 @@
+
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>  
+<html>
     <head>
         <meta charset="utf-8">
-        <meta http-equiv="cache-control" content="max-age=0" />
-        <meta http-equiv="cache-control" content="no-cache" />
-        <meta http-equiv="expires" content="0" />
-        <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
-        <meta http-equiv="pragma" content="no-cache" />
+
 
         <title>JSmol Panel</title>
 
 
-        <link rel="stylesheet" type="text/css" href="style/style.css">
-        <script type="text/javascript" src="JSmol.min.js"></script>
+
+        <link rel="stylesheet" type="text/css" href="VAADIN/jsmol/style/style.css">
+        <script type="text/javascript" src="VAADIN/jsmol/JSmol.min.js"></script>
         <script type="text/javascript">
 
             Jmol._isAsync = false;
@@ -33,32 +33,45 @@
             // anywhere in the Java or Jmol code.
 
             Jmol._debugCode = (s.indexOf("debugcode") >= 0);
-            var pdb = decodeURIComponent(getParameterByName('pdb'));
-            var peptideMapQuery = 'select  resno >=620 and resno <=633 and chain = A; color green';
-            if (getParameterByName('query') !== 'null') {
-                peptideMapQuery =  decodeURIComponent(getParameterByName('query')); /*+ 'and resno <=' + getParameterByName('end') + ' and chain = ' + getParameterByName('chain') + '; color ' + getParameterByName('color') + ';';'select  chain=' + getParameterByName('chain') + '; color ' + getParameterByName('color');*/
-            }
+            /* var pdb = '1BLU';decodeURIComponent(getParameterByName('pdb'));*/
+            
             jmol_isReady = function (applet) {
-                document.title = (applet._id + " - Jmol " + Jmol.___JmolVersion)
                 Jmol._getElement(applet, "appletdiv").style.border = "none";
-                Jmol.search(jsmol, '=' + pdb, 'spin on; ribbon only; background white;' + peptideMapQuery);
-               
+                Jmol._getElement(applet, "appletdiv").style.width = '100%';
+                Jmol._getElement(applet, "appletdiv").style.height = '100%';
+                Jmol._getElement(applet, "appletinfotablediv").style.border = "none";                
+                Jmol._getElement(applet, "appletinfotablediv").style.height = '100%';
+                Jmol._getElement(applet, "appletinfotablediv").style.width = '100%';
+
 
 
             }
+            function loadNewProtein(pdb) {
+                Jmol.search(jsmol, '=' + pdb, 'spin on; ribbon only; background white; select all ;color lightgray');
+            }
+            function excutequery(query) {
+                Jmol.script(jsmol, query);
+
+            }
+            function selectChain(chainid, start, end) {
+                Jmol.script(jsmol, 'select  resno >=' + start + ' and resno <= ' + end + 'chain = ' + chainid + ' ; color green');
+            }
+            function selectePeptide(start, end, color) {
+                Jmol.clearConsole(jsmol);
+                Jmol.script(jsmol, 'select select resno >=' + start + ' and resno <= ' + end + '; color ' + color);
+            }
+
 
             /**"select resno >=" + (peptideTempStart - chains[selectedChainIndex - 1].getDifference())
              + " and resno <=" + (peptideTempEnd - chains[selectedChainIndex - 1].getDifference())
              + " and chain = " + currentChain + "; color green")*/
 
             var Info = {
-                width: getParameterByName('w'),
-                height: getParameterByName('h'),
                 debug: false,
                 color: "0xFFFFFF",
                 addSelectionOptions: true,
                 use: "HTML5", // JAVA HTML5 WEBGL are all options
-                j2sPath: "./j2s", // this needs to point to where the j2s directory is.
+                j2sPath: "VAADIN/jsmol/j2s", // this needs to point to where the j2s directory is.
                 jarPath: "./java", // this needs to point to where the java directory is.
                 jarFile: "JmolAppletSigned.jar",
                 isSigned: true,
@@ -68,16 +81,15 @@
                 disableJ2SLoadMonitor: true,
                 disableInitialConsole: true,
                 allowJavaScript: true,
-                spinning: true,
+                spinning: true
                 //defaultModel: "$dopamine",
                 //console: "none", // default will be jsmol_infodiv, but you can designate another div here or "none"
             }
 
             $(document).ready(function () {
                 $("#appdiv").html(Jmol.getAppletHtml("jsmol", Info));
-
                 document.getElementById('jmolApplet0_canvas2d').style.width = '50%';
-                document.getElementById('jsmol_submit').style.border = '2px solid red';
+                document.getElementById('jsmol_submit').style.border = 'none';
 
             })
             var lastPrompt = 0;
@@ -97,14 +109,13 @@
         </script>
     </head>
     <body id="outerhtml">
-        <table width=1000 cellpadding=10>
-            <tr><td valign="top" >
+        <table>
+            <tr><td  >
             <center>    
-                <div id="appdiv"></div>
-                <table cellpadding=5><tr><td valign=top></table>
+                <div id="appdiv" style="width:100%;height:100%"></div> 
             </center>
         </td>
-    </tr></table>
-<script>Jmol._applets['jmolApplet0']._search()</script>
+    </tr>
+</table>
 </body>
 </html>

@@ -2337,8 +2337,10 @@
         color:#3d84dc !important; 
         position:absolute;
         cursor:pointer;
-        font-size:14px;
-        font-weight:bold;
+        font-family: "Open Sans", sans-serif    ;
+        font-size: 12px;
+        font-weight: 400;
+
     }
     .clickablelabel .v-label:hover{
         color:blue !important; 
@@ -2359,7 +2361,7 @@
         background-color: whitesmoke;
         color: #8b8282;
         border-radius:5px;
-        box-shadow: gray 0px 2px 5px 0px, transparent 0px 15px 20px 0px;
+        /*box-shadow: gray 0px 2px 5px 0px, transparent 0px 15px 20px 0px;*/
         box-sizing: border-box;
         cursor: pointer;
         display: block;
@@ -2372,11 +2374,13 @@
         z-index:200000000 !important;
         position:fixed !important;	
         margin-top:-5px;
+
     }
+    
 
     .v-button-poweron {
         color: #2886e3 !important;
-        text-shadow: 2px 2px 4px #2886e3 !important;
+        /*text-shadow: 2px 2px 4px #2886e3 !important;*/
         background: white !important;
         box-shadow:none !important;
         -webkit-box-shadow: none !important;
@@ -2384,7 +2388,68 @@
         -moz-transition: none;
         -o-transition: none;
         transition: none;
+        border:2px solid lightgray;
     }
+
+
+    .v-button-plainbtn  {
+        color: #2886e3 !important;
+        background: white !important;
+        box-shadow: none !important;
+        -webkit-box-shadow: none !important;
+        -webkit-transition: none;
+        -moz-transition: none;
+        -o-transition: none;
+        transition: none;
+        border: 2px solid #c5c5c5 !important;border:2px solid lightgray;
+    }
+    .v-button-plainbtn {
+        color: #2886e3 !important;
+        background: white !important;
+        box-shadow: none !important;
+        -webkit-box-shadow: none !important;
+        -webkit-transition: none;
+        -moz-transition: none;
+        -o-transition: none;
+        transition: none;
+        outline: none!important;
+
+    }
+    .v-button-plainbtn .v-disabled {
+        color: #2886e3 !important;
+        background: white !important;
+        box-shadow: none !important;
+        -webkit-box-shadow: none !important;
+        -webkit-transition: none;
+        -moz-transition: none;
+        -o-transition: none;
+        transition: none;
+        outline: none!important;
+
+    }
+    .v-button-plainbtn.v-disabled {
+        color:lightgray !important;
+        opacity:1 !important;
+        border-color:whitesmoke !important;
+
+    }
+
+    /*    .proteinStructiorpanel .v-button:after {
+            border: none  !important;
+            right:0px !important; 
+            top: 0px  !important;
+            bottom: 0px  !important;
+            left: 0px  !important;
+        }*/
+
+    .proteinStructiorpanel .v-button-plainbtn:after, .proteinStructiorpanel .v-button-poweron:after {
+        border: none  !important;
+        right:0px !important; 
+        top: 0px  !important;
+        bottom: 0px  !important;
+        left: 0px  !important;
+    }
+
     /****mobile css**/
     .horizontalcss  .largetitle .v-label{
         margin-left:10px;

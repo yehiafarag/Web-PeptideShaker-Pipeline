@@ -1,17 +1,30 @@
 package com.uib.web.peptideshaker;
 
 import com.uib.web.peptideshaker.galaxy.nelsgalaxy.NeLSGalaxy;
+import com.uib.web.peptideshaker.presenter.components.peptideshakerview.components.LiteMOLComponent;
 import javax.servlet.annotation.WebServlet;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
+import com.vaadin.event.LayoutEvents;
 import com.vaadin.server.Extension;
+import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.BrowserFrame;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.JavaScript;
+import com.vaadin.ui.JavaScriptFunction;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import elemental.json.JsonArray;
 import javax.servlet.ServletContext;
 
 /**
@@ -80,14 +93,48 @@ public class PeptidShakerUI extends UI {
         }
         System.out.println("at request address " + vaadinRequest.getHeaderNames() + "  " + vaadinRequest.getContextPath());
 
-//        ProteinStructurePanel proteinStructurePanel = new ProteinStructurePanel();
-//        Window testWindow = new Window("Test JSMOL");
-//        testWindow.setWidth(50, Unit.PERCENTAGE);
-//        testWindow.setHeight(50, Unit.PERCENTAGE);
-//        testWindow.center();
-//        testWindow.setContent(proteinStructurePanel);
-//        UI.getCurrent().addWindow(testWindow);
-//        testWindow.setVisible(true);
+        VerticalLayout container = new VerticalLayout();
+        container.setSizeFull();
+        container.setSpacing(true);
+        
+        LiteMOLComponent comp = new LiteMOLComponent();
+       comp.setSizeFull();
+       comp.setMargin(true);
+       comp.loadProtein("1cbs");
+        container.addComponent(comp);
+        
+        container.addLayoutClickListener(new LayoutEvents.LayoutClickListener() {
+            @Override
+            public void layoutClick(LayoutEvents.LayoutClickEvent event) {
+                 comp.loadProtein("5exw");
+                 Notification.show("clicked working");
+            
+            }
+        });
+        
+
+//        Label proteinStructurePanel = new Label("<iframe id='jsmolframe' src='jsmol'  style='width:100%; height:100%'></iframe>", ContentMode.HTML);        
+//        proteinStructurePanel.setSizeFull();
+//        container.addComponent(proteinStructurePanel);
+//         container.setExpandRatio(proteinStructurePanel,0.9f);
+//        TextArea textArea = new TextArea();
+//        textArea.setValue("document.getElementById('jsmolframe').contentWindow.loadNewProtein('1BLU');");
+//        container.addComponent(textArea);
+//         container.setExpandRatio(textArea,0.5f);
+//        textArea.setSizeFull();
+//        final Button executeButton = new Button("Execute", event -> JavaScript.getCurrent().execute(textArea.getValue()));
+//        container.addComponent(executeButton);
+//        container.setExpandRatio(executeButton,0.5f);
+//    
+//       
+//
+        Window testWindow = new Window("Test JSMOL");
+        testWindow.setWidth(90, Unit.PERCENTAGE);
+        testWindow.setHeight(90, Unit.PERCENTAGE);
+        testWindow.center();
+        testWindow.setContent(container);
+        UI.getCurrent().addWindow(testWindow);
+        testWindow.setVisible(true);
 
     }
 

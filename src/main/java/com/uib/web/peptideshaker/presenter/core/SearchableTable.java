@@ -306,7 +306,7 @@ public abstract class SearchableTable extends VerticalLayout implements Property
             mainTable.select(mainTable.getCurrentPageFirstItemId());
         } else {
             mainTable.select(null);
-             itemSelected(null);
+            itemSelected(null);
         }
 
     }

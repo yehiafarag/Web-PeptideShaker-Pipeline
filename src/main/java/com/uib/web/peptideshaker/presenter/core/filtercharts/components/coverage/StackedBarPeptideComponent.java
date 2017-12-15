@@ -1,7 +1,6 @@
 package com.uib.web.peptideshaker.presenter.core.filtercharts.components.coverage;
 
 import com.vaadin.event.LayoutEvents;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.VerticalLayout;
 import java.util.HashMap;
 import java.util.Map;
@@ -51,7 +50,6 @@ public class StackedBarPeptideComponent extends VerticalLayout implements Compar
      * The main pop-up window that contain peptide information form.
      */
 //    private PopupWindowFrame popupWindow;
-
     /**
      * Get the peptide location level
      *
@@ -144,10 +142,8 @@ public class StackedBarPeptideComponent extends VerticalLayout implements Compar
 //            popupWindow.setFrameWidth(1500);
 //
 //            PeptidesInformationOverviewLayout peptideInfo = new PeptidesInformationOverviewLayout(quantPeptide);
-
 //            popupBody.addComponent(peptideInfo);
 //            popupBody.setComponentAlignment(peptideInfo, Alignment.TOP_CENTER);
-
             this.addLayoutClickListener(StackedBarPeptideComponent.this);
         }
 
@@ -190,7 +186,6 @@ public class StackedBarPeptideComponent extends VerticalLayout implements Compar
     public Object getParam(String key) {
         return parametersMap.get(key);
     }
-
 
     @Override
     public int compareTo(StackedBarPeptideComponent o) {

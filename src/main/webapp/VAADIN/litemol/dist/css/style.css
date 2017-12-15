@@ -1,0 +1,49 @@
+
+
+
+
+/* 
+    Created on : Nov 20, 2017, 1:52:43 PM
+    Author     : Yehia Farag
+*/
+html,body,.litemolbody,center{
+    overflow: hidden !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+.lm-plugin-content.lm-layout-standard.lm-layout-standard-outside{
+    width:50% !important;
+    height:50% !important;
+    padding:0px !important;
+    margin:0px !important;
+}
+.lm-layout-region.lm-layout-right, .lm-layout-region.lm-layout-bottom,.lm-layout-region.lm-layout-left{
+    /*visibility:hidden;*/
+}
+.lm-plugin{
+    background:white;
+}
+.lm-layout-region.lm-layout-main {
+    width:100%;
+    height:100%;
+    left:0px !important;
+}
+.lm-viewport-controls-buttons{
+   border:1px solid lightgray;
+   border-radius:5px;
+}
+.lm-btn.lm-btn-link.lm-btn-link-toggle-off,.lm-btn.lm-btn-link{
+    background:#ffffff !important;
+    color:gray !important; 
+    height:30px !important;
+
+
+
+}
+.lm-icon-expand-layout,.lm-icon-tools {
+   display:none !important;
+   visibility: hidden;
+}
+.lm-btn.lm-btn-link.lm-btn-link-toggle-off:hover,.lm-btn.lm-btn-link:hover{    
+    color:black !important; 
+}

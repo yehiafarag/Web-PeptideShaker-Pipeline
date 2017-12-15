@@ -426,6 +426,11 @@ public abstract class HistoryHandler {
 
             for (String key : peptideShakerVisualizationMap.keySet()) {
                 PeptideShakerVisualizationDataset vDs = peptideShakerVisualizationMap.get(key);
+                if(!searchGUIFilesMap.containsKey(vDs.getProjectName())){
+                    System.out.println("at error happen here "+vDs.getProjectName()+"  searchGUIFilesMap "+searchGUIFilesMap.keySet());
+                    continue;
+                
+                }
                 vDs.setSearchGUIFileId(searchGUIFilesMap.get(vDs.getProjectName()).getId());
 //                vDs.setFastaFileId(fastaFilesMap.get(vDs.getProjectName()+"- FASTA").getGalaxyId());
 //                if (vDs.getSearchGUIFileId() == null || !searchGUIFilesMap.containsKey(vDs.getSearchGUIFileId())) {

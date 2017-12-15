@@ -13,6 +13,21 @@
     <session-config>
         <session-timeout>15</session-timeout>
     </session-config>
-  
+  <servlet>
+      <servlet-name>jsmol</servlet-name>
+      <jsp-file>/VAADIN/jsmol/jsptest.jsp</jsp-file>
+ </servlet>
+ <servlet>
+      <servlet-name>litemol</servlet-name>
+      <jsp-file>/VAADIN/litemol/litemolservlet.jsp</jsp-file>
+ </servlet>
+ <servlet-mapping>
+      <servlet-name>jsmol</servlet-name>
+      <url-pattern>/jsmol</url-pattern>
+ </servlet-mapping>
+ <servlet-mapping>
+      <servlet-name>litemol</servlet-name>
+      <url-pattern>/litemol</url-pattern>
+ </servlet-mapping>
   
 </web-app>

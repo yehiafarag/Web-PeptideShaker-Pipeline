@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+        <title>LiteMol</title>
+        <!-- Complied & minified library css -->
+        <link rel="stylesheet" href="//www.ebi.ac.uk/pdbe/pdb-component-library/v1.0/css/pdb.component.library.min-1.0.0.css" />
+
+        <!-- Dependencey scripts (these can be skipped if already included in page) -->
+        <script src="//www.ebi.ac.uk/pdbe/pdb-component-library/libs/d3.min.js"></script>
+        <script src="//www.ebi.ac.uk/pdbe/pdb-component-library/libs/angular.1.4.7.min.js"></script>
+
+        <!-- Complied & minified library JS -->
+        <script src="//www.ebi.ac.uk/pdbe/pdb-component-library/v1.0/js/pdb.component.library.min-1.0.0.js"></script>
+      
+
+
+
+    </head>
+    <body id="litemolbody">
+    <center>
+        <pdb-lite-mol pdb-id="'1cbs'"></pdb-lite-mol>
+
+
+
+
+    </center>     
+    <div> <button type="button" onclick="callShowControls()" style="
+                  width: 100px;
+                  height: 100px;
+                  top: 400px !important;
+                  position: absolute;
+                  z-index: 900000000;
+                  ">Click Me!</button> </div>   
+
+
+
+
+
+
+
+
+
+
+    <script>
+     //Bootstrapping / Installing the library
+  angular.element(document).ready(function () {
+      angular.bootstrap(document, ['pdb.component.library']);
+  });
+  
+  //Method to bind component scope
+  var bindPdbComponentScope = function(element){
+    return angular.element(element).isolateScope();
+  }
+  
+  //variable to store LiteMol Component Scope which has all the methods
+  var liteMolScope; 
+  
+  //bind to the component scope on window.onload
+  window.onload = function(e) {
+    var litemolElement = document.getElementById('litemol_1cbs');
+    liteMolScope = bindPdbComponentScope(litemolElement);
+    alert("load js");
+     
+  }
+  function callShowControls(){
+      liteMolScope.LiteMolComponent.showControls();
+      
+  }
+
+
+
+    </script>    
+</body>
+</html>

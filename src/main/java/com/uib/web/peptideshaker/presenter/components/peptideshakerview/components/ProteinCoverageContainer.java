@@ -21,10 +21,10 @@ import org.apache.commons.collections15.map.LinkedMap;
  * @author Yehia Farag
  */
 public abstract class ProteinCoverageContainer extends VerticalLayout {
-    
+
     private final Table proteinCoverageTable;
     private final Map<Object, Object[]> tableData;
-    
+
     public ProteinCoverageContainer() {
         ProteinCoverageContainer.this.setSizeFull();
         tableData = new LinkedMap<>();
@@ -34,8 +34,8 @@ public abstract class ProteinCoverageContainer extends VerticalLayout {
         proteinCoverageTable.addStyleName("inframetable");
         proteinCoverageTable.addStyleName(ValoTheme.TABLE_NO_STRIPES);
         proteinCoverageTable.setSelectable(false);
-        proteinCoverageTable.setWidth(100,Unit.PERCENTAGE);
-        proteinCoverageTable.setHeight(95,Unit.PERCENTAGE);
+        proteinCoverageTable.setWidth(100, Unit.PERCENTAGE);
+        proteinCoverageTable.setHeight(95, Unit.PERCENTAGE);
         proteinCoverageTable.addContainerProperty("info", ActionLabel.class, null, "", null, Table.Align.LEFT);
         proteinCoverageTable.addContainerProperty("acc", ActionLabel.class, null, "Accession", null, Table.Align.LEFT);
         proteinCoverageTable.addContainerProperty("name", PopupLabel.class, null, "Name", null, Table.Align.LEFT);
@@ -44,9 +44,9 @@ public abstract class ProteinCoverageContainer extends VerticalLayout {
         proteinCoverageTable.setColumnWidth("acc", 100);
         proteinCoverageTable.setColumnWidth("name", 300);
         ProteinCoverageContainer.this.addComponent(proteinCoverageTable);
-        
+
     }
-    
+
     public void setSelectedItems(Set<Object> selectedProteinsItems, Set<Object> selectedPeptidesItems) {
         if (tableData.isEmpty() || !tableData.keySet().containsAll(selectedProteinsItems)) {
             return;
@@ -56,28 +56,24 @@ public abstract class ProteinCoverageContainer extends VerticalLayout {
             this.proteinCoverageTable.addItem(tableData.get(id), id);
             ((ProteinCoverageComponent) tableData.get(id)[3]).selectPeptides(selectedPeptidesItems);
         }
-        
+
     }
-    
+
     public void updateProteinsMode(String mode) {
-        System.out.println("at mode is "+mode);
-//        try{
-        for(Object id:tableData.keySet())
+        for (Object id : tableData.keySet()) {
             ((ProteinCoverageComponent) tableData.get(id)[3]).updateStylingMode(mode);
-//        }catch(Exception e)
-//        {
-//            e.printStackTrace();
-//        }
+        }
+
     }
-    
+
     public Map<Object, Object[]> getTableData() {
         return tableData;
     }
-    
+
     public void selectDataset(Map<String, ProteinObject> proteinNodes, Map<String, PeptideObject> peptidesNodes, Set<Object> defaultSelectedProteinsItems, Set<Object> defaultSelectedPeptidesItems) {
         tableData.clear();
 //        this.proteinCoverageTable.removeAllItems();
-        
+
         for (ProteinObject protein : proteinNodes.values()) {
             ProteinCoverageComponent proteinLayout = new ProteinCoverageComponent(protein, peptidesNodes) {
                 @Override
@@ -91,12 +87,12 @@ public abstract class ProteinCoverageContainer extends VerticalLayout {
                         }
                     }
                 }
-                
+
             };
             ActionLabel info = new ActionLabel(VaadinIcons.INFO_CIRCLE, "Click to view protein information") {
                 @Override
                 public void layoutClick(LayoutEvents.LayoutClickEvent event) {
-                    
+
                 }
             };
             ActionLabel acc = new ActionLabel(protein.getAccession(), new ExternalResource("http://www.uniprot.org/uniprot/" + protein.getAccession())) {
@@ -107,11 +103,11 @@ public abstract class ProteinCoverageContainer extends VerticalLayout {
             PopupLabel proteinDescription = new PopupLabel(protein.getDescription());
             tableData.put(protein.getAccession(), new Object[]{info, acc, proteinDescription, proteinLayout});
 //            this.proteinCoverageTable.addItem(tableData.get(protein.getAccession()), protein.getAccession());
-            
+
         }
         setSelectedItems(defaultSelectedProteinsItems, defaultSelectedPeptidesItems);
     }
-    
+
     public abstract void selectPeptide(Object proteinId, Object peptideId);
-    
+
 }

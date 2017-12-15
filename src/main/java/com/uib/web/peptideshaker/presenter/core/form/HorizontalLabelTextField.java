@@ -56,7 +56,7 @@ public class HorizontalLabelTextField extends HorizontalLayout {
         textField.addStyleName(ValoTheme.TEXTFIELD_TINY);
         textField.setNullRepresentation(this.defaultValue);
         textField.setInputPrompt(this.defaultValue);
-        textField.setValue(this.defaultValue);
+//        textField.setValue(this.defaultValue);
 
         textField.setWidth(100, Unit.PERCENTAGE);
         textField.setHeight(25, Unit.PIXELS);
