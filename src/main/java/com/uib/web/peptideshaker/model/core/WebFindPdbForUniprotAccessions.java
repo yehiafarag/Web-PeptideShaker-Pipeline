@@ -13,7 +13,8 @@ import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Maps UniProt protein accession numbers to PDB file IDs. updated to suit the
@@ -36,11 +37,11 @@ public class WebFindPdbForUniprotAccessions {
     /**
      * The PDB parameters.
      */
-    private Vector<PdbParameter> iPdbs = new Vector<>();
+    private List<PdbParameter> iPdbs = new ArrayList<>();
     /**
      * The DAS reader.
      */
-    private DasAnnotationServerAlingmentReader iDasReader = new DasAnnotationServerAlingmentReader("empty");
+    private WebDasAnnotationServerAlingmentReader iDasReader;
     /**
      * The URL.
      */
@@ -62,21 +63,20 @@ public class WebFindPdbForUniprotAccessions {
     public WebFindPdbForUniprotAccessions(String aProteinAccession) {
 
         this.iProteinAccession = aProteinAccession;
+        try {            // find features iProteinAccession
+            String urlMake = "http://www.rcsb.org/pdb/rest/das/pdb_uniprot_mapping/alignment?query=" + iProteinAccession + ";";
+            iDasReader = readUrl(urlMake);
 
-        try {
-            // find features
-            String urlMake = "http://www.rcsb.org/pdb/rest/das/pdb_uniprot_mapping/alignment?query=" + iProteinAccession;
-            readUrl(urlMake);
         } catch (Exception e) {
             e.printStackTrace();
             // ignore
         }
         iAlignments = iDasReader.getAllAlignments();
-
         try {
             for (DasAlignment align : iAlignments) {
                 String pdb = align.getPdbAccession().substring(0, 4);
                 pdb = pdb.toUpperCase();
+
                 boolean newPdb = true;
                 PdbParameter pdbParamToAddBlock = null;
                 for (int v = 0; v < iPdbs.size(); v++) {
@@ -102,10 +102,24 @@ public class WebFindPdbForUniprotAccessions {
                     }
                 }
             }
+            if (!iPdbs.isEmpty()) {
+                for (PdbParameter param : iPdbs) {
+                    System.out.print("pdbid " + iProteinAccession + "-- " + param.getPdbaccession() + "-- " + param.getBlocks().length + "  { ");
+                    for (PdbBlock block : param.getBlocks()) {
+                        System.out.print(block.getBlock() + " ");
+                    }
+                    System.out.println("} ");
+                }
+
+            } else {
+                System.out.println("at pdbid " + iProteinAccession + "-- has empty view ");
+            }
+
         } catch (StringIndexOutOfBoundsException e) {
             System.out.println("Error in reading das pdb alignment");
             e.printStackTrace();
         }
+
     }
 
     /**
@@ -123,7 +137,7 @@ public class WebFindPdbForUniprotAccessions {
      *
      * @return a vector of the PDB files
      */
-    public Vector<PdbParameter> getPdbs() {
+    public List<PdbParameter> getPdbs() {
         return iPdbs;
     }
 
@@ -132,39 +146,64 @@ public class WebFindPdbForUniprotAccessions {
      *
      * @param aUrl the PDB URL to read
      */
-    private void readUrl(String aUrl) {
+    private WebDasAnnotationServerAlingmentReader readUrl(String aUrl) {
 
         urlRead = false;
         this.iUrl = aUrl;
-
+        WebDasAnnotationServerAlingmentReader tempIDasReader;
+        HttpURLConnection connection = null;
         try {
+
             URL myURL = new URL(iUrl);
             StringBuilder input = new StringBuilder();
-            HttpURLConnection connection = (HttpURLConnection) myURL.openConnection();
-            BufferedInputStream in = new BufferedInputStream(connection.getInputStream());
-            Reader r = new InputStreamReader(in);
+            connection = (HttpURLConnection) myURL.openConnection();
+            try (BufferedInputStream in = new BufferedInputStream(connection.getInputStream())) {
+//                if (in.available() > 500) {
+                    try (Reader r = new InputStreamReader(in)) {
+                        int i;
+                        while ((i = r.read()) != -1) {
+                            input.append((char) i);
+                        }
+                        r.close();
+                    }
+//                }
+                in.close();
 
-            int i;
-            while ((i = r.read()) != -1) {
-                input.append((char) i);
             }
-
-            r.close();
-            in.close();
-
-            iDasReader = new DasAnnotationServerAlingmentReader(input.toString());
+            connection.disconnect();
+            tempIDasReader = new WebDasAnnotationServerAlingmentReader(input.toString());
+           
             urlRead = true;
+            return tempIDasReader;
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (ConnectException e) {
             System.out.println("Connect exception for url " + iUrl);
-            if (isFirstTry) {
-                readUrl(iUrl);
-            }
-            isFirstTry = false;
+//            if (isFirstTry) {
+//                tempIDasReader = readUrl(iUrl);
+//                isFirstTry = false;
+//                return tempIDasReader;
+//            } else {
+//                isFirstTry = false;
+//                return new DasAnnotationServerAlingmentReader("empty");
+//            }
+
         } catch (IOException e) {
             System.out.println("I/O exception for url " + iUrl);
+//             if (isFirstTry) {
+//                tempIDasReader = readUrl(iUrl);
+//                isFirstTry = false;
+//                return tempIDasReader;
+//            } else {
+//                isFirstTry = false;
+//                return new DasAnnotationServerAlingmentReader("empty");
+//            }
         }
+        if (connection != null) {
+            connection.disconnect();
+        }
+        return new WebDasAnnotationServerAlingmentReader("empty");
+
     }
 
 }

@@ -2,7 +2,7 @@ package com.uib.web.peptideshaker.presenter;
 
 import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDataset;
 import com.uib.web.peptideshaker.galaxy.dataobjects.SystemDataSet;
-import com.uib.web.peptideshaker.presenter.components.DataViewLayout;
+import com.uib.web.peptideshaker.presenter.layouts.DataViewLayout;
 import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
 import com.uib.web.peptideshaker.presenter.core.SmallSideBtn;
 import com.vaadin.event.LayoutEvents;
@@ -78,7 +78,7 @@ public abstract class GalaxyFileSystemPresenter extends VerticalLayout implement
         btnContainer.setSpacing(true);
         btnContainer.setMargin(new MarginInfo(false, false, true, false));
 //
-        BigSideBtn viewDataBtn = new BigSideBtn("Show Data");
+        BigSideBtn viewDataBtn = new BigSideBtn("Show Data",1);
         viewDataBtn.updateIcon(new ThemeResource("img/jobs2.png"));
         viewDataBtn.setData("datasetoverview");
         btnContainer.addComponent(viewDataBtn);

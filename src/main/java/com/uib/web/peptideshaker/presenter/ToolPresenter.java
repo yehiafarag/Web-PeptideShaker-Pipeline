@@ -3,7 +3,7 @@ package com.uib.web.peptideshaker.presenter;
 import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
 import com.uib.web.peptideshaker.galaxy.dataobjects.SystemDataSet;
 import com.uib.web.peptideshaker.galaxy.dataobjects.GalaxyFile;
-import com.uib.web.peptideshaker.presenter.components.WorkFlowLayout;
+import com.uib.web.peptideshaker.presenter.layouts.WorkFlowLayout;
 import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
 import com.uib.web.peptideshaker.presenter.core.SmallSideBtn;
 import com.vaadin.event.LayoutEvents;
@@ -91,8 +91,8 @@ public abstract class ToolPresenter extends VerticalLayout implements ViewableFr
 
         workflowLayout = new WorkFlowLayout() {
             @Override
-            public void executeWorkFlow(String projectName,String fastaFileId, Set<String> mgfIdsList, Set<String> searchEnginesList,SearchParameters searchParam,Map<String,Boolean>otherSearchParameters) {
-                ToolPresenter.this.executeWorkFlow(projectName,fastaFileId, mgfIdsList, searchEnginesList,searchParam,otherSearchParameters);
+            public void executeWorkFlow(String projectName,String fastaFileId, Set<String> mgfIdsList, Set<String> searchEnginesList,SearchParameters searchParam,Map<String,Boolean>searchEngines) {
+                ToolPresenter.this.executeWorkFlow(projectName,fastaFileId, mgfIdsList, searchEnginesList,searchParam,searchEngines);
             }
 
             @Override
@@ -103,7 +103,7 @@ public abstract class ToolPresenter extends VerticalLayout implements ViewableFr
         };
         VerticalLayout nelsLayout = new VerticalLayout();
 
-        BigSideBtn nelsBtn = new BigSideBtn("Get Data");
+        BigSideBtn nelsBtn = new BigSideBtn("Get Data",1);
         nelsBtn.updateIcon(new ThemeResource("img/NeLS2.png"));
         nelsBtn.setData("nels");
         btnContainer.addComponent(nelsBtn);
@@ -111,7 +111,7 @@ public abstract class ToolPresenter extends VerticalLayout implements ViewableFr
         nelsBtn.addLayoutClickListener(ToolPresenter.this);
         btnsLayoutMap.put(nelsBtn, nelsLayout);
 
-        BigSideBtn workFlowBtn = new BigSideBtn("Work-Flow");
+        BigSideBtn workFlowBtn = new BigSideBtn("Work-Flow",2);
          workFlowBtn.updateIcon(new ThemeResource("img/workflow.png"));
         workFlowBtn.setData("workflow");
         workFlowBtn.addStyleName("zeropadding");

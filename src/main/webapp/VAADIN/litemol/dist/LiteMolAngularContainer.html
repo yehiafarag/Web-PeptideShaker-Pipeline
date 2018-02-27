@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>LiteMol</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- Complied & minified library css -->
+        <link rel="stylesheet" href="css/LiteMol-plugin.css" />
+        <link rel="stylesheet" href="css/style.css" />
+        <link rel="stylesheet" href="../../jsmol/style/style.css" type="text/css">
+
+        <!-- Dependence scripts (these can be skipped if already included in page) -->
+        <script src="js/d3.min.js"></script>
+        <script src="js/angular.min.js"></script>
+        <!-- Complied & minified library JS -->
+        <script src="js/updated.pdb.component.library.min-1.0.0.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+
+
+    </head>
+
+    <body id="litemolbody" >
+    <center id="container">
+        <pdb-lite-mol id="litemolid"  ></pdb-lite-mol>
+    </center>   
+    <div> 
+        <!-- -->
+
+        <input id="loadnewproteinbtn2" type="button" value="load protein" onClick="loadNewProtein('3iuc')" style="
+               width: 200px;
+                       height: 30px;
+               top: 40px !important;
+               
+               position: absolute;
+               z-index: 900000000;
+               "/>
+       <!-- A,633,654__A,562,573__A,621,633__A,324,336__A,152,164__A,164,181__A,152,163__A,540,554__A,447,464__A,49,60__A,81,96__A,122,138__A,46,60__A,81,97__ -->
+        <input id="loadnewproteinbtn" type="button" value="initial selection" onClick="excutequery('A,100,200')" style="
+                     width: 200px;
+                       height: 30px;
+                       top: 80px !important;
+                       position: absolute;
+                       z-index: 900000000;
+                       "/>
+        <input id="updateselectionbtn" type="button" value="updateselection" onClick="updatequery('A,102,120')" style="
+                       width: 200px;
+                       height: 30px;
+                       top: 120px !important;
+                       position: absolute;
+                       z-index: 900000000;
+                       "/>
+    </div> 
+
+    <script>
+        $(document).ready(function () {
+            reset();
+            finalizeStyle();
+
+        });
+        function finalizeStyle() {
+            var x = document.getElementsByClassName("lm-btn lm-btn-link lm-btn-link-toggle-on");
+            x[0].setAttribute("style", " display:none !important; visibility:hidden;");
+            x[1].setAttribute("style", " display:none !important; visibility:hidden !important; background:red;");
+            var y = document.getElementsByClassName("lm-btn lm-btn-link");
+            y[5].setAttribute("style", " display:none !important; visibility:hidden;");
+            y[2].setAttribute("style", " display:none !important; visibility:hidden;");
+
+
+
+        }
+        function clickedBtn()
+        {         //Method to bind component scope
+            var litemolElement = document.getElementById('litemolid');
+            var liteMolcope = angular.element(litemolElement).isolateScope();
+
+
+
+        }
+        function reset()
+        {
+            //Method to bind component scope
+            var litemolElement = document.getElementById('litemolid');
+            var liteMolScope = angular.element(litemolElement).isolateScope();
+
+            liteMolScope.LiteMolComponent.destroyPlugin();
+            liteMolScope.LiteMolComponent.createPlugin();
+            liteMolScope.LiteMolComponent.expand();
+            liteMolScope.LiteMolComponent.setBackground();
+
+            // liteMolScope.LiteMolComponent.moleculeId = "3iuc";
+            // liteMolScope.LiteMolComponent.loadMolecule();
+
+            //  
+            //liteMolScope.$apply();
+
+        }
+        ;
+        function showMessage(msg) {
+            alert(msg);
+        }
+        ;
+        //variable to store LiteMol Component Scope which has all the methods
+        var liteMolScope;
+        //Bootstrapping / Installing the library
+        var bindPdbComponentScope = function (element) {
+            return angular.element(element).isolateScope();
+        };
+        //bind to the component scope on window.onload
+        window.onload = function (e) {
+            var litemolElement = document.getElementById('litemolid');
+            liteMolScope = bindPdbComponentScope(litemolElement);
+            liteMolScope.LiteMolComponent.setBackground();
+            liteMolScope.LiteMolComponent.expand();
+
+
+        };
+
+        var selectionDetails = {
+            entity_id: '1',
+            struct_asym_id: 'A',
+            start_residue_number: 28,
+            end_residue_number: 406
+        };
+
+        var selectionDetails2 = {
+            entity_id: '1',
+            struct_asym_id: 'B',
+            start_residue_number: 1,
+            end_residue_number: 100
+        };
+        var callSelectFocus = function (selectionDetails, colorCode) {
+            var showSideChains = false;
+            liteMolScope.LiteMolComponent.UpdatedSelectExtractFocus(selectionDetails, colorCode, showSideChains);
+        };
+
+
+        function getParameterByName(name, url) {
+            if (!url)
+                url = window.location.href;
+            name = name.replace(/[\[\]]/g, "\\$&");
+            var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                    results = regex.exec(url);
+            if (!results)
+                return null;
+            if (!results[2])
+                return '';
+            return decodeURIComponent(results[2].replace(/\+/g, " "));
+        }
+        angular.element(document).ready(function () {
+            angular.bootstrap(document, ['pdb.component.library']);
+        });
+        var visualParams = {
+            polymer: true,
+            polymerRef: 'polymer-visual',
+            het: false,
+            hetRef: 'het-visual',
+            water: false,
+            waterRef: 'water-visual'
+        };
+        function loadNewProtein(pdb, query, selectionColor) {
+            //Method to bind component scope
+            //  var litemolElement = document.getElementById('litemolid');
+            // var liteMolcope = angular.element(litemolElement).isolateScope();
+            liteMolScope.LiteMolComponent.setBackground();
+            liteMolScope.LiteMolComponent.moleculeId = pdb;
+            liteMolScope.LiteMolComponent.loadMolecule();
+            
+            var x2 = document.getElementsByClassName("lm-btn lm-btn-link lm-entity-tree-entry-toggle-visible lm-entity-tree-entry-toggle-visible-full");
+            setTimeout(function () {
+                x2[2].click();
+                x2[1].click();
+                excutequery(query, selectionColor);
+
+            }, 3000);
+
+
+            // liteMolcope.$apply();
+        }
+
+        var colorCode2 = {r: 200, g: 0, b: 000};
+ var colorCode = {r: 255, g: 255, b: 255};
+var selectioncolorCode={r: 0, g: 0, b: 200};
+
+        function testexcutequery2(pdb) {
+            liteMolScope.LiteMolComponent.colorMultiSequence();
+
+           
+        }
+        // finalizeStyle();
+
+        var selection = function (chain, start, end) {
+            var selectionDetails = {
+                entity_id: '1',
+                struct_asym_id: chain,
+                start_residue_number: start,
+                end_residue_number: end
+            }
+            return selectionDetails;
+
+        }
+
+
+
+
+
+
+        function excutequery(query, selectionColor) {
+            if (liteMolScope.LiteMolComponent.moleculeId === undefined)
+                return;
+            var arr = query.split("__");
+            liteMolScope.LiteMolComponent.resetThemeSelHighlight();          
+            for (i = 0; i < arr.length; i++) {
+                var c = String(arr[i].split(",")[0]);
+                var s = parseInt(arr[i].split(",")[1]);
+                var e = parseInt(arr[i].split(",")[2]);
+                liteMolScope.LiteMolComponent.selectSequence('1', c, s, e, colorCode2, colorCode, true);
+            }
+
+
+        }
+        
+         function updatequery(query, selectionColor) {
+             
+            if (liteMolScope.LiteMolComponent.moleculeId === undefined)
+                return;
+            var arr = query.split("__");        
+            for (i = 0; i < arr.length; i++) {
+                var c = String(arr[i].split(",")[0]);
+                var s = parseInt(arr[i].split(",")[1]);
+                var e = parseInt(arr[i].split(",")[2]);
+                liteMolScope.LiteMolComponent.addSelection('1', c, s, e, selectioncolorCode, true);
+            }
+
+
+        }
+        
+        
+        
+        function process(query) {
+
+            ;
+            liteMolScope.LiteMolComponent.colorMultiChains(['A', 'C'], [211, 211, 211]);
+            // liteMolScope.LiteMolComponent.selectSequence('');
+
+
+
+
+
+            //
+            //callSelectFocus(selectionDetails2, colorCode2);
+
+
+
+        }
+
+
+    </script>    
+</body>
+</html>

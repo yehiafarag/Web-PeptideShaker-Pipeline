@@ -1,9 +1,9 @@
 package com.uib.web.peptideshaker.presenter;
 
 import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDataset;
-import com.uib.web.peptideshaker.presenter.components.peptideshakerview.DatasetVisulizationLevelContainer;
-import com.uib.web.peptideshaker.presenter.components.peptideshakerview.ProteinVisulizationLevelContainer;
-import com.uib.web.peptideshaker.presenter.components.peptideshakerview.SelectionManager;
+import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.DatasetVisulizationLevelContainer;
+import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.ProteinVisulizationLevelContainer;
+import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.SelectionManager;
 import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
 import com.uib.web.peptideshaker.presenter.core.SmallSideBtn;
 import com.vaadin.event.LayoutEvents;
@@ -33,7 +33,7 @@ public class PeptideShakerViewPresenter extends VerticalLayout implements Viewab
     private HorizontalLayout mobilebtnContainer;
 
     private DatasetVisulizationLevelContainer datasetVisulizationLevelContainer;
-    private  SelectionManager Selection_Manager;
+    private SelectionManager Selection_Manager;
     private ProteinVisulizationLevelContainer proteinsVisulizationLevelContainer;
 
     /**
@@ -66,7 +66,7 @@ public class PeptideShakerViewPresenter extends VerticalLayout implements Viewab
         btnContainer.setMargin(new MarginInfo(false, false, true, false));
 //
 
-        BigSideBtn datasetsOverviewBtn = new BigSideBtn("Dataset overview");
+        BigSideBtn datasetsOverviewBtn = new BigSideBtn("Dataset overview", 1);
         datasetsOverviewBtn.setData("datasetoverview");
         btnContainer.addComponent(datasetsOverviewBtn);
         btnContainer.setComponentAlignment(datasetsOverviewBtn, Alignment.TOP_CENTER);
@@ -77,7 +77,7 @@ public class PeptideShakerViewPresenter extends VerticalLayout implements Viewab
         Selection_Manager.addBtnLayout(datasetsOverviewBtn, datasetVisulizationLevelContainer);
 
 //"img/peptides_3.png",
-        BigSideBtn proteinoverviewBtn = new BigSideBtn("Peptides Overview");
+        BigSideBtn proteinoverviewBtn = new BigSideBtn("Protein Overview", 2);
         proteinoverviewBtn.updateIcon(null);
         proteinoverviewBtn.setData("proteinoverview");
         btnContainer.addComponent(proteinoverviewBtn);
@@ -172,6 +172,15 @@ public class PeptideShakerViewPresenter extends VerticalLayout implements Viewab
     public void layoutClick(LayoutEvents.LayoutClickEvent event) {
         BigSideBtn comp = (BigSideBtn) event.getComponent();
         Selection_Manager.selectBtn(comp);
+        System.out.println("at selection tab name " + comp.getBtnId());
+        if (proteinsVisulizationLevelContainer != null) {
+            if (comp.getBtnId() == 2) {
+                proteinsVisulizationLevelContainer.activate3DProteinView();
+                    
+            } else {
+                proteinsVisulizationLevelContainer.reset3DProteinView();
+            }
+        }
 
     }
 

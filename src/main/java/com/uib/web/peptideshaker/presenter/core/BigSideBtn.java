@@ -16,10 +16,12 @@ public class BigSideBtn extends HorizontalLayout {
 
     private final Image icon;
     private final MobileSideBtn mobileModeBtn;
+    private final int btnId;
 
-    public BigSideBtn(String text) {
+    public BigSideBtn(String text,int btnId) {
         icon = new Image();
         icon.setSizeFull();
+        this.btnId = btnId;
         BigSideBtn.this.addComponent(icon);
         BigSideBtn.this.setComponentAlignment(icon, Alignment.MIDDLE_CENTER);
         BigSideBtn.this.setSizeFull();
@@ -27,6 +29,10 @@ public class BigSideBtn extends HorizontalLayout {
 
         mobileModeBtn = new MobileSideBtn(text);
 
+    }
+
+    public int getBtnId() {
+        return btnId;
     }
 
     @Override

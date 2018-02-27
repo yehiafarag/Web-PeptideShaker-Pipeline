@@ -55,14 +55,14 @@ import org.codehaus.jettison.json.JSONObject;
  * @author Yehia Farag
  */
 public abstract class ToolsHandler {
-    
+
     private boolean validToolsAvailable;
     private boolean nelsSupport;
-    
+
     public boolean isNelsSupport() {
         return nelsSupport;
     }
-    
+
     public String getNelsExporter_Tool_Id() {
         return nelsExporter_Tool_Id;
     }
@@ -99,7 +99,7 @@ public abstract class ToolsHandler {
      *
      */
     public ToolsHandler(ToolsClient galaxyToolClient, WorkflowsClient galaxyWorkFlowClient, HistoriesClient galaxyHistoriesClient) {
-        
+
         this.galaxyWorkFlowClient = galaxyWorkFlowClient;
         this.galaxyHistoriesClient = galaxyHistoriesClient;
         for (History h : galaxyHistoriesClient.getHistories()) {
@@ -121,38 +121,40 @@ public abstract class ToolsHandler {
          */
 //        String galaxyPeptideShakerToolId = null;
         try {
-            
+
             List<ToolSection> toolSections = galaxyToolClient.getTools();
             String PSVersion = "0.0.0";
-            String SGVersion = "0.0.0";
+            String SGVersion = "0.0.0.0";
             for (ToolSection secion : toolSections) {
                 List<Tool> tools = secion.getElems();
                 if (tools != null && !validToolsAvailable) {
                     for (Tool tool : tools) {
-                        
+
                         if (tool.getId().equalsIgnoreCase("nels_export")) {
                             nelsExporter_Tool_Id = tool.getId();
 //                            sendPost();
 
                         } else if (tool.getId().contains("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/search_gui/")) {
                             String version = tool.getId().split("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/search_gui/")[1];
+                            
                             if (isFirmwareNewer(version, SGVersion)) {
                                 SGVersion = version;
                                 search_GUI_Tool_Id = tool.getId();
-                                
+
                             }
                         } else if (tool.getId().contains("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/peptide_shaker/")) {
                             String version = tool.getId().split("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/peptide_shaker/")[1];
+                            
                             if (isFirmwareNewer(version, PSVersion)) {
                                 PSVersion = version;
                                 peptideShaker_Tool_Id = tool.getId();
-                                
+
                             }
                         }
-                        
+
                     }
                 }
-                
+
                 if (peptideShaker_Tool_Id != null && search_GUI_Tool_Id != null && nelsExporter_Tool_Id != null) {
                     validToolsAvailable = true;
                     nelsSupport = true;
@@ -160,23 +162,24 @@ public abstract class ToolsHandler {
                 } else if (peptideShaker_Tool_Id != null && search_GUI_Tool_Id != null) {
                     validToolsAvailable = true;
                 }
-                
+
             }
         } catch (Exception e) {
             if (e.toString().contains("Service Temporarily Unavailable")) {
                 Notification.show("Service Temporarily Unavailable", Notification.Type.ERROR_MESSAGE);
                 UI.getCurrent().getSession().close();
                 VaadinSession.getCurrent().getSession().invalidate();
-                
+
             } else {
                 System.out.println("at tools are not available");
+                e.printStackTrace();
 //                UI.getCurrent().getSession().close();
 //                VaadinSession.getCurrent().getSession().invalidate();
 //                Page.getCurrent().reload();
             }
         }
     }
-    
+
     public boolean isValidTools() {
         if (!validToolsAvailable) {
             Notification.show("PeptideShaker tools are not available on this Galaxy Server", Notification.Type.WARNING_MESSAGE);
@@ -196,12 +199,12 @@ public abstract class ToolsHandler {
      *
      */
     private String reIndexFile(String id, String peptideShakerViewID, String workHistoryId) {
-        
+
         String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
         File file = new File(basepath + "/VAADIN/Galaxy-Workflow-convertMGF.ga");
         String json = readWorkflowFile(file).replace("updated_MGF", peptideShakerViewID);
         Workflow selectedWf = galaxyWorkFlowClient.importWorkflow(json);
-        
+
         try {
             WorkflowInputs workflowInputs = new WorkflowInputs();
             workflowInputs.setWorkflowId(selectedWf.getId());
@@ -215,7 +218,7 @@ public abstract class ToolsHandler {
             galaxyWorkFlowClient.deleteWorkflowRequest(selectedWf.getId());
         }
         return null;
-        
+
     }
 
     /**
@@ -225,7 +228,7 @@ public abstract class ToolsHandler {
      * @param searchParameters searchParameters .par file
      */
     public Map<String, GalaxyFile> saveSearchGUIParameters(String galaxyURL, File userFolder, Map<String, GalaxyFile> searchSetiingsFilesMap, String workHistoryId, SearchParameters searchParameters, boolean editMode) {
-        
+
         String fileName = searchParameters.getFastaFile().getName().split("__")[1] + ".par";
         String fileId;
         if (editMode) {
@@ -233,13 +236,13 @@ public abstract class ToolsHandler {
             searchSetiingsFilesMap.remove(fileId);
             //delete the file and make new one 
             this.deleteDataset(galaxyURL, workHistoryId, fileId);
-            
+
         } else {
             fileId = fileName;
         }
-        
+
         File file = new File(userFolder, fileId);
-        
+
         if (file.exists()) {
             file.delete();
         }
@@ -249,7 +252,7 @@ public abstract class ToolsHandler {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-        
+
         final ToolsClient.FileUploadRequest request = new ToolsClient.FileUploadRequest(workHistoryId, file);
         request.setDatasetName(fileName);
         List<OutputDataset> excList = galaxyToolClient.upload(request).getOutputs();
@@ -271,7 +274,7 @@ public abstract class ToolsHandler {
                 ex.printStackTrace();
             }
         }
-        
+
         return searchSetiingsFilesMap;
     }
 
@@ -285,7 +288,7 @@ public abstract class ToolsHandler {
     private String readWorkflowFile(File file) {
         String json = "";
         String line;
-        
+
         try {
             FileReader fileReader = new FileReader(file);
             try ( // Always wrap FileReader in BufferedReader.
@@ -303,7 +306,7 @@ public abstract class ToolsHandler {
         }
         return json;
     }
-    
+
     public void deleteDataset(String galaxyURL, String historyId, String dsId) {
         try {
             if (dsId == null || historyId == null || galaxyURL == null) {
@@ -323,7 +326,7 @@ public abstract class ToolsHandler {
             conn.addRequestProperty("Pragma", "no-cache");
             conn.setDoOutput(true);
             conn.setDoInput(true);
-            
+
             conn.setRequestMethod("PUT");
             conn.setRequestProperty("Accept", "application/json, text/javascript, */*; q=0.01");
             conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
@@ -346,22 +349,26 @@ public abstract class ToolsHandler {
             }
             br.close();
             conn.disconnect();
-            
+
         } catch (MalformedURLException ex) {
             ex.printStackTrace();
         } catch (IOException ex) {
             ex.printStackTrace();
-            
+
         }
     }
 
     /**
      * Run Online Peptide-Shaker work-flow
      *
+     * @param projectName
      * @param fastaFileId FASTA file dataset id
      * @param mgfIdsList list of MGF file dataset ids
      * @param searchEnginesList List of selected search engine names
      * @param historyId galaxy history id that will store the results
+     * @param searchParameters
+     * @param otherSearchParameters
+     * @return 
      */
     public PeptideShakerVisualizationDataset executeWorkFlow(String projectName, String fastaFileId, Map<String, String> mgfIdsList, Set<String> searchEnginesList, String historyId, SearchParameters searchParameters, Map<String, Boolean> otherSearchParameters) {
         Workflow selectedWf = null;
@@ -377,8 +384,12 @@ public abstract class ToolsHandler {
                 input2 = new WorkflowInputs.WorkflowInput(mgfIdsList.keySet().iterator().next(), WorkflowInputs.InputSourceType.HDA);
             }
             String json = readWorkflowFile(file);
-            json = json.replace("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/search_gui/3.2.11", search_GUI_Tool_Id);
-            json = json.replace("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/peptide_shaker/1.11.0", peptideShaker_Tool_Id);
+//            json = json.replace("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/search_gui/3.2.11", search_GUI_Tool_Id);
+            String version = search_GUI_Tool_Id.split("\\/")[search_GUI_Tool_Id.split("\\/").length-1];
+             json = json.replace("3.2.13.1", version);
+             version = peptideShaker_Tool_Id.split("\\/")[peptideShaker_Tool_Id.split("\\/").length-1];
+              json = json.replace("1.16.4", version);
+//            json = json.replace("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/peptide_shaker/1.11.0", peptideShaker_Tool_Id);
             json = json.replace("SearchGUI_Label", projectName + "-SearchGUI Results").replace("ZIP_Label", projectName + "-ZIP").replace("PSM_Label", projectName + "-PSM").replace("Proteins_Label", projectName + "-Proteins").replace("Peptides_Label", projectName + "-Peptides");
             //protein_database_options
             json = json.replace("\"create_decoy\\\\\\\": \\\\\\\"true\\\\\\\"", "\"create_decoy\\\\\\\": \\\\\\\"" + (Boolean.valueOf(searchParameters.getFastaFile().getName().split("__")[2])) + "\\\\\\\"");
@@ -399,7 +410,7 @@ public abstract class ToolsHandler {
                 for (String modification : searchParameters.getPtmSettings().getVariableModifications()) {
                     variableModification += modification + "\\\\\\\", \\\\\\\"";
                 }
-                
+
                 variableModification = variableModification.substring(0, variableModification.length() - 6) + "]";
                 json = json.replace("\\\\\\\"variable_modifications\\\\\\\": null", variableModification);
             }
@@ -429,7 +440,7 @@ public abstract class ToolsHandler {
                 case 2:
                     json = json.replace("{\\\\\\\"cleavage\\\\\\\": \\\\\\\"default\\\\\\\", \\\\\\\"missed_cleavages\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 0}}\\\",", "{\\\\\\\"cleavage\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 3}}\\\",");
                     break;
-                
+
             }
 //            System.out.println("at before json " + jsonToMap(jsonToMap(jsonToMap(jsonToMap(json).get("steps")).get("2")).get("tool_state")).get("precursor_options"));
             //  //precursor_options
@@ -438,20 +449,19 @@ public abstract class ToolsHandler {
 
 //          
 //          
-//            System.out.println("");
             selectedWf = galaxyWorkFlowClient.importWorkflow(json);
-            
+
             WorkflowInputs workflowInputs = new WorkflowInputs();
             workflowInputs.setWorkflowId(selectedWf.getId());
             workflowInputs.setDestination(new WorkflowInputs.ExistingHistory(historyId));
-            
+
             WorkflowInputs.WorkflowInput input = new WorkflowInputs.WorkflowInput(fastaFileId, WorkflowInputs.InputSourceType.HDA);
             workflowInputs.setInput("0", input);
             workflowInputs.setInput("1", input2);
-            
+
             Thread t = new Thread(() -> {
                 galaxyWorkFlowClient.runWorkflow(workflowInputs);
-                
+
             });
             t.start();
             //reindex mgf files
@@ -460,28 +470,29 @@ public abstract class ToolsHandler {
                 for (String mgfId : mgfIdsList.keySet()) {
                     this.reIndexFile(mgfId, projectName + "-" + mgfIdsList.get(mgfId) + "-" + (index++) + "-MGFFile", historyId);
                 }
-                
+
             });
             t1.start();
-            
+
             PeptideShakerVisualizationDataset tempWorkflowOutput = new PeptideShakerVisualizationDataset("tempID");
             tempWorkflowOutput.setName(projectName);
             tempWorkflowOutput.setGalaxyId("tempID");
             tempWorkflowOutput.setDownloadUrl("tempID");
             tempWorkflowOutput.setHistoryId(historyId);
             tempWorkflowOutput.setStatus("new");
-            tempWorkflowOutput.setType("Web Peptide Shaker Dataset");    
+            tempWorkflowOutput.setType("Web Peptide Shaker Dataset");
             tempWorkflowOutput.setJobId("tempID");
-            galaxyWorkFlowClient.deleteWorkflowRequest(selectedWf.getId());        
+            galaxyWorkFlowClient.deleteWorkflowRequest(selectedWf.getId());
             return tempWorkflowOutput;
-            
+
         } catch (Exception e) {
+            e.printStackTrace();
             if (selectedWf != null) {
                 galaxyWorkFlowClient.deleteWorkflowRequest(selectedWf.getId());
             }
             return null;
         }
-        
+
     }
 
     /**
@@ -492,7 +503,7 @@ public abstract class ToolsHandler {
      * @throws InterruptedException
      */
     private WorkflowInputs.WorkflowInput prepareWorkflowCollectionList(WorkflowInputs.InputSourceType inputSource, Set<String> dsIds, String historyId) {
-        
+
         CollectionResponse collectionResponse = constructFileCollectionList(historyId, dsIds);
         return new WorkflowInputs.WorkflowInput(collectionResponse.getId(),
                 inputSource);
@@ -518,45 +529,56 @@ public abstract class ToolsHandler {
         }
         return galaxyHistoriesClient.createDatasetCollection(historyId, collectionDescription);
     }
-    
+
     private boolean isFirmwareNewer(String testFW, String baseFW) {
-        
+
         int[] testVer = getVersionNumbers(testFW);
+        System.out.println("at group end " + testVer.length);
         int[] baseVer = getVersionNumbers(baseFW);
-        
+        System.out.println("at group end " + baseVer.length);
         for (int i = 0; i < testVer.length; i++) {
             if (testVer[i] != baseVer[i]) {
                 return testVer[i] > baseVer[i];
             }
         }
-        
+
         return true;
     }
-    
+
     private int[] getVersionNumbers(String ver) {
-        Matcher m = Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+)(beta(\\d*))?")
-                .matcher(ver);
-        if (!m.matches()) {
-            throw new IllegalArgumentException("Malformed FW version");
+        Matcher m;
+        if (ver.split("\\.").length == 4) {
+            m = Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+).(\\d+)")
+                    .matcher(ver);
+            if (m != null && !m.matches()) {
+                throw new IllegalArgumentException("Malformed FW version");
+            }
+            return new int[]{Integer.parseInt(m.group(1)), // major
+                Integer.parseInt(m.group(2)), // minor
+                Integer.parseInt(m.group(3)), // rev.
+                Integer.parseInt(m.group(4)) // "beta3"
+        };
+        } else {
+            m = Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+)")
+                    .matcher(ver);
+            if (m != null && !m.matches()) {
+                throw new IllegalArgumentException("Malformed FW version");
+            }
+            return new int[]{Integer.parseInt(m.group(1)), // major
+                Integer.parseInt(m.group(2)), // minor
+                Integer.parseInt(m.group(3)) // rev.
+        };
         }
-        
-        return new int[]{Integer.parseInt(m.group(1)), // major
-            Integer.parseInt(m.group(2)), // minor
-            Integer.parseInt(m.group(3)), // rev.
-            m.group(4) == null ? Integer.MAX_VALUE // no beta suffix
-            : m.group(5).isEmpty() ? 1 // "beta"
-            : Integer.parseInt(m.group(5)) // "beta3"
-    };
+
     }
-    
-  
+
     public boolean sendToNels(String historyId, String dsId, String galaxyURL) {
-        
+
         final HashMap inputDict = new HashMap();
         final HashMap values = initToolDatasetDict(dsId);
         String nelsFolder = VaadinSession.getCurrent().getAttribute("nelsFolderPath") + "";
         String nelsUserId = VaadinSession.getCurrent().getAttribute("nelsUserId") + "";
-        
+
         HashMap selectedFiles = new HashMap();
         selectedFiles.put("values", values);
         inputDict.put("hist_file", selectedFiles);
@@ -572,7 +594,7 @@ public abstract class ToolsHandler {
                 Thread.sleep(1000);
                 System.out.println("data sent :-) " + ds.getId());
             }
-            
+
             deleteDataset(galaxyURL, galaxyWorkingHistory.getId(), ds.getId());
         } catch (GalaxyResponseException e) {
             e.printStackTrace();
@@ -583,11 +605,11 @@ public abstract class ToolsHandler {
             Notification.show("Could not send it to NeLS :-( ", Notification.Type.ERROR_MESSAGE);
             return false;
         }
-        updateHistoryDatastructure(null);        
+        updateHistoryDatastructure(null);
         return true;
-        
+
     }
-    
+
     public boolean getFromNels(String historyId, String dsId) {
         final HashMap inputDict = new HashMap();
 //        final HashMap values = initToolDatasetDict(dsId);
@@ -610,16 +632,17 @@ public abstract class ToolsHandler {
         }
         updateHistoryDatastructure(null);
         return true;
-        
+
     }
-    
+
     private HashMap initToolDatasetDict(String datasetId) {
         final HashMap values = new HashMap();
         values.put("src", "hda");
         values.put("id", datasetId);
         return values;
-        
+
     }
-    public abstract void updateHistoryDatastructure(  PeptideShakerVisualizationDataset tempWorkflowOutput);
-    
+
+    public abstract void updateHistoryDatastructure(PeptideShakerVisualizationDataset tempWorkflowOutput);
+
 }

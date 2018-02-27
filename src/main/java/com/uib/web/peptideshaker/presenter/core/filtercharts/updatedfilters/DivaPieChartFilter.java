@@ -5,7 +5,7 @@ import com.ejt.vaadin.sizereporter.SizeReporter;
 import com.google.common.collect.Sets;
 import com.itextpdf.text.pdf.codec.Base64;
 
-import com.uib.web.peptideshaker.presenter.components.peptideshakerview.SelectionManager;
+import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.SelectionManager;
 import com.uib.web.peptideshaker.presenter.core.FilterButton;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.charts.RegistrableFilter;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.components.LegendItem;

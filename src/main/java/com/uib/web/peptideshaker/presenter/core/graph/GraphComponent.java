@@ -5,7 +5,7 @@ import com.ejt.vaadin.sizereporter.SizeReporter;
 import com.itextpdf.text.pdf.codec.Base64;
 import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideObject;
 import com.uib.web.peptideshaker.galaxy.dataobjects.ProteinObject;
-import com.uib.web.peptideshaker.presenter.components.peptideshakerview.components.coverage.Legend;
+import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components.coverage.Legend;
 import com.vaadin.data.Property;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.event.dd.DragAndDropEvent;
@@ -155,7 +155,7 @@ public abstract class GraphComponent extends VerticalLayout {
 
         bottomRightPanel = new HorizontalLayout();
         bottomRightPanel.setSpacing(false);
-        bottomRightPanel.setWidth(300, Unit.PIXELS);
+//        bottomRightPanel.setWidth(300, Unit.PIXELS);
         bottomRightPanel.setStyleName("inframe");
 
         rightBottomPanel = new HorizontalLayout();
@@ -329,10 +329,10 @@ public abstract class GraphComponent extends VerticalLayout {
         wrapper.setMargin(new MarginInfo(true, true, true, true));
         wrapper.addComponent(edgesImage);
         mainContainer.addComponent(wrapper, "left: 0px; top: 0px");
-        mainContainer.addComponent(bottomRightPanel, "right: " + 50 + "px; bottom: " + -15 + "px");
-        mainContainer.addComponent(lefTtopPanel, "left: " + 30 + "px; top: " + -15 + "px");
-        mainContainer.addComponent(rightBottomPanel, "right: " + 50 + "px; top: " + -15 + "px");
-        mainContainer.addComponent(leftBottomPanel, "left: " + 30 + "px; bottom: " + -15 + "px");
+        mainContainer.addComponent(bottomRightPanel, "right: " + 10 + "px; bottom: " + -15 + "px");
+        mainContainer.addComponent(lefTtopPanel, "left: " + 10 + "px; top: " + -15 + "px");
+        mainContainer.addComponent(rightBottomPanel, "right: " + 10 + "px; top: " + -15 + "px");
+        mainContainer.addComponent(leftBottomPanel, "left: " + 10 + "px; bottom: " + -15 + "px");
         wrapper = new VerticalLayout();
         wrapper.setSizeFull();
         wrapper.setMargin(new MarginInfo(true, true, true, true));
@@ -712,9 +712,9 @@ public abstract class GraphComponent extends VerticalLayout {
 
     private void redrawSelection(Object[] ids, boolean selectRelatedNodes) {
         edgesImage.addStyleName("hide");
-        for (Node node : nodesMap.values()) {
+        nodesMap.values().forEach((node) -> {
             node.setSelected(false);
-        }
+        });
         this.selectedPeptides.clear();
         this.selectedProteins.clear();
         for (Object id : ids) {
@@ -730,15 +730,17 @@ public abstract class GraphComponent extends VerticalLayout {
                 selectedPeptides.add(id);
             }
             if (selectRelatedNodes) {
-                for (Edge edge : edgesMap) {
+                edgesMap.stream().map((edge) -> {
                     edge.select(n, uniqueOnly);
+                    return edge;
+                }).map((edge) -> {
                     if (edge.getN2().isSelected()) {
                         selectedProteins.add(edge.getN2().getNodeId());
                     }
-                    if (edge.getN1().isSelected()) {
-                        selectedPeptides.add(edge.getN1().getNodeId());
-                    }
-                }
+                    return edge;
+                }).filter((edge) -> (edge.getN1().isSelected())).forEachOrdered((edge) -> {
+                    selectedPeptides.add(edge.getN1().getNodeId());
+                });
             }
         }
         drawEdges();

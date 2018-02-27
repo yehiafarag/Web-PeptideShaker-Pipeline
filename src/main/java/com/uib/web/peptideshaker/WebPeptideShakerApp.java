@@ -8,7 +8,7 @@ import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDa
 import com.uib.web.peptideshaker.presenter.GalaxyFileSystemPresenter;
 import com.uib.web.peptideshaker.presenter.PeptideShakerViewPresenter;
 import com.uib.web.peptideshaker.presenter.ToolPresenter;
-import com.uib.web.peptideshaker.presenter.WelcomePage;
+import com.uib.web.peptideshaker.presenter.WelcomePagePresenter;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.MarginInfo;
@@ -85,7 +85,7 @@ public class WebPeptideShakerApp extends VerticalLayout {
 
         nelsGalaxyConnectionBtn = new Link("NeLS-Galaxy", new ExternalResource("http://localhost:8084/NelsGalaxyRedirectForm/"));
         nelsGalaxyConnectionBtn.setStyleName("nelslogo");
-        WelcomePage welcomePage = new WelcomePage(Galaxy_Layer.getGalaxyConnectionPanel(), nelsGalaxyConnectionBtn);
+        WelcomePagePresenter welcomePage = new WelcomePagePresenter(Galaxy_Layer.getGalaxyConnectionPanel(), nelsGalaxyConnectionBtn);
         presentationManager.registerView(welcomePage);
         presentationManager.viewLayout(welcomePage.getViewId());
         toolsView = new ToolPresenter() {

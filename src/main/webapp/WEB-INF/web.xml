@@ -19,7 +19,7 @@
  </servlet>
  <servlet>
       <servlet-name>litemol</servlet-name>
-      <jsp-file>/VAADIN/litemol/litemolservlet.jsp</jsp-file>
+      <jsp-file>/VAADIN/litemol/LiteMolFrame.jsp</jsp-file>
  </servlet>
  <servlet-mapping>
       <servlet-name>jsmol</servlet-name>

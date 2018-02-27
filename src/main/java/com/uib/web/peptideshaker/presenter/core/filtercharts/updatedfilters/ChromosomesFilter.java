@@ -2,7 +2,7 @@ package com.uib.web.peptideshaker.presenter.core.filtercharts.updatedfilters;
 
 import com.uib.web.peptideshaker.presenter.core.filtercharts.charts.*;
 import com.google.common.collect.Sets;
-import com.uib.web.peptideshaker.presenter.components.peptideshakerview.SelectionManager;
+import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.SelectionManager;
 import com.uib.web.peptideshaker.presenter.core.FilterButton;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.components.RangeColorGenerator;
 import com.vaadin.event.LayoutEvents;

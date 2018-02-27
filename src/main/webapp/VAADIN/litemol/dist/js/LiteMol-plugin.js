@@ -52460,11 +52460,7 @@ SOFTWARE.
 	        )
 	      );
 
-	      // div style={ this.styles().toggles }>
-	      //           <div style={ this.styles().hue }>
-	      //             <Hue {...this.styles().Hue} {...this.props} pointer={ ChromePointer } onChange={ this.handleChange } />
-	      //           </div>
-	      //         </div>
+	      
 	    }
 	  }]);
 

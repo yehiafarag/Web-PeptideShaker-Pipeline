@@ -99,8 +99,6 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
             return proteinsMap.get(proteinKey);
         } else {
             ProteinObject newRelatedProt = updateProteinInformation(null, proteinKey);
-//            proteinsMap.put(proteinKey, newRelatedProt);
-            System.out.println("we found pnull protein key " + newRelatedProt.getDescription());
             return newRelatedProt;
         }
 

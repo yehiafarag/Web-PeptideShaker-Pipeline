@@ -2,6 +2,7 @@ package com.uib.web.peptideshaker.presenter.core.filtercharts.components;
 
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
@@ -66,7 +67,7 @@ public abstract class SelectableNode extends AbsoluteLayout implements LayoutEve
         nodeCircle.setData(columnIndex);
 
         nodeContainer.addComponent(nodeCircle);
-        nodeContainer.setComponentAlignment(nodeCircle, Alignment.MIDDLE_CENTER);
+        nodeContainer.setComponentAlignment(nodeCircle, Alignment.TOP_CENTER);
 
         this.disables = disables;
 
@@ -134,14 +135,14 @@ public abstract class SelectableNode extends AbsoluteLayout implements LayoutEve
         }
         this.selecatble = selecatble;
         if (selecatble) {
-            nodeCircle.setValue("<center style='color:rgb(" + nodeColor.getRed() + "," + nodeColor.getGreen() + "," + nodeColor.getBlue() + "); width:100% !important; height:100% !important'>&#9899;</center>");
+            nodeCircle.setValue("<center style='color:rgb(" + nodeColor.getRed() + "," + nodeColor.getGreen() + "," + nodeColor.getBlue() + "); width:100% !important; height:100% !important'>"+FontAwesome.CIRCLE.getHtml()+"</center>");
 
 //             nodeContainer.setVisible(true);
 //            nodeCircle.setIcon(VaadinIcons.CIRCLE);
 //            SelectableNode.this.addStyleName("selectablebubble");
         } else {
 //            columnIndex=-1;
-            nodeCircle.setValue("<center style='z-index: 1 !important;; color:rgb(" + Color.WHITE.getRed() + "," + Color.WHITE.getGreen() + "," + Color.WHITE.getBlue() + "); width:100% !important; height:100% !important'>&#9899;</center>");
+            nodeCircle.setValue("<center style='z-index: 1 !important;; color:rgb(" + Color.WHITE.getRed() + "," + Color.WHITE.getGreen() + "," + Color.WHITE.getBlue() + "); width:100% !important; height:100% !important'>"+FontAwesome.CIRCLE.getHtml()+"</center>");
 
 //            nodeCircle.setIcon(VaadinIcons.CIRCLE_THIN);
 //             nodeContainer.setVisible(false);

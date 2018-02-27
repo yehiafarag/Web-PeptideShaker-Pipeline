@@ -5,8 +5,8 @@ import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDa
 import com.uib.web.peptideshaker.galaxy.dataobjects.SystemDataSet;
 import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
 import com.github.jmchilton.blend4j.galaxy.GalaxyInstance;
-import com.github.jmchilton.blend4j.galaxy.beans.User;
-import com.uib.web.peptideshaker.presenter.components.GalaxyConnectionPanelLayout;
+import com.uib.web.peptideshaker.presenter.layouts.GalaxyConnectionPanelLayout;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
 import com.vaadin.server.VaadinSession;
@@ -78,7 +78,7 @@ public abstract class GalaxyLayer {
         galaxyConnectionPanel.setWidth(100, Sizeable.Unit.PERCENTAGE);
         galaxyConnectionPanel.setSpacing(true);
 
-        Label connectionStatuesLabel = new Label("Galaxy is<font color='red'>  not connected </font><font size='3' color='red'> &#128528;</font>");
+        Label connectionStatuesLabel = new Label("Galaxy is<font color='red'>  not connected </font><font size='3' color='red'> "+FontAwesome.FROWN_O.getHtml()+"</font>");
         connectionStatuesLabel.setContentMode(ContentMode.HTML);
 
         connectionStatuesLabel.setHeight(25, Sizeable.Unit.PIXELS);
@@ -165,7 +165,7 @@ public abstract class GalaxyLayer {
                         };//                        
                         connectionBtn.setCaption("Disconnect");
                         connectionBtn.addStyleName("disconnect");
-                        connectionStatuesLabel.setValue("Galaxy is <font color='green'>connected </font><font size='3' color='green'> &#128522;</font>");
+                        connectionStatuesLabel.setValue("Galaxy is <font color='green'>connected </font><font size='3' color='green'> "+FontAwesome.SMILE_O.getHtml()+"</font>");
                         systemConnected();
                     } else {
                         System.out.println("at null galaxy");
@@ -211,7 +211,7 @@ public abstract class GalaxyLayer {
                 //disconnect from galaxy
                 connectionBtn.setCaption("Connect");
                 connectionBtn.removeStyleName("disconnect");
-                connectionStatuesLabel.setValue("Galaxy is<font color='red'>  not connected </font><font size='3' color='red'> &#128528;</font>");
+                connectionStatuesLabel.setValue("Galaxy is<font color='red'>  not connected </font><font size='3' color='red'> "+FontAwesome.FROWN_O.getHtml()+"</font>");
                 galaxyConnectionSettingsPanel.disconnectGalaxy();
                 historyHandler = null;
                 toolsHandler = null;
@@ -363,16 +363,18 @@ public abstract class GalaxyLayer {
     /**
      * Run Online Peptide-Shaker work-flow
      *
+     * @param projectName
      * @param fastaFileId FASTA file dataset id
      * @param mgfIdsList list of MGF file dataset ids
      * @param searchEnginesList List of selected search engine names
-     * @param historyId galaxy history id that will store the results
+     * @param searchParameters
+     * @param otherSearchParameters
      */
     public void executeWorkFlow(String projectName, String fastaFileId, Set<String> mgfIdsList, Set<String> searchEnginesList, SearchParameters searchParameters, Map<String, Boolean> otherSearchParameters) {
         Map<String, String> mgfMap = new LinkedHashMap<>();
-        for (String mgfId : mgfIdsList) {
+        mgfIdsList.forEach((mgfId) -> {
             mgfMap.put(mgfId, historyHandler.getMgfFilesMap().get(mgfId).getName());
-        }
+        });
         PeptideShakerVisualizationDataset tempWorkflowOutput = toolsHandler.executeWorkFlow(projectName, fastaFileId, mgfMap, searchEnginesList, historyHandler.getWorkingHistoryId(), searchParameters, otherSearchParameters);
         toolsHandler.updateHistoryDatastructure(tempWorkflowOutput);
     }
