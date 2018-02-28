@@ -115,7 +115,7 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
 
         Selection_Manager.RegistrProteinInformationComponent(ProteinVisulizationLevelContainer.this);
 
-        proteinCoverageContainer = new ProteinCoverageContainer() {
+        proteinCoverageContainer = new ProteinCoverageContainer(proteinStructurePanel.getChainCoverageLayout()) {
             @Override
             public void selectPeptide(Object proteinId, Object peptideId) {
                 selectedProteinGraph.selectPeptide(proteinId, peptideId);
@@ -148,7 +148,6 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
     public void selectionChange(String type) {
         String proteinsId = Selection_Manager.getSelectedProteinId();
         String imgUrl = selectedProteinGraph.updateGraphData(proteinsId);
-//        proteinStructurePanel.updatePdbMap(selectedProteinGraph.getProteinNodes().keySet());
         proteinCoverageContainer.selectDataset(selectedProteinGraph.getProteinNodes(), selectedProteinGraph.getPeptidesNodes(), selectedProteinGraph.getSelectedProteins(), selectedProteinGraph.getSelectedPeptides());
 
         if (imgUrl != null) {
@@ -156,7 +155,6 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
         } else {
             this.proteinoverviewBtn.updateIcon(null);
         }
-//        proteinStructurePanel.updatePanel(selectedProteinGraph.getSelectedProteins());
     }
 
     @Override
@@ -179,6 +177,8 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
     }
 
     public void activate3DProteinView() {
+        
+        proteinStructurePanel.updatePdbMap(selectedProteinGraph.getProteinNodes().keySet());
         proteinStructurePanel.activate3DProteinView();
     }
 

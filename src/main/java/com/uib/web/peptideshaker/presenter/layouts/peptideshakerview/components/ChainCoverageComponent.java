@@ -1,6 +1,11 @@
 package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components;
 
+import com.ejt.vaadin.sizereporter.ComponentResizeEvent;
+import com.ejt.vaadin.sizereporter.SizeReporter;
 import com.itextpdf.text.pdf.codec.Base64;
+import com.vaadin.server.ExternalResource;
+import com.vaadin.ui.Image;
+import com.vaadin.ui.Notification;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
@@ -25,19 +30,30 @@ public class ChainCoverageComponent {
 
     private final int proteinSequenceLength;
     private final Map<String, Rectangle> chainsBlocks;
-    private int compWidth = 250;
+    private int compWidth = 260;
     private int comHeight = 30;
     private double correctFactor;
     private final int[] coverageArr;
+    private Image chainCoverageWebComponent;
 
     public ChainCoverageComponent(int proteinSequenceLength) {
         this.proteinSequenceLength = proteinSequenceLength;
-        this.correctFactor = (double) (compWidth - 50) / (double) this.proteinSequenceLength;
+        this.correctFactor = (double) (compWidth - 60) / (double) this.proteinSequenceLength;
         this.chainsBlocks = new LinkedHashMap<>();
         this.coverageArr = new int[proteinSequenceLength];
+        this.chainCoverageWebComponent = new Image();
+        this.chainCoverageWebComponent.setSizeFull();
+        SizeReporter imageSizeReporter = new SizeReporter(chainCoverageWebComponent);
+        imageSizeReporter.addResizeListener((ComponentResizeEvent event) -> {
+            Notification.show("new width " + event.getWidth() + "   new h " + event.getHeight());
+            this.compWidth = event.getWidth();
+            chainCoverageWebComponent.setSource(new ExternalResource(drawImage(lasteSelectedChain)));
+        });
+
     }
 
     int counter = 1;
+    private String lasteSelectedChain;
 
     public void addChainRange(String chainId, int start, int end) {
         Rectangle chain = new Rectangle(start, 10, (end - start + 1), 10);
@@ -61,7 +77,7 @@ public class ChainCoverageComponent {
         for (int i = 0; i < coverageArr.length; i++) {
             counter += coverageArr[i];
         }
-        coverage = ((double)counter / (double) this.proteinSequenceLength) * 100.00;
+        coverage = ((double) counter / (double) this.proteinSequenceLength) * 100.00;
         return coverage;
     }
 
@@ -72,15 +88,16 @@ public class ChainCoverageComponent {
 
     private Color chaincolor;
     private Color bordercolor;
-    DecimalFormat df = new DecimalFormat("#.##");
+    DecimalFormat df = new DecimalFormat("#.#");
 
     private String drawImage(String chainId) {
+        lasteSelectedChain = chainId;
         BufferedImage image = new BufferedImage(compWidth, comHeight, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = image.createGraphics();
 
         //draw sequence line
         g2.setColor(Color.GRAY);
-        g2.fillRect(5, 14, (compWidth - 50), 3);
+        g2.fillRect(5, 14, (compWidth - 60), 3);
 
         //chaine border
         g2.setStroke(new BasicStroke(2));
@@ -109,7 +126,7 @@ public class ChainCoverageComponent {
             }
         }
 
-        String v ;
+        String v;
         if (!chainId.contains("All")) {
             counter = 0;
             chainsBlocks.keySet().forEach((c) -> {
@@ -118,7 +135,7 @@ public class ChainCoverageComponent {
                     g2.drawRect(5 + (int) ((double) chainsBlocks.get(c).x * correctFactor), chainsBlocks.get(c).y, (int) ((double) chainsBlocks.get(c).width * correctFactor), chainsBlocks.get(c).height);
                     g2.setColor(Color.LIGHT_GRAY);
                     g2.fillRect(5 + (int) ((double) chainsBlocks.get(c).x * correctFactor), chainsBlocks.get(c).y, (int) ((double) chainsBlocks.get(c).width * correctFactor), chainsBlocks.get(c).height);
-                    counter += (chainsBlocks.get(c).width-1);
+                    counter += (chainsBlocks.get(c).width - 1);
                 }
             });
 
@@ -130,8 +147,8 @@ public class ChainCoverageComponent {
         //total chain coverage
 //     
         g2.setColor(Color.BLACK);
-        g2.setFont(new Font("\"Open Sans\", sans-serif", Font.PLAIN, 15));
-        g2.drawString(v + " %", (compWidth - 45), (comHeight / 2) + 8);
+        g2.setFont(new Font("\"Open Sans\", sans-serif", Font.PLAIN, 14));
+        g2.drawString(v + "%", (compWidth - 40), (comHeight / 2) + 6);
         g2.dispose();
         byte[] imageData = null;
         try {
@@ -143,16 +160,21 @@ public class ChainCoverageComponent {
 
         String base64 = Base64.encodeBytes(imageData);
         base64 = "data:image/png;base64," + base64;
+        chainCoverageWebComponent.setSource(new ExternalResource(base64));
 
         return base64;
     }
 
     public void setCompWidth(int compWidth) {
         this.compWidth = compWidth;
-        this.correctFactor = (double) this.proteinSequenceLength / (double) compWidth;
+        this.correctFactor = (double) this.proteinSequenceLength / ((double) compWidth - 60.0);
     }
 
     public void setComHeight(int comHeight) {
         this.comHeight = comHeight;
+    }
+
+    public Image getChainCoverageWebComponent() {
+        return chainCoverageWebComponent;
     }
 }

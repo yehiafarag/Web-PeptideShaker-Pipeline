@@ -8,6 +8,7 @@ import com.uib.web.peptideshaker.presenter.core.PopupLabel;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ExternalResource;
+import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -24,9 +25,11 @@ public abstract class ProteinCoverageContainer extends VerticalLayout {
 
     private final Table proteinCoverageTable;
     private final Map<Object, Object[]> tableData;
+    private final AbsoluteLayout chainCoverageLayout;
 
-    public ProteinCoverageContainer() {
+    public ProteinCoverageContainer( AbsoluteLayout chainCoverageLayout) {
         ProteinCoverageContainer.this.setSizeFull();
+        this.chainCoverageLayout=chainCoverageLayout;
         tableData = new LinkedMap<>();
         proteinCoverageTable = new Table(" ");
         proteinCoverageTable.setStyleName(ValoTheme.TABLE_COMPACT);
@@ -54,7 +57,14 @@ public abstract class ProteinCoverageContainer extends VerticalLayout {
         this.proteinCoverageTable.removeAllItems();
         for (Object id : selectedProteinsItems) {
             this.proteinCoverageTable.addItem(tableData.get(id), id);
-            ((ProteinCoverageComponent) tableData.get(id)[3]).selectPeptides(selectedPeptidesItems);
+           ProteinCoverageComponent pcov = ((ProteinCoverageComponent) tableData.get(id)[3]);
+           pcov.selectPeptides(selectedPeptidesItems);
+           if(selectedProteinsItems.size()==1)
+           {
+               chainCoverageLayout.detach();
+               pcov.enable3D(chainCoverageLayout);
+               System.out.println("ready to add the component ");
+           }
         }
 
     }

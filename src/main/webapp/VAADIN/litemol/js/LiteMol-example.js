@@ -1092,14 +1092,16 @@ var LiteMolPluginInstance;
         var json = ((document.getElementById('pdbid').value) || '');
         var jsonObj = JSON.parse(json);
         var id = jsonObj.pdbId;
+          var shwoWater = (document.getElementById('showWB').value=== 'true');
         // this builds the transforms needed to create a molecule
         var action = Transform.build()
                 .add(plugin.context.tree.root, Transformer.Data.Download, {url: "https://www.ebi.ac.uk/pdbe/static/entry/" + id + "_updated.cif", type: 'String', id: id})
                 .then(Transformer.Data.ParseCif, {id: id}, {isBinding: true})
                 .then(Transformer.Molecule.CreateFromMmCif, {blockIndex: 0}, {isBinding: true})
                 .then(Transformer.Molecule.CreateModel, {modelIndex: 0}, {isBinding: false, ref: 'model'})
-                .then(Transformer.Molecule.CreateMacromoleculeVisual, {polymer: true, polymerRef: 'polymer-visual', het: true, water: true});
+                .then(Transformer.Molecule.CreateMacromoleculeVisual, {polymer: true, polymerRef: 'polymer-visual', het: shwoWater, water: shwoWater});
         // can also add hetRef and waterRef; the refs allow us to reference the model and visual later.
+        taction=action;
         applyTransforms(action);
 
         //.then(() => nextAction())
@@ -1107,6 +1109,8 @@ var LiteMolPluginInstance;
 
     });
     addButton('Load Ligand', function () {
+     
+        
         // in the ligand instance, you will want to NOT include Bootstrap.Behaviour.ShowInteractionOnSelect(5) 
         var ligandStyle = {
             type: 'BallsAndSticks',
@@ -1177,7 +1181,7 @@ var LiteMolPluginInstance;
     });
     addButton('Color Sequences', function () {
 
-        var json = ((document.getElementById('pdbid').value) || '');
+        var json = ((document.getElementById('pdbid').value) || '');      
         var jsonObj = JSON.parse(json);
         var model = plugin.selectEntities('model')[0];
         var coloringJson = jsonObj.coloring;
@@ -1235,6 +1239,7 @@ var LiteMolPluginInstance;
         var query = Query.sequence('1', 'A', {seqNumber: 10}, {seqNumber: 25});
         Command.Molecule.FocusQuery.dispatch(plugin.context, {model: model, query: query});
     });
+    var taction;
     addButton('Color Chains', function () {
         var visual = selectNodes('polymer-visual')[0];
         var model = selectNodes('model')[0];
@@ -1353,7 +1358,7 @@ var LiteMolPluginInstance;
                                     });
                                     addHeader('Input data');
                                     addTextInput('pdbid', '', '4 letter PDB id...');
-                                    addTextInput('sequence', '', '4 letter PDB id...');
+                                    addTextInput('showWB', '', '4 letter PDB id...');
 
                                     var DefaultComponents = [
                                         Plugin.Components.Visualization.HighlightInfo(LayoutRegion.Main, true),

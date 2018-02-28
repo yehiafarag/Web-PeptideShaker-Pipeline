@@ -16,14 +16,12 @@ import com.vaadin.ui.themes.ValoTheme;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import static umontreal.iro.lecuyer.util.PrintfFormat.e;
 
 /**
  * This class represents 3D protein structure panel using JSMOL web service
@@ -33,10 +31,12 @@ import static umontreal.iro.lecuyer.util.PrintfFormat.e;
 public class ProteinStructurePanel extends AbsoluteLayout {
 
     private final VerticalLayout LiteMolPanel;
+    private AbsoluteLayout chainCoverageLayout;
 //    private JSMOLComponent jSmolcomponent;
     private LiteMOL3DComponent liteMOL3DComponent;
     private final ConcurrentHashMap<String, WebFindPdbForUniprotAccessions> accessionToPDBMap;
     private final Map<String, List<HashMap<String, Object>>> peptidesQueryMap;
+
     private boolean moleculeMode = true;
     private final ComboBox pdbMatchesSelect;
     private final ComboBox pdbChainsSelect;
@@ -44,7 +44,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
     private final Property.ValueChangeListener pdbChainsSelectlistener;
     private final Map<Object, List<Object[]>> pdbMachesTableData;
     private final Button playBtn;
-//    private final Button refreshBtn;
+    private ChainCoverageComponent lastSelectedChainCoverage //    private final Button refreshBtn;
     private Object lastSelectedAccession;
     private String lastSelectedProteinSequence;
 //    private String lastQuerey;
@@ -67,6 +67,21 @@ public class ProteinStructurePanel extends AbsoluteLayout {
         liteMOL3DComponent = new LiteMOL3DComponent();
         liteMOL3DComponent.setSizeFull();
         liteMOL3DComponent.setVisible(true);
+
+        chainCoverageLayout = new AbsoluteLayout() {
+
+            @Override
+            public void setVisible(boolean v) {
+                if (this.getParent() != null) {
+                    this.getParent().setVisible(v);
+                }
+                super.setVisible(v);
+
+            }
+
+        };
+        chainCoverageLayout.setSizeFull();
+        chainCoverageLayout.setHeight(30, Unit.PIXELS);
 
         LiteMolPanel.addComponent(liteMOL3DComponent);
 
@@ -116,11 +131,13 @@ public class ProteinStructurePanel extends AbsoluteLayout {
         pdbChainsSelect.addStyleName("selectchain3dMenue");
         pdbChainsSelect.setNullSelectionAllowed(false);
 //        pdbChainsSelect.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ICON_ONLY);
-        ProteinStructurePanel.this.addComponent(pdbChainsSelect, "left: 152px; bottom:0px");
+        ProteinStructurePanel.this.addComponent(pdbChainsSelect, "left: 132px; bottom:0px");
         this.pdbChainsSelectlistener = ((Property.ValueChangeEvent event) -> {
             LiteMolPanel.setVisible(pdbChainsSelect.getValue() != null);
             if (LiteMolPanel.isVisible()) {
-
+                lastSelectedChainCoverage.selectChain(pdbChainsSelect.getValue() + "")
+                chainCoverageLayout.removeAllComponents();
+                chainCoverageLayout.addComponent(lastSelectedChainCoverage.getChainCoverageWebComponent());
                 contsructQueries(pdbBlockMap.get(pdbChainsSelect.getValue() + ""));
 
 //                captionLabel.setValue(("PDB Match: " + pdbMatchesTable.getValue() + " <br/>PDB Chain: " + pdbChainsTable.getValue()).replace("null", "<font style='color:red'>Select from table</font>"));
@@ -146,10 +163,11 @@ public class ProteinStructurePanel extends AbsoluteLayout {
             pdbBlockMap.clear();
             PdbParameter param = pdbToParamMap.get(pdbMatchesSelect.getValue().toString());
             PdbBlock[] pdbChains = param.getBlocks();
-            ChainCoverageComponent chainCoverage = reCalculateChainRange(pdbChains, proteinSequenceLength);
+
+            lastSelectedChainCoverage = reCalculateChainRange(pdbChains, proteinSequenceLength);
             pdbChainsSelect.addItem("All");
             pdbChainsSelect.setItemCaption("All", "All");
-            pdbChainsSelect.setItemIcon("All", new ExternalResource(chainCoverage.selectChain("All")));
+            pdbChainsSelect.setItemIcon("All", new ExternalResource(lastSelectedChainCoverage.selectChain("All")));
             pdbBlockMap.put("All", new ArrayList<>());
 
             for (PdbBlock chain : pdbChains) {
@@ -162,7 +180,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
                 }
                 pdbChainsSelect.addItem(chain.getBlock());
                 pdbChainsSelect.setItemCaption(chain.getBlock(), chain.getBlock());
-                pdbChainsSelect.setItemIcon(chain.getBlock(), new ExternalResource(chainCoverage.selectChain(chain.getBlock())));
+                pdbChainsSelect.setItemIcon(chain.getBlock(), new ExternalResource(lastSelectedChainCoverage.selectChain(chain.getBlock())));
                 pdbBlockMap.get(chain.getBlock()).add(chain);
                 pdbBlockMap.get("All").add(chain);
 
@@ -186,7 +204,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
         });
         pdbMatchesSelect.addValueChangeListener(pdbMatchSelectlistener);
 //        pdbMatchesTable.addValueChangeListener(pdbMatchTablelistener);
-
+        ProteinStructurePanel.this.addComponent(chainCoverageLayout, "left: 0px; top:40px");
         // Create the selection component
     }
 
@@ -195,6 +213,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
         liteMOL3DComponent.reset3DView();
         pdbMatchesSelect.setVisible(false);
         pdbChainsSelect.setVisible(false);
+        chainCoverageLayout.setVisible(false);
         playBtn.setCaption("Enable 3D");
         lastSelectedPeptideKey = "";
 
@@ -209,6 +228,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
 
         pdbMatchesSelect.setVisible(true);
         pdbChainsSelect.setVisible(true);
+        chainCoverageLayout.setVisible(true);
         playBtn.setCaption("Disable 3D");
         loadData(lastSelectedAccession, lastSelectedProteinSequence);
 
@@ -232,23 +252,24 @@ public class ProteinStructurePanel extends AbsoluteLayout {
     private Thread updatePdbMapThread;
     private String currentprocessAcc;
 
-    public void updatePdbMap(String accession) {
-        try {
-            if (updatePdbMapThread != null && updatePdbMapThread.isAlive()) {
-                updatePdbMapThread.interrupt();
-                accessionToPDBMap.clear();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            accessionToPDBMap.remove(currentprocessAcc);
-        }
-        updatePdbMapThread = new Thread(() -> {
-//            accessionList.stream().filter((accession) -> (!accessionToPDBMap.containsKey(accession))).forEachOrdered((accession) -> {
+    public void updatePdbMap(Set<String> accessionList) {
+//        try {
+//            if (updatePdbMapThread != null && updatePdbMapThread.isAlive()) {
+//                System.out.println("lets intrupt the thread " + currentprocessAcc);
+//                updatePdbMapThread.interrupt();
+//                accessionToPDBMap.clear();
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            accessionToPDBMap.remove(currentprocessAcc);
+//        }
+//        updatePdbMapThread = new Thread(() -> {
+        accessionList.stream().filter((accession) -> (!accessionToPDBMap.containsKey(accession))).forEachOrdered((accession) -> {
             currentprocessAcc = accession;
             accessionToPDBMap.put(accession, new WebFindPdbForUniprotAccessions(accession));
-//            });
         });
-        updatePdbMapThread.start();
+//        });
+//        updatePdbMapThread.start();
 
     }
     private final Map<String, PdbParameter> pdbToParamMap = new LinkedHashMap<>();
@@ -262,11 +283,16 @@ public class ProteinStructurePanel extends AbsoluteLayout {
         pdbMachesTableData.clear();
         String accession = accessionObject.toString();
         if (!accessionToPDBMap.containsKey(accession)) {
-            accessionToPDBMap.put(accession, new WebFindPdbForUniprotAccessions(accession));
+            WebFindPdbForUniprotAccessions temp = new WebFindPdbForUniprotAccessions(accession);
+            accessionToPDBMap.put(accession, temp);
         }
         proteinSequenceLength = proteinSequence.length();
-
         WebFindPdbForUniprotAccessions data = accessionToPDBMap.get(accession);
+        while (!data.isValid()) {
+            data.reProcessInformation();
+
+        }
+
         List<PdbParameter> resultsVictor = data.getPdbs();
         Collections.reverse(resultsVictor);
 
@@ -279,37 +305,16 @@ public class ProteinStructurePanel extends AbsoluteLayout {
             pdbMatchesSelect.setItemCaption(param.getPdbaccession(), param.getPdbaccession() + "     (" + param.getTitle() + ") " + param.getExperiment_type() + " , " + param.getBlocks().length);
             return param;
         }).forEachOrdered((param) -> {
-            pdbToParamMap.put(param.getPdbaccession(), param);
-//            List<Object[]> pdbChainTableData = new ArrayList<>();
-//            PdbBlock[] pdbChains = param.getBlocks();
-//            ChainCoverageComponent chainCoverage = reCalculateChainRange(pdbChains, proteinSequenceLength);
-//            pdbChainTableData.add(new Object[]{"All", "All Chains", chainCoverage.getCoverage() + " %", chainCoverage.selectChain("All")});
-//            count = 2;
-//            for (PdbBlock chain : pdbChains) {
-//
-//                if (!pdbBlockMap.containsKey(chain.getBlock())) {
-//                    double range = Math.max(1.0, ((double) chain.getEndProtein() - chain.getStartProtein()));
-//                    pdbChainTableData.add(new Object[]{chain.getBlock(), ("   [" + (chain.getStartProtein() + "," + chain.getEndProtein()) + "]   "), (((range) / proteinSequenceLength) * 100), chainCoverage.selectChain(chain.getBlock())});
-//                    List<PdbBlock> blocks = new ArrayList<>();
-//                    pdbBlockMap.put(chain.getBlock(), blocks);
-//
-//                }
-//                pdbBlockMap.get(chain.getBlock()).add(chain);
-//
-//            }
-//            System.out.println("chain blocks for " + param.getPdbaccession() + "  ----- " + pdbChainTableData.size());
-//            pdbMachesTableData.put(param.getPdbaccession(), pdbChainTableData);
-//            System.out.println("------------------------------------------------------");
+            pdbToParamMap.put(param.getPdbaccession(), param);//         
         });
 
         pdbMatchesSelect.setVisible(!pdbMatchesSelect.getItemIds().isEmpty());
         pdbChainsSelect.setVisible(pdbMatchesSelect.isVisible());
-//        pdbMatchesTable.setCaption("PDB Matches (" + pdbMatchesTable.getItemIds().size() + ")");
+        chainCoverageLayout.setVisible(pdbMatchesSelect.isVisible())
         pdbMatchesSelect.addValueChangeListener(pdbMatchSelectlistener);
         if (!pdbMatchesSelect.getItemIds().isEmpty()) {
-            pdbMatchesSelect.setValue(pdbMatchesSelect.getItemIds().iterator().next());
+            pdbMatchesSelect.setValue(pdbMatchesSelect.getItemIds().toArray()[0]);
             playBtn.addStyleName("poweron");
-//            refreshBtn.setEnabled(true);
         } else {
             Notification.show("No visulization available ", Notification.Type.TRAY_NOTIFICATION);
             reset();
@@ -351,7 +356,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
                 int start = selectedBlock.getStartBlock();
                 int end = selectedBlock.getEndBlock();//we need color
                 HashMap chainSeq = initSequenceMap(selectedBlock.getBlock(), start, end, "valid");
-                 chainSeq.put("color", initColorMap(new int[]{255, 195, 206}));
+                chainSeq.put("color", initColorMap(new int[]{255, 195, 206}));
                 entriesSet.add(chainSeq);
             }
         }
@@ -510,6 +515,10 @@ public class ProteinStructurePanel extends AbsoluteLayout {
     public void setMode(boolean moleculeMode) {
         this.moleculeMode = moleculeMode;
         selectPeptide(lastSelectedPeptideKey);
+    }
+
+    public AbsoluteLayout getChainCoverageLayout() {
+        return chainCoverageLayout;
     }
 }
 

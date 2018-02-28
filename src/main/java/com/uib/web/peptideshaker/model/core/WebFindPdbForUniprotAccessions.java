@@ -55,71 +55,95 @@ public class WebFindPdbForUniprotAccessions {
      */
     private boolean urlRead = false;
 
+    private boolean valid = false;
+
+    public boolean isValid() {
+        return valid;
+    }
+
     /**
      * Constructor.
      *
      * @param aProteinAccession the protein accession
      */
     public WebFindPdbForUniprotAccessions(String aProteinAccession) {
-
         this.iProteinAccession = aProteinAccession;
-        try {            // find features iProteinAccession
-            String urlMake = "http://www.rcsb.org/pdb/rest/das/pdb_uniprot_mapping/alignment?query=" + iProteinAccession + ";";
-            iDasReader = readUrl(urlMake);
+        this.reProcessInformation();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            // ignore
+    }
+
+    public final void reProcessInformation() {
+        if (valid) {
+            return;
         }
-        iAlignments = iDasReader.getAllAlignments();
         try {
-            for (DasAlignment align : iAlignments) {
-                String pdb = align.getPdbAccession().substring(0, 4);
-                pdb = pdb.toUpperCase();
+            Thread t = new Thread(() -> {
+                try {            // find features iProteinAccession
+                    String urlMake = "http://www.rcsb.org/pdb/rest/das/pdb_uniprot_mapping/alignment?query=" + iProteinAccession + ";";
+                    iDasReader = readUrl(urlMake);
 
-                boolean newPdb = true;
-                PdbParameter pdbParamToAddBlock = null;
-                for (int v = 0; v < iPdbs.size(); v++) {
-                    PdbParameter pdbParam = iPdbs.get(v);
-                    if (pdb.equalsIgnoreCase(pdbParam.getPdbaccession())) {
-                        newPdb = false;
-                        v = iPdbs.size();
-                        pdbParamToAddBlock = pdbParam;
-                    }
+                } catch (Exception e) {
+                    valid = false;
+                    e.printStackTrace();
+                    return;
+                    // ignore
                 }
+                iAlignments = iDasReader.getAllAlignments();
+                try {
+                    for (DasAlignment align : iAlignments) {
+                        String pdb = align.getPdbAccession().substring(0, 4);
+                        pdb = pdb.toUpperCase();
 
-                if (newPdb || pdbParamToAddBlock == null) {
-                    pdbParamToAddBlock = new PdbParameter(pdb, align.getTitle(), align.getExperimentType(), align.getResolution());
-                    for (AlignmentBlock alignBlock : align.getAlignmentBlocks()) {
-                        PdbBlock block = new PdbBlock(alignBlock.getPdbAccession().substring(5), alignBlock.getSpStart(), alignBlock.getSpEnd(), alignBlock.getPdbStart(), alignBlock.getPdbEnd());
-                        pdbParamToAddBlock.addBlock(block);
+                        boolean newPdb = true;
+                        PdbParameter pdbParamToAddBlock = null;
+                        for (int v = 0; v < iPdbs.size(); v++) {
+                            PdbParameter pdbParam = iPdbs.get(v);
+                            if (pdb.equalsIgnoreCase(pdbParam.getPdbaccession())) {
+                                newPdb = false;
+                                v = iPdbs.size();
+                                pdbParamToAddBlock = pdbParam;
+                            }
+                        }
+
+                        if (newPdb || pdbParamToAddBlock == null) {
+                            pdbParamToAddBlock = new PdbParameter(pdb, align.getTitle(), align.getExperimentType(), align.getResolution());
+                            for (AlignmentBlock alignBlock : align.getAlignmentBlocks()) {
+                                PdbBlock block = new PdbBlock(alignBlock.getPdbAccession().substring(5), alignBlock.getSpStart(), alignBlock.getSpEnd(), alignBlock.getPdbStart(), alignBlock.getPdbEnd());
+                                pdbParamToAddBlock.addBlock(block);
+                            }
+                            iPdbs.add(pdbParamToAddBlock);
+                        } else {
+                            for (AlignmentBlock alignBlock : align.getAlignmentBlocks()) {
+                                PdbBlock block = new PdbBlock(alignBlock.getPdbAccession().substring(5), alignBlock.getSpStart(), alignBlock.getSpEnd(), alignBlock.getPdbStart(), alignBlock.getPdbEnd());
+                                pdbParamToAddBlock.addBlock(block);
+                            }
+                        }
                     }
-                    iPdbs.add(pdbParamToAddBlock);
-                } else {
-                    for (AlignmentBlock alignBlock : align.getAlignmentBlocks()) {
-                        PdbBlock block = new PdbBlock(alignBlock.getPdbAccession().substring(5), alignBlock.getSpStart(), alignBlock.getSpEnd(), alignBlock.getPdbStart(), alignBlock.getPdbEnd());
-                        pdbParamToAddBlock.addBlock(block);
-                    }
+//            if (!iPdbs.isEmpty()) {
+//                for (PdbParameter param : iPdbs) {
+//                    for (PdbBlock block : param.getBlocks()) {
+//                        System.out.print(block.getBlock() + " ");
+//                    }
+//                    System.out.println("} ");
+//                }
+//
+//            } else {
+//                System.out.println("at pdbid " + iProteinAccession + "-- has empty view ");
+//            }
+
+                } catch (StringIndexOutOfBoundsException e) {
+                    System.out.println("Error in reading das pdb alignment");
+                    valid = false;
+                    e.printStackTrace();
+                    return;
                 }
-            }
-            if (!iPdbs.isEmpty()) {
-                for (PdbParameter param : iPdbs) {
-                    System.out.print("pdbid " + iProteinAccession + "-- " + param.getPdbaccession() + "-- " + param.getBlocks().length + "  { ");
-                    for (PdbBlock block : param.getBlocks()) {
-                        System.out.print(block.getBlock() + " ");
-                    }
-                    System.out.println("} ");
-                }
-
-            } else {
-                System.out.println("at pdbid " + iProteinAccession + "-- has empty view ");
-            }
-
-        } catch (StringIndexOutOfBoundsException e) {
-            System.out.println("Error in reading das pdb alignment");
-            e.printStackTrace();
+                valid = true;
+            });
+            t.start();
+            t.join();
+        } catch (InterruptedException ex) {
+            valid = false;
         }
-
     }
 
     /**
@@ -159,20 +183,20 @@ public class WebFindPdbForUniprotAccessions {
             connection = (HttpURLConnection) myURL.openConnection();
             try (BufferedInputStream in = new BufferedInputStream(connection.getInputStream())) {
 //                if (in.available() > 500) {
-                    try (Reader r = new InputStreamReader(in)) {
-                        int i;
-                        while ((i = r.read()) != -1) {
-                            input.append((char) i);
-                        }
-                        r.close();
+                try (Reader r = new InputStreamReader(in)) {
+                    int i;
+                    while ((i = r.read()) != -1) {
+                        input.append((char) i);
                     }
+                    r.close();
+                }
 //                }
                 in.close();
 
             }
             connection.disconnect();
             tempIDasReader = new WebDasAnnotationServerAlingmentReader(input.toString());
-           
+
             urlRead = true;
             return tempIDasReader;
         } catch (MalformedURLException e) {

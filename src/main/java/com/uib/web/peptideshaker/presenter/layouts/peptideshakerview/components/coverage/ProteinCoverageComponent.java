@@ -4,6 +4,7 @@ import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideObject;
 import com.uib.web.peptideshaker.galaxy.dataobjects.ProteinObject;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
 import java.util.Collections;
 import java.util.HashMap;
@@ -22,6 +23,7 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
 
     private final ProteinCoverageLayout proteinCoverageLayout;
     private final AbsoluteLayout peptideDistributionLayout;
+    private final AbsoluteLayout chainCoverage3dLayout;
     private final Set<PeptideLayout> peptideDistMap;
     private final Set<PeptideObject> peptideObjectsSet;
 
@@ -43,15 +45,41 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
             protein.setValidation("Not Available");
         }
         this.peptideObjectsSet = new LinkedHashSet<>();
+        chainCoverage3dLayout = new AbsoluteLayout() {
+            @Override
+            public void setVisible(boolean v) {
+                if (v) {
+                    ProteinCoverageComponent.this.removeAllComponents();
+                    ProteinCoverageComponent.this.addComponent(chainCoverage3dLayout, "left:0; top:0px;");
+                    ProteinCoverageComponent.this.addComponent(proteinCoverageLayout, "left:0; top:30px;");
+                    ProteinCoverageComponent.this.addComponent(peptideDistributionLayout, "left:0; top:45px;");
+                    ProteinCoverageComponent.this.setHeight(ProteinCoverageComponent.this.getHeight()+20, Unit.PIXELS);
+                } else {
+                    ProteinCoverageComponent.this.removeAllComponents();
+                    ProteinCoverageComponent.this.addComponent(chainCoverage3dLayout, "left:0; top:0px;");
+                    ProteinCoverageComponent.this.addComponent(proteinCoverageLayout, "left:0; top:10px;");
+                    ProteinCoverageComponent.this.addComponent(peptideDistributionLayout, "left:0; top:25px;");
+                    ProteinCoverageComponent.this.setHeight(ProteinCoverageComponent.this.getHeight()-20, Unit.PIXELS);
+
+                }
+                super.setVisible(v);
+
+            }
+        ;
+
+        };
+        chainCoverage3dLayout.setHeight(30, Unit.PIXELS);
+        chainCoverage3dLayout.setWidth(100, Unit.PERCENTAGE);
+//        ProteinCoverageComponent.this.addComponent(chainCoverage3dLayout, "left:0; top:0px;");
 
         proteinCoverageLayout = new ProteinCoverageLayout(styles.get(protein.getValidation()), styles.get(protein.getProteinEvidence()));
-        ProteinCoverageComponent.this.addComponent(proteinCoverageLayout, "left:0; top:10px;");
+//        ProteinCoverageComponent.this.addComponent(proteinCoverageLayout, "left:0; top:10px;");
 
         peptideDistributionLayout = new AbsoluteLayout();
         peptideDistributionLayout.setWidth(100, Unit.PERCENTAGE);
         peptideDistributionLayout.setHeight(100, Unit.PERCENTAGE);
         peptideDistributionLayout.addStyleName("peptidecoverage");
-        ProteinCoverageComponent.this.addComponent(peptideDistributionLayout, "left:0; top:25px;");
+//        ProteinCoverageComponent.this.addComponent(peptideDistributionLayout, "left:0; top:25px;");
 
         LayoutEvents.LayoutClickListener peptidesListener = (LayoutEvents.LayoutClickEvent event) -> {
             PeptideLayout genPeptid = (PeptideLayout) event.getComponent();
@@ -123,8 +151,10 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
             peptideDistributionLayout.addComponent(pep, "left:" + pep.getX() + "%; top:" + level + "px;");
 
         }
-        levelNum = 25 + (levelNum * 20) + 5;
+        levelNum = 10+ (levelNum * 20) + 5;
         ProteinCoverageComponent.this.setHeight(levelNum, Unit.PIXELS);
+        chainCoverage3dLayout.setVisible(false);
+        
     }
 
     public void selectPeptides(Set<Object> peptidesId) {
@@ -141,6 +171,13 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
         for (PeptideLayout peptide : peptideDistMap) {
             peptide.setSelected(peptideId.equals(peptide.getPeptideId()));
         }
+    }
+    public void enable3D(Component view){
+        this.chainCoverage3dLayout.removeAllComponents();
+        this.chainCoverage3dLayout.addComponent(view);
+        this.chainCoverage3dLayout.setVisible(view.isVisible());
+    
+    
     }
 
     public abstract void selectPeptide(Object proteinId, Object peptideId);

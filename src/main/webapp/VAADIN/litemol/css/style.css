@@ -37,13 +37,15 @@ html,body,.litemolbody,center{
     height:20px !important;
     margin-top:0px !important;
     line-height:100%;
-    font-size:02.3vmax !important;
     font-weight: 400 !important;
     text-align: center;
+    border:none !important;
 }
-
 .lm-btn.lm-btn-link.lm-btn-link-toggle-off:hover,.lm-btn.lm-btn-link:hover{    
-    color:black !important; 
+    color:gray !important; 
+}
+.lm-btn.lm-btn-link.lm-btn-link-toggle-off:focus {
+    outline: none !important;
 }
 .lm-highlight-info{
     bottom:8px;

@@ -15701,6 +15701,9 @@ div.v-layout.v-horizontal.v-widget {
 	padding-left: 0px !important;
 	padding-right: 0px !important;
 	width: 100% !important;
+	height: 27px !important;
+	border-top-left-radius: 0px !important;
+	border-bottom-left-radius: 0px !important;
 }
 
 .webpeptideshakertheme .v-filterselect-selectchain3dMenue.v-filterselect [class*="input"] {
@@ -15782,7 +15785,9 @@ div.v-layout.v-horizontal.v-widget {
 	margin-top: -15px !important;
 	position: fixed !important;
 	margin-left: 40px !important;
-	height: 28px !important;
+	height: 27px !important;
+	border-top-left-radius: 0px !important;
+	border-bottom-left-radius: 0px !important;
 	z-index: 300000000 !important;
 	padding-left: 5px !important;
 	width: 95px !important;

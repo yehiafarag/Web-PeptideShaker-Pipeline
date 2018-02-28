@@ -108,103 +108,128 @@
     <div id='interactions'>
     </div>
 <center id="container">
-    <div id="app" class="app-default"></div>
+    <div id="app" class="app-default">
+    </div>
 </center> 
+<div>
+    <!-- -->
+
+    <button title="Show/Hide water, balls & sticks" class="lm-btn lm-btn-link lm-btn-link-toggle-off" style="
+            right: 110px !important;
+            top:12px !important;
+            background:rgba(0,0,0,0) !important;                                                                     
+            position: absolute;
+            z-index: 900000000;
+            padding-top:0px !important;
+            font-size: 100%;                                                                      
+
+            " onclick="hideWater()"><span class="lm-icon">&#127778;</span></button>
+
+</div>
 
 <script src="VAADIN/litemol/js/LiteMol-example.js?lmversion=1518789385303"></script>
 
 
 <script>
-    var str = '{"pdbId":"3iuc","chainId":"A"}';
-    var controlBtns;
-    window.onload = function (e) {
-        controlBtns = document.getElementsByTagName('button');
-        controlBtns[0].click();
-        controlBtns[4].click();
-        controlBtns[5].click();
-        setTimeout(finalizeStyle, 2000);
+                var str = '{"pdbId":"3iuc","chainId":"A"}';
+                var controlBtns;
+                window.onload = function (e) {
+                    controlBtns = document.getElementsByTagName('button');
+                    controlBtns[0].click();
+                    controlBtns[4].click();
+                    controlBtns[5].click();
+                    setTimeout(finalizeStyle, 2000);
+                    document.getElementById('showWB').value = !hideWaterVar;
 
-    };
-    function finalizeStyle() {
-        var y = document.getElementsByClassName("lm-btn lm-btn-link");
-        y[5].setAttribute("style", " display:none !important; visibility:hidden;");
-        y[4].setAttribute("style", " display:none !important; visibility:hidden;");
-        y[3].setAttribute("style", " display:none !important; visibility:hidden;");
+                };
+                function finalizeStyle() {
+                    var y = document.getElementsByClassName("lm-btn lm-btn-link");
+                    y[5].setAttribute("style", " display:none !important; visibility:hidden;");
+                    y[4].setAttribute("style", " display:none !important; visibility:hidden;");
+                    y[3].setAttribute("style", " display:none !important; visibility:hidden;");
 
-    }
-
-
-    function getParameterByName(name, url) {
-        if (!url)
-            url = window.location.href;
-        name = name.replace(/[\[\]]/g, "\\$&");
-        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-                results = regex.exec(url);
-        if (!results)
-            return null;
-        if (!results[2])
-            return '';
-        return decodeURIComponent(results[2].replace(/\+/g, " "));
-    }
-
-    var tquery = '{"pdbId":"3iuc","chainId":"A","coloring":{"entries":[{"start_residue_number":0,"color":{"r":124,"b":124,"g":124},"end_residue_number":1000,"struct_asym_id":"A","entity_id":"1"},{"start_residue_number":60,"color":{"r":0,"b":0,"g":255},"end_residue_number":100,"struct_asym_id":"A","entity_id":"1"},{"start_residue_number":10,"color":{"r":0,"b":255,"g":0},"end_residue_number":50,"struct_asym_id":"A","entity_id":"1"},{"start_residue_number":120,"color":{"r":255,"b":0,"g":0},"end_residue_number":300,"struct_asym_id":"A","entity_id":"1"}],"base":{"r":255,"b":255,"g":255}}}';
-    function excutequery(query, newId) {
-        document.getElementById('pdbid').value = query;
-        if (newId) {
-            reset();
-            controlBtns[14].click();
-           setTimeout(update, 4000);
-        } else{
-            update();
-        }
-
-    }
-    function update() {
-        controlBtns[24].click();
-        controlBtns[19].click();
-        // controlBtns[21].click();
-    }
-    function reset() {
-        controlBtns[26].click();
-    }
+                }
 
 
-    var colorCode2 = {r: 200, g: 0, b: 000};
-    var colorCode = {r: 255, g: 255, b: 255};
-    var selectioncolorCode = {r: 0, g: 0, b: 200};
-    var selection = function (chain, start, end) {
-        var selectionDetails = {
-            entity_id: '1',
-            struct_asym_id: chain,
-            start_residue_number: start,
-            end_residue_number: end
-        };
-        return selectionDetails;
+                function getParameterByName(name, url) {
+                    if (!url)
+                        url = window.location.href;
+                    name = name.replace(/[\[\]]/g, "\\$&");
+                    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                            results = regex.exec(url);
+                    if (!results)
+                        return null;
+                    if (!results[2])
+                        return '';
+                    return decodeURIComponent(results[2].replace(/\+/g, " "));
+                }
 
-    };
+                var tquery = '{"pdbId":"3iuc","chainId":"A","coloring":{"entries":[{"start_residue_number":0,"color":{"r":124,"b":124,"g":124},"end_residue_number":1000,"struct_asym_id":"A","entity_id":"1"},{"start_residue_number":60,"color":{"r":0,"b":0,"g":255},"end_residue_number":100,"struct_asym_id":"A","entity_id":"1"},{"start_residue_number":10,"color":{"r":0,"b":255,"g":0},"end_residue_number":50,"struct_asym_id":"A","entity_id":"1"},{"start_residue_number":120,"color":{"r":255,"b":0,"g":0},"end_residue_number":300,"struct_asym_id":"A","entity_id":"1"}],"base":{"r":255,"b":255,"g":255}}}';
+
+                function excutequery(query, newId) {
+                    tquery = query;
+                    document.getElementById('pdbid').value = tquery;
+                    if (newId) {
+                        reset();
+                        controlBtns[14].click();
+                        setTimeout(update, 3000);
+                    } else {
+                        update();
+                    }
+
+                }
+                function update() {
+                    controlBtns[24].click();
+                    controlBtns[19].click();
+                    // controlBtns[21].click();
+                }
+                function reset() {
+                    controlBtns[26].click();
+                }
 
 
-    var selectionDetails = {
-        entity_id: '1',
-        struct_asym_id: 'A',
-        start_residue_number: 28,
-        end_residue_number: 406
-    };
+                var colorCode2 = {r: 200, g: 0, b: 000};
+                var colorCode = {r: 255, g: 255, b: 255};
+                var selectioncolorCode = {r: 0, g: 0, b: 200};
+                var selection = function (chain, start, end) {
+                    var selectionDetails = {
+                        entity_id: '1',
+                        struct_asym_id: chain,
+                        start_residue_number: start,
+                        end_residue_number: end
+                    };
+                    return selectionDetails;
 
-    var selectionDetails2 = {
-        entity_id: '1',
-        struct_asym_id: 'B',
-        start_residue_number: 1,
-        end_residue_number: 100
-    };
-    var visualParams = {
-        polymer: true,
-        polymerRef: 'polymer-visual',
-        het: false,
-        hetRef: 'het-visual',
-        water: false,
-        waterRef: 'water-visual'
-    };
+                };
+
+
+                var selectionDetails = {
+                    entity_id: '1',
+                    struct_asym_id: 'A',
+                    start_residue_number: 28,
+                    end_residue_number: 406
+                };
+
+                var selectionDetails2 = {
+                    entity_id: '1',
+                    struct_asym_id: 'B',
+                    start_residue_number: 1,
+                    end_residue_number: 100
+                };
+                var visualParams = {
+                    polymer: true,
+                    polymerRef: 'polymer-visual',
+                    het: false,
+                    hetRef: 'het-visual',
+                    water: false,
+                    waterRef: 'water-visual'
+                };
+                var hideWaterVar = true;
+                function hideWater() {
+                    document.getElementById('showWB').value = hideWaterVar;
+                    hideWaterVar = !hideWaterVar;
+                    excutequery(tquery, true);
+                }
 </script>    
 
 </body>
