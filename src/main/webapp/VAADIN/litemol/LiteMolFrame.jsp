@@ -136,7 +136,7 @@
                 window.onload = function (e) {
                     controlBtns = document.getElementsByTagName('button');
                     controlBtns[0].click();
-                    controlBtns[4].click();
+                     controlBtns[4].click();
                     controlBtns[5].click();
                     setTimeout(finalizeStyle, 2000);
                     document.getElementById('showWB').value = !hideWaterVar;
@@ -164,8 +164,8 @@
                     return decodeURIComponent(results[2].replace(/\+/g, " "));
                 }
 
-                var tquery = '{"pdbId":"3iuc","chainId":"A","coloring":{"entries":[{"start_residue_number":0,"color":{"r":124,"b":124,"g":124},"end_residue_number":1000,"struct_asym_id":"A","entity_id":"1"},{"start_residue_number":60,"color":{"r":0,"b":0,"g":255},"end_residue_number":100,"struct_asym_id":"A","entity_id":"1"},{"start_residue_number":10,"color":{"r":0,"b":255,"g":0},"end_residue_number":50,"struct_asym_id":"A","entity_id":"1"},{"start_residue_number":120,"color":{"r":255,"b":0,"g":0},"end_residue_number":300,"struct_asym_id":"A","entity_id":"1"}],"base":{"r":255,"b":255,"g":255}}}';
-
+                //     var tquery = '{"pdbId":"6asy","chainId":"A","coloring":{"entries":[{"start_residue_number":0,"color":{"r":124,"b":124,"g":124},"end_residue_number":1000,"struct_asym_id":"A","entity_id":"1"},{"start_residue_number":618,"color":{"r":0,"b":0,"g":255},"end_residue_number":629,"struct_asym_id":"A","entity_id":"1"},{"start_residue_number":10,"color":{"r":0,"b":255,"g":0},"end_residue_number":50,"struct_asym_id":"A","entity_id":"1"},{"start_residue_number":120,"color":{"r":255,"b":0,"g":0},"end_residue_number":300,"struct_asym_id":"A","entity_id":"1"}],"base":{"r":255,"b":255,"g":255}}}';
+                var tquery = '{"pdbId":"6asy","chainId":"A","coloring":{"entries":[{"start_residue_number":0,"color":{"r":255,"b":0,"g":0},"end_residue_number":50,"struct_asym_id":"A","entity_id":"1"}],"base":{"r":255,"b":255,"g":255}}}';
                 function excutequery(query, newId) {
                     tquery = query;
                     document.getElementById('pdbid').value = tquery;

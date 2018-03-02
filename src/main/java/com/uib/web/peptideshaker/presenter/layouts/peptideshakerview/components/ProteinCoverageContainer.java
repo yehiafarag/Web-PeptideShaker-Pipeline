@@ -12,6 +12,7 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import org.apache.commons.collections15.map.LinkedMap;
@@ -27,9 +28,9 @@ public abstract class ProteinCoverageContainer extends VerticalLayout {
     private final Map<Object, Object[]> tableData;
     private final AbsoluteLayout chainCoverageLayout;
 
-    public ProteinCoverageContainer( AbsoluteLayout chainCoverageLayout) {
+    public ProteinCoverageContainer(AbsoluteLayout chainCoverageLayout) {
         ProteinCoverageContainer.this.setSizeFull();
-        this.chainCoverageLayout=chainCoverageLayout;
+        this.chainCoverageLayout = chainCoverageLayout;
         tableData = new LinkedMap<>();
         proteinCoverageTable = new Table(" ");
         proteinCoverageTable.setStyleName(ValoTheme.TABLE_COMPACT);
@@ -55,24 +56,32 @@ public abstract class ProteinCoverageContainer extends VerticalLayout {
             return;
         }
         this.proteinCoverageTable.removeAllItems();
-        for (Object id : selectedProteinsItems) {
+        selectedProteinsItems.stream().map((id) -> {
             this.proteinCoverageTable.addItem(tableData.get(id), id);
-           ProteinCoverageComponent pcov = ((ProteinCoverageComponent) tableData.get(id)[3]);
-           pcov.selectPeptides(selectedPeptidesItems);
-           if(selectedProteinsItems.size()==1)
-           {
-               chainCoverageLayout.detach();
-               pcov.enable3D(chainCoverageLayout);
-               System.out.println("ready to add the component ");
-           }
-        }
+            return id;
+        }).map((id) -> ((ProteinCoverageComponent) tableData.get(id)[3])).map((pcov) -> {
+            pcov.selectPeptides(selectedPeptidesItems);
+            return pcov;
+        }).filter((pcov) -> (selectedProteinsItems.size() == 1)).map((pcov) -> {
+            if (chainCoverageLayout != null && chainCoverageLayout.isAttached()) {
+                System.out.println("will detach");
+                chainCoverageLayout.setSizeUndefined();
+                chainCoverageLayout.detach();
+            }
+            return pcov;
+        }).map((pcov) -> {
+            pcov.enable3D(chainCoverageLayout);
+            return pcov;
+        }).forEachOrdered((_item) -> {
+            System.out.println("ready to add the component ");
+        });
 
     }
 
     public void updateProteinsMode(String mode) {
-        for (Object id : tableData.keySet()) {
+        tableData.keySet().forEach((id) -> {
             ((ProteinCoverageComponent) tableData.get(id)[3]).updateStylingMode(mode);
-        }
+        });
 
     }
 
@@ -83,19 +92,18 @@ public abstract class ProteinCoverageContainer extends VerticalLayout {
     public void selectDataset(Map<String, ProteinObject> proteinNodes, Map<String, PeptideObject> peptidesNodes, Set<Object> defaultSelectedProteinsItems, Set<Object> defaultSelectedPeptidesItems) {
         tableData.clear();
 //        this.proteinCoverageTable.removeAllItems();
-
-        for (ProteinObject protein : proteinNodes.values()) {
+        proteinNodes.values().forEach((protein) -> {
             ProteinCoverageComponent proteinLayout = new ProteinCoverageComponent(protein, peptidesNodes) {
                 @Override
                 public void selectPeptide(Object proteinId, Object peptideId) {
                     ProteinCoverageContainer.this.selectPeptide(proteinId, peptideId);
-                    for (Object id : tableData.keySet()) {
+                    tableData.keySet().forEach((id) -> {
                         if (id.equals(proteinId)) {
                             ((ProteinCoverageComponent) tableData.get(id)[3]).selectPeptides(peptideId);
                         } else {
                             ((ProteinCoverageComponent) tableData.get(id)[3]).selectPeptides("");
                         }
-                    }
+                    });
                 }
 
             };
@@ -113,8 +121,7 @@ public abstract class ProteinCoverageContainer extends VerticalLayout {
             PopupLabel proteinDescription = new PopupLabel(protein.getDescription());
             tableData.put(protein.getAccession(), new Object[]{info, acc, proteinDescription, proteinLayout});
 //            this.proteinCoverageTable.addItem(tableData.get(protein.getAccession()), protein.getAccession());
-
-        }
+        });
         setSelectedItems(defaultSelectedProteinsItems, defaultSelectedPeptidesItems);
     }
 

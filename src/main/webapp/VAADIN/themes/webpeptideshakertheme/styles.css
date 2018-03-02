@@ -14979,7 +14979,7 @@ div.v-layout.v-horizontal.v-widget {
 .webpeptideshakertheme .v-absolutelayout-wrapper-proteincoverage {
 	padding-left: 25px !important;
 	padding-right: 25px !important;
-	background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='15px' width='25px'><text  x='0' y='12' fill='gray' font-size='15px'>N  </text></svg>"), url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='15px' width='25px'><text x='10' y='12' fill='gray' font-size='15px'>C</text></svg>");
+	background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='15px' width='25px'><text  style='font-family:sans-serif;' x='0' y='12' fill='gray' font-size='15px'>N  </text></svg>"), url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='15px' width='25px'><text style='font-family:sans-serif;' x='10' y='12' fill='gray' font-size='15px'>C</text></svg>");
 	background-repeat: no-repeat;
 	background-position: 5px 50%, right 0px top 50%;
 }
@@ -15643,7 +15643,7 @@ div.v-layout.v-horizontal.v-widget {
 	white-space: nowrap !important;
 	margin-top: 13px !important;
 	margin-left: 0px !important;
-	height: 25px !important;
+	height: 24px !important;
 	z-index: 200000000 !important;
 	position: fixed !important;
 	background: white !important;
@@ -15674,7 +15674,7 @@ div.v-layout.v-horizontal.v-widget {
 .webpeptideshakertheme .v-filterselect.v-filterselect-selectchain3dMenue {
 	margin-top: -15px !important;
 	position: fixed !important;
-	margin-left: 60px !important;
+	margin-left: 65px !important;
 	height: 28px !important;
 	z-index: 300000000 !important;
 	padding-left: 0px !important;
@@ -15701,7 +15701,7 @@ div.v-layout.v-horizontal.v-widget {
 	padding-left: 0px !important;
 	padding-right: 0px !important;
 	width: 100% !important;
-	height: 27px !important;
+	height: 28px !important;
 	border-top-left-radius: 0px !important;
 	border-bottom-left-radius: 0px !important;
 }
@@ -15785,10 +15785,10 @@ div.v-layout.v-horizontal.v-widget {
 	margin-top: -15px !important;
 	position: fixed !important;
 	margin-left: 40px !important;
-	height: 27px !important;
+	height: 28px !important;
 	border-top-left-radius: 0px !important;
 	border-bottom-left-radius: 0px !important;
 	z-index: 300000000 !important;
 	padding-left: 5px !important;
-	width: 95px !important;
+	width: 75px !important;
 }
