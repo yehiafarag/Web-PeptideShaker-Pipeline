@@ -46,25 +46,31 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
         }
         this.peptideObjectsSet = new LinkedHashSet<>();
         chainCoverage3dLayout = new AbsoluteLayout() {
+          private boolean expanded=false;
             @Override
             public void setVisible(boolean v) {
-                if (v) {
+                if (v && !expanded) {
                     ProteinCoverageComponent.this.removeAllComponents();
                     ProteinCoverageComponent.this.addComponent(chainCoverage3dLayout, "left:0; top:0px;");
                     ProteinCoverageComponent.this.addComponent(proteinCoverageLayout, "left:0; top:30px;");
                     ProteinCoverageComponent.this.addComponent(peptideDistributionLayout, "left:0; top:45px;");
                     ProteinCoverageComponent.this.setHeight(ProteinCoverageComponent.this.getHeight() + 30, Unit.PIXELS);
-                } else {
+                    expanded=true;
+                } else if(!v && expanded){
                     ProteinCoverageComponent.this.removeAllComponents();
                     ProteinCoverageComponent.this.addComponent(chainCoverage3dLayout, "left:0; top:0px;");
                     ProteinCoverageComponent.this.addComponent(proteinCoverageLayout, "left:0; top:10px;");
                     ProteinCoverageComponent.this.addComponent(peptideDistributionLayout, "left:0; top:25px;");
                     ProteinCoverageComponent.this.setHeight(ProteinCoverageComponent.this.getHeight() - 30, Unit.PIXELS);
-
+                    expanded=false;
+                }else if(!v){
+                   ProteinCoverageComponent.this.removeAllComponents();
+                    ProteinCoverageComponent.this.addComponent(chainCoverage3dLayout, "left:0; top:0px;");
+                    ProteinCoverageComponent.this.addComponent(proteinCoverageLayout, "left:0; top:10px;");
+                    ProteinCoverageComponent.this.addComponent(peptideDistributionLayout, "left:0; top:25px;");
                 }
-                here error
-                System.out.println("at ProteinCoverageComponent "+ProteinCoverageComponent.this.isVisible());
                 super.setVisible(v);
+                System.out.println("at expanded situation "+expanded+"  "+(v && !expanded));
 
             }
         ;
@@ -152,16 +158,16 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
             peptideDistributionLayout.addComponent(pep, "left:" + pep.getX() + "%; top:" + level + "px;");
 
         }
-        levelNum = 10 + (levelNum * 20) + 5;
+        levelNum = 25 + (levelNum * 20) + 5;
         ProteinCoverageComponent.this.setHeight(levelNum, Unit.PIXELS);
         chainCoverage3dLayout.setVisible(false);
 
     }
 
     public void selectPeptides(Set<Object> peptidesId) {
-        for (PeptideLayout peptide : peptideDistMap) {
+        peptideDistMap.forEach((peptide) -> {
             peptide.setSelected(peptidesId.contains(peptide.getPeptideId()));
-        }
+        });
     }
 
     public Set<PeptideObject> getPeptideObjectsSet() {
@@ -176,12 +182,12 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
 
     public void enable3D(Component view) {
         this.chainCoverage3dLayout.removeAllComponents();
-        this.chainCoverage3dLayout.addComponent(view);
-        
+        this.chainCoverage3dLayout.addComponent(view);        
         view.setSizeFull();
         this.chainCoverage3dLayout.setHeight(30, Unit.PIXELS);
         this.chainCoverage3dLayout.setWidth(100, Unit.PERCENTAGE);
         this.chainCoverage3dLayout.setVisible(view.isVisible());
+        
     }
 
     public abstract void selectPeptide(Object proteinId, Object peptideId);

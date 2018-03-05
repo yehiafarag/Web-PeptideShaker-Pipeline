@@ -50,7 +50,6 @@ public class ProteinStructurePanel extends AbsoluteLayout {
     private final ComboBox pdbChainsSelect;
     private final Property.ValueChangeListener pdbMatchSelectlistener;
     private final Property.ValueChangeListener pdbChainsSelectlistener;
-    private final Map<Object, List<Object[]>> pdbMachesTableData;
     private final Button playBtn;
     private ChainCoverageComponent lastSelectedChainCoverage; //    private final Button refreshBtn;
     private Object lastSelectedAccession;
@@ -81,7 +80,6 @@ public class ProteinStructurePanel extends AbsoluteLayout {
         this.pdbBlockMap = new HashMap<>();
         this.peptidesQueryMap = new LinkedHashMap<>();
 
-        this.pdbMachesTableData = new LinkedHashMap<>();
         LiteMolPanel = new VerticalLayout();
         LiteMolPanel.setSizeFull();
 
@@ -129,7 +127,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
                 chainCoverageLayout.removeAllComponents();
                 chainCoverageLayout.addComponent(lastSelectedChainCoverage.getChainCoverageWebComponent());
                 contsructQueries(pdbBlockMap.get(pdbChainsSelect.getValue() + ""));
-                selectPeptides(null);
+                selectPeptides(lastSelectedPeptideKey);
             }
         });
         pdbChainsSelect.addValueChangeListener(pdbChainsSelectlistener);
@@ -231,7 +229,6 @@ public class ProteinStructurePanel extends AbsoluteLayout {
         pdbMatchesSelect.removeValueChangeListener(pdbMatchSelectlistener);
         pdbMatchesSelect.removeAllItems();
         pdbBlockMap.clear();
-        pdbMachesTableData.clear();
         String accession = accessionObject.toString();
         if (!accessionToPDBMap.containsKey(accession)) {
             WebFindPdbForUniprotAccessions temp = new WebFindPdbForUniprotAccessions(accession);

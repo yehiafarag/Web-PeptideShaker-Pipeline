@@ -12,11 +12,13 @@ import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import javax.servlet.ServletContext;
 
 /**
@@ -81,6 +83,15 @@ public class PeptidShakerUI extends UI {
         if (isNelsGalaxyConnection || (VaadinSession.getCurrent().getAttribute("ApiKey") != null && VaadinSession.getCurrent().getAttribute("galaxyUrl") != null)) {
             webPeptideShakerApp.reConnectToGalaxyServer(VaadinSession.getCurrent().getAttribute("ApiKey") + "", VaadinSession.getCurrent().getAttribute("galaxyUrl") + "");
         }
+//        Window modalWindow = new Window();
+////        modalWindow.setModal(true);
+//        modalWindow.setSizeFull();
+//        modalWindow.setClosable(false);
+//        modalWindow.setResizable(false);
+//        modalWindow.setDraggable(false);
+//        modalWindow.setPrimaryStyleName("v-loading-indicator");
+////        modalWindow.addStyleName("v-window-modalitycurtain");
+//           UI.getCurrent().addWindow(modalWindow);
 
 //        VerticalLayout container = new VerticalLayout();
 //        container.setSizeFull();
@@ -121,16 +132,16 @@ public class PeptidShakerUI extends UI {
 ////    
 ////       
 ////
-        VerticalLayout mainLayout = new VerticalLayout();
-        mainLayout.setMargin(true);
-        mainLayout.setSpacing(true);
-        mainLayout.setSizeFull();
-
-        LiteMOLComponent LiteMolInfo;
-        LiteMolInfo = new LiteMOLComponent();
-
-        mainLayout.addComponent(LiteMolInfo);
+//        VerticalLayout mainLayout = new VerticalLayout();
+//        mainLayout.setMargin(true);
+//        mainLayout.setSpacing(true);
+//        mainLayout.setSizeFull();
 //
+//        LiteMOLComponent LiteMolInfo;
+//        LiteMolInfo = new LiteMOLComponent();
+//
+//        mainLayout.addComponent(LiteMolInfo);
+////
 //        
         
         
@@ -145,7 +156,7 @@ public class PeptidShakerUI extends UI {
 //         
 //          
 //            
-            LiteMolInfo = new LiteMOLComponent();
+//            LiteMolInfo = new LiteMOLComponent();
 //            accordion.addTab(LiteMolInfo, "LiteMol-Demo");
 //            mainLayout.addComponent(accordion);
 //

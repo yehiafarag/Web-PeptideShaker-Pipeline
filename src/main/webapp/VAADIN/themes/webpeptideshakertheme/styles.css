@@ -15672,7 +15672,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .v-filterselect.v-filterselect-selectchain3dMenue {
-	margin-top: -15px !important;
+	margin-top: -14px !important;
 	position: fixed !important;
 	margin-left: 65px !important;
 	height: 28px !important;
@@ -15701,7 +15701,7 @@ div.v-layout.v-horizontal.v-widget {
 	padding-left: 0px !important;
 	padding-right: 0px !important;
 	width: 100% !important;
-	height: 28px !important;
+	height: 26px !important;
 	border-top-left-radius: 0px !important;
 	border-bottom-left-radius: 0px !important;
 }
@@ -15782,7 +15782,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .v-filterselect.v-filterselect-select3dMenue {
-	margin-top: -15px !important;
+	margin-top: -14px !important;
 	position: fixed !important;
 	margin-left: 40px !important;
 	height: 28px !important;
@@ -15791,4 +15791,24 @@ div.v-layout.v-horizontal.v-widget {
 	z-index: 300000000 !important;
 	padding-left: 5px !important;
 	width: 75px !important;
+}
+
+.webpeptideshakertheme .v-loading-indicator[style*="none"]:before {
+	display: none;
+}
+
+.webpeptideshakertheme .v-loading-indicator-delay:before, .webpeptideshakertheme .v-loading-indicator-wait:before {
+	content: "";
+	position: fixed;
+	background-color: rgba(0, 0, 0, 0.1);
+	background-image: url(images/preloader.gif);
+	background-position: center;
+	background-attachment: fixed;
+	background-repeat: no-repeat;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	pointer-events: auto;
+	cursor: wait;
 }

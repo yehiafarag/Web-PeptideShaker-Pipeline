@@ -351,6 +351,7 @@ public class WebFindPdbForUniprotAccessions {
         if (connection != null) {
             connection.disconnect();
         }
+        valid=false;
         return new WebDasAnnotationServerAlingmentReader("empty");
 
     }

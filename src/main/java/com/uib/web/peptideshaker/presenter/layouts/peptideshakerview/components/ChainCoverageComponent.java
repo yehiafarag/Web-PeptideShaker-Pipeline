@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jfree.chart.encoders.ImageEncoder;
 import org.jfree.chart.encoders.ImageEncoderFactory;
 import org.jfree.chart.encoders.ImageFormat;
@@ -46,7 +48,14 @@ public class ChainCoverageComponent {
         this.chainCoverageWebComponent.setSizeFull();
         SizeReporter imageSizeReporter = new SizeReporter(chainCoverageWebComponent);
         imageSizeReporter.addResizeListener((ComponentResizeEvent event) -> {
+            if (event.getWidth() == 60) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                }
+            }
             this.compWidth = event.getWidth();
+            System.out.println("at comp width " + compWidth + "   " + imageSizeReporter.getWidth());
             this.correctFactor = (double) (compWidth - 50) / (double) this.proteinSequenceLength;
             drawImage(lasteSelectedChain);
         });
