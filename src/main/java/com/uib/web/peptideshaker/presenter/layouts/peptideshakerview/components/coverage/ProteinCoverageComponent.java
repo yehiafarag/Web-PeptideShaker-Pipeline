@@ -46,38 +46,38 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
         }
         this.peptideObjectsSet = new LinkedHashSet<>();
         chainCoverage3dLayout = new AbsoluteLayout() {
-          private boolean expanded=false;
+            private boolean expanded = false;
+
             @Override
-            public void setVisible(boolean v) {
+            public void setVisible(boolean v) 
+            { 
                 if (v && !expanded) {
                     ProteinCoverageComponent.this.removeAllComponents();
                     ProteinCoverageComponent.this.addComponent(chainCoverage3dLayout, "left:0; top:0px;");
                     ProteinCoverageComponent.this.addComponent(proteinCoverageLayout, "left:0; top:30px;");
                     ProteinCoverageComponent.this.addComponent(peptideDistributionLayout, "left:0; top:45px;");
                     ProteinCoverageComponent.this.setHeight(ProteinCoverageComponent.this.getHeight() + 30, Unit.PIXELS);
-                    expanded=true;
-                } else if(!v && expanded){
+                    expanded = true;
+                } else if (!v && expanded) {
                     ProteinCoverageComponent.this.removeAllComponents();
                     ProteinCoverageComponent.this.addComponent(chainCoverage3dLayout, "left:0; top:0px;");
                     ProteinCoverageComponent.this.addComponent(proteinCoverageLayout, "left:0; top:10px;");
                     ProteinCoverageComponent.this.addComponent(peptideDistributionLayout, "left:0; top:25px;");
                     ProteinCoverageComponent.this.setHeight(ProteinCoverageComponent.this.getHeight() - 30, Unit.PIXELS);
-                    expanded=false;
-                }else if(!v){
-                   ProteinCoverageComponent.this.removeAllComponents();
+                    expanded = false;
+                } else if (!v) {
+                    ProteinCoverageComponent.this.removeAllComponents();
                     ProteinCoverageComponent.this.addComponent(chainCoverage3dLayout, "left:0; top:0px;");
                     ProteinCoverageComponent.this.addComponent(proteinCoverageLayout, "left:0; top:10px;");
                     ProteinCoverageComponent.this.addComponent(peptideDistributionLayout, "left:0; top:25px;");
                 }
                 super.setVisible(v);
-                System.out.println("at expanded situation "+expanded+"  "+(v && !expanded));
 
             }
         ;
 
         };
         
-//        ProteinCoverageComponent.this.addComponent(chainCoverage3dLayout, "left:0; top:0px;");
 
         proteinCoverageLayout = new ProteinCoverageLayout(styles.get(protein.getValidation()), styles.get(protein.getProteinEvidence()));
 //        ProteinCoverageComponent.this.addComponent(proteinCoverageLayout, "left:0; top:10px;");
@@ -96,32 +96,60 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
         float factor = 100f / Float.valueOf(protein.getSequence().length());
         int[] distArr = new int[protein.getSequence().length()];
         peptideDistMap = new TreeSet<>(Collections.reverseOrder());
-        for (PeptideObject peptide : peptidesNodes.values()) {
-            if (!protein.getSequence().contains(peptide.getSequence()) && peptide.getSequence().contains("VEIIANDQGNR") && protein.getAccession().contains("P11021")) {
-                System.out.println("at prot seq : " + protein.getSequence());
-                System.out.println("peptide seq : " + peptide.getSequence());
-                System.out.println("***** prot has the peptide ***** ");
-                System.out.println("------------------------------------------------------------------------------");
-
-            }
+        peptidesNodes.values().forEach((peptide) -> {
             if (protein.getSequence().contains(peptide.getSequence())) {
-                int index = protein.getSequence().indexOf(peptide.getSequence());
-                int startIndex = index;
-                float left = (index) * factor;
-                float width = (peptide.getSequence().length() * factor);
-                width = (width / (100f - left) * 100);
-                for (char c : peptide.getSequence().toCharArray()) {
-                    distArr[index] = distArr[index] + 1;
-                    index++;
+                int current = 0;
+                int index;
+                while (true) {
+                    index = protein.getSequence().indexOf(peptide.getSequence(), current);
+                    current = index + peptide.getSequence().length();
+                    if (index == -1) {
+                        break;
+                    }
+                    int startIndex = index;
+                    float left = (index) * factor;
+                    float width = (peptide.getSequence().length() * factor);
+                    width = (width / (100f - left) * 100);
+                    for (char c : peptide.getSequence().toCharArray()) {
+                        distArr[index] = distArr[index] + 1;
+                        index++;
+                    }
+
+                    PeptideLayout genPeptide = new PeptideLayout(peptide, width, startIndex, left, styles.get(peptide.getValidation()), styles.get("Not Applicable"), protein.isEnymaticPeptide(peptide.getModifiedSequence()));
+                    genPeptide.addLayoutClickListener(peptidesListener);
+                    peptideDistMap.add(genPeptide);
+                    peptideObjectsSet.add(peptide);
+
                 }
 
-                PeptideLayout genPeptide = new PeptideLayout(peptide, width, startIndex, left, styles.get(peptide.getValidation()), styles.get("Not Applicable"), protein.isEnymaticPeptide(peptide.getModifiedSequence()));
-                genPeptide.addLayoutClickListener(peptidesListener);
-                peptideDistMap.add(genPeptide);
-                peptideObjectsSet.add(peptide);
-            }
+            } else if (protein.getSequence().toLowerCase().replaceAll("i", "l").contains(peptide.getSequence().toLowerCase().replaceAll("i", "l"))) {
+                String tempProtSeq = protein.getSequence().toLowerCase().replaceAll("i", "l");
+                String tempPeptSeq = peptide.getSequence().toLowerCase().replaceAll("i", "l");
+                 int current = 0;
+                int index;
+                while (true) {
+                    index = tempProtSeq.indexOf(tempPeptSeq, current);
+                    current = index + tempPeptSeq.length();
+                    if (index == -1) {
+                        break;
+                    }
+                    int startIndex = index;
+                    float left = (index) * factor;
+                    float width = (tempPeptSeq.length() * factor);
+                    width = (width / (100f - left) * 100);
+                    for (char c : tempPeptSeq.toCharArray()) {
+                        distArr[index] = distArr[index] + 1;
+                        index++;
+                    }
 
-        }
+                    PeptideLayout genPeptide = new PeptideLayout(peptide, width, startIndex, left, styles.get(peptide.getValidation()), styles.get("Not Applicable"), protein.isEnymaticPeptide(peptide.getModifiedSequence()));
+                    genPeptide.addLayoutClickListener(peptidesListener);
+                    peptideDistMap.add(genPeptide);
+                    peptideObjectsSet.add(peptide);
+
+                }
+            }
+        });
 
         int levelNum = 1;
         for (int index = 0; index < distArr.length; index++) {
@@ -182,12 +210,12 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
 
     public void enable3D(Component view) {
         this.chainCoverage3dLayout.removeAllComponents();
-        this.chainCoverage3dLayout.addComponent(view);        
+        this.chainCoverage3dLayout.addComponent(view);
         view.setSizeFull();
         this.chainCoverage3dLayout.setHeight(30, Unit.PIXELS);
         this.chainCoverage3dLayout.setWidth(100, Unit.PERCENTAGE);
         this.chainCoverage3dLayout.setVisible(view.isVisible());
-        
+
     }
 
     public abstract void selectPeptide(Object proteinId, Object peptideId);

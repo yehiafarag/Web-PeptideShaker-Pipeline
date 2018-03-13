@@ -291,7 +291,6 @@ public abstract class DataViewLayout extends Panel {
             i++;
         }
         topPanelLayout.setVisible(topDataTable.getComponentCount() > 1);
-        System.err.println("bottomDataTable " +topDataTable.getComponentCount());
 
     }
 

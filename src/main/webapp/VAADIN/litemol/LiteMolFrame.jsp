@@ -113,6 +113,22 @@
 </center> 
 <div>
     <!-- -->
+    <div id='progress' style='
+    left: 5% !important;
+    top: 5% !important;
+    /* margin-top: -40px; */
+    /* margin-left: -40px; */
+    position: absolute;
+    z-index: 900000000 !important;
+    width: 50px !important;
+    height: 50px !important;
+    background-image: url("VAADIN/themes/webpeptideshakertheme/img/loading.gif");
+    background-repeat:  no-repeat;
+    background-size:  contain;
+    border-radius:  100%;    
+    display:  block;
+    visibility:  visible;
+'></div>
 
     <button title="Show/Hide water, balls & sticks" class="lm-btn lm-btn-link lm-btn-link-toggle-off" style="
             right: 110px !important;
@@ -136,7 +152,7 @@
                 window.onload = function (e) {
                     controlBtns = document.getElementsByTagName('button');
                     controlBtns[0].click();
-                     controlBtns[4].click();
+                    controlBtns[4].click();
                     controlBtns[5].click();
                     setTimeout(finalizeStyle, 2000);
                     document.getElementById('showWB').value = !hideWaterVar;
@@ -165,8 +181,10 @@
                 }
 
                 //     var tquery = '{"pdbId":"6asy","chainId":"A","coloring":{"entries":[{"start_residue_number":0,"color":{"r":124,"b":124,"g":124},"end_residue_number":1000,"struct_asym_id":"A","entity_id":"1"},{"start_residue_number":618,"color":{"r":0,"b":0,"g":255},"end_residue_number":629,"struct_asym_id":"A","entity_id":"1"},{"start_residue_number":10,"color":{"r":0,"b":255,"g":0},"end_residue_number":50,"struct_asym_id":"A","entity_id":"1"},{"start_residue_number":120,"color":{"r":255,"b":0,"g":0},"end_residue_number":300,"struct_asym_id":"A","entity_id":"1"}],"base":{"r":255,"b":255,"g":255}}}';
-                var tquery = '{"pdbId":"6asy","chainId":"A","coloring":{"entries":[{"start_residue_number":0,"color":{"r":255,"b":0,"g":0},"end_residue_number":50,"struct_asym_id":"A","entity_id":"1"}],"base":{"r":255,"b":255,"g":255}}}';
-                function excutequery(query, newId) {
+                var tquery = '{"pdbId":"3iuc","chainId":"A","coloring":{"entries":[{"start_residue_number":44,"color":{"r":255,"b":0,"g":0},"end_residue_number":404,"struct_asym_id":"A","entity_id":"1"}],"base":{"r":255,"b":255,"g":255}}}';
+                  
+                    function excutequery(query, newId) {                 
+                    document.getElementById("progress").style.display = "block";
                     tquery = query;
                     document.getElementById('pdbid').value = tquery;
                     if (newId) {
@@ -181,9 +199,13 @@
                 function update() {
                     controlBtns[24].click();
                     controlBtns[19].click();
+             //        progress.setAttribute("style", " display:none !important; visibility:hidden;");
                     // controlBtns[21].click();
+                    document.getElementById("progress").style.display = "none";
+                   
                 }
                 function reset() {
+                   // document.getElementById("progress").style.display = "none";
                     controlBtns[26].click();
                 }
 

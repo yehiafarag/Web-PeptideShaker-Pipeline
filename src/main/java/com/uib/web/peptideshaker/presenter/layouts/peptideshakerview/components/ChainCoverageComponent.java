@@ -15,8 +15,6 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jfree.chart.encoders.ImageEncoder;
 import org.jfree.chart.encoders.ImageEncoderFactory;
 import org.jfree.chart.encoders.ImageFormat;
@@ -48,14 +46,13 @@ public class ChainCoverageComponent {
         this.chainCoverageWebComponent.setSizeFull();
         SizeReporter imageSizeReporter = new SizeReporter(chainCoverageWebComponent);
         imageSizeReporter.addResizeListener((ComponentResizeEvent event) -> {
-            if (event.getWidth() == 60) {
+            if (event.getWidth() <= 200) {
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(2000);
                 } catch (InterruptedException ex) {
                 }
             }
             this.compWidth = event.getWidth();
-            System.out.println("at comp width " + compWidth + "   " + imageSizeReporter.getWidth());
             this.correctFactor = (double) (compWidth - 50) / (double) this.proteinSequenceLength;
             drawImage(lasteSelectedChain);
         });
@@ -64,8 +61,14 @@ public class ChainCoverageComponent {
 
     int counter = 1;
     private String lasteSelectedChain;
+    private boolean ready;
+
+    public void setReady(boolean ready) {
+        this.ready = ready;
+    }
 
     public void addChainRange(String chainId, int start, int end) {
+        start = Math.max(start, 0);
         Rectangle chain = new Rectangle(start, 10, (end - start + 1), 10);
         chainsBlocks.put(chainId + "_" + (counter++), chain);
         for (int i = start; i <= end; i++) {
@@ -94,7 +97,9 @@ public class ChainCoverageComponent {
     private Color chaincolor;
     private Color bordercolor;
     DecimalFormat df = new DecimalFormat("#.#");
+    private int tcounter = 0;
 
+    ;
     private String drawImage(String chainId) {
         lasteSelectedChain = chainId;
 
@@ -105,7 +110,7 @@ public class ChainCoverageComponent {
         Graphics2D icong2 = icon.createGraphics();
 
         //draw sequence line
-        g2.setColor(Color.GRAY);
+        g2.setColor(Color.LIGHT_GRAY);
         g2.fillRect(25, 14, (compWidth - 50), 3);
 
         icong2.setColor(Color.GRAY);
@@ -158,7 +163,6 @@ public class ChainCoverageComponent {
 
                 }
             });
-
             v = df.format(((double) counter / (double) proteinSequenceLength) * 100.0);
         } else {
             double d = getCoverage();
@@ -167,13 +171,13 @@ public class ChainCoverageComponent {
         //total chain coverage
 //     
         g2.setColor(Color.GRAY);
-        g2.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 15));
+        g2.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
         g2.drawString("3D", (3), (comHeight / 2) + 6);
         g2.drawString(chainId, (compWidth - 15), (comHeight / 2) + 6);
         g2.dispose();
 
         icong2.setColor(Color.BLACK);
-        icong2.setFont(new Font("\"Open Sans\", sans-serif", Font.PLAIN, 14));
+        icong2.setFont(new Font("sans-serif", Font.PLAIN, 14));
         icong2.drawString(v + "%", (220), (comHeight / 2) + 6);
         icong2.dispose();
 

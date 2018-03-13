@@ -172,7 +172,6 @@ public class PeptideShakerViewPresenter extends VerticalLayout implements Viewab
     public void layoutClick(LayoutEvents.LayoutClickEvent event) {
         BigSideBtn comp = (BigSideBtn) event.getComponent();
         Selection_Manager.selectBtn(comp);
-        System.out.println("at selection tab name " + comp.getBtnId());
         if (proteinsVisulizationLevelContainer != null) {
             if (comp.getBtnId() == 2) {
                 proteinsVisulizationLevelContainer.activate3DProteinView();

@@ -12,7 +12,6 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import org.apache.commons.collections15.map.LinkedMap;
@@ -64,7 +63,6 @@ public abstract class ProteinCoverageContainer extends VerticalLayout {
             return pcov;
         }).filter((pcov) -> (selectedProteinsItems.size() == 1)).map((pcov) -> {
             if (chainCoverageLayout != null && chainCoverageLayout.isAttached()) {
-                System.out.println("will detach");
                 chainCoverageLayout.setSizeUndefined();
                 chainCoverageLayout.detach();
             }
@@ -73,7 +71,7 @@ public abstract class ProteinCoverageContainer extends VerticalLayout {
             pcov.enable3D(chainCoverageLayout);
             return pcov;
         }).forEachOrdered((_item) -> {
-            System.out.println("ready to add the component ");
+//            System.out.println("ready to add the component ");
         });
 
     }

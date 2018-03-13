@@ -24,7 +24,7 @@ import java.util.concurrent.Callable;
  * @author Niklaas Colaert
  * @author Yehia Farag
  */
-public class WebFindPdbForUniprotAccessions {
+public class WebFindPdbForUniprotAccessions1 {
 
     /**
      * The protein accession number.
@@ -66,14 +66,17 @@ public class WebFindPdbForUniprotAccessions {
      *
      * @param aProteinAccession the protein accession
      */
-    public WebFindPdbForUniprotAccessions(String aProteinAccession) {
+    public WebFindPdbForUniprotAccessions1(String aProteinAccession) {
         this.iProteinAccession = aProteinAccession;
     }
+    int index = 1;
+    private boolean readyFile;
 
     public final Callable<String> reProcessInformation() {
         if (valid) {
             return null;
         }
+         readyFile=false;
         try {
 //            Thread t = new Thread(() -> {
 //                try {            // find features iProteinAccession
@@ -141,7 +144,7 @@ public class WebFindPdbForUniprotAccessions {
 //            t.join();
 
             Callable<String> task = () -> {
-                System.out.println("the function is called to work");
+                System.out.println("the function is called to work " + iProteinAccession + "   " + index++);
                 try {            // find features iProteinAccession
                     String urlMake = "http://www.rcsb.org/pdb/rest/das/pdb_uniprot_mapping/alignment?query=" + iProteinAccession + ";";
                     iDasReader = readUrl(urlMake);
@@ -202,6 +205,7 @@ public class WebFindPdbForUniprotAccessions {
                     return "";
                 }
                 valid = true;
+                readyFile=true;
                 return "done";
             };
 
@@ -267,6 +271,10 @@ public class WebFindPdbForUniprotAccessions {
         }
         return null;
 
+    }
+
+    public boolean isReadyFile() {
+        return readyFile;
     }
 
     /**
@@ -338,6 +346,7 @@ public class WebFindPdbForUniprotAccessions {
 //            }
 
         } catch (IOException e) {
+            e.printStackTrace();
             System.out.println("I/O exception for url " + iUrl);
 //             if (isFirstTry) {
 //                tempIDasReader = readUrl(iUrl);
@@ -351,7 +360,7 @@ public class WebFindPdbForUniprotAccessions {
         if (connection != null) {
             connection.disconnect();
         }
-        valid=false;
+        valid = false;
         return new WebDasAnnotationServerAlingmentReader("empty");
 
     }

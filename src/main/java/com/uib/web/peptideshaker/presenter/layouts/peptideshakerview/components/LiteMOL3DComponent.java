@@ -61,6 +61,7 @@ public class LiteMOL3DComponent extends VerticalLayout {
     }
 
     public void reset3DView() {
+        pdbId = null;
         JavaScript.getCurrent().execute("document.getElementById('litemolframe').contentWindow.reset();");
     }
 

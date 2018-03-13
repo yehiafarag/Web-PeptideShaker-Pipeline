@@ -95,3 +95,6 @@ html,body,.litemolbody,center{
     background:red !important;
     width: 100% !important;
 }
+.progress{
+     background-image: url("img/loading.gif");
+}
