@@ -121,18 +121,18 @@ public class WebPeptideShakerApp extends VerticalLayout {
 
                     PeptideShakerVisualizationDataset vDs = (PeptideShakerVisualizationDataset) ds;
 
-                    boolean check = Galaxy_Layer.sendDataToNels(vDs.getHistoryId(), vDs.getProteinFileId());
-                    if (!check) {
-                        return check;
-                    }
-                    check = Galaxy_Layer.sendDataToNels(vDs.getHistoryId(), vDs.getPeptideFileId());
-                    if (!check) {
-                        return check;
-                    }
-                    check = Galaxy_Layer.sendDataToNels(vDs.getHistoryId(), vDs.getPsmFileId());
-                    if (!check) {
-                        return check;
-                    }
+                    boolean check;// = Galaxy_Layer.sendDataToNels(vDs.getHistoryId(), vDs.getProteinFileId());
+//                    if (!check) {
+//                        return check;
+//                    }
+//                    check = Galaxy_Layer.sendDataToNels(vDs.getHistoryId(), vDs.getPeptideFileId());
+//                    if (!check) {
+//                        return check;
+//                    }
+//                    check = Galaxy_Layer.sendDataToNels(vDs.getHistoryId(), vDs.getPsmFileId());
+//                    if (!check) {
+//                        return check;
+//                    }
                     check = Galaxy_Layer.sendDataToNels(vDs.getHistoryId(), vDs.getSearchGUIFileId());
                     if (!check) {
                         return check;

@@ -18,12 +18,17 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
@@ -52,7 +57,9 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
     private String enzyme = "";
 
     /**
-     * Constructor to initialize the main setting parameters
+     * Constructor to initialise the main setting parameters
+     *
+     * @param dataset
      */
     public DatasetOverviewLayout(PeptideShakerVisualizationDataset dataset) {
         DatasetOverviewLayout.this.setMargin(true);
@@ -61,7 +68,7 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
         HorizontalLayout titleLayout = new HorizontalLayout();
         titleLayout.setSizeFull();
         titleLayout.addStyleName("subpanelframe");
-        if (dataset.getParameters() == null) {
+        if (dataset.getSearchingParameters() == null) {
             return;
         }
         DatasetOverviewLayout.this.addComponent(titleLayout);
@@ -70,43 +77,42 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
         titleLayout.addComponent(projectNameLabel);
         titleLayout.setComponentAlignment(projectNameLabel, Alignment.TOP_CENTER);
 
-        Button closeBtn = new Button("Close");
-        closeBtn.setIcon(VaadinIcons.CLOSE_SMALL, "Close window");
-        closeBtn.setStyleName(ValoTheme.BUTTON_SMALL);
-        closeBtn.addStyleName(ValoTheme.BUTTON_TINY);
-        closeBtn.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-        closeBtn.addStyleName("centerbackground");
-        closeBtn.setHeight(25, Unit.PIXELS);
-        closeBtn.setWidth(25, Unit.PIXELS);
+        Button closeIconBtn = new Button("Close");
+        closeIconBtn.setIcon(VaadinIcons.CLOSE_SMALL, "Close window");
+        closeIconBtn.setStyleName(ValoTheme.BUTTON_SMALL);
+        closeIconBtn.addStyleName(ValoTheme.BUTTON_TINY);
+        closeIconBtn.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+        closeIconBtn.addStyleName("centerbackground");
+        closeIconBtn.setHeight(25, Unit.PIXELS);
+        closeIconBtn.setWidth(25, Unit.PIXELS);
 
-        closeBtn.addClickListener((Button.ClickEvent event) -> {
+        closeIconBtn.addClickListener((Button.ClickEvent event) -> {
             close();
         });
-        titleLayout.addComponent(closeBtn);
-        titleLayout.setComponentAlignment(closeBtn, Alignment.TOP_RIGHT);
+        titleLayout.addComponent(closeIconBtn);
+        titleLayout.setComponentAlignment(closeIconBtn, Alignment.TOP_RIGHT);
 
-        HorizontalLayout overviewPanel = new HorizontalLayout();
-        overviewPanel.setSizeFull();
-        overviewPanel.addStyleName("subpanelframe");
-        DatasetOverviewLayout.this.addComponent(overviewPanel);
-        HorizontalLayout topUpper = new HorizontalLayout();
-        topUpper.setSizeFull();
-        topUpper.setSpacing(true);
-        overviewPanel.addComponent(topUpper);
-
-        Horizontal2Label proteinsNumber = new Horizontal2Label("#Proteins:", dataset.getProteinsNumber() + "");//new Label("#Proteins: <font style='text-align:right;'>" + dataset.getProteinsNumber() + "</font>");
-        topUpper.addComponent(proteinsNumber);
-        topUpper.setComponentAlignment(proteinsNumber, Alignment.MIDDLE_CENTER);
-        Horizontal2Label peptidesNumber = new Horizontal2Label("#Peptides:", dataset.getPeptidesNumber() + "");//new Label("#Peptides: <font style='text-align:right;'>" + dataset.getPeptidesNumber()+ "</font>");
-
-        topUpper.addComponent(peptidesNumber);
-        topUpper.setComponentAlignment(peptidesNumber, Alignment.MIDDLE_CENTER);
-
-        Horizontal2Label PSMNumber = new Horizontal2Label("#PSM:", dataset.getPsmNumber() + "");//new Label("#Peptides: <font style='text-align:right;'>" + dataset.getPeptidesNumber()+ "</font>");
-
-        topUpper.addComponent(PSMNumber);
-        topUpper.setComponentAlignment(PSMNumber, Alignment.MIDDLE_CENTER);
-
+//        HorizontalLayout overviewPanel = new HorizontalLayout();
+//        overviewPanel.setSizeFull();
+//        overviewPanel.addStyleName("subpanelframe");
+//        DatasetOverviewLayout.this.addComponent(overviewPanel);
+//        HorizontalLayout topUpper = new HorizontalLayout();
+//        topUpper.setSizeFull();
+//        topUpper.setSpacing(true);
+//        overviewPanel.addComponent(topUpper);
+//
+//        Horizontal2Label proteinsNumber = new Horizontal2Label("#Proteins:", dataset.getProteinsNumber() + "");//new Label("#Proteins: <font style='text-align:right;'>" + dataset.getProteinsNumber() + "</font>");
+//        topUpper.addComponent(proteinsNumber);
+//        topUpper.setComponentAlignment(proteinsNumber, Alignment.MIDDLE_CENTER);
+//        Horizontal2Label peptidesNumber = new Horizontal2Label("#Peptides:", dataset.getPeptidesNumber() + "");//new Label("#Peptides: <font style='text-align:right;'>" + dataset.getPeptidesNumber()+ "</font>");
+//
+//        topUpper.addComponent(peptidesNumber);
+//        topUpper.setComponentAlignment(peptidesNumber, Alignment.MIDDLE_CENTER);
+//
+//        Horizontal2Label PSMNumber = new Horizontal2Label("#PSM:", dataset.getPsmNumber() + "");//new Label("#Peptides: <font style='text-align:right;'>" + dataset.getPeptidesNumber()+ "</font>");
+//
+//        topUpper.addComponent(PSMNumber);
+//        topUpper.setComponentAlignment(PSMNumber, Alignment.MIDDLE_CENTER);
         VerticalLayout upperPanel = new VerticalLayout();
         upperPanel.setWidth(100, Unit.PERCENTAGE);
         upperPanel.addStyleName("subpanelframe");
@@ -115,14 +121,21 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
         Horizontal2Label fastaFileLabel = new Horizontal2Label("Protein Database (FASTA) :", dataset.getFastaFileName());
         upperPanel.addComponent(fastaFileLabel);
 
-        if (dataset.getParameters().get("protein_database_options").toString().split("\"create_decoy\": ")[1].startsWith("\"true\"")) {
+        if (dataset.getSearchingParameters().get("protein_database_options").toString().split("\"create_decoy\": ")[1].startsWith("\"true\"")) {
             Horizontal2Label addDecoy = new Horizontal2Label("Decoy Sequences :", "Added");
             upperPanel.addComponent(addDecoy);
 
         }
+        try {
+            Horizontal2Label searchEnginesLabel = new Horizontal2Label("Search Engines :", jsonToMap(new JSONObject(dataset.getSearchingParameters().get("search_engines_options").toString())).get("engines").toString().replace("[", "").replace("]", ""));
+            upperPanel.addComponent(searchEnginesLabel);
+        } catch (JSONException ex) {
+            Logger.getLogger(DatasetOverviewLayout.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
         int index = 1;
-        for (String mgf : dataset.getMgfFiles().values()) {
-            Horizontal2Label mgfFile = new Horizontal2Label("MGF File " + index + " :", mgf);
+        for (String mgf : dataset.getMgfFiles().keySet()) {
+            Horizontal2Label mgfFile = new Horizontal2Label("MGF File " + index + " :", dataset.getMgfFiles().get(mgf).getName());
             upperPanel.addComponent(mgfFile);
             index++;
         }
@@ -140,10 +153,30 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
         variableModificationTable.setVisible(!variableModificationTable.getItemIds().isEmpty());
         fixedModificationTable.setVisible(!fixedModificationTable.getItemIds().isEmpty());
 
-        GridLayout proteaseFragmentationContainer = inititProteaseFragmentationLayout(dataset.getParameters());
+        GridLayout proteaseFragmentationContainer = inititProteaseFragmentationLayout(dataset.getSearchingParameters());
         proteaseFragmentationContainer.addStyleName("subpanelframe");
         DatasetOverviewLayout.this.addComponent(proteaseFragmentationContainer);
 
+        HorizontalLayout searchEngines = new HorizontalLayout();
+        searchEngines.setSizeFull();
+        searchEngines.addStyleName("subpanelframe");
+        DatasetOverviewLayout.this.addComponent(searchEngines);
+        HorizontalLayout bottomPanel = new HorizontalLayout();
+        bottomPanel.setSizeFull();
+        bottomPanel.setSpacing(true);
+
+        Button closeBtn = new Button("Close");
+        closeBtn.setStyleName(ValoTheme.BUTTON_SMALL);
+        closeBtn.addStyleName(ValoTheme.BUTTON_TINY);
+        closeBtn.setHeight(25, Unit.PIXELS);
+        closeBtn.setWidth(100, Unit.PIXELS);
+        closeBtn.addClickListener((Button.ClickEvent event) -> {
+            close();
+        });
+        searchEngines.addComponent(closeBtn);
+        searchEngines.setComponentAlignment(closeBtn, Alignment.TOP_RIGHT);
+
+        //search_engines_options  engines
     }
 
     private HorizontalLayout inititModificationLayout(String[] fixedMod, String[] varMod) {
@@ -255,6 +288,11 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
         proteaseFragmentationContainer.setHeight(190, Unit.PIXELS);
         proteaseFragmentationContainer.setSpacing(true);
 
+        try {
+            parameters = jsonToMap(new JSONObject(parameters));
+        } catch (JSONException ex) {
+        }
+
 //        Set<String> digestionOptionList = new LinkedHashSet<>();
 //        digestionOptionList.add("Enzyme");
 //        digestionOptionList.add("Unspecific");
@@ -268,40 +306,43 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
         String _charge = "";
         String iso = "";
         try {
-            String[] jsonProtein_digest_optionsObjects = jsonToMap(parameters.get("protein_digest_options").toString()).get("digestion").split(",");
+            Map<String, Object> jsonProtein_digest_optionsObjects = (Map<String, Object>) jsonToMap(new JSONObject(parameters.get("protein_digest_options").toString())).get("digestion");
+
             //cleavage
-            if (jsonProtein_digest_optionsObjects[0].contains("\"default\"")) {
+            if (jsonProtein_digest_optionsObjects.get("cleavage").toString().equalsIgnoreCase("default")) {
                 digestion = "Enzyme";
                 enzyme = "Trypsin";
                 specificity = "Specific";
-                maxMissCleavValue = Integer.valueOf(jsonProtein_digest_optionsObjects[1].split(":")[1].replace("\"", ""));
+                maxMissCleavValue = Integer.valueOf(jsonProtein_digest_optionsObjects.get("missed_cleavages").toString());
 
-            } else if (jsonProtein_digest_optionsObjects[0].contains("\"0\"")) {
+            } else if (jsonProtein_digest_optionsObjects.get("cleavage").toString().equalsIgnoreCase("0")) {
                 digestion = "Enzyme";
-                enzyme = jsonProtein_digest_optionsObjects[2].split(":")[1].replace("\"", "");
-                maxMissCleavValue = Integer.valueOf(jsonProtein_digest_optionsObjects[3].split(":")[1].replace("\"", "").replace("}", "").replace("]", ""));
+                enzyme = jsonProtein_digest_optionsObjects.get("Enzyme").toString();
+                maxMissCleavValue = (Integer) jsonProtein_digest_optionsObjects.get("missed_cleavages");
                 specificity = "Specific";
 
-            } else if (jsonProtein_digest_optionsObjects[0].contains("\"1\"")) {
+            } else if (jsonProtein_digest_optionsObjects.get("cleavage").toString().equalsIgnoreCase("1")) {
                 digestion = "Unspecific";
                 enzyme = null;
                 specificity = null;
 
-            } else if (jsonProtein_digest_optionsObjects[0].contains("\"2\"")) {
+            } else if (jsonProtein_digest_optionsObjects.get("cleavage").toString().equalsIgnoreCase("2")) {
                 digestion = "Whole Protein";
                 enzyme = null;
                 specificity = null;
 
             }
 
-            Map<String, String> json_Precursor_options_Objects = jsonToMap(parameters.get("precursor_options").toString());
+            Map<String, Object> json_Precursor_options_Objects = jsonToMap(new JSONObject(parameters.get("precursor_options").toString()));
             ion = json_Precursor_options_Objects.get("forward_ion") + " , " + json_Precursor_options_Objects.get("reverse_ion");
-            precursor_ion = json_Precursor_options_Objects.get("precursor_ion_tol") + " " + json_Precursor_options_Objects.get("precursor_ion_tol_units").replace("1", "ppm").replace("2", "Da");
+            precursor_ion = json_Precursor_options_Objects.get("precursor_ion_tol") + " " + json_Precursor_options_Objects.get("precursor_ion_tol_units").toString().replace("1", "ppm").replace("2", "Da");
             fragment_tol = json_Precursor_options_Objects.get("fragment_tol") + " Da";
             _charge = json_Precursor_options_Objects.get("min_charge") + " to " + json_Precursor_options_Objects.get("max_charge");
             iso = json_Precursor_options_Objects.get("min_isotope") + " to " + json_Precursor_options_Objects.get("max_isotope");
-        } catch (JSONException | NumberFormatException ex) {
+        } catch (NumberFormatException ex) {
             ex.printStackTrace();
+        } catch (JSONException ex) {
+            Logger.getLogger(DatasetOverviewLayout.class.getName()).log(Level.SEVERE, null, ex);
         }
         Horizontal2Label digestionList = new Horizontal2Label("Digestion :", digestion);
         Horizontal2Label enzymeList = new Horizontal2Label("Enzyme :", enzyme);
@@ -348,19 +389,36 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
 
     public abstract void close();
 
-    private HashMap<String, String> jsonToMap(String t) throws JSONException {
+    private Map<String, Object> jsonToMap(JSONObject object) throws JSONException {
+        Map<String, Object> map = new HashMap<>();
 
-        HashMap<String, String> map = new HashMap<>();
-        JSONObject jObject = new JSONObject(t);
-        Iterator<?> keys = jObject.keys();
-        while (keys.hasNext()) {
-            String key = (String) keys.next();
-            String value = jObject.getString(key);
+        Iterator<String> keysItr = object.keys();
+        while (keysItr.hasNext()) {
+            String key = keysItr.next();
+            Object value = object.get(key);
+
+            if (value instanceof JSONArray) {
+                value = toList((JSONArray) value);
+            } else if (value instanceof JSONObject) {
+                value = jsonToMap((JSONObject) value);
+            }
             map.put(key, value);
-
         }
-
         return map;
+    }
+
+    private List<Object> toList(JSONArray array) throws JSONException {
+        List<Object> list = new ArrayList<>();
+        for (int i = 0; i < array.length(); i++) {
+            Object value = array.get(i);
+            if (value instanceof JSONArray) {
+                value = toList((JSONArray) value);
+            } else if (value instanceof JSONObject) {
+                value = jsonToMap((JSONObject) value);
+            }
+            list.add(value);
+        }
+        return list;
     }
 
 }

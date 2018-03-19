@@ -38,9 +38,8 @@ public abstract class GalaxyFileSystemPresenter extends VerticalLayout implement
     private DataViewLayout dataLayout;
 
     /**
-     * Initialize the web tool main attributes
+     * Initialise the web tool main attributes.
      *
-     * @param searchGUITool SearchGUI web tool
      */
     public GalaxyFileSystemPresenter() {
         GalaxyFileSystemPresenter.this.setSizeFull();
@@ -67,7 +66,6 @@ public abstract class GalaxyFileSystemPresenter extends VerticalLayout implement
             topToolsBtn.updateIconURL("img/jobs2.png");
         }
         this.dataLayout.updateDatasetsTable(historyFilesMap);
-        System.out.println("at updated presenter ---->>> set busy ");
     }
 
     private void initLayout() {

@@ -1,14 +1,9 @@
 package com.uib.web.peptideshaker.model.core.pdb;
 
-import com.uib.web.peptideshaker.model.core.pdb.PdbEbiRestService;
-import com.uib.web.peptideshaker.model.core.pdb.PdbMatch;
-import com.uib.web.peptideshaker.model.core.pdb.UniprotToPdb;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import org.codehaus.jettison.json.JSONObject;
 
 /**
  * Maps UniProt protein accession numbers to PDB file IDs. updated to suit the

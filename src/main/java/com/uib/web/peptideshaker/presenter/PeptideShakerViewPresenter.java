@@ -6,6 +6,7 @@ import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.ProteinVisu
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.SelectionManager;
 import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
 import com.uib.web.peptideshaker.presenter.core.SmallSideBtn;
+import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.PSMVisulizationLevelContainer;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbsoluteLayout;
@@ -36,10 +37,11 @@ public class PeptideShakerViewPresenter extends VerticalLayout implements Viewab
     private SelectionManager Selection_Manager;
     private ProteinVisulizationLevelContainer proteinsVisulizationLevelContainer;
 
+    private PSMVisulizationLevelContainer psmVisulizationLevelContainer;
+
     /**
      * Initialize the web tool main attributes
      *
-     * @param searchGUITool SearchGUI web tool
      */
     public PeptideShakerViewPresenter() {
         PeptideShakerViewPresenter.this.setSizeFull();
@@ -87,6 +89,19 @@ public class PeptideShakerViewPresenter extends VerticalLayout implements Viewab
         proteinsVisulizationLevelContainer = new ProteinVisulizationLevelContainer(Selection_Manager, proteinoverviewBtn);
         Selection_Manager.addBtnLayout(proteinoverviewBtn, proteinsVisulizationLevelContainer);
 
+        BigSideBtn psmoverviewBtn = new BigSideBtn("PSM Overview", 3);
+        psmoverviewBtn.updateIcon(null);
+        psmoverviewBtn.setData("psmoverview");
+        btnContainer.addComponent(psmoverviewBtn);
+        btnContainer.setComponentAlignment(psmoverviewBtn, Alignment.TOP_CENTER);
+        psmoverviewBtn.addLayoutClickListener(PeptideShakerViewPresenter.this);
+        
+        psmVisulizationLevelContainer = new PSMVisulizationLevelContainer(Selection_Manager, psmoverviewBtn);
+        Selection_Manager.addBtnLayout(psmoverviewBtn,psmVisulizationLevelContainer);
+
+        
+        
+
         VerticalLayout toolViewFrame = new VerticalLayout();
         toolViewFrame.setSizeFull();
         toolViewFrame.setStyleName("viewframe");
@@ -101,6 +116,7 @@ public class PeptideShakerViewPresenter extends VerticalLayout implements Viewab
 
         toolViewFrameContent.addComponent(datasetVisulizationLevelContainer);
         toolViewFrameContent.addComponent(proteinsVisulizationLevelContainer);
+        toolViewFrameContent.addComponent(psmVisulizationLevelContainer);
 
         mobilebtnContainer = new HorizontalLayout();
         mobilebtnContainer.setHeight(100, Unit.PERCENTAGE);
@@ -114,6 +130,8 @@ public class PeptideShakerViewPresenter extends VerticalLayout implements Viewab
 //        BigSideBtn proteinoverviewBtnM = new BigSideBtn("img/peptides_3.png", "Peptides Overview");       
         mobilebtnContainer.addComponent(proteinoverviewBtn.getMobileModeBtn());
         mobilebtnContainer.setComponentAlignment(proteinoverviewBtn.getMobileModeBtn(), Alignment.TOP_CENTER);
+        mobilebtnContainer.addComponent(psmoverviewBtn.getMobileModeBtn());
+        mobilebtnContainer.setComponentAlignment(psmoverviewBtn.getMobileModeBtn(), Alignment.TOP_CENTER);
 
     }
 
@@ -175,7 +193,6 @@ public class PeptideShakerViewPresenter extends VerticalLayout implements Viewab
         if (proteinsVisulizationLevelContainer != null) {
             if (comp.getBtnId() == 2) {
                 proteinsVisulizationLevelContainer.activate3DProteinView();
-                    
             } else {
                 proteinsVisulizationLevelContainer.reset3DProteinView();
             }
@@ -203,8 +220,9 @@ public class PeptideShakerViewPresenter extends VerticalLayout implements Viewab
         this.toolsBtn.setEnabled(ds != null);
         Selection_Manager.reset();
         Selection_Manager.selectBtn(0);
-        datasetVisulizationLevelContainer.selectDataset(ds);
+        this.datasetVisulizationLevelContainer.selectDataset(ds);
         this.proteinsVisulizationLevelContainer.selectDataset(ds);
+        this.psmVisulizationLevelContainer.selectDataset(ds);
 
     }
 }

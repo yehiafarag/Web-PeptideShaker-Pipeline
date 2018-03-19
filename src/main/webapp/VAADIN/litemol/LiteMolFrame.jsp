@@ -205,7 +205,7 @@
                    
                 }
                 function reset() {
-                   // document.getElementById("progress").style.display = "none";
+                   document.getElementById("progress").style.display = "none";
                     controlBtns[26].click();
                 }
 

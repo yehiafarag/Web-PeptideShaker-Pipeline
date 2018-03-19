@@ -84,13 +84,13 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
         peptideShakerVisualizationDataset.getPeptidesMap();
         Map<String, Color> ModificationColorMap = new LinkedHashMap<>();
         ModificationMatrix modificationMatrix = peptideShakerVisualizationDataset.getModificationMatrix();
-        for (String mod : modificationMatrix.getRows().keySet()) {
+        modificationMatrix.getRows().keySet().forEach((mod) -> {
             if (PTM.containsPTM(mod)) {
                 ModificationColorMap.put(mod, PTMFactory.getDefaultColor(mod));
             } else {
                 ModificationColorMap.put(mod, Color.LIGHT_GRAY);
             }
-        }
+        });
         this.chartFiltersContainer.updateFiltersData(modificationMatrix, ModificationColorMap, peptideShakerVisualizationDataset.getChromosomeMap(), peptideShakerVisualizationDataset.getPiMap(), peptideShakerVisualizationDataset.getProteinValidationMap(), peptideShakerVisualizationDataset.getProteinPeptidesNumberMap(), peptideShakerVisualizationDataset.getProteinPSMNumberMap(), peptideShakerVisualizationDataset.getProteinCoverageMap());
    
 

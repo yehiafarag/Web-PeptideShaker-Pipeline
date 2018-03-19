@@ -2744,7 +2744,7 @@
         content: "";
         position: fixed;
         background-color: rgba(0,0,0,0.1);
-        background-image: url(images/preloader.gif);
+        background-image: url(img/preloader.gif);
         background-position: center;
         background-attachment: fixed;
         background-repeat: no-repeat;
@@ -2949,5 +2949,9 @@
         font-variant-numeric: normal !important;
         font-variation-settings: normal !important;
         font-weight: 800 !important;
+    }
+    .v-Notification.system.v-Notification-system.v-position-top.v-position-center{
+        z-index:90000000000000000000000 !important;
+
     }
 }

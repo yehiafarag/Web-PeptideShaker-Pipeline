@@ -15646,7 +15646,7 @@ div.v-layout.v-horizontal.v-widget {
 	content: "";
 	position: fixed;
 	background-color: rgba(0, 0, 0, 0.1);
-	background-image: url(images/preloader.gif);
+	background-image: url(img/preloader.gif);
 	background-position: center;
 	background-attachment: fixed;
 	background-repeat: no-repeat;

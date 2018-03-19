@@ -38,6 +38,7 @@ public class NeLSGalaxy {
      * redirected from NeLS.
      *
      * @param vaadinRequest the request used to initialize the application UI
+     * @return boolean is Nels-Galaxy server
      * @todo: will be updated based on final agreement with UiB NeLS-Galaxy
      * administrators on the best authentication method available to access the
      * user date
@@ -53,15 +54,15 @@ public class NeLSGalaxy {
                 NeLSGalaxyDomainURL = cookie.getValue();
                 VaadinSession.getCurrent().setAttribute("galaxyUrl", NeLSGalaxyDomainURL + "/galaxy");
             }
-            if (cookie.getName().equalsIgnoreCase("PHPSESSID") || cookie.getName().equalsIgnoreCase("SimpleSAMLAuthToken")) {
-                nelsCookiesRequestProperty += ";" + cookie.getName() + "=" + cookie.getValue();
-            }
-            if (cookie.getName().equalsIgnoreCase("NelsJSESSIONID")) {
-                nelsCookiesRequestProperty += ";" + "JSESSIONID" + "=" + cookie.getValue();
-            }
-            if (cookie.getName().equalsIgnoreCase("AuthMemCookie") || cookie.getName().equalsIgnoreCase("PHPSESSID") || cookie.getName().equalsIgnoreCase("SimpleSAMLAuthToken")) {
-                cookiesRequestProperty += ";" + cookie.getName() + "=" + cookie.getValue();
-            }
+//            if (cookie.getName().equalsIgnoreCase("PHPSESSID") || cookie.getName().equalsIgnoreCase("SimpleSAMLAuthToken")) {
+//                nelsCookiesRequestProperty += ";" + cookie.getName() + "=" + cookie.getValue();
+//            }
+//            if (cookie.getName().equalsIgnoreCase("NelsJSESSIONID")) {
+//                nelsCookiesRequestProperty += ";" + "JSESSIONID" + "=" + cookie.getValue();
+//            }
+//            if (cookie.getName().equalsIgnoreCase("AuthMemCookie") || cookie.getName().equalsIgnoreCase("PHPSESSID") || cookie.getName().equalsIgnoreCase("SimpleSAMLAuthToken")) {
+//                cookiesRequestProperty += ";" + cookie.getName() + "=" + cookie.getValue();
+//            }
         }
         isNelsGalaxyConnection = Boolean.FALSE;
         cookiesRequestProperty = cookiesRequestProperty.replaceFirst(";", "");

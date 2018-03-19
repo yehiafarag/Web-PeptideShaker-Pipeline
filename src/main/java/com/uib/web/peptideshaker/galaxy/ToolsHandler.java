@@ -37,7 +37,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,8 +45,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jettison.json.JSONException;
-import org.codehaus.jettison.json.JSONObject;
 
 /**
  * This class responsible for interaction with tools on Galaxy server
@@ -129,11 +126,8 @@ public abstract class ToolsHandler {
                 List<Tool> tools = secion.getElems();
                 if (tools != null && !validToolsAvailable) {
                     for (Tool tool : tools) {
-
                         if (tool.getId().equalsIgnoreCase("nels_export")) {
                             nelsExporter_Tool_Id = tool.getId();
-//                            sendPost();
-
                         } else if (tool.getId().contains("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/search_gui/")) {
                             String version = tool.getId().split("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/search_gui/")[1];
                             
@@ -147,7 +141,8 @@ public abstract class ToolsHandler {
                             
                             if (isFirmwareNewer(version, PSVersion)) {
                                 PSVersion = version;
-                                peptideShaker_Tool_Id = tool.getId();
+                                peptideShaker_Tool_Id = "testtoolshed.g2.bx.psu.edu/repos/carlosh/peptideshaker_tests/peptide_shaker/1.16.15";// tool.getId();
+                               
 
                             }
                         }
@@ -158,7 +153,7 @@ public abstract class ToolsHandler {
                 if (peptideShaker_Tool_Id != null && search_GUI_Tool_Id != null && nelsExporter_Tool_Id != null) {
                     validToolsAvailable = true;
                     nelsSupport = true;
-                    break;
+//                    break;
                 } else if (peptideShaker_Tool_Id != null && search_GUI_Tool_Id != null) {
                     validToolsAvailable = true;
                 }
@@ -384,11 +379,13 @@ public abstract class ToolsHandler {
                 input2 = new WorkflowInputs.WorkflowInput(mgfIdsList.keySet().iterator().next(), WorkflowInputs.InputSourceType.HDA);
             }
             String json = readWorkflowFile(file);
-//            json = json.replace("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/search_gui/3.2.11", search_GUI_Tool_Id);
+            json = json.replace("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/search_gui/3.2.13.1", search_GUI_Tool_Id);
             String version = search_GUI_Tool_Id.split("\\/")[search_GUI_Tool_Id.split("\\/").length-1];
              json = json.replace("3.2.13.1", version);
+             json=json.replace("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/peptide_shaker/1.16.4", peptideShaker_Tool_Id);
              version = peptideShaker_Tool_Id.split("\\/")[peptideShaker_Tool_Id.split("\\/").length-1];
               json = json.replace("1.16.4", version);
+              System.out.println("at in the end tool v "+version);
 //            json = json.replace("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/peptide_shaker/1.11.0", peptideShaker_Tool_Id);
             json = json.replace("SearchGUI_Label", projectName + "-SearchGUI Results").replace("ZIP_Label", projectName + "-ZIP").replace("PSM_Label", projectName + "-PSM").replace("Proteins_Label", projectName + "-Proteins").replace("Peptides_Label", projectName + "-Peptides");
             //protein_database_options
@@ -474,14 +471,14 @@ public abstract class ToolsHandler {
             });
             t1.start();
 
-            PeptideShakerVisualizationDataset tempWorkflowOutput = new PeptideShakerVisualizationDataset("tempID");
-            tempWorkflowOutput.setName(projectName);
-            tempWorkflowOutput.setGalaxyId("tempID");
-            tempWorkflowOutput.setDownloadUrl("tempID");
-            tempWorkflowOutput.setHistoryId(historyId);
-            tempWorkflowOutput.setStatus("new");
-            tempWorkflowOutput.setType("Web Peptide Shaker Dataset");
-            tempWorkflowOutput.setJobId("tempID");
+            PeptideShakerVisualizationDataset tempWorkflowOutput =null;// new PeptideShakerVisualizationDataset("tempID");
+//            tempWorkflowOutput.setName(projectName);
+//            tempWorkflowOutput.setGalaxyId("tempID");
+//            tempWorkflowOutput.setDownloadUrl("tempID");
+//            tempWorkflowOutput.setHistoryId(historyId);
+//            tempWorkflowOutput.setStatus("new");
+//            tempWorkflowOutput.setType("Web Peptide Shaker Dataset");
+//            tempWorkflowOutput.setJobId("tempID");
             galaxyWorkFlowClient.deleteWorkflowRequest(selectedWf.getId());
             return tempWorkflowOutput;
 

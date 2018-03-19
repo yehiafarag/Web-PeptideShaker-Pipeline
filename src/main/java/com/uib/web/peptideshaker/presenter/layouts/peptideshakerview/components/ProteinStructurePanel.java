@@ -191,7 +191,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
                 pdbBlockMap.remove("All");
                 pdbChainsSelect.removeItem("All");
             }
-            
+
             pdbChainsSelect.addValueChangeListener(pdbChainsSelectlistener);
             pdbChainsSelect.setValue(pdbChainsSelect.getItemIds().iterator().next());
 
@@ -247,6 +247,9 @@ public class ProteinStructurePanel extends AbsoluteLayout {
 
     private void loadData(Object accessionObject, String proteinSequence) {
 //
+        if (accessionObject == null) {
+            return;
+        }
         pdbMatchesSelect.removeValueChangeListener(pdbMatchSelectlistener);
         pdbMatchesSelect.removeAllItems();
         pdbBlockMap.clear();
@@ -296,7 +299,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
             chains.stream().map((selectedBlock) -> {
                 int start = selectedBlock.getStart_residue_number();
                 int end = selectedBlock.getEnd_residue_number();//we need color               
-                HashMap chainSeq = initSequenceMap(selectedBlock.getChain_id(),lastSelectedMatch.getEntity_id(), start, end, "valid");
+                HashMap chainSeq = initSequenceMap(selectedBlock.getChain_id(), lastSelectedMatch.getEntity_id(), start, end, "valid");
                 return chainSeq;
             }).map((chainSeq) -> {
                 chainSeq.put("color", initColorMap(selectedChainColor));
@@ -427,7 +430,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
                         break;
                     }
                     selectedBlocks.forEach((selectedBlock) -> {
-                        peptidesQueryMap.get(peptide.getModifiedSequence()).add(initSequenceMap(selectedBlock.getChain_id(),lastSelectedMatch.getEntity_id(), start, end, peptide.getValidation()));
+                        peptidesQueryMap.get(peptide.getModifiedSequence()).add(initSequenceMap(selectedBlock.getChain_id(), lastSelectedMatch.getEntity_id(), start, end, peptide.getValidation()));
                     });
                 }
             } else if (lastSelectedMatch.getSequence().toLowerCase().replaceAll("i", "l").contains(peptide.getSequence().toLowerCase().replaceAll("i", "l"))) {
@@ -442,7 +445,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
                         break;
                     }
                     selectedBlocks.forEach((selectedBlock) -> {
-                        peptidesQueryMap.get(peptide.getModifiedSequence()).add(initSequenceMap(selectedBlock.getChain_id(),lastSelectedMatch.getEntity_id(), start, end, peptide.getValidation()));
+                        peptidesQueryMap.get(peptide.getModifiedSequence()).add(initSequenceMap(selectedBlock.getChain_id(), lastSelectedMatch.getEntity_id(), start, end, peptide.getValidation()));
 
                     });
                 }
@@ -452,9 +455,9 @@ public class ProteinStructurePanel extends AbsoluteLayout {
 
     }
 
-    private HashMap<String, Object> initSequenceMap(String chainId,int entity_id, int start, int end, String validation) {
+    private HashMap<String, Object> initSequenceMap(String chainId, int entity_id, int start, int end, String validation) {
         HashMap<String, Object> sequenceMap = new HashMap<>();
-        sequenceMap.put("entity_id",entity_id+"" );
+        sequenceMap.put("entity_id", entity_id + "");
         sequenceMap.put("struct_asym_id", chainId.toUpperCase());
         sequenceMap.put("start_residue_number", start);
         sequenceMap.put("end_residue_number", end);

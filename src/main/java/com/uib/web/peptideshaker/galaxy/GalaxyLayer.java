@@ -69,7 +69,7 @@ public abstract class GalaxyLayer {
     private final Button connectionBtn;
 
     /**
-     * Constructor to initialize Galaxy layer.
+     * Constructor to initialise Galaxy layer.
      */
     public GalaxyLayer() {
 
@@ -141,7 +141,6 @@ public abstract class GalaxyLayer {
                         VaadinSession.getCurrent().setAttribute("galaxyUrl", Galaxy_Instance.getGalaxyUrl());
 
                         galaxyURL = Galaxy_Instance.getGalaxyUrl();
-
                         toolsHandler = new ToolsHandler(Galaxy_Instance.getToolsClient(), Galaxy_Instance.getWorkflowsClient(), Galaxy_Instance.getHistoriesClient()) {
                             @Override
                             public void updateHistoryDatastructure(  PeptideShakerVisualizationDataset tempWorkflowOutput) {
@@ -382,10 +381,10 @@ public abstract class GalaxyLayer {
     public void deleteDataset(SystemDataSet ds) {
         if (ds.getType().equalsIgnoreCase("Web Peptide Shaker Dataset")) {
             PeptideShakerVisualizationDataset vDs = (PeptideShakerVisualizationDataset) ds;
-            toolsHandler.deleteDataset(galaxyURL, vDs.getHistoryId(), vDs.getCpsId());
-            toolsHandler.deleteDataset(galaxyURL, vDs.getHistoryId(), vDs.getProteinFileId());
-            toolsHandler.deleteDataset(galaxyURL, vDs.getHistoryId(), vDs.getPeptideFileId());
-            toolsHandler.deleteDataset(galaxyURL, vDs.getHistoryId(), vDs.getPsmFileId());
+//            toolsHandler.deleteDataset(galaxyURL, vDs.getHistoryId(), vDs.getCpsId());
+//            toolsHandler.deleteDataset(galaxyURL, vDs.getHistoryId(), vDs.getProteinFileId());
+//            toolsHandler.deleteDataset(galaxyURL, vDs.getHistoryId(), vDs.getPeptideFileId());
+//            toolsHandler.deleteDataset(galaxyURL, vDs.getHistoryId(), vDs.getPsmFileId());
             toolsHandler.deleteDataset(galaxyURL, vDs.getHistoryId(), vDs.getSearchGUIFileId());
 
         } else {

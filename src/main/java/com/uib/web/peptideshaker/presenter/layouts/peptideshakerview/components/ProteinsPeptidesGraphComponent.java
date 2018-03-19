@@ -63,8 +63,9 @@ public abstract class ProteinsPeptidesGraphComponent extends VerticalLayout {
     public Map<String, PeptideObject> getPeptidesNodes() {
         return peptidesNodes;
     }
-    public void selectPeptide(Object proteinId, Object peptideId){      
-    graphComponent.selectChildItem( proteinId,  peptideId);
+
+    public void selectPeptide(Object proteinId, Object peptideId) {
+        graphComponent.selectChildItem(proteinId, peptideId);
     }
 
     public String updateGraphData(String selectedProteinId) {
@@ -79,41 +80,43 @@ public abstract class ProteinsPeptidesGraphComponent extends VerticalLayout {
             graphComponent.updateGraphData(null, null, null, null);
             thumbURL = null;
             return thumbURL;
-        }
-
+        }   
         ProteinObject protein = peptideShakerVisualizationDataset.getProtein(selectedProteinId);
 //        selectedProtiensLabel.setCaption(protein.getDescription());
 //        selectedProtiensLabel.setEnabled(true);
 //        selectedProtiensLabel.setResource(new ExternalResource("http://www.uniprot.org/uniprot/" + selectedProteinId));
-        for (String acc : protein.getProteinGroupSet()) {
+        protein.getProteinGroupSet().stream().map((acc) -> {
             proteinNodes.put(acc, peptideShakerVisualizationDataset.getProtein(acc));
+            return acc;
+        }).forEachOrdered((acc) -> {
             peptides.addAll(peptideShakerVisualizationDataset.getPeptides(acc));
-        }
+        });
 
         Set<String> tunrelatedProt = new LinkedHashSet<>();
-        for (PeptideObject peptide : peptides) {
+        peptides.stream().map((peptide) -> {
             peptidesNodes.put(peptide.getModifiedSequence(), peptide);
+            return peptide;
+        }).forEachOrdered((peptide) -> {
             ArrayList<String> tEd = new ArrayList<>();
-            for (String acc : peptide.getProteinsSet()) {
+            peptide.getProteinsSet().stream().map((acc) -> {
                 tEd.add(acc);
-                if (!proteinNodes.containsKey(acc)) {
-                    tunrelatedProt.add(acc);
-                }
-            }
+                return acc;
+            }).filter((acc) -> (!proteinNodes.containsKey(acc))).forEachOrdered((acc) -> {
+                tunrelatedProt.add(acc);
+            });
             edges.put(peptide.getModifiedSequence(), tEd);
-
-        }
-        for (String unrelated : tunrelatedProt) {
+        });
+        tunrelatedProt.forEach((unrelated) -> {
             fillUnrelatedProteinsAndPeptides(unrelated, peptideShakerVisualizationDataset.getProtein(unrelated));
-        }
+        });
         proteinNodes.putAll(unrelatedProt);
         peptidesNodes.putAll(unrelatedPeptides);
 
         Map<String, ProteinObject> tempProteinNodes = new LinkedHashMap<>(proteinNodes);
-        for (String accession : tempProteinNodes.keySet()) {
+        tempProteinNodes.keySet().forEach((accession) -> {
             proteinNodes.replace(accession, peptideShakerVisualizationDataset.updateProteinInformation(tempProteinNodes.get(accession), accession));
 //            proteinTableData.put(accession, proteinNodes.get(accession));
-        }
+        });
 
         graphComponent.updateGraphData(protein, proteinNodes, peptidesNodes, edges);
         thumbURL = graphComponent.getThumbImgeUrl();
@@ -128,24 +131,28 @@ public abstract class ProteinsPeptidesGraphComponent extends VerticalLayout {
         unrelatedProt.put(proteinAccession, protein);
         Set<PeptideObject> tpeptides = peptideShakerVisualizationDataset.getPeptides(proteinAccession);
         if (tpeptides != null) {
-            for (PeptideObject pep : tpeptides) {
+            tpeptides.stream().map((pep) -> {
                 if (!edges.containsKey(pep.getModifiedSequence())) {
                     ArrayList<String> tEd = new ArrayList<>();
                     edges.put(pep.getModifiedSequence(), tEd);
                 }
+                return pep;
+            }).map((pep) -> {
                 edges.get(pep.getModifiedSequence()).add(proteinAccession);
-                if (!peptidesNodes.containsKey(pep.getModifiedSequence())) {
-                    unrelatedPeptides.put(pep.getModifiedSequence(), pep);
-                    for (String newAcc : pep.getProteinsSet()) {
-                        fillUnrelatedProteinsAndPeptides(newAcc, peptideShakerVisualizationDataset.getProtein(newAcc));
-                    }
-                }
-
-            }
+                return pep;
+            }).filter((pep) -> (!peptidesNodes.containsKey(pep.getModifiedSequence()))).map((pep) -> {
+                unrelatedPeptides.put(pep.getModifiedSequence(), pep);
+                return pep;
+            }).forEachOrdered((pep) -> {
+                pep.getProteinsSet().forEach((newAcc) -> {
+                    fillUnrelatedProteinsAndPeptides(newAcc, peptideShakerVisualizationDataset.getProtein(newAcc));
+                });
+            });
         }
 
     }
-     public Set<Object> getSelectedProteins() {
+
+    public Set<Object> getSelectedProteins() {
         return graphComponent.getSelectedProteins();
     }
 
@@ -156,6 +163,5 @@ public abstract class ProteinsPeptidesGraphComponent extends VerticalLayout {
     public abstract void selectedItem(Set<Object> selectedItems, Set<Object> selectedChildsItems);
 
     public abstract void updateProteinsMode(String modeType);
-    
-    
+
 }

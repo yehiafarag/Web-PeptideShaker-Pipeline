@@ -32,6 +32,7 @@ public class SelectionManager {
         return selectedProteinId;
     }
     private String selectedProteinId;
+     private String selectedPeptideId;
 
     private boolean singleProteinsFilter = false;
 
@@ -200,7 +201,8 @@ public class SelectionManager {
     }
 
     public void selectBtn(BigSideBtn btn) {
-        for (BigSideBtn bbt : btnsLayoutMap.keySet()) {
+        btnsLayoutMap.keySet().forEach((bbt) -> {
+            
             if (btn.getData().toString().equalsIgnoreCase(bbt.getData().toString())) {
                 bbt.setSelected(true);
                 btnsLayoutMap.get(bbt).removeStyleName("hidepanel");
@@ -208,7 +210,7 @@ public class SelectionManager {
                 bbt.setSelected(false);
                 btnsLayoutMap.get(bbt).addStyleName("hidepanel");
             }
-        }
+        });
 
     }
 
@@ -238,8 +240,13 @@ public class SelectionManager {
      * @param filteringValue set of selected value ids
      * @param filterId filter that create the event
      */
-    public void setSelection(String selectionType, Set<Comparable> filteringValue, Set<Comparable> filteredItemsSet, String filterId) {
+    public String getSelectedPeptideId() {
 
+        return selectedPeptideId;
+
+    }
+
+    public void setSelection(String selectionType, Set<Comparable> filteringValue, Set<Comparable> filteredItemsSet, String filterId) {
         if (selectionType.equalsIgnoreCase("dataset_filter_selection")) {
             datasetFilterOrderList.remove(filterId);
             if (filteringValue.isEmpty()) {
@@ -253,9 +260,12 @@ public class SelectionManager {
         } else if (selectionType.equalsIgnoreCase("protein_selection")) {
             selectedProteinId = (String)filteringValue.toArray()[0];
 
-        }
-        SelectionChanged(selectionType, filterId);
+        }else if (selectionType.equalsIgnoreCase("peptide_selection")) {
+            selectedPeptideId = (String)filteringValue.toArray()[0];
 
+        }
+        
+        SelectionChanged(selectionType, filterId);
     }
 
     private FilteredProteins filterProteinData() {
@@ -421,10 +431,10 @@ public class SelectionManager {
 //                
             }
 
-        } else if (selectionType.equalsIgnoreCase("protein_selection")) {
-            for (String filterId : registeredProteinComponentsMap.keySet()) {
+        } else if (selectionType.equalsIgnoreCase("protein_selection")||selectionType.equalsIgnoreCase("peptide_selection")) {
+            registeredProteinComponentsMap.keySet().forEach((filterId) -> {
                 registeredProteinComponentsMap.get(filterId).selectionChange(selectionType);
-            }
+            });
         }
     }
 

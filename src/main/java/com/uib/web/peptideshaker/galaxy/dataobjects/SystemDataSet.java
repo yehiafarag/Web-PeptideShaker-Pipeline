@@ -16,6 +16,7 @@ public class SystemDataSet {
     private String status;
     private String type;
     private String nelsKey;
+    private String inputDsId;
 
     public String getNelsKey() {        
         return nelsKey;
@@ -118,6 +119,14 @@ public class SystemDataSet {
 
     public void setReIndexedHistoryId(String reIndexedHistoryId) {
         this.reIndexedHistoryId = reIndexedHistoryId;
+    }
+
+    public String getInputDsId() {
+        return inputDsId;
+    }
+
+    public void setInputDsId(String inputDsId) {
+        this.inputDsId = inputDsId;
     }
 
 }

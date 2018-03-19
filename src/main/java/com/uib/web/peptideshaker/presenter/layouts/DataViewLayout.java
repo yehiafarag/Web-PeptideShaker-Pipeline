@@ -235,6 +235,7 @@ public abstract class DataViewLayout extends Panel {
             getToGalaxyLabel.setVisible(nelsSupported);
 
             HorizontalLayout rowLayout;
+            
             if (ds.getType().equalsIgnoreCase("Web Peptide Shaker Dataset")) {
                 nameLabel = new PopupWindow(ds.getName());
                 DatasetOverviewLayout dsOverview = new DatasetOverviewLayout((PeptideShakerVisualizationDataset) ds) {

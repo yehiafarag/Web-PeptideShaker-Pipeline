@@ -2,7 +2,6 @@ package com.uib.web.peptideshaker;
 
 import com.uib.web.peptideshaker.galaxy.nelsgalaxy.NeLSGalaxy;
 import archive.LiteMOLComponent;
-import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components.LiteMOL3DComponent;
 import javax.servlet.annotation.WebServlet;
 
 import com.vaadin.annotations.Theme;
@@ -12,13 +11,8 @@ import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinSession;
-import com.vaadin.shared.ui.window.WindowMode;
-import com.vaadin.ui.Accordion;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 import javax.servlet.ServletContext;
 
 /**
