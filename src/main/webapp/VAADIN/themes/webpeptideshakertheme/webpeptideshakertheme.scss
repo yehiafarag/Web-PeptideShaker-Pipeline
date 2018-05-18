@@ -2464,259 +2464,13 @@
         bottom: 0px  !important;
         left: 0px  !important;
     }
-
-    /****mobile css**/
-    .horizontalcss  .largetitle .v-label{
-        margin-left:10px;
+    .v-caption-borderslider center{
+        font-size:10px !important;       
+        margin-top:0px !important;
+        width:40px !important;
+        text-align:-webkit-center;
+        text-align:center;
     }
-    .horizontalcss .scrollinsideframe{
-        padding-left: 10px;
-        padding-right: 10px;
-    }
-    .horizontalcss .mainlayout {
-
-    }
-
-    .horizontalcss .v-slot-leftsidebtncontainer {
-        width: 1% !important;
-        background-color: white;
-        opacity:0;
-    }
-
-    .horizontalcss .v-slot-integratedframe {
-        width: 99% !important;
-        height: 90% !important;
-    }
-
-    .horizontalcss .v-slot-bottomsidebtncontainer{       
-        opacity: 1;
-    }
-    .horizontalcss .bigmenubtn img {
-        height:100% !important;
-        width: 40px !important;
-        border: 2px solid lightgray;
-        border-radius: 5px;
-        cursor: pointer;
-        padding: 10% !important;
-        z-index:10000000000000000000000000000000 !important;
-        position:relative;
-    }
-    .horizontalcss zeropadding{
-        padding:10px !important;
-    }
-    .horizontalcss .selectedbiglbtn {
-        background-color:whitesmoke;
-        margin-top:-2px !important;
-        border-top-color:whitesmoke;
-        border-right-color:lightgrey;
-        border-bottom-right-radius:5px;
-    }
-    .horizontalcss .selectedbiglbtn img{
-        border-color:rgba(18, 120, 239, 0.96) !important;
-    }
-    .horizontalcss.autooverflow{
-        overflow:hidden !important;
-    }
-    .horizontalcss .v-slot-rightsidebtncontainer {	
-        /*        background-color: white;
-                border-top: 2px solid white;
-                border-bottom: 2px solid white;
-                overflow: hidden;*/
-        width: 0px !important;
-        z-index:0 !important;
-        overflow: hidden;
-    }
-    .smalltable div{
-        font-size:12px !important;
-    }
-    .smalltable .v-label-smalltable.v-label{
-        font-size: 12px !important;
-        font-weight:normal !important;
-        text-decoration:none !important;
-        padding-left:5px
-    }
-
-
-    /*    .horizontalcss .v-slot-rightsidebtncontainer {
-            width: 50px !important;
-            z-index: 10000000000.0 !important;
-            position: absolute !important;
-            overflow: visible;
-            right: 10px;
-        }*/
-
-    .v-horizontallayout-logocontainer{
-        margin-top:30px !important;
-        left:20px !important;
-
-        overflow:visible !important;
-        position:fixed !important;
-        z-index:2222222222 !important;
-    }
-    .horizontalcss .middleviewcontainer {
-        padding-left: 0px;
-        padding-right: 0px;
-        padding-bottom:60px;
-    }
-    .horizontalcss .leftsideviewcontainer .v-slot-bigmenubtn {
-        visibility: hidden !important;
-    }
-    .horizontalcss.frame {	
-        min-height: 400px !important;
-        min-width: 495px !important;
-
-    }
-    .horizontalcss .v-slot-bottomsidebtncontainer {
-
-        min-height: 60px !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        position: relative;
-        z-index: 2;
-        background-color: white !important;
-    }
-    .horizontalcss .bottomsidebtncontainer {
-        margin-top: -2px;	
-        min-height: 60px !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        position: relative;
-        margin-left:20px;
-    }
-    .horizontalcss .v-slot-topviewcontainer {
-        min-height: 50px;
-        max-width: 220px;
-        position: relative !important;
-        top: 35px !important;
-        float: right;
-        left: -50px !important;
-        z-index: 2000000000 !important;
-        background-color: #ffffff !important;
-        height: 50px !important;
-        overflow: visible;
-        visibility: visible !important;
-    }
-    .v-slot-smallmenubtn{
-        min-width:50px;
-    }
-    .horizontalcss .v-verticallayout-middleviewcontainer{
-        top:-39px !important;
-        overflow:visible;
-        visibility:visible !important;
-        z-index:2 !important;
-        position:absolute !important;
-    }
-    .horizontalcss .logocontainer img {
-        height:140px !important;
-        overflow:visible;
-        margin-top:-20px;
-        position:fixed ;
-        z-index:10!important;
-    }
-    .v-verticallayout-hidepanel img{
-        visibility:hidden;
-    }
-    .horizontalcss .v-link-headerlogo {
-        visibility:hidden;
-    }
-
-    .logocontainer{
-        top:-1px !important;
-        position:absolute;
-    }
-    .horizontalcss .selectedsmallbtn {
-
-    }
-    .horizontalcss .v-slot-smallmenubtn {
-        min-width: 50px;
-    }
-    .horizontalcss .v-label-frametitle {
-
-        padding-left: 10px;
-        padding-top: 20px;
-        font-size: 14px;
-        font-weight: bold;
-        font-family: "Open Sans", sans-serif;
-        color: #464646;
-    }
-
-
-
-    .v-slot-smallmenubtn {
-        max-height: 80px !important;
-        border: 2px solid lightgray;
-        border-right: none;
-        background-color: whitesmoke;
-        margin-top: -4px;
-        border-radius: 5px;
-        border-bottom-right-radius: 0px;
-        border-top-right-radius: 0px;
-        overflow: visible !important;
-        z-index: 3 !important;
-        position: relative !important;
-        margin-top:-6px;
-    }
-    .v-slot-smallmenubtn.v-slot-selectedsmallbtn {
-
-        border-top: 2px solid lightgray;
-        border-radius: 5px;
-        border-top-left-radius: 0px;
-        border-bottom-left-radius: 0px;
-        background: linear, lightgray, lightgray right no-repeat;
-        background: -webkit-linear-gradient(lightgray, lightgray) right no-repeat;
-        background: -o-linear-gradient(lightgray, lightgray) right no-repeat;
-        background: -moz-linear-gradient(lightgray, lightgray) right no-repeat;
-        background: linear, lightgray, lightgray right no-repeat;
-        background-size: 2px 100%;
-        margin-left: -2px;
-        overflow: hidden;
-        z-index: 2 !important;
-        border-right: 2px solid lightgray;
-    }
-
-    .v-slot-selectedsmallbtn.v-slot-middilesmallbtn {
-        border-right:none;
-        border-left-color:white;
-        background: linear, lightgray, lightgray right no-repeat;
-        background: -webkit-linear-gradient(lightgray, lightgray) right no-repeat;
-        background: -o-linear-gradient(lightgray, lightgray) right no-repeat;
-        background: -moz-linear-gradient(lightgray, lightgray) right no-repeat;
-        background-size: 2px 100%;
-        margin-left:-2px;
-        overflow: hidden;
-        z-index: 2 !important;
-    }
-
-    .horizontalcss .v-slot-smallmenubtn {
-        max-height: 40px !important;
-        border: 2px solid lightgray;
-        border-top: 2px solid rgba(211, 211, 211, 0);
-        background: whitesmoke;
-        border-radius: 5px;
-        border-top-right-radius: 0px;
-        border-top-left-radius: 0px;
-        overflow: visible !important;
-        z-index: 3 !important;
-        position: relative !important;
-        margin-top:-2px;
-        padding-top:2px;
-        margin-left:-2px;
-        float:bottom;
-    }
-
-    .horizontalcss .v-slot-smallmenubtn.v-slot-selectedsmallbtn {
-        border-bottom-color: white !important;	
-        background:white !important;
-        border-top-color:lightgray;
-        border-top-right-radius: 5px;
-        border-top-left-radius: 5px;
-        border-bottom-right-radius: 0px;
-        border-bottom-left-radius: 0px;
-        overflow: hidden;
-        z-index: 2 !important;
-
-    }
-
 
     .counterlabel{
         width:47.55% !important;
@@ -2954,4 +2708,310 @@
         z-index:90000000000000000000000 !important;
 
     }
+    .v-slider-feedback{
+        visibility:hidden !important;
+    }
+    .v-verticallayout-selectioncanvas canvas{
+        outline:none !important;
+    }
+
+    #selectioncanvas {
+        /*        border:1px solid lightgray;
+                border-radius: 5px;*/
+    }
+    #coords, #hiddenbtn{
+        color:rgba(0, 0, 0, 0);
+        border:none;
+        display:none;
+    }
+
+
+
+    /****mobile css**/
+    .horizontalcss  .largetitle .v-label{
+        margin-left:10px;
+    }
+    .horizontalcss .scrollinsideframe{
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    .horizontalcss .mainlayout {
+
+    }
+
+    .horizontalcss .v-slot-leftsidebtncontainer {
+        width: 1% !important;
+        background-color: white;
+        opacity:0;
+    }
+
+    .horizontalcss .v-slot-integratedframe {
+        width: 99% !important;
+        height: 90% !important;
+    }
+
+    .horizontalcss .v-slot-bottomsidebtncontainer{       
+        opacity: 1;
+    }
+    .horizontalcss .bigmenubtn img {
+        height:100% !important;
+        width: 40px !important;
+        border: 2px solid lightgray;
+        border-radius: 5px;
+        cursor: pointer;
+        padding: 10% !important;
+        z-index:10000000000000000000000000000000 !important;
+        position:relative;
+    }
+    .horizontalcss zeropadding{
+        padding:10px !important;
+    }
+    .horizontalcss .selectedbiglbtn {
+        background-color:whitesmoke;
+        margin-top:-2px !important;
+        border-top-color:whitesmoke;
+        border-right-color:lightgrey;
+        border-bottom-right-radius:5px;
+    }
+    .horizontalcss .selectedbiglbtn img{
+        border-color:rgba(18, 120, 239, 0.96) !important;
+    }
+    .horizontalcss.autooverflow{
+        overflow:hidden !important;
+    }
+    .horizontalcss .v-slot-rightsidebtncontainer {	
+        /*        background-color: white;
+                border-top: 2px solid white;
+                border-bottom: 2px solid white;
+                overflow: hidden;*/
+        width: 0px !important;
+        z-index:0 !important;
+        overflow: hidden;
+    }
+
+    /*    .horizontalcss .v-slot-rightsidebtncontainer {
+            width: 50px !important;
+            z-index: 10000000000.0 !important;
+            position: absolute !important;
+            overflow: visible;
+            right: 10px;
+        }*/
+
+    .v-horizontallayout-logocontainer{
+        margin-top:30px !important;
+        left:20px !important;
+
+        overflow:visible !important;
+        position:fixed !important;
+        z-index:2222222222 !important;
+    }
+    .horizontalcss .middleviewcontainer {
+        padding-left: 0px;
+        padding-right: 0px;
+        padding-bottom:60px;
+    }
+    .horizontalcss .leftsideviewcontainer .v-slot-bigmenubtn {
+        visibility: hidden !important;
+    }
+    .horizontalcss.frame {	
+        min-height: 400px !important;
+        min-width: 495px !important;
+
+    }
+    .horizontalcss .v-slot-bottomsidebtncontainer {
+
+        min-height: 60px !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        position: relative;
+        z-index: 2;
+        background-color: white !important;
+    }
+    .horizontalcss .bottomsidebtncontainer {
+        margin-top: -2px;	
+        min-height: 60px !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        position: relative;
+        margin-left:20px;
+    }
+    .horizontalcss .v-slot-topviewcontainer {
+        min-height: 50px;
+        max-width: 220px;
+        position: relative !important;
+        top: 35px !important;
+        float: right;
+        left: -50px !important;
+        z-index: 2000000000 !important;
+        background-color: #ffffff !important;
+        height: 50px !important;
+        overflow: visible;
+        visibility: visible !important;
+    }
+    .v-slot-smallmenubtn{
+        min-width:50px;
+    }
+    .horizontalcss .v-verticallayout-middleviewcontainer{
+        top:-39px !important;
+        overflow:visible;
+        visibility:visible !important;
+        z-index:2 !important;
+        position:absolute !important;
+    }
+    .horizontalcss .logocontainer img {
+        height:140px !important;
+        overflow:visible;
+        margin-top:-20px;
+        position:fixed ;
+        z-index:10!important;
+    }
+    .v-verticallayout-hidepanel img{
+        visibility:hidden;
+    }
+    .horizontalcss .v-link-headerlogo {
+        visibility:hidden;
+    }
+
+    .horizontalcss .selectedsmallbtn {
+
+    }
+    .horizontalcss .v-slot-smallmenubtn {
+        min-width: 50px;
+    }
+    .horizontalcss .v-label-frametitle {
+
+        padding-left: 10px;
+        padding-top: 20px;
+        font-size: 14px;
+        font-weight: bold;
+        font-family: "Open Sans", sans-serif;
+        color: #464646;
+    }
+
+
+    .horizontalcss .v-slot-smallmenubtn {
+        max-height: 40px !important;
+        border: 2px solid lightgray;
+        border-top: 2px solid rgba(211, 211, 211, 0);
+        background: whitesmoke;
+        border-radius: 5px;
+        border-top-right-radius: 0px;
+        border-top-left-radius: 0px;
+        overflow: visible !important;
+        z-index: 3 !important;
+        position: relative !important;
+        margin-top:-2px;
+        padding-top:2px;
+        margin-left:-2px;
+        float:bottom;
+    }
+
+    .horizontalcss .v-slot-smallmenubtn.v-slot-selectedsmallbtn {
+        border-bottom-color: white !important;	
+        background:white !important;
+        border-top-color:lightgray;
+        border-top-right-radius: 5px;
+        border-top-left-radius: 5px;
+        border-bottom-right-radius: 0px;
+        border-bottom-left-radius: 0px;
+        overflow: hidden;
+        z-index: 2 !important;
+
+    }
+
+
+    .smalltable div{
+        font-size:12px !important;
+    }
+    .smalltable .v-label-smalltable.v-label{
+        font-size: 12px !important;
+        font-weight:normal !important;
+        text-decoration:none !important;
+        padding-left:5px
+    }
+
+
+
+    .logocontainer{
+        top:-1px !important;
+        position:absolute;
+    }
+    .v-slot-smallmenubtn {
+        max-height: 80px !important;
+        border: 2px solid lightgray;
+        border-right: none;
+        background-color: whitesmoke;
+        margin-top: -4px;
+        border-radius: 5px;
+        border-bottom-right-radius: 0px;
+        border-top-right-radius: 0px;
+        overflow: visible !important;
+        z-index: 3 !important;
+        position: relative !important;
+        margin-top:-6px;
+    }
+    .v-slot-smallmenubtn.v-slot-selectedsmallbtn {
+
+        border-top: 2px solid lightgray;
+        border-radius: 5px;
+        border-top-left-radius: 0px;
+        border-bottom-left-radius: 0px;
+        background: linear, lightgray, lightgray right no-repeat;
+        background: -webkit-linear-gradient(lightgray, lightgray) right no-repeat;
+        background: -o-linear-gradient(lightgray, lightgray) right no-repeat;
+        background: -moz-linear-gradient(lightgray, lightgray) right no-repeat;
+        background: linear, lightgray, lightgray right no-repeat;
+        background-size: 2px 100%;
+        margin-left: -2px;
+        overflow: hidden;
+        z-index: 2 !important;
+        border-right: 2px solid lightgray;
+    }
+
+    .v-slot-selectedsmallbtn.v-slot-middilesmallbtn {
+        border-right:none;
+        border-left-color:white;
+        background: linear, lightgray, lightgray right no-repeat;
+        background: -webkit-linear-gradient(lightgray, lightgray) right no-repeat;
+        background: -o-linear-gradient(lightgray, lightgray) right no-repeat;
+        background: -moz-linear-gradient(lightgray, lightgray) right no-repeat;
+        background-size: 2px 100%;
+        margin-left:-2px;
+        overflow: hidden;
+        z-index: 2 !important;
+    }
+
+    #selectioncanvas{
+/*        border:2px solid black !important;
+        background-image: url("https://www.ess.fi/incoming/img2398873/btt840/ALTERNATES/w640/1755383.jpg");
+        background-repeat:no-repeat;
+        background-size:cover;*/
+    }
+    #tbox{
+        height:50px;
+        width:200px;
+        border:1px solid blue;
+        left:10px !important;
+        top:10px !important;
+        position:relative !important;
+         visibility:hidden;
+        display:none;
+       
+    }
+    #leftarrow, #rightarrow {	
+	 visibility:hidden;
+        display:none;
+}
+
+.textintablecell .v-absolutelayout-margin{
+	 min-height:20px !important;
+	overflow:visible !important;
+
+}
+.textintablecell .v-label{
+	margin-top:2px
+            
+}
+
+
 }

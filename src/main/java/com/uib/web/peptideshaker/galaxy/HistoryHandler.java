@@ -79,6 +79,7 @@ public abstract class HistoryHandler {
     ;
     private final Set<String> historiesIds;
     private final File userFolder;
+    private final GalaxyDatasetServingUtil galaxyDatasetServingUtil;
     /**
      * History progress icon
      *
@@ -89,8 +90,6 @@ public abstract class HistoryHandler {
      *
      */
     private final Refresher REFRESHER;
-
-    private final GalaxyFastaFileReader fastaFileReader;
 
     public Map<String, PeptideShakerVisualizationDataset> getPeptideShakerVisualizationMap() {
         return peptideShakerVisualizationMap;
@@ -114,7 +113,7 @@ public abstract class HistoryHandler {
         this.historyFilesMap = new LinkedHashMap<>();
         this.historiesIds = new HashSet<>();
         this.NeLSFilesMap = new LinkedHashMap<>();
-        this.fastaFileReader = new GalaxyFastaFileReader();
+        this.galaxyDatasetServingUtil = new GalaxyDatasetServingUtil(Galaxy_Instance.getGalaxyUrl(), Galaxy_Instance.getApiKey());
 
         REFRESHER = new Refresher();
         ((PeptidShakerUI) UI.getCurrent()).addExtension(REFRESHER);
@@ -255,7 +254,7 @@ public abstract class HistoryHandler {
                             NeLSFilesMap.remove(ds.getNelsKey());
                         } else if ((map.get("name").toString().endsWith("-ZIP")) && (map.get("data_type").toString().equalsIgnoreCase("abc.CompressedArchive") || map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.binary.CompressedZipArchive"))) {
                             String projectId = map.get("name").toString().split("-")[0];
-                            PeptideShakerVisualizationDataset vDs = new PeptideShakerVisualizationDataset(projectId, userFolder, Galaxy_Instance.getGalaxyUrl(), Galaxy_Instance.getApiKey());
+                            PeptideShakerVisualizationDataset vDs = new PeptideShakerVisualizationDataset(projectId, userFolder, Galaxy_Instance.getGalaxyUrl(), Galaxy_Instance.getApiKey(),galaxyDatasetServingUtil);
                             peptideShakerVisualizationMap.put(projectId, vDs);
                             HistoryContentsProvenance prov = galaxyHistoriesClient.showProvenance(workingHistory.getId(), map.get("id").toString());
                             vDs.setJobId("_PS_" + prov.getJobId());
@@ -470,7 +469,7 @@ public abstract class HistoryHandler {
                     continue;
                 }
                 vDs.setSearchGUIFileId(searchGUIFilesMap.get(vDs.getProjectName()).getId());
-                Map<String, Object> parameters = searchGUIFilesMap.get(vDs.getProjectName()).getParameters();                
+                Map<String, Object> parameters = searchGUIFilesMap.get(vDs.getProjectName()).getParameters();
                 vDs.setSearchingParameters(jsonToMap(new JSONObject(parameters)));
                 parameters.keySet().stream().filter((str) -> (str.contains("peak_lists"))).forEachOrdered((str) -> {
                     String id = ((Map<String, Object>) parameters.get(str)).get("id").toString();
@@ -638,7 +637,8 @@ public abstract class HistoryHandler {
         });
 
     }
-      public Map<String, Object> jsonToMap(JSONObject object) throws JSONException {
+
+    public Map<String, Object> jsonToMap(JSONObject object) throws JSONException {
         Map<String, Object> map = new HashMap<>();
 
         Iterator<String> keysItr = object.keys();

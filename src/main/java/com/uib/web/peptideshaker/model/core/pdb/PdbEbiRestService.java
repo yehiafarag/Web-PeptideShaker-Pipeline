@@ -1,4 +1,3 @@
-
 package com.uib.web.peptideshaker.model.core.pdb;
 
 import java.io.BufferedReader;
@@ -152,7 +151,37 @@ public class PdbEbiRestService {
                             subChainData = (Map<String, Object>) chainData.get("end");
                             int end_author_residue_number = (Integer) subChainData.get("author_residue_number");
                             int end_residue_number = (Integer) subChainData.get("residue_number");
-                            ChainBlock chainParam = new ChainBlock(struct_asym_id, chain_id, start_author_residue_number, start_residue_number, end_author_residue_number, end_residue_number);
+
+                            String chainSequence = pdbMatch.getSequence().substring(start_residue_number - 1, end_residue_number - 1);
+                            int uniprotStart = -5;
+                            int uniprotEnd = -5;
+
+                            int uniprotLength = end_author_residue_number - start_author_residue_number;
+                            int diffrent = (end_residue_number - start_residue_number) - uniprotLength;
+
+                            String uProtSeq = proteinSequence.replace("L", "I");
+                            String uChainSeq = chainSequence.replace("L", "I").substring(0, 20);
+                            if (uProtSeq.contains(uChainSeq)) {
+                                uniprotStart = uProtSeq.indexOf(uChainSeq);
+                                uniprotEnd = uniprotStart + chainSequence.length();
+                            } else {
+                                for (int i = 1; i < uChainSeq.length(); i++) {
+                                    String t = uChainSeq.substring(i);
+                                    if (uProtSeq.contains(t)) {
+                                        uniprotStart = uProtSeq.indexOf(t);
+                                        uniprotEnd = uniprotStart + chainSequence.length() - i + 1;
+                                        break;
+                                    }
+                                }
+
+                            }
+                            if (uniprotStart == -5) {
+                                uniprotStart = start_author_residue_number;
+                            }
+                            if (uniprotEnd == -5) {
+                                uniprotEnd = end_author_residue_number;
+                            }
+                            ChainBlock chainParam = new ChainBlock(struct_asym_id, chain_id, uniprotStart, start_residue_number, uniprotEnd, end_residue_number);
                             return chainParam;
                         }).forEachOrdered((chainParam) -> {
                             pdbMatch.addChain(chainParam);

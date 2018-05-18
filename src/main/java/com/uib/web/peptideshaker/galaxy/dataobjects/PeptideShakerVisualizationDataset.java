@@ -3,9 +3,26 @@ package com.uib.web.peptideshaker.galaxy.dataobjects;
 import com.compomics.util.experiment.biology.AminoAcidPattern;
 import com.compomics.util.experiment.biology.Enzyme;
 import com.compomics.util.experiment.biology.EnzymeFactory;
+import com.compomics.util.experiment.biology.Peptide;
+import com.compomics.util.experiment.identification.Advocate;
+import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
+import com.compomics.util.experiment.identification.matches.ModificationMatch;
+import com.compomics.util.experiment.identification.matches.SpectrumMatch;
+import com.compomics.util.experiment.identification.spectrum_assumptions.PeptideAssumption;
+import com.compomics.util.experiment.io.massspectrometry.MgfIndex;
+import com.compomics.util.experiment.massspectrometry.Charge;
+import com.compomics.util.experiment.massspectrometry.MSnSpectrum;
+import com.compomics.util.gui.spectrum.SequenceFragmentationPanel;
+import com.compomics.util.io.SerializationUtils;
+import com.compomics.util.preferences.IdentificationParameters;
 import com.compomics.util.preferences.SequenceMatchingPreferences;
 import com.google.common.collect.Sets;
+import com.uib.web.peptideshaker.galaxy.GalaxyDatasetServingUtil;
 import com.uib.web.peptideshaker.model.core.ModificationMatrix;
+import com.uib.web.peptideshaker.presenter.core.PopupWindow;
+import com.uib.web.peptideshaker.presenter.pscomponents.SpectrumPlot;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,6 +35,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -51,6 +70,7 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
     private String enzyme;
     private GalaxyFastaFileReader fastaFileReader;
     private final Map<String, GalaxyFile> mgfFilesIndexers;
+    private final Map<String, MgfIndex> importedMgfFilesIndexers;
     private Map<String, ProteinObject> proteinsMap;
     private Map<String, Set<ProteinObject>> protein_relatedProteins_Map;
     private final Map<Object, ProteinObject> fastaProteinsMap;
@@ -69,6 +89,10 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
     private final EnzymeFactory enzymeFactory;
 
     private Map<String, List<PSMObject>> psmMap;
+    private Map<Object, PSMObject> psmIndexMap;
+    private final GalaxyDatasetServingUtil galaxyDatasetServingUtil;
+
+    private IdentificationParameters identificationParameters;
 
 //
 //
@@ -89,13 +113,14 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
 //    private String fastaFileId;
 //    
 //
-    public PeptideShakerVisualizationDataset(String projectName, File user_folder, String galaxyUrl, String apiKey) {
+    public PeptideShakerVisualizationDataset(String projectName, File user_folder, String galaxyUrl, String apiKey, GalaxyDatasetServingUtil galaxyDatasetServingUtil) {
         this.projectName = projectName;
         this.user_folder = user_folder;
         this.galaxyUrl = galaxyUrl;
         this.apiKey = apiKey;
         this.mgfFiles = new LinkedHashMap<>();
         this.mgfFilesIndexers = new LinkedHashMap<>();
+        this.importedMgfFilesIndexers = new LinkedHashMap<>();
         this.fastaProteinsMap = new LinkedHashMap<>();
         this.chromosomeMap = new LinkedHashMap<>();
         this.chromosomeMap.put("No Information", new LinkedHashSet<>());
@@ -113,6 +138,8 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
         this.modificationMap.put("No Modification", new LinkedHashSet<>());
         this.sequenceMatchingPreferences = SequenceMatchingPreferences.getDefaultSequenceMatching();
         this.enzymeFactory = EnzymeFactory.getInstance();
+
+        this.galaxyDatasetServingUtil = galaxyDatasetServingUtil;
 //        
 //        
     }
@@ -135,6 +162,26 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
 
     public void setSearchGUIFileId(String searchGUIFileId) {
         this.searchGUIFileId = searchGUIFileId;
+        System.out.println("search gui is exist " + searchGUIFileId);
+        //init fasta file 
+        SystemDataSet ds = new SystemDataSet();
+        ds.setName(this.projectName + "-Param");
+        ds.setType("Param File");
+        ds.setGalaxyId(searchGUIFileId + "__SEARCHGUI_IdentificationParameters.par");
+        ds.setDownloadUrl(galaxyUrl + "/api/histories/" + this.getHistoryId() + "/contents/" + searchGUIFileId + "/display?key=" + apiKey);
+        GalaxyFile file = new GalaxyFile(user_folder, ds, true);
+        file.setDownloadUrl("to_ext=" + file_ext);
+        SearchParameters searchParameters;
+        try {
+            searchParameters = SearchParameters.getIdentificationParameters(file.getFile());
+            searchParameters.setFastaFile(null);
+        } catch (IOException | ClassNotFoundException ex) {
+
+            ex.printStackTrace();
+            return;
+        }
+      
+        this.identificationParameters = new IdentificationParameters(searchParameters);
     }
 
     public void setSearchingParameters(Map<String, Object> searchingParameters) {
@@ -264,6 +311,7 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
                 GalaxyFile index_file = new GalaxyFile(user_folder, ds, true);
                 index_file.setDownloadUrl("to_ext=" + file_ext);
                 mgfFilesIndexers.put(key, index_file);
+                System.out.println("add reIndex cui file " + key);
 //                index_file.getFile();
             }
 
@@ -552,6 +600,7 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
         peptidesMap = new LinkedHashMap<>();
         protein_peptide_Map = new HashMap<>();
         this.psmMap = new LinkedHashMap<>();
+        this.psmIndexMap = new LinkedHashMap<>();
         BufferedRandomAccessFile bufferedRandomAccessFile = null;
         try {//           
             bufferedRandomAccessFile = new BufferedRandomAccessFile(peptides_file.getFile(), "r", 1024 * 100);
@@ -693,7 +742,7 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
                     psm.setConfidence(Double.parseDouble(arr[22]));
                 }
                 psm.setValidation(arr[23]);
-               
+
                 if (psmMap.containsKey(psm.getModifiedSequence())) {
                     psmMap.get(psm.getModifiedSequence()).add(psm);
                 } else if (psmMap.containsKey(psm.getModifiedSequence().replace("L", "I"))) {
@@ -703,7 +752,8 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
                 } else {
                     System.out.println("at Error for psm mapping...not exist peptide " + psm.getModifiedSequence());
                 }
-               
+                psmIndexMap.put(psm.getIndex(), psm);
+
             }
             bufferedRandomAccessFile.close();
 
@@ -898,6 +948,57 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
         }
 
     }
+
+    public void getSelectedPsmData(Object psmIndex, String peptideSequence,SpectrumPlot plot) {
+
+        PSMObject selectedPsm = psmIndexMap.get(psmIndex);
+
+        try {
+            if (!importedMgfFilesIndexers.containsKey(selectedPsm.getSpectrumFile())) {
+                importedMgfFilesIndexers.put(selectedPsm.getSpectrumFile(), (MgfIndex) SerializationUtils.readObject(mgfFilesIndexers.get("data/" + selectedPsm.getSpectrumFile() + ".cui").getFile()));
+            }
+
+        } catch (IOException | ClassNotFoundException ex) {
+            ex.printStackTrace();
+        }
+        MgfIndex mgfIndex = importedMgfFilesIndexers.get(selectedPsm.getSpectrumFile());
+        String galaxyFileId = "";
+        String galaxyHistoryId = "";
+        for (SystemDataSet ds : mgfFiles.values()) {
+            if (ds.getName().equalsIgnoreCase(selectedPsm.getSpectrumFile())) {
+                galaxyFileId = ds.getGalaxyId();
+                galaxyHistoryId = ds.getHistoryId();
+                break;
+            }
+        }
+        MSnSpectrum spectrum = galaxyDatasetServingUtil.getSpectrum(mgfIndex.getIndex(selectedPsm.getSpectrumTitle()), galaxyHistoryId, galaxyFileId, selectedPsm.getSpectrumFile());
+        System.out.println(" selected psm " + selectedPsm.getSpectrumFile() + "  " + importedMgfFilesIndexers.containsKey(selectedPsm.getSpectrumFile()) + "  " + selectedPsm.getSpectrumFile() + "  start index " + mgfIndex.getIndex(selectedPsm.getSpectrumTitle()) + "   ");
+        try {
+            System.out.println("at spectrum " + spectrum.getFileName() + "  " + spectrum.getPeakListAsString() + "  " + spectrum.getScanNumber());
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
+      
+        ArrayList<ModificationMatch> psModificationMatches = null;
+//        if (sePeptide.isModified()) {
+//            psModificationMatches = new ArrayList<ModificationMatch>(sePeptide.getNModifications());
+//            for (ModificationMatch seModMatch : sePeptide.getModificationMatches()) {
+//                psModificationMatches.add(new ModificationMatch(seModMatch.getTheoreticPtm(), seModMatch.isVariable(), seModMatch.getModificationSite()));
+//            }
+//        }
+
+        Peptide psPeptide = new Peptide(peptideSequence.replace("NH2-","").replace("-COOH",""), psModificationMatches);
+        psPeptide.setParentProteins(new ArrayList<>(selectedPsm.getProteins()));
+        PeptideAssumption psAssumption = new PeptideAssumption(psPeptide, new Charge(+2, 2));
+        SpectrumMatch spectrumMatch = new SpectrumMatch(spectrum.getSpectrumKey());
+        spectrumMatch.setBestPeptideAssumption(psAssumption);
+        plot.selectedSpectrum(spectrum, "2", 0.02, identificationParameters, spectrumMatch);
+       
+        
+      
+
+
+    }
 //
 //    public void setPsmFile(GalaxyFile psmFile) {
 //        this.psmFile = psmFile;
@@ -1067,4 +1168,7 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
 //    public boolean isAvailableOnGalaxy() {
 //        return super.isAvailableOnGalaxy(); //To change body of generated methods, choose Tools | Templates.
 //    }
+    
+    
+ 
 }

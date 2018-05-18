@@ -35,6 +35,12 @@ public class ChainCoverageComponent {
     private final double iconCorrectFactor;
     private final int[] coverageArr;
     private final Image chainCoverageWebComponent;
+    private int counter = 1;
+    private String lasteSelectedChain;
+    private double coverage = -1;
+    private Color chaincolor;
+    private Color bordercolor;
+    private final DecimalFormat df = new DecimalFormat("#.#");
 
     public ChainCoverageComponent(int proteinSequenceLength) {
         this.proteinSequenceLength = proteinSequenceLength;
@@ -53,29 +59,22 @@ public class ChainCoverageComponent {
                 }
             }
             this.compWidth = event.getWidth();
-            this.correctFactor = (double) (compWidth - 50) / (double) this.proteinSequenceLength;
+            this.correctFactor = (double) (compWidth - 52) / (double) this.proteinSequenceLength;
             drawImage(lasteSelectedChain);
         });
 
     }
 
-    int counter = 1;
-    private String lasteSelectedChain;
-    private boolean ready;
-
-    public void setReady(boolean ready) {
-        this.ready = ready;
-    }
-
     public void addChainRange(String chainId, int start, int end) {
+        System.out.println("--- --- "+chainId+" --- --- "+start+" --- --- "+end);
         start = Math.max(start, 0);
+        end = Math.min(end, coverageArr.length - 1);
         Rectangle chain = new Rectangle(start, 10, (end - start + 1), 10);
         chainsBlocks.put(chainId + "_" + (counter++), chain);
         for (int i = start; i <= end; i++) {
             coverageArr[i] = 1;
         }
     }
-    private double coverage = -1;
 
     public double getCoverage() {
         if (coverage != -1) {
@@ -94,12 +93,6 @@ public class ChainCoverageComponent {
 
     }
 
-    private Color chaincolor;
-    private Color bordercolor;
-    DecimalFormat df = new DecimalFormat("#.#");
-    private int tcounter = 0;
-
-    ;
     private String drawImage(String chainId) {
         lasteSelectedChain = chainId;
 
@@ -111,7 +104,7 @@ public class ChainCoverageComponent {
 
         //draw sequence line
         g2.setColor(Color.LIGHT_GRAY);
-        g2.fillRect(25, 14, (compWidth - 50), 3);
+        g2.fillRect(25, 14, (compWidth - 52), 3);
 
         icong2.setColor(Color.GRAY);
         icong2.fillRect(5, 14, (200), 3);
@@ -172,8 +165,8 @@ public class ChainCoverageComponent {
 //     
         g2.setColor(Color.GRAY);
         g2.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
-        g2.drawString("3D", (3), (comHeight / 2) + 6);
-        g2.drawString(chainId, (compWidth - 15), (comHeight / 2) + 6);
+        g2.drawString("3D", (2), (comHeight / 2) + 6);
+        g2.drawString(chainId, (compWidth - 20), (comHeight / 2) + 6);
         g2.dispose();
 
         icong2.setColor(Color.BLACK);
@@ -204,7 +197,7 @@ public class ChainCoverageComponent {
 
     public void setCompWidth(int compWidth) {
         this.compWidth = compWidth;
-        this.correctFactor = (double) this.proteinSequenceLength / ((double) compWidth - 50.0);
+        this.correctFactor = (double) this.proteinSequenceLength / ((double) compWidth - 52.0);
         drawImage(lasteSelectedChain);
     }
 

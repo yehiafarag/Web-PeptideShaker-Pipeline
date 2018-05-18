@@ -29,6 +29,9 @@ public class PSMVisulizationLevelContainer extends HorizontalLayout implements R
 
     /**
      * Constructor to initialise the main layout and variables.
+     *
+     * @param Selection_Manager
+     * @param psmViewBtn
      */
     public PSMVisulizationLevelContainer(SelectionManager Selection_Manager, BigSideBtn psmViewBtn) {
         PSMVisulizationLevelContainer.this.setSizeFull();
@@ -48,7 +51,7 @@ public class PSMVisulizationLevelContainer extends HorizontalLayout implements R
         topLabelContainer.setSizeFull();
         topLabelContainer.addStyleName("minhight30");
         container.addComponent(topLabelContainer);
-        container.setExpandRatio(topLabelContainer, 1);
+        container.setExpandRatio(topLabelContainer, 0.01f);
 
         HorizontalLayout topLeftLabelContainer = new HorizontalLayout();
         topLeftLabelContainer.setWidthUndefined();
@@ -60,69 +63,22 @@ public class PSMVisulizationLevelContainer extends HorizontalLayout implements R
         headerLabel.setWidthUndefined();
         topLeftLabelContainer.setSpacing(true);
         topLeftLabelContainer.addComponent(headerLabel);
-
-//        Label commentLabel = new Label("<i style='padding-right: 50px;'>* Click in the graph to select proteins and peptides</i>", ContentMode.HTML);
-//        commentLabel.setWidthUndefined();
-//        commentLabel.setStyleName("resizeabletext");
-//        commentLabel.addStyleName("margintop10");
-//        topLabelContainer.addComponent(commentLabel);
-//        topLabelContainer.setComponentAlignment(commentLabel, Alignment.TOP_RIGHT);
         HorizontalLayout middleContainer = new HorizontalLayout();
         middleContainer.setSizeFull();
         middleContainer.setSpacing(true);
         container.addComponent(middleContainer);
-        container.setExpandRatio(middleContainer, 100);
+        container.setExpandRatio(middleContainer, 1f);
 
-        psmViewComponent = new PSMViewComponent();
+        psmViewComponent = new PSMViewComponent() {
+            @Override
+            public void getSpectrumData(Object psmId) {
+                System.out.println("at selected psm is " + psmId);
+                peptideShakerVisualizationDataset.getSelectedPsmData(psmId, Selection_Manager.getSelectedPeptideId(), psmViewComponent.getSpectrumPlot());
+            }
+
+        };
         middleContainer.addComponent(psmViewComponent);
-
-//        selectedProteinGraph = new ProteinsPeptidesGraphComponent() {
-//            @Override
-//            public void selectedItem(Set<Object> selectedItems, Set<Object> selectedChildsItems) {
-//                proteinCoverageContainer.setSelectedItems(selectedItems, selectedChildsItems);
-//                if (selectedChildsItems.size() == 1) {
-//                    peptideSelection(selectedChildsItems.iterator().next());
-//                }
-//                if (selectedItems.size() == 1) {
-//                    ProteinObject protien = this.getProteinNodes().get((String) selectedItems.iterator().next());
-//                    Set<PeptideObject> proteinPeptides = new LinkedHashSet<>();
-//                    this.getPeptidesNodes().values().stream().filter((peptide) -> (peptide.getProteinsSet().contains(protien.getAccession()))).forEachOrdered((peptide) -> {
-//                        proteinPeptides.add(peptide);
-//                    });
-//                    proteinStructurePanel.updatePanel(protien.getAccession(), protien.getSequence(), proteinPeptides);
-//                } else {
-//                    proteinStructurePanel.reset();
-//                }
-//
-//            }
-//
-//            @Override
-//            public void updateProteinsMode(String modeType) {
-//                proteinCoverageContainer.updateProteinsMode(modeType);
-//                proteinStructurePanel.setMode(!modeType.equalsIgnoreCase("Validation Status"));
-//            }
-//
-//        };
-//        middleContainer.addComponent(selectedProteinGraph);
-//        middleContainer.setExpandRatio(selectedProteinGraph, 60);
-//
-//        proteinStructurePanel = new ProteinStructurePanel();
-//        middleContainer.addComponent(proteinStructurePanel);
-//        middleContainer.setExpandRatio(proteinStructurePanel, 40);
         Selection_Manager.RegistrProteinInformationComponent(PSMVisulizationLevelContainer.this);
-
-//        proteinCoverageContainer = new ProteinCoverageContainer(proteinStructurePanel.getChainCoverageLayout()) {
-//            @Override
-//            public void selectPeptide(Object proteinId, Object peptideId) {
-//                selectedProteinGraph.selectPeptide(proteinId, peptideId);
-//                peptideSelection(peptideId);
-//                proteinStructurePanel.selectPeptide(peptideId + "");
-//            }
-//
-//        };
-//        proteinCoverageContainer.setSizeFull();
-//        container.addComponent(proteinCoverageContainer);
-//        container.setExpandRatio(proteinCoverageContainer, 49);
     }
 
     public void selectDataset(PeptideShakerVisualizationDataset peptideShakerVisualizationDataset) {

@@ -37,6 +37,8 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +47,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 
 /**
  * This class responsible for interaction with tools on Galaxy server
@@ -99,12 +104,14 @@ public abstract class ToolsHandler {
 
         this.galaxyWorkFlowClient = galaxyWorkFlowClient;
         this.galaxyHistoriesClient = galaxyHistoriesClient;
-        for (History h : galaxyHistoriesClient.getHistories()) {
+        List<History>availableHistories = galaxyHistoriesClient.getHistories();
+        for (History h : availableHistories) {
             if (h.getName().equalsIgnoreCase("Online-PeptideShaker-Job-History")) {
                 galaxyWorkingHistory = h;
                 break;
             }
         }
+        
         if (galaxyWorkingHistory == null) {
             galaxyWorkingHistory = galaxyHistoriesClient.getHistories().get(0);
         }
@@ -130,19 +137,17 @@ public abstract class ToolsHandler {
                             nelsExporter_Tool_Id = tool.getId();
                         } else if (tool.getId().contains("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/search_gui/")) {
                             String version = tool.getId().split("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/search_gui/")[1];
-                            
+
                             if (isFirmwareNewer(version, SGVersion)) {
                                 SGVersion = version;
                                 search_GUI_Tool_Id = tool.getId();
-
                             }
                         } else if (tool.getId().contains("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/peptide_shaker/")) {
                             String version = tool.getId().split("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/peptide_shaker/")[1];
-                            
+
                             if (isFirmwareNewer(version, PSVersion)) {
                                 PSVersion = version;
-                                peptideShaker_Tool_Id = "testtoolshed.g2.bx.psu.edu/repos/carlosh/peptideshaker_tests/peptide_shaker/1.16.15";// tool.getId();
-                               
+                                peptideShaker_Tool_Id = tool.getId();
 
                             }
                         }
@@ -224,7 +229,7 @@ public abstract class ToolsHandler {
      */
     public Map<String, GalaxyFile> saveSearchGUIParameters(String galaxyURL, File userFolder, Map<String, GalaxyFile> searchSetiingsFilesMap, String workHistoryId, SearchParameters searchParameters, boolean editMode) {
 
-        String fileName = searchParameters.getFastaFile().getName().split("__")[1] + ".par";
+        String fileName = searchParameters.getFastaFile().getName().split("__")[1].replace(".", "_") + ".par";
         String fileId;
         if (editMode) {
             fileId = searchParameters.getFastaFile().getName().split("__")[3];
@@ -235,7 +240,6 @@ public abstract class ToolsHandler {
         } else {
             fileId = fileName;
         }
-
         File file = new File(userFolder, fileId);
 
         if (file.exists()) {
@@ -363,7 +367,7 @@ public abstract class ToolsHandler {
      * @param historyId galaxy history id that will store the results
      * @param searchParameters
      * @param otherSearchParameters
-     * @return 
+     * @return
      */
     public PeptideShakerVisualizationDataset executeWorkFlow(String projectName, String fastaFileId, Map<String, String> mgfIdsList, Set<String> searchEnginesList, String historyId, SearchParameters searchParameters, Map<String, Boolean> otherSearchParameters) {
         Workflow selectedWf = null;
@@ -372,60 +376,24 @@ public abstract class ToolsHandler {
             File file;
             WorkflowInputs.WorkflowInput input2;
             if (mgfIdsList.size() > 1) {
-                file = new File(basepath + "/VAADIN/Galaxy-Workflow-onlinepeptideshaker_collection-updated.ga");
+                file = new File(basepath + "/VAADIN/Galaxy-Workflow-Web-Peptide-Shaker-Multiple-MGF.ga");
                 input2 = prepareWorkflowCollectionList(WorkflowInputs.InputSourceType.HDCA, mgfIdsList.keySet(), historyId);
             } else {
-                file = new File(basepath + "/VAADIN/Galaxy-Workflow-onlinepeptideshaker-updated.ga");
+                file = new File(basepath + "/VAADIN/Galaxy-Workflow-Web-Peptide-Shaker-Single-MGF.ga");
                 input2 = new WorkflowInputs.WorkflowInput(mgfIdsList.keySet().iterator().next(), WorkflowInputs.InputSourceType.HDA);
             }
             String json = readWorkflowFile(file);
-            json = json.replace("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/search_gui/3.2.13.1", search_GUI_Tool_Id);
-            String version = search_GUI_Tool_Id.split("\\/")[search_GUI_Tool_Id.split("\\/").length-1];
-             json = json.replace("3.2.13.1", version);
-             json=json.replace("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/peptide_shaker/1.16.4", peptideShaker_Tool_Id);
-             version = peptideShaker_Tool_Id.split("\\/")[peptideShaker_Tool_Id.split("\\/").length-1];
-              json = json.replace("1.16.4", version);
-              System.out.println("at in the end tool v "+version);
-//            json = json.replace("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/peptide_shaker/1.11.0", peptideShaker_Tool_Id);
-            json = json.replace("SearchGUI_Label", projectName + "-SearchGUI Results").replace("ZIP_Label", projectName + "-ZIP").replace("PSM_Label", projectName + "-PSM").replace("Proteins_Label", projectName + "-Proteins").replace("Peptides_Label", projectName + "-Peptides");
-            //protein_database_options
-            json = json.replace("\"create_decoy\\\\\\\": \\\\\\\"true\\\\\\\"", "\"create_decoy\\\\\\\": \\\\\\\"" + (Boolean.valueOf(searchParameters.getFastaFile().getName().split("__")[2])) + "\\\\\\\"");
-//json = json.replace("\"update_gene_mapping\\\\\\\": \\\\\\\"false\\\\\\\"", "\"update_gene_mapping\\\\\\\": \\\\\\\"true\\\\\\\"");
-//            json = json.replace("\"use_gene_mapping\\\\\\\": \\\\\\\"false\\\\\\\"", "\"use_gene_mapping\\\\\\\": \\\\\\\" true\\\\\\\"");
-
-            //search_engines_options
-            String searchEngJson = "";
-            for (String searchEng : searchEnginesList) {
-                searchEngJson = searchEngJson + searchEng + "\\\\\\\",\\\\\\\"";
-            }
-            searchEngJson = (searchEngJson.substring(0, searchEngJson.length() - 6)).replace("+", "").replace("-", "").replace(" (Select for noncommercial use only)", "");
-            json = json.replace("search_eng_to_replace", searchEngJson);
-
-            //protein_modification_options
-            if (!searchParameters.getPtmSettings().getVariableModifications().isEmpty()) {
-                String variableModification = "\\\\\\\"variable_modifications\\\\\\\": [\\\\\\\"";
-                for (String modification : searchParameters.getPtmSettings().getVariableModifications()) {
-                    variableModification += modification + "\\\\\\\", \\\\\\\"";
-                }
-
-                variableModification = variableModification.substring(0, variableModification.length() - 6) + "]";
-                json = json.replace("\\\\\\\"variable_modifications\\\\\\\": null", variableModification);
-            }
-
-            //fixed_modifications
-            if (!searchParameters.getPtmSettings().getFixedModifications().isEmpty()) {
-                String fixedModification = "\\\\\\\"fixed_modifications\\\\\\\": [\\\\\\\"";
-                for (String modification : searchParameters.getPtmSettings().getFixedModifications()) {
-                    fixedModification += modification + "\\\\\\\", \\\\\\\"";
-                }
-                fixedModification = fixedModification.substring(0, fixedModification.length() - 6) + "]";
-                json = json.replace("\\\\\\\"fixed_modifications\\\\\\\": null", fixedModification);
-            }
-
-            //protein_digest_options           
+            Map<String, Object> workflowMap = jsonToMap(new JSONObject(json));
+            Map<String, Object> StepsMap = (Map<String, Object>) workflowMap.get("steps");//
+            Map<String, Object> searchGUIStepMap = (Map<String, Object>) StepsMap.get("2");
+            json = json.replace(searchGUIStepMap.get("content_id").toString(), search_GUI_Tool_Id);
+            json = json.replace(searchGUIStepMap.get("tool_version").toString(), search_GUI_Tool_Id.split("\\/")[search_GUI_Tool_Id.split("\\/").length - 1]);
+            Map<String, Object> innerMap = (Map<String, Object>) ((Map<String, Object>) ((Map<String, Object>) searchGUIStepMap.get("post_job_actions")).get("RenameDatasetActionsearchgui_results")).get("action_arguments");
+            json = json.replace(innerMap.get("newname").toString(), projectName + "-SearchGUI Results").replace("ZIP_Label", projectName + "-ZIP");
+//            //protein_digest_options     
             switch (searchParameters.getDigestionPreferences().getCleavagePreference().index) {
                 case 0:
-                    if (searchParameters.getDigestionPreferences().getEnzymes().get(0).getName().equalsIgnoreCase("Trypsin")) {
+                    if (searchParameters.getDigestionPreferences().getEnzymes().get(0).getName().equalsIgnoreCase("Trypsin")) {//
                         json = json.replace("{\\\\\\\"cleavage\\\\\\\": \\\\\\\"default\\\\\\\", \\\\\\\"missed_cleavages\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 0}}\\\",", "{\\\\\\\"cleavage\\\\\\\": \\\\\\\"default\\\\\\\", \\\\\\\"missed_cleavages\\\\\\\": \\\\\\\"" + searchParameters.getDigestionPreferences().getnMissedCleavages(searchParameters.getDigestionPreferences().getEnzymes().get(0).getName()) + "\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 0}}\\\",");
                     } else {
                         json = json.replace("{\\\\\\\"cleavage\\\\\\\": \\\\\\\"default\\\\\\\", \\\\\\\"missed_cleavages\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 0}}\\\",", "{\\\\\\\"cleavage\\\\\\\": \\\\\\\"0\\\\\\\", \\\\\\\"digests\\\\\\\": [{\\\\\\\"__index__\\\\\\\": 0, \\\\\\\"enzyme\\\\\\\": \\\\\\\"" + searchParameters.getDigestionPreferences().getEnzymes().get(0).getName() + "\\\\\\\", \\\\\\\"missed_cleavages\\\\\\\": \\\\\\\"" + searchParameters.getDigestionPreferences().getnMissedCleavages(searchParameters.getDigestionPreferences().getEnzymes().get(0).getName()) + "\\\\\\\"}], \\\\\\\"__current_case__\\\\\\\": 1}}\\\",");
@@ -437,15 +405,38 @@ public abstract class ToolsHandler {
                 case 2:
                     json = json.replace("{\\\\\\\"cleavage\\\\\\\": \\\\\\\"default\\\\\\\", \\\\\\\"missed_cleavages\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 0}}\\\",", "{\\\\\\\"cleavage\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 3}}\\\",");
                     break;
-
             }
-//            System.out.println("at before json " + jsonToMap(jsonToMap(jsonToMap(jsonToMap(json).get("steps")).get("2")).get("tool_state")).get("precursor_options"));
+            //protein_modification_options           
+            if (!searchParameters.getPtmSettings().getVariableModifications().isEmpty()) {
+                Set<String> modifications = new HashSet<>();
+                searchParameters.getPtmSettings().getVariableModifications().forEach((modification) -> {
+                    modifications.add("\\\\\\\"" + modification + "\\\\\\\"");
+                });
+                json = json.replace("\\\\\\\"variable_modifications\\\\\\\": null", "\\\\\\\"variable_modifications\\\\\\\": " + modifications.toString());
+            }
+            //fixed_modifications
+            if (!searchParameters.getPtmSettings().getFixedModifications().isEmpty()) {
+                Set<String> modifications = new HashSet<>();
+                searchParameters.getPtmSettings().getFixedModifications().forEach((modification) -> {
+                    modifications.add("\\\\\\\"" + modification + "\\\\\\\"");
+                });
+                json = json.replace("\\\\\\\"fixed_modifications\\\\\\\": null", "\\\\\\\"fixed_modifications\\\\\\\": " + modifications.toString());
+            }
+//            search_engines_options 
+            Set<String> search_engines = new HashSet<>();
+            searchEnginesList.forEach((searchEng) -> {
+                search_engines.add(("\\\\\\\"" + searchEng + "\\\\\\\"").replace(" (Select for noncommercial use only)", "").replace("+", "").replace("-", ""));
+            });
+            json = json.replace("{\\\\\\\"__class__\\\\\\\": \\\\\\\"RuntimeValue\\\\\\\"}", search_engines.toString());
+            //precursor_options
             //  //precursor_options
-            json = json.replace("\\\"{\\\\\\\"forward_ion\\\\\\\": \\\\\\\"b\\\\\\\", \\\\\\\"max_charge\\\\\\\": \\\\\\\"4\\\\\\\", \\\\\\\"max_isotope\\\\\\\": \\\\\\\"1\\\\\\\", \\\\\\\"precursor_ion_tol_units\\\\\\\": \\\\\\\"1\\\\\\\", \\\\\\\"min_isotope\\\\\\\": \\\\\\\"0\\\\\\\", \\\\\\\"fragment_tol\\\\\\\": \\\\\\\"0.5\\\\\\\", \\\\\\\"min_charge\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"reverse_ion\\\\\\\": \\\\\\\"y\\\\\\\", \\\\\\\"precursor_ion_tol\\\\\\\": \\\\\\\"10.0\\\\\\\"}\\\",", "\\\"{\\\\\\\"forward_ion\\\\\\\": \\\\\\\"" + forwardIons.get(searchParameters.getForwardIons().get(0)) + "\\\\\\\", \\\\\\\"max_charge\\\\\\\": \\\\\\\"" + searchParameters.getMaxChargeSearched().value + "\\\\\\\", \\\\\\\"max_isotope\\\\\\\": \\\\\\\"" + searchParameters.getMaxIsotopicCorrection() + "\\\\\\\", \\\\\\\"precursor_ion_tol_units\\\\\\\": \\\\\\\"" + (searchParameters.getPrecursorAccuracyType().ordinal() + 1) + "\\\\\\\", \\\\\\\"min_isotope\\\\\\\": \\\\\\\"" + searchParameters.getMinIsotopicCorrection() + "\\\\\\\", \\\\\\\"fragment_tol\\\\\\\": \\\\\\\"" + searchParameters.getFragmentIonAccuracyInDaltons() + "\\\\\\\", \\\\\\\"min_charge\\\\\\\": \\\\\\\"" + searchParameters.getMinChargeSearched().value + "\\\\\\\", \\\\\\\"reverse_ion\\\\\\\": \\\\\\\"" + rewindIons.get(searchParameters.getRewindIons().get(0)) + "\\\\\\\", \\\\\\\"precursor_ion_tol\\\\\\\": \\\\\\\"" + searchParameters.getPrecursorAccuracy() + "\\\\\\\"}\\\",");
-//            System.out.println("at after json " + jsonToMap(jsonToMap(jsonToMap(jsonToMap(json).get("steps")).get("2")).get("tool_state")).get("precursor_options"));
 
-//          
-//          
+            String updated = "{\\\\\\\"forward_ion\\\\\\\": \\\\\\\"" + forwardIons.get(searchParameters.getForwardIons().get(0)) + "\\\\\\\", \\\\\\\"max_charge\\\\\\\": \\\\\\\"" + searchParameters.getMaxChargeSearched().value + "\\\\\\\", \\\\\\\"fragment_tol_units\\\\\\\": \\\\\\\"" + (searchParameters.getFragmentAccuracyType().ordinal() - 1) + "\\\\\\\", \\\\\\\"max_isotope\\\\\\\": \\\\\\\"" + (searchParameters.getMaxIsotopicCorrection()) + "\\\\\\\", \\\\\\\"precursor_ion_tol_units\\\\\\\": \\\\\\\"" + (searchParameters.getPrecursorAccuracyType().ordinal() + 1) + "\\\\\\\", \\\\\\\"min_isotope\\\\\\\": \\\\\\\"" + searchParameters.getMinIsotopicCorrection() + "\\\\\\\", \\\\\\\"fragment_tol\\\\\\\": \\\\\\\"" + searchParameters.getFragmentIonAccuracyInDaltons() + "\\\\\\\", \\\\\\\"min_charge\\\\\\\": \\\\\\\"" + searchParameters.getMinChargeSearched().value + "\\\\\\\", \\\\\\\"reverse_ion\\\\\\\": \\\\\\\"" + rewindIons.get(searchParameters.getRewindIons().get(0)) + "\\\\\\\", \\\\\\\"precursor_ion_tol\\\\\\\": \\\\\\\"" + searchParameters.getPrecursorAccuracy() + "\\\\\\\"}\\\",";
+            json = json.replace("{\\\\\\\"forward_ion\\\\\\\": \\\\\\\"b\\\\\\\", \\\\\\\"max_charge\\\\\\\": \\\\\\\"4\\\\\\\", \\\\\\\"fragment_tol_units\\\\\\\": \\\\\\\"0\\\\\\\", \\\\\\\"max_isotope\\\\\\\": \\\\\\\"1\\\\\\\", \\\\\\\"precursor_ion_tol_units\\\\\\\": \\\\\\\"1\\\\\\\", \\\\\\\"min_isotope\\\\\\\": \\\\\\\"0\\\\\\\", \\\\\\\"fragment_tol\\\\\\\": \\\\\\\"0.02\\\\\\\", \\\\\\\"min_charge\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"reverse_ion\\\\\\\": \\\\\\\"y\\\\\\\", \\\\\\\"precursor_ion_tol\\\\\\\": \\\\\\\"10.0\\\\\\\"}\\\",", updated);
+
+            json = json.replace("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/peptide_shaker/1.16.17", peptideShaker_Tool_Id);
+            json = json.replace("1.16.17", peptideShaker_Tool_Id.split("\\/")[peptideShaker_Tool_Id.split("\\/").length - 1]);
+
             selectedWf = galaxyWorkFlowClient.importWorkflow(json);
 
             WorkflowInputs workflowInputs = new WorkflowInputs();
@@ -471,25 +462,24 @@ public abstract class ToolsHandler {
             });
             t1.start();
 
-            PeptideShakerVisualizationDataset tempWorkflowOutput =null;// new PeptideShakerVisualizationDataset("tempID");
-//            tempWorkflowOutput.setName(projectName);
-//            tempWorkflowOutput.setGalaxyId("tempID");
-//            tempWorkflowOutput.setDownloadUrl("tempID");
-//            tempWorkflowOutput.setHistoryId(historyId);
-//            tempWorkflowOutput.setStatus("new");
-//            tempWorkflowOutput.setType("Web Peptide Shaker Dataset");
-//            tempWorkflowOutput.setJobId("tempID");
+            PeptideShakerVisualizationDataset tempWorkflowOutput = new PeptideShakerVisualizationDataset("tempID", null, "", "",null);
+            tempWorkflowOutput.setName(projectName);
+            tempWorkflowOutput.setGalaxyId("tempID");
+            tempWorkflowOutput.setDownloadUrl("tempID");
+            tempWorkflowOutput.setHistoryId(historyId);
+            tempWorkflowOutput.setStatus("new");
+            tempWorkflowOutput.setType("Web Peptide Shaker Dataset");
+            tempWorkflowOutput.setJobId("tempID");
             galaxyWorkFlowClient.deleteWorkflowRequest(selectedWf.getId());
             return tempWorkflowOutput;
-
-        } catch (Exception e) {
+//
+        } catch (JSONException e) {
             e.printStackTrace();
             if (selectedWf != null) {
                 galaxyWorkFlowClient.deleteWorkflowRequest(selectedWf.getId());
             }
             return null;
         }
-
     }
 
     /**
@@ -638,6 +628,38 @@ public abstract class ToolsHandler {
         values.put("id", datasetId);
         return values;
 
+    }
+
+    private Map<String, Object> jsonToMap(JSONObject object) throws JSONException {
+        Map<String, Object> map = new HashMap<>();
+
+        Iterator<String> keysItr = object.keys();
+        while (keysItr.hasNext()) {
+            String key = keysItr.next();
+            Object value = object.get(key);
+
+            if (value instanceof JSONArray) {
+                value = toList((JSONArray) value);
+            } else if (value instanceof JSONObject) {
+                value = jsonToMap((JSONObject) value);
+            }
+            map.put(key, value);
+        }
+        return map;
+    }
+
+    private List<Object> toList(JSONArray array) throws JSONException {
+        List<Object> list = new ArrayList<>();
+        for (int i = 0; i < array.length(); i++) {
+            Object value = array.get(i);
+            if (value instanceof JSONArray) {
+                value = toList((JSONArray) value);
+            } else if (value instanceof JSONObject) {
+                value = jsonToMap((JSONObject) value);
+            }
+            list.add(value);
+        }
+        return list;
     }
 
     public abstract void updateHistoryDatastructure(PeptideShakerVisualizationDataset tempWorkflowOutput);

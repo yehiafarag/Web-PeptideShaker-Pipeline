@@ -1,16 +1,11 @@
 package com.uib.web.peptideshaker.presenter.layouts;
 
-import com.github.jmchilton.blend4j.galaxy.DefaultWebResourceFactoryImpl;
-import com.github.jmchilton.blend4j.galaxy.GalaxyAuthWebResourceFactoryImpl;
 import com.github.jmchilton.blend4j.galaxy.GalaxyInstance;
 import com.github.jmchilton.blend4j.galaxy.GalaxyInstanceFactory;
 import com.vaadin.data.Property;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.server.ThemeResource;
-import com.vaadin.server.VaadinService;
-import com.vaadin.server.VaadinServletRequest;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -26,7 +21,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.servlet.http.Cookie;
 
 /**
  * This class represents the galaxy server connection panel that contains
@@ -85,10 +79,9 @@ public abstract class GalaxyConnectionPanelLayout extends VerticalLayout impleme
      * Request cookies to attach to every request for galaxy used mainly for
      * securing sessions.
      */
-    private String cookiesRequestProperty;
 
     /**
-     * Constructor to initialize the main variable.
+     * Constructor to initialise the main variable.
      */
     public GalaxyConnectionPanelLayout() {
         GalaxyConnectionPanelLayout.this.setWidth(500, Unit.PIXELS);
@@ -98,7 +91,7 @@ public abstract class GalaxyConnectionPanelLayout extends VerticalLayout impleme
     }
 
     /**
-     * Initialize galaxy input data layout.
+     * Initialise galaxy input data layout.
      */
     private VerticalLayout initializeUserInputPanel() {
         VerticalLayout userInputPanelLayout = new VerticalLayout();
@@ -134,18 +127,19 @@ public abstract class GalaxyConnectionPanelLayout extends VerticalLayout impleme
         galaxyLink.setNullSelectionAllowed(false);
         galaxyLink.setTextInputAllowed(true);
         galaxyLink.setNewItemsAllowed(true);
+          galaxyLink.addItem("http://129.177.231.22/galaxy/");
+        galaxyLink.setItemCaption("http://129.177.231.22/galaxy/", "PROBE Galaxy");
+        
         galaxyLink.addItem("http://129.177.123.195:8080/");
-        galaxyLink.setItemCaption("http://129.177.123.195:8080/", "My Galaxy installation in Bergen");
+        galaxyLink.setItemCaption("http://129.177.123.195:8080/", "CBU Galaxy");
         galaxyLink.addItem("https://usegalaxy.org/");
         galaxyLink.setItemCaption("https://usegalaxy.org/", "Use Galaxy Server");
         galaxyLink.addItem("https://test-fe.cbu.uib.no/galaxy");
-        galaxyLink.setItemCaption("https://test-fe.cbu.uib.no/galaxy", "NeLS testing Galaxy installation in Bergen");
+        galaxyLink.setItemCaption("https://test-fe.cbu.uib.no/galaxy", "NeLS testing Galaxy");
 
         galaxyLink.addItem("https://galaxy-uio.bioinfo.no/main/");
-        galaxyLink.setItemCaption("https://galaxy-uio.bioinfo.no/main/", "Official UiB Galaxy Server");
+        galaxyLink.setItemCaption("https://galaxy-uio.bioinfo.no/main/", "Official UiB Galaxy");
 
-        galaxyLink.addItem("https://usegalaxyp.org/");
-        galaxyLink.setItemCaption("https://usegalaxyp.org/", "GalaxyP");
 
         galaxyLink.setNewItemHandler((final String newItemCaption) -> {
 
@@ -168,7 +162,7 @@ public abstract class GalaxyConnectionPanelLayout extends VerticalLayout impleme
         userInputPanelLayout.setComponentAlignment(galaxyLinkContainer, Alignment.BOTTOM_CENTER);
         userInputPanelLayout.setExpandRatio(galaxyLinkContainer, 12);
 
-        galaxyLink.setValue("http://129.177.123.195:8080/");//"http://129.177.123.195:8080/");//https://usegalaxyp.org
+        galaxyLink.setValue("http://129.177.231.22/galaxy/");//"http://129.177.123.195:8080/");//https://usegalaxyp.org
 
         inputTabSheet = new TabSheet();
         inputTabSheet.setWidth(100, Unit.PERCENTAGE);
@@ -223,7 +217,7 @@ public abstract class GalaxyConnectionPanelLayout extends VerticalLayout impleme
         APIKey.addStyleName(ValoTheme.TEXTFIELD_TINY);
         APIKey.addStyleName("nomargin");
         APIKey.setInputPrompt("Galaxy API Key");
-        APIKey.setValue("bbf16f044f8082abf10afda5c96b16eb");//"abba9538dfd38d10c71aab67bbd30cfe"  admin 6abed6a0b5021096631350a0b89c5155   --71821f0c14cf63a2609f59d821bc1df3--61062cd3acb2433c1e1ed66d6560357f
+        APIKey.setValue("ab84003e53c247bd7e2ca7ec949ab2cb");//"abba9538dfd38d10c71aab67bbd30cfe"  admin 6abed6a0b5021096631350a0b89c5155   --71821f0c14cf63a2609f59d821bc1df3--61062cd3acb2433c1e1ed66d6560357f
         userAPIKeyPanel.addComponent(APIKey);
         APIKey.setWidth(100, Unit.PERCENTAGE);
         APIKey.setHeight(50, Unit.PERCENTAGE);
@@ -268,7 +262,9 @@ public abstract class GalaxyConnectionPanelLayout extends VerticalLayout impleme
             } else if (galaxyLink.getValue().toString().equalsIgnoreCase("https://usegalaxyp.org/")) {
                 APIKey.setValue("61062cd3acb2433c1e1ed66d6560357f");
             }
-        });
+       else if (galaxyLink.getValue().toString().equalsIgnoreCase("http://129.177.231.22/galaxy/")) {
+                APIKey.setValue("ab84003e53c247bd7e2ca7ec949ab2cb");
+            } });
         return userInputPanelLayout;
     }
 
@@ -402,6 +398,7 @@ public abstract class GalaxyConnectionPanelLayout extends VerticalLayout impleme
     public abstract void hideGalaxyPanel();
 
     public void validateAndConnect() {
+        
         if (galaxyConnected) {
             galaxyConnected = false;
             connectionLabel.setValue("Galaxy is not connected <font size=\"3\" color=\"red\"> "+FontAwesome.FROWN_O.getHtml()+"</font>");
@@ -418,6 +415,7 @@ public abstract class GalaxyConnectionPanelLayout extends VerticalLayout impleme
             galaxyLinkContainer.setEnabled(!galaxyConnected);
             inputTabSheet.setEnabled(!galaxyConnected);
         }
+
 
         this.connectedToGalaxy(galaxyInstance);
 

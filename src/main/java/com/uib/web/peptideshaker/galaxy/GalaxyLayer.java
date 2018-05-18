@@ -78,7 +78,7 @@ public abstract class GalaxyLayer {
         galaxyConnectionPanel.setWidth(100, Sizeable.Unit.PERCENTAGE);
         galaxyConnectionPanel.setSpacing(true);
 
-        Label connectionStatuesLabel = new Label("Galaxy is<font color='red'>  not connected </font><font size='3' color='red'> "+FontAwesome.FROWN_O.getHtml()+"</font>");
+        Label connectionStatuesLabel = new Label("Galaxy is<font color='red'>  not connected </font><font size='3' color='red'> " + FontAwesome.FROWN_O.getHtml() + "</font>");
         connectionStatuesLabel.setContentMode(ContentMode.HTML);
 
         connectionStatuesLabel.setHeight(25, Sizeable.Unit.PIXELS);
@@ -124,6 +124,7 @@ public abstract class GalaxyLayer {
                     if (Galaxy_Instance != null) {
                         if (VaadinSession.getCurrent().getAttribute("ApiKey") != null) {
                             String APIKey = VaadinSession.getCurrent().getAttribute("ApiKey").toString();
+
                             if (!APIKey.equalsIgnoreCase(Galaxy_Instance.getApiKey())) {
                                 //clean history and create new folder
                                 userFolder = new File(userDataFolderUrl, APIKey);
@@ -139,32 +140,29 @@ public abstract class GalaxyLayer {
                         userFolder.mkdir();
                         VaadinSession.getCurrent().setAttribute("ApiKey", Galaxy_Instance.getApiKey() + "");
                         VaadinSession.getCurrent().setAttribute("galaxyUrl", Galaxy_Instance.getGalaxyUrl());
-
+System.out.println("at galaxy 0");
                         galaxyURL = Galaxy_Instance.getGalaxyUrl();
+                        System.out.println("at galaxy I");
                         toolsHandler = new ToolsHandler(Galaxy_Instance.getToolsClient(), Galaxy_Instance.getWorkflowsClient(), Galaxy_Instance.getHistoriesClient()) {
                             @Override
-                            public void updateHistoryDatastructure(  PeptideShakerVisualizationDataset tempWorkflowOutput) {
+                            public void updateHistoryDatastructure(PeptideShakerVisualizationDataset tempWorkflowOutput) {
                                 historyHandler.updateHistory(tempWorkflowOutput);
                             }
 
                         };
-
+System.out.println("at galaxy II");
                         historyHandler = new HistoryHandler(Galaxy_Instance, userFolder) {
-//                            @Override
-//                            public String reIndexFile(String id, String historyId, String workHistoryId) {
-////                                return GalaxyLayer.this.reIndexFile(id, historyId, workHistoryId);
-//                            }
-
                             @Override
                             public void systemIsBusy(boolean busy, Map<String, SystemDataSet> historyFilesMap) {
                                 //update history in the system 
                                 jobsInProgress(busy, historyFilesMap);
                             }
 
-                        };//                        
+                        };//    
+                        System.out.println("at galaxy III");
                         connectionBtn.setCaption("Disconnect");
                         connectionBtn.addStyleName("disconnect");
-                        connectionStatuesLabel.setValue("Galaxy is <font color='green'>connected </font><font size='3' color='green'> "+FontAwesome.SMILE_O.getHtml()+"</font>");
+                        connectionStatuesLabel.setValue("Galaxy is <font color='green'>connected </font><font size='3' color='green'> " + FontAwesome.SMILE_O.getHtml() + "</font>");
                         systemConnected();
                     } else {
                         System.out.println("at null galaxy");
@@ -210,7 +208,7 @@ public abstract class GalaxyLayer {
                 //disconnect from galaxy
                 connectionBtn.setCaption("Connect");
                 connectionBtn.removeStyleName("disconnect");
-                connectionStatuesLabel.setValue("Galaxy is<font color='red'>  not connected </font><font size='3' color='red'> "+FontAwesome.FROWN_O.getHtml()+"</font>");
+                connectionStatuesLabel.setValue("Galaxy is<font color='red'>  not connected </font><font size='3' color='red'> " + FontAwesome.FROWN_O.getHtml() + "</font>");
                 galaxyConnectionSettingsPanel.disconnectGalaxy();
                 historyHandler = null;
                 toolsHandler = null;
@@ -395,9 +393,9 @@ public abstract class GalaxyLayer {
     }
 
     public boolean sendDataToNels(String historyId, String datasetGalaxyId) {
-         boolean check= toolsHandler.sendToNels(historyId, datasetGalaxyId, galaxyURL);
-         toolsHandler.updateHistoryDatastructure(null);
-         return check;
+        boolean check = toolsHandler.sendToNels(historyId, datasetGalaxyId, galaxyURL);
+        toolsHandler.updateHistoryDatastructure(null);
+        return check;
 
     }
 

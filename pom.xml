@@ -90,7 +90,8 @@
         <dependency>
             <groupId>com.github.jmchilton.blend4j</groupId>
             <artifactId>blend4j</artifactId>
-            <version>3-SNAPSHOT</version>
+            <version>0.2.0-SNAPSHOT</version>
+           <!--<version>3-SNAPSHOT</version>-->
         </dependency>
         <dependency>
             <groupId>org.vaadin.addons</groupId>
@@ -157,7 +158,7 @@
             <artifactId>jsoup</artifactId>
             <version>1.8.3</version>
         </dependency>
-       <dependency>
+        <dependency>
             <groupId>de.akquinet.engineering.vaadin.vaangular</groupId>
             <artifactId>vaangular-demo</artifactId>
             <!-- at least temporarily move properties / build instructions to sub-projects to make them independent -->
@@ -168,15 +169,16 @@
             <artifactId>vaangular</artifactId>
             <version>0.1.2</version>
         </dependency>
-        <dependency>
-            <groupId>de.akquinet.engineering</groupId>
-            <artifactId>javascriptplus-for-vaadin</artifactId>
-            <!-- at least temporarily move properties / build instructions to sub-projects to make them independent -->
-            <!-- do use a release per default though
-            <version>0.1.3-SNAPSHOT</version> -->
-            <version>0.1.2</version>
-        </dependency>
 
+
+        <!-- https://mvnrepository.com/artifact/de.schlichtherle.truezip/truezip-path -->
+        <dependency>
+            <groupId>de.schlichtherle.truezip</groupId>
+            <artifactId>truezip-path</artifactId>
+            <version>7.7.10</version>
+        </dependency>      
+       
+      
 
 
       

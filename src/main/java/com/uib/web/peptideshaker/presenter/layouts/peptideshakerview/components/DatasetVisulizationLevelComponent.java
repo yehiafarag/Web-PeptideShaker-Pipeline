@@ -53,8 +53,9 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
         TableColumnHeader headerVII = new TableColumnHeader("possibleCoverage", Double.class, null, "Possible Coverage", null, Table.Align.RIGHT);
         TableColumnHeader headerVIII = new TableColumnHeader("peptides_number", Integer.class, null, "#Peptides", null, Table.Align.RIGHT);
         TableColumnHeader headerIVV = new TableColumnHeader("protein_group", String.class, null, "Protein Group", null, Table.Align.LEFT);
+        TableColumnHeader headerIIVV = new TableColumnHeader("psm_number", Integer.class, null, "#PSM", null, Table.Align.RIGHT);
 
-        TableColumnHeader[] tableHeaders = new TableColumnHeader[]{headerI, headerII, headerIII, headerIV, headerV, headerVI, headerVII, headerVIII, headerIVV};
+        TableColumnHeader[] tableHeaders = new TableColumnHeader[]{headerI, headerII, headerIII, headerIV, headerV, headerVI, headerVII, headerVIII, headerIVV,headerIIVV};
         this.proteinTableContainer = new SearchableTable("Proteins", "Accssion or protein name", tableHeaders){
            private final Set<Comparable>selectedIds = new LinkedHashSet<>();
            @Override
@@ -75,9 +76,9 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
     public void updateData(PeptideShakerVisualizationDataset peptideShakerVisualizationDataset) {
         Map<String, ProteinObject> proteinTableMap = peptideShakerVisualizationDataset.getProteinsMap();
         Map<Comparable, Object[]> proteinTableData = new LinkedHashMap<>();
-        for (ProteinObject protein : proteinTableMap.values()) {
-            proteinTableData.put(protein.getAccession(), new Object[]{protein.getIndex(), protein.getAccession(), protein.getDescription(), protein.getGeneName(), protein.getProteinInference(), protein.getMW(), protein.getPossibleCoverage(), protein.getValidatedPeptidesNumber(), protein.getProteinGroup()});
-        }
+        proteinTableMap.values().forEach((protein) -> {
+            proteinTableData.put(protein.getAccession(), new Object[]{protein.getIndex(), protein.getAccession(), protein.getDescription(), protein.getGeneName(), protein.getProteinInference(), protein.getMW(), protein.getPossibleCoverage(), protein.getValidatedPeptidesNumber(), protein.getProteinGroup(),protein.getPSMsNumber()});
+        });
         int[] searchingIndexes = {1, 2, 8};
         int keyIndex = 1;
         this.proteinTableContainer.upateTableData(proteinTableData, searchingIndexes, keyIndex);

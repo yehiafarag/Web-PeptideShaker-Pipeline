@@ -54,6 +54,9 @@ public class PopupWindow extends VerticalLayout implements LayoutEvents.LayoutCl
         window.setVisible(false);
         UI.getCurrent().addWindow(window);
     }
+    public void setClosable(boolean closable){
+        window.setClosable(closable);
+    }
 
     public void setLabelValue(String value) {
         titleLabel.setValue(value);
