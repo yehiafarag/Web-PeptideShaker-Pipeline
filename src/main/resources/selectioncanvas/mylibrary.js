@@ -270,6 +270,7 @@ mylibrary.SelectioncanvasComponent = function (element) {
             thecoordsText.value = startPos.x + "," + startPos.y + "," + finalPos.x + "," + finalPos.y + "," + 1;
             button.click("1");
         }
+        touchevent = false;
     }
     var timer;
     selectionCanvasElement.on('touchmove', function (ev) {

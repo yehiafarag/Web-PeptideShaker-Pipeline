@@ -15900,3 +15900,56 @@ div.v-layout.v-horizontal.v-widget {
 .webpeptideshakertheme .textintablecell .v-label {
 	margin-top: 2px;
 }
+
+.webpeptideshakertheme .v-table [class*="-row"].v-selected .v-table-cell-content .sequencefragmentationchart img {
+	border-color: gray !important;
+}
+
+.webpeptideshakertheme .sequencefragmentationchart img {
+	border: 1px solid white !important;
+}
+
+.webpeptideshakertheme .sparklinecontainer {
+	background-color: lightgray;
+	height: 12px !important;
+}
+
+.webpeptideshakertheme .greenlayout {
+	background-color: #4dca4d !important;
+	border: 1px solid lightgray;
+}
+
+.webpeptideshakertheme .v-label-sparklinelabel {
+	width: 50px !important;
+	height: 20px !important;
+}
+
+.webpeptideshakertheme .v-absolutelayout-sparkline .v-absolutelayout-margin {
+	overflow: visible !important;
+}
+
+.webpeptideshakertheme .v-table [class*="-row"].v-selected {
+	background-image: -webkit-linear-gradient(top, #0e5ea2 2%, #1759a7 98%) !important;
+	background-image: linear, to bottom, #0e5ea2 2%, #1759a7 98% !important;
+}
+
+.webpeptideshakertheme .validlabel span {
+	color: #4dca4d;
+	background-color: white;
+	border-radius: 100%;
+	margin-left: -2px;
+}
+
+.webpeptideshakertheme .notvalidlabel span {
+	color: #ab0000;
+	background-color: white;
+	border-radius: 100%;
+	margin-left: -2px;
+}
+
+.webpeptideshakertheme .doubtful span {
+	color: #ffbc00;
+	background-color: white;
+	border-radius: 100%;
+	margin-left: -2px;
+}

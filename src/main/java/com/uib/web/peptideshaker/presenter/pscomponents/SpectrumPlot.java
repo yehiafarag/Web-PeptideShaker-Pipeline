@@ -446,15 +446,16 @@ public class SpectrumPlot extends AbsoluteLayout {
             spectrumPanel.setAnnotateHighestPeak(annotationPreferences.getTiesResolution() == SpectrumAnnotator.TiesResolution.mostIntense); //@TODO: implement ties resolution in the spectrum panel
             spectrumPanel.setAnnotations(SpectrumAnnotator.getSpectrumAnnotation(annotations), annotationPreferences.getTiesResolution() == SpectrumAnnotator.TiesResolution.mostIntense); //@TODO: the selection of the peak to annotate should be done outside the spectrum panel
             spectrumPanel.updateUI();
-//            plot.setSource(new ExternalResource(drawImage(spectrumPanel)));
+            plot.setSource(new ExternalResource(drawImage(spectrumPanel)));
 
             // create the sequence fragment ion view
-//            SequenceFragmentationPanel sequenceFragmentationPanel = new SequenceFragmentationPanel(currentPeptide.getSequence(),//getTaggedPeptideSequence(spectrumMatch, false, false, false),
-//                    annotations, true, getIdentificationParameters().getSearchParameters().getPtmSettings(), forwardIon, rewindIon);
-//            sequenceFragmentationPanel.setMinimumSize(new Dimension(sequenceFragmentationPanel.getPreferredSize().width, sequenceFragmentationPanel.getHeight()));
-//            sequenceFragmentationPanel.setOpaque(true);
-//            sequenceFragmentationPanel.setBackground(Color.WHITE);
-//            plot.setSource(new ExternalResource(drawImage(sequenceFragmentationPanel)));
+           String taggedPeptideSequence =  currentPeptide.getTaggedModifiedSequence(getIdentificationParameters().getSearchParameters().getPtmSettings(),false, false, false);
+             SequenceFragmentationPanel sequenceFragmentationPanel = new SequenceFragmentationPanel(taggedPeptideSequence, annotations, false, getIdentificationParameters().getSearchParameters().getPtmSettings(), forwardIon, rewindIon);
+            
+            
+            
+            
+            
         } catch (Exception e) {
             e.printStackTrace();
 //            catchException(e);

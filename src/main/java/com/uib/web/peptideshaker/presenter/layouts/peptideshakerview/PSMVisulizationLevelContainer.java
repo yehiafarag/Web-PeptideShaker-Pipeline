@@ -1,15 +1,19 @@
 package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview;
 
+import com.uib.web.peptideshaker.galaxy.dataobjects.PSMObject;
 import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDataset;
 import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.charts.RegistrableFilter;
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components.PSMViewComponent;
+import com.uib.web.peptideshaker.presenter.pscomponents.SpectrumInformation;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -71,9 +75,8 @@ public class PSMVisulizationLevelContainer extends HorizontalLayout implements R
 
         psmViewComponent = new PSMViewComponent() {
             @Override
-            public void getSpectrumData(Object psmId) {
-                System.out.println("at selected psm is " + psmId);
-                peptideShakerVisualizationDataset.getSelectedPsmData(psmId, Selection_Manager.getSelectedPeptideId(), psmViewComponent.getSpectrumPlot());
+            public Map<Object, SpectrumInformation> getSpectrumData(List<PSMObject> psms) {              
+                return peptideShakerVisualizationDataset.getSelectedPsmData(psms, Selection_Manager.getSelectedPeptideId());
             }
 
         };
@@ -101,7 +104,7 @@ public class PSMVisulizationLevelContainer extends HorizontalLayout implements R
         if (type.equalsIgnoreCase("peptide_selection")) {
             if (Selection_Manager.getSelectedPeptideId() != null) {
                 headerLabel.setValue("Peptide Spectrum Matches ( " + Selection_Manager.getSelectedPeptideId() + " )");
-                this.psmViewComponent.updateView(peptideShakerVisualizationDataset.getPSM(Selection_Manager.getSelectedPeptideId()));
+                this.psmViewComponent.updateView(peptideShakerVisualizationDataset.getPSM(Selection_Manager.getSelectedPeptideId()),Selection_Manager.getSelectedPeptideId().length());
                 this.psmViewBtn.updateIcon(new ThemeResource("img/spectra_1.png"));
             } else {
                 headerLabel.setValue("Peptide Spectrum Matches");

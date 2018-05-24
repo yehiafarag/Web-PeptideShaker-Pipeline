@@ -4,10 +4,14 @@ import com.compomics.util.experiment.biology.AminoAcidPattern;
 import com.compomics.util.experiment.biology.Enzyme;
 import com.compomics.util.experiment.biology.EnzymeFactory;
 import com.compomics.util.experiment.biology.Peptide;
-import com.compomics.util.experiment.identification.Advocate;
 import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
+import com.compomics.util.experiment.identification.matches.IonMatch;
 import com.compomics.util.experiment.identification.matches.ModificationMatch;
 import com.compomics.util.experiment.identification.matches.SpectrumMatch;
+import com.compomics.util.experiment.identification.spectrum_annotation.AnnotationSettings;
+import com.compomics.util.experiment.identification.spectrum_annotation.SpecificAnnotationSettings;
+import com.compomics.util.experiment.identification.spectrum_annotation.SpectrumAnnotator;
+import com.compomics.util.experiment.identification.spectrum_annotation.spectrum_annotators.PeptideSpectrumAnnotator;
 import com.compomics.util.experiment.identification.spectrum_assumptions.PeptideAssumption;
 import com.compomics.util.experiment.io.massspectrometry.MgfIndex;
 import com.compomics.util.experiment.massspectrometry.Charge;
@@ -19,12 +23,10 @@ import com.compomics.util.preferences.SequenceMatchingPreferences;
 import com.google.common.collect.Sets;
 import com.uib.web.peptideshaker.galaxy.GalaxyDatasetServingUtil;
 import com.uib.web.peptideshaker.model.core.ModificationMatrix;
-import com.uib.web.peptideshaker.presenter.core.PopupWindow;
-import com.uib.web.peptideshaker.presenter.pscomponents.SpectrumPlot;
-import java.awt.Color;
-import java.awt.Dimension;
+import com.uib.web.peptideshaker.presenter.pscomponents.SpectrumInformation;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -180,7 +182,7 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
             ex.printStackTrace();
             return;
         }
-      
+
         this.identificationParameters = new IdentificationParameters(searchParameters);
     }
 
@@ -949,37 +951,44 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
 
     }
 
-    public void getSelectedPsmData(Object psmIndex, String peptideSequence,SpectrumPlot plot) {
+    public Map<Object, SpectrumInformation> getSelectedPsmData(List<PSMObject> psms, String peptideSequence) {//SpectrumPlot plot
+        Map<Object, SpectrumInformation> spectrumInformationMap = new LinkedHashMap<>();
+        int maxCharge = Integer.MIN_VALUE;
+        double maxError = Double.MIN_VALUE;;
+        for (PSMObject selectedPsm : psms) {
+            try {
+                if (!importedMgfFilesIndexers.containsKey(selectedPsm.getSpectrumFile())) {
+                    importedMgfFilesIndexers.put(selectedPsm.getSpectrumFile(), (MgfIndex) SerializationUtils.readObject(mgfFilesIndexers.get("data/" + selectedPsm.getSpectrumFile() + ".cui").getFile()));
+                }
 
-        PSMObject selectedPsm = psmIndexMap.get(psmIndex);
-
-        try {
-            if (!importedMgfFilesIndexers.containsKey(selectedPsm.getSpectrumFile())) {
-                importedMgfFilesIndexers.put(selectedPsm.getSpectrumFile(), (MgfIndex) SerializationUtils.readObject(mgfFilesIndexers.get("data/" + selectedPsm.getSpectrumFile() + ".cui").getFile()));
+            } catch (IOException | ClassNotFoundException ex) {
+                ex.printStackTrace();
+            }
+            MgfIndex mgfIndex = importedMgfFilesIndexers.get(selectedPsm.getSpectrumFile());
+            String galaxyFileId = "";
+            String galaxyHistoryId = "";
+            for (SystemDataSet ds : mgfFiles.values()) {
+                if (ds.getName().equalsIgnoreCase(selectedPsm.getSpectrumFile())) {
+                    galaxyFileId = ds.getGalaxyId();
+                    galaxyHistoryId = ds.getHistoryId();
+                    break;
+                }
+            }
+            MSnSpectrum spectrum = galaxyDatasetServingUtil.getSpectrum(mgfIndex.getIndex(selectedPsm.getSpectrumTitle()), galaxyHistoryId, galaxyFileId, selectedPsm.getSpectrumFile());
+            int tCharge = Integer.parseInt(selectedPsm.getMeasuredCharge().replace("+", ""));
+            if (tCharge > maxCharge) {
+                maxCharge = tCharge;
+            }
+             if (selectedPsm.getPrecursorMZError_PPM()>maxError) {
+                maxError = selectedPsm.getPrecursorMZError_PPM();
+            }
+            try {
+                System.out.println("at spectrum " + spectrum.getFileName() + "  " + spectrum.getPeakListAsString() + "  " + spectrum.getScanNumber());
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
             }
 
-        } catch (IOException | ClassNotFoundException ex) {
-            ex.printStackTrace();
-        }
-        MgfIndex mgfIndex = importedMgfFilesIndexers.get(selectedPsm.getSpectrumFile());
-        String galaxyFileId = "";
-        String galaxyHistoryId = "";
-        for (SystemDataSet ds : mgfFiles.values()) {
-            if (ds.getName().equalsIgnoreCase(selectedPsm.getSpectrumFile())) {
-                galaxyFileId = ds.getGalaxyId();
-                galaxyHistoryId = ds.getHistoryId();
-                break;
-            }
-        }
-        MSnSpectrum spectrum = galaxyDatasetServingUtil.getSpectrum(mgfIndex.getIndex(selectedPsm.getSpectrumTitle()), galaxyHistoryId, galaxyFileId, selectedPsm.getSpectrumFile());
-        System.out.println(" selected psm " + selectedPsm.getSpectrumFile() + "  " + importedMgfFilesIndexers.containsKey(selectedPsm.getSpectrumFile()) + "  " + selectedPsm.getSpectrumFile() + "  start index " + mgfIndex.getIndex(selectedPsm.getSpectrumTitle()) + "   ");
-        try {
-            System.out.println("at spectrum " + spectrum.getFileName() + "  " + spectrum.getPeakListAsString() + "  " + spectrum.getScanNumber());
-        } catch (InterruptedException ex) {
-            ex.printStackTrace();
-        }
-      
-        ArrayList<ModificationMatch> psModificationMatches = null;
+            ArrayList<ModificationMatch> psModificationMatches = null;
 //        if (sePeptide.isModified()) {
 //            psModificationMatches = new ArrayList<ModificationMatch>(sePeptide.getNModifications());
 //            for (ModificationMatch seModMatch : sePeptide.getModificationMatches()) {
@@ -987,16 +996,26 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
 //            }
 //        }
 
-        Peptide psPeptide = new Peptide(peptideSequence.replace("NH2-","").replace("-COOH",""), psModificationMatches);
-        psPeptide.setParentProteins(new ArrayList<>(selectedPsm.getProteins()));
-        PeptideAssumption psAssumption = new PeptideAssumption(psPeptide, new Charge(+2, 2));
-        SpectrumMatch spectrumMatch = new SpectrumMatch(spectrum.getSpectrumKey());
-        spectrumMatch.setBestPeptideAssumption(psAssumption);
-        plot.selectedSpectrum(spectrum, "2", 0.02, identificationParameters, spectrumMatch);
-       
-        
-      
+            Peptide psPeptide = new Peptide(peptideSequence.replace("NH2-", "").replace("-COOH", ""), psModificationMatches);
+            psPeptide.setParentProteins(new ArrayList<>(selectedPsm.getProteins()));
+            PeptideAssumption psAssumption = new PeptideAssumption(psPeptide, new Charge(+2, 2));
+            SpectrumMatch spectrumMatch = new SpectrumMatch(spectrum.getSpectrumKey());
+            spectrumMatch.setBestPeptideAssumption(psAssumption);
+            SpectrumInformation spectrumInformation = new SpectrumInformation();
+            spectrumInformation.setCharge("2");
+            spectrumInformation.setFragmentIonAccuracy(0.02);
+            spectrumInformation.setIdentificationParameters(identificationParameters);
+            spectrumInformation.setSpectrumMatch(spectrumMatch);
+            spectrumInformation.setSpectrumId(selectedPsm.getIndex());
+            spectrumInformation.setSpectrum(spectrum);
+            spectrumInformationMap.put(selectedPsm.getIndex(), spectrumInformation);
 
+        }
+        for (SpectrumInformation spectrumInformation : spectrumInformationMap.values()) {
+            spectrumInformation.setMaxCharge(maxCharge);
+            spectrumInformation.setMzError(maxError);
+        }
+        return spectrumInformationMap;
 
     }
 //
@@ -1168,7 +1187,4 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
 //    public boolean isAvailableOnGalaxy() {
 //        return super.isAvailableOnGalaxy(); //To change body of generated methods, choose Tools | Templates.
 //    }
-    
-    
- 
 }

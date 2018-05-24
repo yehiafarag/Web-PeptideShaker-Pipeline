@@ -152,7 +152,7 @@ public abstract class SearchableTable extends VerticalLayout implements Property
     }
 
     /**
-     * Initialize the proteins table.
+     * Initialise the proteins table.
      */
     private Table initProteinTable(TableColumnHeader[] tableHeaders) {
         Table table = new Table() {

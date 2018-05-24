@@ -100,7 +100,7 @@ public class PeptidShakerUI extends UI {
 
         VerticalLayout layoutContent = new VerticalLayout();
         layoutContent.setSizeFull();
-        setContent(layoutContent);
+//        setContent(layoutContent);
 
         final SelectioncanvasComponent mycomponent = new SelectioncanvasComponent() {
             @Override
