@@ -575,7 +575,6 @@ public class SpectrumPlot extends AbsoluteLayout {
                 if (w <= 0 || h <= 0) {
                     return;
                 }
-
                 spectrumPanel.setSize(w, h);
                 plot.setWidth(w, Unit.PIXELS);
                 plot.setHeight(h, Unit.PIXELS);
@@ -642,11 +641,11 @@ public class SpectrumPlot extends AbsoluteLayout {
                 Property.ValueChangeListener listener = (Property.ValueChangeEvent event) -> {
                     updateAnnotationPreferences();
                 };
-                annotationAccuracySlider.setValue(100.0);                
+                annotationAccuracySlider.setValue(100.0);
+                levelSlider.setValue(75.0);
                 levelSlider.addValueChangeListener(listener);
                 annotationAccuracySlider.addValueChangeListener(listener);
-               levelSlider.setValue(75.0);
-
+                updateAnnotationPreferences();
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
