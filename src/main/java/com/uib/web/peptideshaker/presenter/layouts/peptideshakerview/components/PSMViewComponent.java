@@ -9,7 +9,7 @@ import com.uib.web.peptideshaker.galaxy.dataobjects.PSMObject;
 import com.uib.web.peptideshaker.presenter.core.InferenceLabel;
 import com.uib.web.peptideshaker.presenter.core.SparkLineLabel;
 import com.uib.web.peptideshaker.presenter.core.ValidationLabel;
-import com.uib.web.peptideshaker.presenter.pscomponents.SequenceFragmentationChart;
+import com.uib.web.peptideshaker.presenter.pscomponents.SecondarySpectraChartsGenerator;
 import com.uib.web.peptideshaker.presenter.pscomponents.SpectrumInformation;
 import com.uib.web.peptideshaker.presenter.pscomponents.SpectrumPlot;
 import com.vaadin.data.Property;
@@ -66,9 +66,11 @@ public abstract class PSMViewComponent extends VerticalLayout {
         psmOverviewTable.addContainerProperty("index", Integer.class, null, "", null, Table.Align.RIGHT);
         psmOverviewTable.addContainerProperty("id", InferenceLabel.class, null, "ID", null, Table.Align.CENTER);
 //        psmOverviewTable.addContainerProperty("sequence", String.class, null, "Sequence", null, Table.Align.LEFT);
-        psmOverviewTable.addContainerProperty("sequenceFrag", SequenceFragmentationChart.class, null, "Sequence Fragmentation", null, Table.Align.LEFT);
+        psmOverviewTable.addContainerProperty("sequenceFrag", VerticalLayout.class, null, "Sequence Fragmentation", null, Table.Align.LEFT);
+        psmOverviewTable.addContainerProperty("massErrorPlot", VerticalLayout.class, null, "Mass Error Plot", null, Table.Align.LEFT);
         psmOverviewTable.addContainerProperty("charge", SparkLineLabel.class, null, "Charge", null, Table.Align.LEFT);
-        psmOverviewTable.addContainerProperty("mzError", SparkLineLabel.class, null, "m/z Error", null, Table.Align.LEFT);        
+        psmOverviewTable.addContainerProperty("mzError", SparkLineLabel.class, null, "m/z Error", null, Table.Align.LEFT);
+
         psmOverviewTable.addContainerProperty("confidence", SparkLineLabel.class, null, "Confidence", null, Table.Align.LEFT);
         psmOverviewTable.addContainerProperty("validation", ValidationLabel.class, null, "", null, Table.Align.CENTER);
         psmOverviewTable.setColumnWidth("index", 50);
@@ -76,8 +78,8 @@ public abstract class PSMViewComponent extends VerticalLayout {
         psmOverviewTable.setColumnWidth("validation", 32);
         psmOverviewTable.setColumnWidth("confidence", 170);
         psmOverviewTable.setColumnWidth("charge", 150);
-          psmOverviewTable.setColumnWidth("mzError", 170);
-
+        psmOverviewTable.setColumnWidth("mzError", 170);
+        psmOverviewTable.setColumnWidth("massErrorPlot", 274);
         psmOverviewTable.setSortContainerPropertyId("charge");
         PSMViewComponent.this.addComponent(psmOverviewTable);
         PSMViewComponent.this.setExpandRatio(psmOverviewTable, 0.25f);
@@ -98,7 +100,7 @@ public abstract class PSMViewComponent extends VerticalLayout {
         this.chartContainer.addComponent(SpectrumPlot);
 
         this.listener = (LayoutEvents.LayoutClickEvent event) -> {
-            psmOverviewTable.setValue(((SequenceFragmentationChart) event.getComponent()).getObjectId());
+            psmOverviewTable.setValue(((VerticalLayout) (event.getComponent())).getData());
         };
 
     }
@@ -111,8 +113,9 @@ public abstract class PSMViewComponent extends VerticalLayout {
         psms.stream().map((psm) -> {
             return psm;
         }).forEachOrdered((psm) -> {
-            SequenceFragmentationChart chart = new SequenceFragmentationChart(psm.getModifiedSequence(), psm.getIndex(), spectrumInformationMap.get(psm.getIndex()));
-            chart.addLayoutClickListener(listener);
+            SecondarySpectraChartsGenerator chartGenerator = new SecondarySpectraChartsGenerator(psm.getModifiedSequence(), psm.getIndex(), spectrumInformationMap.get(psm.getIndex()));
+            chartGenerator.getSequenceFragmentationChart().addLayoutClickListener(listener);
+            chartGenerator.getMassErrorPlot().addLayoutClickListener(listener);
             int charge = Integer.parseInt(psm.getIdentificationCharge().replace("+", ""));
             Map<String, Number> values = new LinkedHashMap<>();
             values.put("greenlayout", (float) charge / (float) spectrumInformationMap.get(psm.getIndex()).getMaxCharge());
@@ -122,20 +125,19 @@ public abstract class PSMViewComponent extends VerticalLayout {
                     psmOverviewTable.setValue(itemId);
                 }
             };
-            
+
             double mzError = psm.getPrecursorMZError_PPM();
-             Map<String, Number> mzErrorValues = new LinkedHashMap<>();
-            mzErrorValues.put("greenlayout", (float) mzError / ((float) spectrumInformationMap.get(psm.getIndex()).getMzError()*2.0f));
-            
-                 
-            SparkLineLabel mzErrorLabel = new SparkLineLabel( df.format(mzError) + "", mzErrorValues, psm.getIndex()) {
+            Map<String, Number> mzErrorValues = new LinkedHashMap<>();
+            mzErrorValues.put("greenlayout", (float) mzError / ((float) spectrumInformationMap.get(psm.getIndex()).getMzError() * 2.0f));
+
+            SparkLineLabel mzErrorLabel = new SparkLineLabel(df.format(mzError) + "", mzErrorValues, psm.getIndex()) {
                 @Override
                 public void selected(Object itemId) {
                     psmOverviewTable.setValue(itemId);
                 }
             };
-            
-              Map<String, Number> confidentValues = new LinkedHashMap<>();
+
+            Map<String, Number> confidentValues = new LinkedHashMap<>();
             confidentValues.put("greenlayout", (float) psm.getConfidence() / 100f);
             SparkLineLabel confidentLabel = new SparkLineLabel(df.format(psm.getConfidence()), confidentValues, psm.getIndex()) {
                 @Override
@@ -143,8 +145,8 @@ public abstract class PSMViewComponent extends VerticalLayout {
                     psmOverviewTable.setValue(itemId);
                 }
             };
-            ValidationLabel validation = new ValidationLabel(psm.getValidation()) ;
-            this.psmOverviewTable.addItem(new Object[]{index++, new InferenceLabel(),chart, chargeLabel, mzErrorLabel, confidentLabel, validation}, psm.getIndex());
+            ValidationLabel validation = new ValidationLabel(psm.getValidation());
+            this.psmOverviewTable.addItem(new Object[]{index++, new InferenceLabel(), chartGenerator.getSequenceFragmentationChart(), chartGenerator.getMassErrorPlot(), chargeLabel, mzErrorLabel, confidentLabel, validation}, psm.getIndex());
         });
         this.psmOverviewTable.setSortContainerPropertyId("charge");
         this.psmOverviewTable.sort();

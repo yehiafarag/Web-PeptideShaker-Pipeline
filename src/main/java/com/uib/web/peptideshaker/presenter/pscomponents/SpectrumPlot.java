@@ -119,7 +119,6 @@ public class SpectrumPlot extends AbsoluteLayout {
         SelectioncanvasComponent selectionCanvas = new SelectioncanvasComponent() {
             @Override
             public void dragSelectionIsPerformed(double startX, double startY, double endX, double endY) {
-                System.out.println("at selection is " + startX + "," + startY + ")(" + endX + "," + endY + ")");
                 if (spectrumPanel != null) {
                     spectrumPanel.zoom((int) startX, (int) startY, (int) endX, (int) endY);
                     plot.setSource(new ExternalResource(drawImage(spectrumPanel)));
@@ -136,7 +135,6 @@ public class SpectrumPlot extends AbsoluteLayout {
 
             @Override
             public void leftSelectionIsPerformed(double startX, double startY) {
-                System.out.println("mouse event is ready -- " + startX + " -- " + startY);
                 if (spectrumPanel != null) {
 
 //                    MouseEvent e = new MouseEvent(spectrumPanel, 0, 0, -1, (int) startX, (int) startY, 1, false, MouseEvent.BUTTON1);
@@ -449,13 +447,9 @@ public class SpectrumPlot extends AbsoluteLayout {
             plot.setSource(new ExternalResource(drawImage(spectrumPanel)));
 
             // create the sequence fragment ion view
-           String taggedPeptideSequence =  currentPeptide.getTaggedModifiedSequence(getIdentificationParameters().getSearchParameters().getPtmSettings(),false, false, false);
-             SequenceFragmentationPanel sequenceFragmentationPanel = new SequenceFragmentationPanel(taggedPeptideSequence, annotations, false, getIdentificationParameters().getSearchParameters().getPtmSettings(), forwardIon, rewindIon);
-            
-            
-            
-            
-            
+            String taggedPeptideSequence = currentPeptide.getTaggedModifiedSequence(getIdentificationParameters().getSearchParameters().getPtmSettings(), false, false, false);
+            SequenceFragmentationPanel sequenceFragmentationPanel = new SequenceFragmentationPanel(taggedPeptideSequence, annotations, false, getIdentificationParameters().getSearchParameters().getPtmSettings(), forwardIon, rewindIon);
+
         } catch (Exception e) {
             e.printStackTrace();
 //            catchException(e);
@@ -556,14 +550,22 @@ public class SpectrumPlot extends AbsoluteLayout {
     private Peptide currentPeptide;
     private double fragmentIonAccuracy;
     private SpectrumMatch spectrumMatch;
+    private Thread selectedSpectrumThread;
 
     public void selectedSpectrum(MSnSpectrum currentSpectrum, String charge, double fragmentIonAccuracy, IdentificationParameters identificationParameters, SpectrumMatch spectrumMatch) {
         this.identificationParameters = identificationParameters;
         this.currentSpectrum = currentSpectrum;
         this.fragmentIonAccuracy = fragmentIonAccuracy;
         this.spectrumMatch = spectrumMatch;
-        Thread t;
-        t = new Thread(() -> {
+        if (spectrumPanel != null) {
+            spectrumPanel.reset();
+            plot.setSource(new ExternalResource(drawImage(spectrumPanel)));
+            if (selectedSpectrumThread.isAlive()) {
+                selectedSpectrumThread.interrupt();
+            }
+        }
+
+        selectedSpectrumThread = new Thread(() -> {
             Precursor precursor = currentSpectrum.getPrecursor();
             try {
                 spectrumPanel = new WebSpectrumPanel(currentSpectrum.getMzValuesAsArray(), currentSpectrum.getIntensityValuesAsArray(), precursor.getMz(), charge, "", 40, false, false, false, 2, false);
@@ -640,18 +642,18 @@ public class SpectrumPlot extends AbsoluteLayout {
                 Property.ValueChangeListener listener = (Property.ValueChangeEvent event) -> {
                     updateAnnotationPreferences();
                 };
-                annotationAccuracySlider.setValue(100.0);
+                annotationAccuracySlider.setValue(100.0);                
                 levelSlider.addValueChangeListener(listener);
                 annotationAccuracySlider.addValueChangeListener(listener);
-                levelSlider.setValue(50.0);
+               levelSlider.setValue(75.0);
 
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
         });
-        t.start();
+        selectedSpectrumThread.start();
         try {
-            t.join();
+            selectedSpectrumThread.join();
         } catch (InterruptedException ex) {
             ex.printStackTrace();
         }

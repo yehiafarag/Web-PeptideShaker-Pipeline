@@ -3034,9 +3034,9 @@
     .v-absolutelayout-sparkline .v-absolutelayout-margin{
         overflow:visible !important;
     }
-    .v-table [class*="-row"].v-selected {
-        background-image: -webkit-linear-gradient(top, #0e5ea2 2%, #1759a7 98%) !important;
-        background-image: linear-gradient(to bottom,#0e5ea2 2%, #1759a7 98%) !important;}
+    /*.v-table [class*="-row"].v-selected {*/
+/*        background-image: -webkit-linear-gradient(top, #0e5ea2 2%, #1759a7 98%) !important;
+        background-image: linear-gradient(to bottom,#0e5ea2 2%, #1759a7 98%) !important;}*/
 
     .validlabel span{
         color:#4dca4d;
@@ -3051,7 +3051,7 @@
         border-radius: 100%;
         margin-left:-2px;
     }
-    .doubtful span{
+    .doubtfullabel span{
         color:#ffbc00;
         background-color: white;
         border-radius: 100%;

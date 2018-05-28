@@ -15928,11 +15928,6 @@ div.v-layout.v-horizontal.v-widget {
 	overflow: visible !important;
 }
 
-.webpeptideshakertheme .v-table [class*="-row"].v-selected {
-	background-image: -webkit-linear-gradient(top, #0e5ea2 2%, #1759a7 98%) !important;
-	background-image: linear, to bottom, #0e5ea2 2%, #1759a7 98% !important;
-}
-
 .webpeptideshakertheme .validlabel span {
 	color: #4dca4d;
 	background-color: white;
@@ -15947,7 +15942,7 @@ div.v-layout.v-horizontal.v-widget {
 	margin-left: -2px;
 }
 
-.webpeptideshakertheme .doubtful span {
+.webpeptideshakertheme .doubtfullabel span {
 	color: #ffbc00;
 	background-color: white;
 	border-radius: 100%;
