@@ -13854,6 +13854,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .v-table-framedpanel.v-table-borderless {
 	border: 1px solid lightgray;
+	font-size: 12px;
 }
 
 .webpeptideshakertheme .peptidenode {
@@ -13950,6 +13951,16 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .smallertext {
 	color: gray;
+	font-size: 12px !important;
+}
+
+.webpeptideshakertheme .smallertext label {
+	color: gray;
+	font-size: 12px !important;
+	line-height: 12px !important;
+}
+
+.webpeptideshakertheme .v-label-small.v-label-inframe {
 	font-size: 12px !important;
 }
 
@@ -14940,7 +14951,7 @@ div.v-layout.v-horizontal.v-widget {
 .webpeptideshakertheme .inframe .v-button-link {
 	text-decoration: none;
 	text-decoration: none;
-	font-size: 0.8vmax !important;
+	font-size: 12px !important;
 	margin-top: -3px !important;
 }
 
@@ -14969,6 +14980,12 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .inframe .v-button-link:focus:after, .webpeptideshakertheme .v-button:focus:after {
 	border: 3px solid white !important;
+}
+
+.webpeptideshakertheme .v-select-optiongroup-small .v-radiobutton {
+	position: relative;
+	line-height: 12px;
+	white-space: nowrap;
 }
 
 .webpeptideshakertheme .proteincoverage {
@@ -15305,7 +15322,7 @@ div.v-layout.v-horizontal.v-widget {
 	position: fixed !important;
 	margin-top: -3px;
 	border: 1px solid lightgray;
-	font-size: 0.8vmax;
+	font-size: 12px;
 	-webkit-box-shadow: none !important;
 	box-shadow: none !important;
 	text-shadow: none !important;
@@ -15627,6 +15644,19 @@ div.v-layout.v-horizontal.v-widget {
 	color: transparent;
 	border: none;
 	display: none;
+}
+
+.webpeptideshakertheme .greenincolor {
+	background-color: #4dca4d !important;
+	width: 20px !important;
+	height: 12px !important;
+}
+
+.webpeptideshakertheme .yellowcolor {
+	background-color: #f5f518 !important;
+	width: 20px !important;
+	height: 12px !important;
+	border: 1px solid #e8dddd;
 }
 
 .webpeptideshakertheme .horizontalcss .largetitle .v-label {

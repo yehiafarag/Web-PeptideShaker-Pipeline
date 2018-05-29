@@ -61,7 +61,7 @@ public abstract class SparkLineLabel extends AbsoluteLayout implements Comparabl
 
     @Override
     public int compareTo(SparkLineLabel o) {
-        return textLabel.getValue().compareTo(o.textLabel.getValue());
+        return Double.valueOf(textLabel.getValue()).compareTo(Double.valueOf(o.textLabel.getValue()));
     }
     
 

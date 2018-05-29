@@ -52,6 +52,7 @@ public abstract class SearchableTable extends VerticalLayout implements Property
         this.mainTable = initProteinTable(tableHeaders);
         SearchableTable.this.addComponent(mainTable);
         SearchableTable.this.setExpandRatio(mainTable, 100);
+
     }
 
     private HorizontalLayout initSearchComponentLayout(String defaultSearchingMessage) {
@@ -178,10 +179,10 @@ public abstract class SearchableTable extends VerticalLayout implements Property
         table.setMultiSelect(false);
         table.setMultiSelectMode(MultiSelectMode.DEFAULT);
         table.setSelectable(true);
-        table.setSortEnabled(true);
+        table.setSortEnabled(false);
         table.setColumnReorderingAllowed(false);
 
-        table.setColumnCollapsingAllowed(false);
+        table.setColumnCollapsingAllowed(true);
         table.addColumnResizeListener((Table.ColumnResizeEvent event) -> {
             table.setColumnWidth(event.getPropertyId(), event.getPreviousWidth());
         });
@@ -189,9 +190,28 @@ public abstract class SearchableTable extends VerticalLayout implements Property
         for (TableColumnHeader header : tableHeaders) {
             table.addContainerProperty(header.getPropertyId(), header.getType(), header.getDefaultValue(), header.getColumnHeader(), header.getColumnIcon(), header.getColumnAlignment());
         }
+        table.addHeaderClickListener((Table.HeaderClickEvent event) -> {
+            sortTable(event.getPropertyId());
+        });
 
         return table;
     }
+    public void sortTable(Object id){
+      mainTable.setSortEnabled(true);
+            if ((mainTable.getSortContainerPropertyId()!=null)&&id.toString().equalsIgnoreCase(mainTable.getSortContainerPropertyId().toString())) {
+                mainTable.setSortAscending(!mainTable.isSortAscending());
+            } else {
+                mainTable.setSortAscending(true);
+                mainTable.setSortContainerPropertyId(id);
+            }
+            mainTable.sort();
+            int index = 1;
+            for (Object key : mainTable.getItemIds()) {
+                mainTable.getItem(key).getItemProperty("index").setValue(index++);
+            }
+            mainTable.setSortEnabled(false);    
+    }
+  
 
     private Map<Comparable, Object[]> tableData;
 
@@ -199,19 +219,25 @@ public abstract class SearchableTable extends VerticalLayout implements Property
         return tableData;
     }
 
+    public Table getMainTable() {
+        return mainTable;
+    }
+
     public void upateTableData(Map<Comparable, Object[]> tableData, int[] searchingIndexes, int keyIndex) {
         this.tableData = tableData;
         this.tableSearchingMap.clear();
         mainTable.removeValueChangeListener(SearchableTable.this);
         mainTable.removeAllItems();
-        for (Object[] data : tableData.values()) {
+        tableData.values().stream().map((data) -> {
             this.mainTable.addItem(data, data[keyIndex]);
+            return data;
+        }).forEachOrdered((data) -> {
             String searchKey = "";
             for (int i : searchingIndexes) {
                 searchKey += data[i] + "_";
             }
             this.tableSearchingMap.put(searchKey.toLowerCase().replace(",", "_"), data[keyIndex] + "");
-        }
+        });
         mainTable.setCaption("<b>" + tableMainTitle + " ( " + mainTable.getItemIds().size() + " / " + tableData.size() + " )</b>");
 
         mainTable.addValueChangeListener(SearchableTable.this);

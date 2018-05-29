@@ -415,6 +415,10 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
 //        System.out.println("at files "+(proteinFileId == null )+"  "+(peptideFileId == null )+"||"+(searchGUIFileId == null )+"||"+( psmFileId == null )+"||"+( mgfFiles.isEmpty() )+"||"+( fastaFileName == null )+"||"+(mgfFilesIndexes.isEmpty()));
 //        return !(proteinFileId == null || peptideFileId == null || fastaFileName == null/*|| searchGUIFileId == null || psmFileId == null || mgfFiles.isEmpty()  || mgfFilesIndexes.isEmpty()*/);
     }
+    private double maxMW = Double.MIN_VALUE;
+    private double maxMS2Quant = Double.MIN_VALUE;
+    private int maxPeptideNumber = Integer.MIN_VALUE;
+    private int maxPsmNumber = Integer.MIN_VALUE;
 
     public Map<String, ProteinObject> getProteinsMap() {
         if (proteinsMap != null) {
@@ -462,6 +466,9 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
                 }
 
                 protein.setMW(Double.valueOf(arr[5]));
+                if (protein.getMW() > maxMW) {
+                    maxMW = protein.getMW();
+                }
                 protein.setPossibleCoverage(Double.valueOf(arr[6]));
                 protein.setCoverage(Double.valueOf(arr[7]));
                 int pc = (int) Math.round(protein.getPossibleCoverage());
@@ -470,6 +477,9 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
                 }
                 proteinCoverageMap.get(pc).add(protein.getAccession());
                 protein.setSpectrumCounting(Double.valueOf(arr[8]));
+                if (protein.getSpectrumCounting() > maxMS2Quant) {
+                    maxMS2Quant = protein.getSpectrumCounting();
+                }
                 protein.setConfidentlyLocalizedModificationSites(arr[9]);
                 protein.setConfidentlyLocalizedModificationSitesNumber(arr[10]);
                 protein.setAmbiguouslyLocalizedModificationSites(arr[11]);
@@ -490,6 +500,9 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
 
                 protein.setProteinGroup(arr[15]);
                 protein.setValidatedPeptidesNumber(Integer.parseInt(arr[16]));
+                if (protein.getValidatedPeptidesNumber() > maxPeptideNumber) {
+                    maxPeptideNumber = protein.getValidatedPeptidesNumber();
+                }
                 protein.setPeptidesNumber(Integer.parseInt(arr[17]));
                 if (!proteinPeptidesNumberMap.containsKey(protein.getValidatedPeptidesNumber())) {
                     proteinPeptidesNumberMap.put(protein.getValidatedPeptidesNumber(), new LinkedHashSet<>());
@@ -500,6 +513,9 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
                 protein.setUniqueToGroupNumber(Integer.parseInt(arr[20]));
                 protein.setValidatedUniqueToGroupNumber(Integer.valueOf(arr[21]));
                 protein.setValidatedPSMsNumber(Integer.valueOf(arr[22]));
+                if (protein.getValidatedPSMsNumber() > maxPsmNumber) {
+                    maxPsmNumber = protein.getValidatedPSMsNumber();
+                }
                 protein.setPSMsNumber(Integer.valueOf(arr[23]));
                 if (!proteinPSMNumberMap.containsKey(protein.getValidatedPSMsNumber())) {
                     proteinPSMNumberMap.put(protein.getValidatedPSMsNumber(), new LinkedHashSet<>());
@@ -551,6 +567,22 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
         }
 
         return proteinsMap;
+    }
+
+    public double getMaxMW() {
+        return maxMW;
+    }
+
+    public double getMaxMS2Quant() {
+        return maxMS2Quant;
+    }
+
+    public int getMaxPeptideNumber() {
+        return maxPeptideNumber;
+    }
+
+    public int getMaxPsmNumber() {
+        return maxPsmNumber;
     }
 
     private void readFastaFile() {
@@ -979,7 +1011,7 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
             if (tCharge > maxCharge) {
                 maxCharge = tCharge;
             }
-             if (selectedPsm.getPrecursorMZError_PPM()>maxError) {
+            if (selectedPsm.getPrecursorMZError_PPM() > maxError) {
                 maxError = selectedPsm.getPrecursorMZError_PPM();
             }
             try {

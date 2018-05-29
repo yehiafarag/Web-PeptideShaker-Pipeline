@@ -865,6 +865,7 @@
     }
     .v-table-framedpanel.v-table-borderless {
         border:1px solid lightgray;
+        font-size:12px;
     }
 
     .peptidenode {
@@ -958,6 +959,14 @@
     }
     .smallertext{
         color:gray;
+        font-size:12px !important;
+    }
+    .smallertext label{
+        color: gray;
+        font-size: 12px !important;	
+        line-height: 12px !important;	
+    }
+    .v-label-small.v-label-inframe {
         font-size:12px !important;
     }
 
@@ -1951,10 +1960,10 @@
         overflow:visible !important;
     }
     .inframe .v-button-link{
-        text-decoration:none ;
         text-decoration: none;
-        font-size: 0.8vmax !important;
-        margin-top: -3px !important;
+        text-decoration: none;
+        font-size: 12px !important;
+        margin-top: -3px !important
     }
     .inframe .v-button-link:hover{
         text-decoration:underline ;
@@ -1980,6 +1989,12 @@
     .inframe .v-button-link:focus:after, .v-button:focus:after{
         border:3px solid white !important;
     }
+    .v-select-optiongroup-small .v-radiobutton {
+        position: relative;
+        line-height: 12px;
+        white-space: nowrap;
+    }
+
     /****protein coverage  css**/
     .proteincoverage {
         background-color: whitesmoke;
@@ -2385,7 +2400,7 @@
         position: fixed !important;
         margin-top: -3px;
         border: 1px solid lightgray;
-        font-size:0.8vmax;  
+        font-size:12px;  
 
         -webkit-box-shadow: none !important;
         box-shadow: none !important;
@@ -2725,7 +2740,17 @@
         display:none;
     }
 
-
+    .greenincolor{
+        background-color: #4dca4d !important;
+        width:20px !important;
+        height:12px !important;
+    }
+    .yellowcolor{
+        background-color: #f5f518 !important;
+        width:20px !important;
+        height:12px !important;
+        border:1px solid #e8dddd;
+    }
 
     /****mobile css**/
     .horizontalcss  .largetitle .v-label{
@@ -3035,8 +3060,8 @@
         overflow:visible !important;
     }
     /*.v-table [class*="-row"].v-selected {*/
-/*        background-image: -webkit-linear-gradient(top, #0e5ea2 2%, #1759a7 98%) !important;
-        background-image: linear-gradient(to bottom,#0e5ea2 2%, #1759a7 98%) !important;}*/
+    /*        background-image: -webkit-linear-gradient(top, #0e5ea2 2%, #1759a7 98%) !important;
+            background-image: linear-gradient(to bottom,#0e5ea2 2%, #1759a7 98%) !important;}*/
 
     .validlabel span{
         color:#4dca4d;
@@ -3056,4 +3081,5 @@
         background-color: white;
         border-radius: 100%;
         margin-left:-2px;
-    }}
+    }
+}

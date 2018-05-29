@@ -6,7 +6,7 @@
 package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components;
 
 import com.uib.web.peptideshaker.galaxy.dataobjects.PSMObject;
-import com.uib.web.peptideshaker.presenter.core.InferenceLabel;
+import com.uib.web.peptideshaker.presenter.core.ColorLabel;
 import com.uib.web.peptideshaker.presenter.core.SparkLineLabel;
 import com.uib.web.peptideshaker.presenter.core.ValidationLabel;
 import com.uib.web.peptideshaker.presenter.pscomponents.SecondarySpectraChartsGenerator;
@@ -64,7 +64,7 @@ public abstract class PSMViewComponent extends VerticalLayout {
         psmOverviewTable.setWidth(100, Unit.PERCENTAGE);
         psmOverviewTable.setHeight(100, Unit.PERCENTAGE);
         psmOverviewTable.addContainerProperty("index", Integer.class, null, "", null, Table.Align.RIGHT);
-        psmOverviewTable.addContainerProperty("id", InferenceLabel.class, null, "ID", null, Table.Align.CENTER);
+        psmOverviewTable.addContainerProperty("id", ColorLabel.class, null, "ID", null, Table.Align.CENTER);
 //        psmOverviewTable.addContainerProperty("sequence", String.class, null, "Sequence", null, Table.Align.LEFT);
         psmOverviewTable.addContainerProperty("sequenceFrag", VerticalLayout.class, null, "Sequence Fragmentation", null, Table.Align.LEFT);
         psmOverviewTable.addContainerProperty("massErrorPlot", VerticalLayout.class, null, "Mass Error Plot", null, Table.Align.LEFT);
@@ -146,7 +146,7 @@ public abstract class PSMViewComponent extends VerticalLayout {
                 }
             };
             ValidationLabel validation = new ValidationLabel(psm.getValidation());
-            this.psmOverviewTable.addItem(new Object[]{index++, new InferenceLabel(), chartGenerator.getSequenceFragmentationChart(), chartGenerator.getMassErrorPlot(), chargeLabel, mzErrorLabel, confidentLabel, validation}, psm.getIndex());
+            this.psmOverviewTable.addItem(new Object[]{index++, new ColorLabel(0,"Not Available"), chartGenerator.getSequenceFragmentationChart(), chartGenerator.getMassErrorPlot(), chargeLabel, mzErrorLabel, confidentLabel, validation}, psm.getIndex());
         });
         this.psmOverviewTable.setSortContainerPropertyId("charge");
         this.psmOverviewTable.sort();

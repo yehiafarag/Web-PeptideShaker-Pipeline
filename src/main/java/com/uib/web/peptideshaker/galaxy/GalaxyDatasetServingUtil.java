@@ -232,7 +232,7 @@ public class GalaxyDatasetServingUtil {
                     } else if (line.startsWith("INSTRUMENT")) {
                         // ion series not implemented
                     } else if (line.startsWith("END IONS")) {
-                        insideSpectrum = false;
+                      
                         Precursor precursor;
                         if (rt1 != -1 && rt2 != -1) {
                             precursor = new Precursor(precursorMz, precursorIntensity, precursorCharges, rt1, rt2);
@@ -244,6 +244,7 @@ public class GalaxyDatasetServingUtil {
                         return msnSpectrum;
                     } else if (insideSpectrum && !line.equals("")) {
                         try {
+                            System.out.println("expected error with line "+line);
                             String values[] = line.split("\\s+");
                             Double mz = new Double(values[0]);
                             Double intensity = new Double(values[1]);
