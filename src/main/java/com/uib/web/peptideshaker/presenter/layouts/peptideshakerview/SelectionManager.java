@@ -40,10 +40,10 @@ public class SelectionManager {
         return fullProteinSet;
     }
     private ModificationMatrix modificationMatrix;
-    private Map<String, Set<Comparable>> chromosomeMap;
+    private Map<Integer, Set<Comparable>> chromosomeMap;
 
     private final Map<String, Set<Comparable>> selectedModificationsMap;
-    private final Map<String, Set<Comparable>> selectedChromosomeMap;
+    private final Map<Integer, Set<Comparable>> selectedChromosomeMap;
     private Map<String, Set<Comparable>> piMap;
     private final Map<String, Set<Comparable>> selectedPIMap;
 
@@ -99,7 +99,7 @@ public class SelectionManager {
     private final TreeMap<Comparable, Set<Comparable>> selectedProteinPSMNumberMap;
     private final TreeMap<Comparable, Set<Comparable>> selectedProteinCoverageMap;
 
-    public void setChromosomeMap(Map<String, Set<Comparable>> chromosomeMap) {
+    public void setChromosomeMap(Map<Integer, Set<Comparable>> chromosomeMap) {
         this.selectedChromosomeMap.clear();
         this.chromosomeMap = chromosomeMap;
     }
@@ -130,7 +130,7 @@ public class SelectionManager {
         this.proteinValidationMap = proteinValidationMap;
     }
 
-    public Map<String, Set<Comparable>> getChromosomeMap() {
+    public Map<Integer, Set<Comparable>> getChromosomeMap() {
         if (selectedChromosomeMap.isEmpty()) {
             return chromosomeMap;
         } else {
@@ -305,12 +305,9 @@ public class SelectionManager {
             }
         } else if (filterId.equalsIgnoreCase("chromosome_filter") && !selectedCategories.isEmpty()) {
             Set<Comparable> selectedData = new LinkedHashSet<>();
-            for (Comparable cat : selectedCategories) {
-                if (cat == null) {
-                    continue;
-                }
-                selectedData.addAll(Sets.intersection(chromosomeMap.get(cat.toString()), filteredProtenSet));
-            }
+            selectedCategories.stream().filter((cat) -> !(cat == null)).forEachOrdered((cat) -> {
+                selectedData.addAll(Sets.intersection(chromosomeMap.get(Integer.valueOf(cat.toString())), filteredProtenSet));
+            });
             tempProtenSet.addAll(Sets.difference(filteredProtenSet, selectedData));
             filteredProtenSet.removeAll(tempProtenSet);
             tempProtenSet.clear();

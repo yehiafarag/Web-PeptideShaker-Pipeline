@@ -77,7 +77,7 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
     private Map<String, Set<ProteinObject>> protein_relatedProteins_Map;
     private final Map<Object, ProteinObject> fastaProteinsMap;
     private final String[] proteinEvedence = new String[]{"Not Available", "Protein", "Transcript", "Homology", "Predicted", "Uncertain"};
-    private final Map<String, Set<Comparable>> chromosomeMap;
+    private final Map<Integer, Set<Comparable>> chromosomeMap;
     private final TreeMap<Comparable, Set<Comparable>> proteinCoverageMap;
     private final Map<String, Set<Comparable>> PIMap;
     private final TreeMap<Comparable, Set<Comparable>> proteinPeptidesNumberMap;
@@ -125,7 +125,7 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
         this.importedMgfFilesIndexers = new LinkedHashMap<>();
         this.fastaProteinsMap = new LinkedHashMap<>();
         this.chromosomeMap = new LinkedHashMap<>();
-        this.chromosomeMap.put("No Information", new LinkedHashSet<>());
+        this.chromosomeMap.put(-2, new LinkedHashSet<>());
         this.proteinCoverageMap = new TreeMap<>();
         this.PIMap = new LinkedHashMap<>();
         this.PIMap.put("No Information", new LinkedHashSet<>());
@@ -454,15 +454,31 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
                 protein.setDescription(arr[2]);
                 protein.setGeneName(arr[3]);
                 protein.setChromosome(arr[4]);
+                int chrIndex = -1;
+                try {
+                    chrIndex = Integer.parseInt(protein.getChromosome());
+                } catch (NumberFormatException ex) {
+                    if (protein.getChromosome().contains("HSCHR")) {
+                        chrIndex = Integer.parseInt(protein.getChromosome().split("HSCHR")[1].split("_")[0].replaceAll("[\\D]", ""));
+                    } else if (protein.getChromosome().equalsIgnoreCase("X")) {
+                        chrIndex = 23;
+                    } else if (protein.getChromosome().equalsIgnoreCase("Y")) {
+                        chrIndex = 24;
+                    }
+
+                }
+                protein.setChromosomeIndex(chrIndex);
+
 //                protein.setChromosome(chrom[r.nextInt(10)] + "");
                 if (protein.getChromosome().trim().isEmpty()) {
                     protein.setChromosome("No Information");
-                    chromosomeMap.get(protein.getChromosome()).add(protein.getAccession());
+                    protein.setChromosomeIndex(-2);
+                    chromosomeMap.get(protein.getChromosomeIndex()).add(protein.getAccession());
                 } else {
-                    if (!chromosomeMap.containsKey(protein.getChromosome())) {
-                        chromosomeMap.put(protein.getChromosome(), new LinkedHashSet<>());
+                    if (!chromosomeMap.containsKey(protein.getChromosomeIndex())) {
+                        chromosomeMap.put(protein.getChromosomeIndex(), new LinkedHashSet<>());
                     }
-                    chromosomeMap.get(protein.getChromosome()).add(protein.getAccession());
+                    chromosomeMap.get(protein.getChromosomeIndex()).add(protein.getAccession());
                 }
 
                 protein.setMW(Double.valueOf(arr[5]));
@@ -810,7 +826,7 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
         return modificationMatrix;
     }
 
-    public Map<String, Set<Comparable>> getChromosomeMap() {
+    public Map<Integer, Set<Comparable>> getChromosomeMap() {
         return chromosomeMap;
     }
 

@@ -18,6 +18,15 @@ public class ProteinObject extends Protein {
     private String description;
     private String geneName;
     private String chromosome;
+    private int chromosomeIndex;
+
+    public int getChromosomeIndex() {
+        return chromosomeIndex;
+    }
+
+    public void setChromosomeIndex(int chromosomeIndex) {
+        this.chromosomeIndex = chromosomeIndex;
+    }
     private double MW;
     private double possibleCoverage;
     private double coverage;
@@ -50,6 +59,7 @@ public class ProteinObject extends Protein {
         this.proteinEvidence = proteinEvidence;
     }
 
+    @Override
     public String getSequence() {
         return sequence;
     }
