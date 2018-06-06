@@ -49,7 +49,7 @@ public abstract class SearchableTable extends VerticalLayout implements Property
         SearchableTable.this.setExpandRatio(serachComponent, 0);
         SearchableTable.this.setComponentAlignment(serachComponent, Alignment.TOP_RIGHT);
 
-        this.mainTable = initProteinTable(tableHeaders);
+        this.mainTable = initTable(tableHeaders);
         SearchableTable.this.addComponent(mainTable);
         SearchableTable.this.setExpandRatio(mainTable, 100);
 
@@ -155,7 +155,7 @@ public abstract class SearchableTable extends VerticalLayout implements Property
     /**
      * Initialise the proteins table.
      */
-    private Table initProteinTable(TableColumnHeader[] tableHeaders) {
+    private Table initTable(TableColumnHeader[] tableHeaders) {
         Table table = new Table() {
             @Override
             protected String formatPropertyValue(Object rowId, Object colId, Property property) {
@@ -181,6 +181,7 @@ public abstract class SearchableTable extends VerticalLayout implements Property
         table.setSelectable(true);
         table.setSortEnabled(false);
         table.setColumnReorderingAllowed(false);
+         table.setNullSelectionAllowed(false);
 
         table.setColumnCollapsingAllowed(true);
         table.addColumnResizeListener((Table.ColumnResizeEvent event) -> {
@@ -228,15 +229,15 @@ public abstract class SearchableTable extends VerticalLayout implements Property
         this.tableSearchingMap.clear();
         mainTable.removeValueChangeListener(SearchableTable.this);
         mainTable.removeAllItems();
-        tableData.values().stream().map((data) -> {
-            this.mainTable.addItem(data, data[keyIndex]);
-            return data;
-        }).forEachOrdered((data) -> {
-            String searchKey = "";
+        tableData.keySet().stream().map((dataKey) -> {
+            this.mainTable.addItem(tableData.get(dataKey), dataKey);
+            return dataKey;
+        }).forEachOrdered((dataKey) -> {
+            String searchKey = dataKey.toString();
             for (int i : searchingIndexes) {
-                searchKey += data[i] + "_";
+                searchKey += tableData.get(dataKey)[i] + "_";
             }
-            this.tableSearchingMap.put(searchKey.toLowerCase().replace(",", "_"), data[keyIndex] + "");
+            this.tableSearchingMap.put(searchKey.toLowerCase().replace(",", "_"), dataKey.toString());
         });
         mainTable.setCaption("<b>" + tableMainTitle + " ( " + mainTable.getItemIds().size() + " / " + tableData.size() + " )</b>");
 
@@ -252,6 +253,7 @@ public abstract class SearchableTable extends VerticalLayout implements Property
     @Override
     public void valueChange(Property.ValueChangeEvent event) {
         Object objcetId = mainTable.getValue();//"P01889";
+        System.out.println("selected object id "+objcetId );
         itemSelected(objcetId);
 //        proteinNodes.clear();
 //        peptidesNodes.clear();

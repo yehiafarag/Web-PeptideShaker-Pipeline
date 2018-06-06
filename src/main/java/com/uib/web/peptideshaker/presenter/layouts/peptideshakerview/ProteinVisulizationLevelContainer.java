@@ -6,7 +6,6 @@ import com.uib.web.peptideshaker.galaxy.dataobjects.ProteinObject;
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components.ProteinCoverageContainer;
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components.ProteinStructurePanel;
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components.ProteinsPeptidesGraphComponent;
-import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components.coverage.ProteinCoverageComponent;
 import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.charts.RegistrableFilter;
 import com.vaadin.server.ExternalResource;
@@ -37,7 +36,9 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
     private final ProteinStructurePanel proteinStructurePanel;
 
     /**
-     * Constructor to initialize the main layout and variables.
+     * Constructor to initialise the main layout and variables.
+     * @param Selection_Manager
+     * @param proteinoverviewBtn
      */
     public ProteinVisulizationLevelContainer(SelectionManager Selection_Manager, BigSideBtn proteinoverviewBtn) {
         ProteinVisulizationLevelContainer.this.setSizeFull();
@@ -156,9 +157,9 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
             proteinCoverageContainer.selectDataset(selectedProteinGraph.getProteinNodes(), selectedProteinGraph.getPeptidesNodes(), selectedProteinGraph.getSelectedProteins(), selectedProteinGraph.getSelectedPeptides());
 
             if (imgUrl != null) {
-                this.proteinoverviewBtn.updateIcon(new ExternalResource(imgUrl));
+                this.proteinoverviewBtn.updateIconResource(new ExternalResource(imgUrl));
             } else {
-                this.proteinoverviewBtn.updateIcon(null);
+                this.proteinoverviewBtn.updateIconResource(null);
             }
         }
     }

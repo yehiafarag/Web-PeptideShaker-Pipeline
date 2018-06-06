@@ -6,7 +6,7 @@ import com.uib.web.peptideshaker.presenter.layouts.DataViewLayout;
 import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
 import com.uib.web.peptideshaker.presenter.core.SmallSideBtn;
 import com.vaadin.event.LayoutEvents;
-import com.vaadin.server.ThemeResource;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
@@ -44,10 +44,11 @@ public abstract class GalaxyFileSystemPresenter extends VerticalLayout implement
     public GalaxyFileSystemPresenter() {
         GalaxyFileSystemPresenter.this.setSizeFull();
         GalaxyFileSystemPresenter.this.setStyleName("activelayout");
-        this.toolsBtn = new SmallSideBtn("img/jobs2.png");
+//        this.toolsBtn = new SmallSideBtn("img/jobs2.png");
+ this.toolsBtn = new SmallSideBtn(VaadinIcons.GLOBE);
         this.toolsBtn.setData(GalaxyFileSystemPresenter.this.getViewId());
-
-        this.topToolsBtn = new SmallSideBtn("img/jobs2.png");
+//  this.topToolsBtn = new SmallSideBtn("img/jobs2.png");
+        this.topToolsBtn = new SmallSideBtn(VaadinIcons.GLOBE);
         this.topToolsBtn.setData(GalaxyFileSystemPresenter.this.getViewId());
 
         this.btnsLayoutMap = new LinkedHashMap<>();
@@ -58,12 +59,14 @@ public abstract class GalaxyFileSystemPresenter extends VerticalLayout implement
 
     public void setBusy(boolean busy, Map<String, SystemDataSet> historyFilesMap) {
         if (busy) {
-            toolsBtn.updateIconURL("img/loading.gif");
-            topToolsBtn.updateIconURL("img/loading.gif");
+            toolsBtn.updateIconURL("img/globe-earth-animation-26.gif");//loading.gif
+            topToolsBtn.updateIconURL("img/globe-earth-animation-26.gif");//loading.gif
             return;
         } else {
-            toolsBtn.updateIconURL("img/jobs2.png");
-            topToolsBtn.updateIconURL("img/jobs2.png");
+//            toolsBtn.updateIconURL("img/jobs2.png");
+//            topToolsBtn.updateIconURL("img/jobs2.png");
+            toolsBtn.updateIconURL(VaadinIcons.GLOBE);
+            topToolsBtn.updateIconURL(VaadinIcons.GLOBE);
         }
         this.dataLayout.updateDatasetsTable(historyFilesMap);
     }
@@ -76,8 +79,9 @@ public abstract class GalaxyFileSystemPresenter extends VerticalLayout implement
         btnContainer.setSpacing(true);
         btnContainer.setMargin(new MarginInfo(false, false, true, false));
 //
-        BigSideBtn viewDataBtn = new BigSideBtn("Show Data",1);
-        viewDataBtn.updateIcon(new ThemeResource("img/jobs2.png"));
+        BigSideBtn viewDataBtn = new BigSideBtn("Show Data", 1);
+//        viewDataBtn.updateIcon(new ThemeResource("img/jobs2.png"));
+        viewDataBtn.updateIcon(VaadinIcons.GLOBE.getHtml());
         viewDataBtn.setData("datasetoverview");
         btnContainer.addComponent(viewDataBtn);
         btnContainer.setComponentAlignment(viewDataBtn, Alignment.TOP_CENTER);
@@ -208,7 +212,8 @@ public abstract class GalaxyFileSystemPresenter extends VerticalLayout implement
             public boolean sendToNeLS(SystemDataSet ds) {
                 return GalaxyFileSystemPresenter.this.sendToNeLS(ds);
             }
-             @Override
+
+            @Override
             public boolean getFromNels(SystemDataSet ds) {
                 return GalaxyFileSystemPresenter.this.getFromNels(ds);
             }
@@ -233,9 +238,7 @@ public abstract class GalaxyFileSystemPresenter extends VerticalLayout implement
     public abstract void viewDataset(PeptideShakerVisualizationDataset ds);
 
     public abstract boolean sendToNeLS(SystemDataSet ds);
-     
+
     public abstract boolean getFromNels(SystemDataSet ds);
-    
-    
 
 }

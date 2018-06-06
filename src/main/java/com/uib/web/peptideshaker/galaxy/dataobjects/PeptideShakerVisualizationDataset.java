@@ -5,18 +5,12 @@ import com.compomics.util.experiment.biology.Enzyme;
 import com.compomics.util.experiment.biology.EnzymeFactory;
 import com.compomics.util.experiment.biology.Peptide;
 import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
-import com.compomics.util.experiment.identification.matches.IonMatch;
 import com.compomics.util.experiment.identification.matches.ModificationMatch;
 import com.compomics.util.experiment.identification.matches.SpectrumMatch;
-import com.compomics.util.experiment.identification.spectrum_annotation.AnnotationSettings;
-import com.compomics.util.experiment.identification.spectrum_annotation.SpecificAnnotationSettings;
-import com.compomics.util.experiment.identification.spectrum_annotation.SpectrumAnnotator;
-import com.compomics.util.experiment.identification.spectrum_annotation.spectrum_annotators.PeptideSpectrumAnnotator;
 import com.compomics.util.experiment.identification.spectrum_assumptions.PeptideAssumption;
 import com.compomics.util.experiment.io.massspectrometry.MgfIndex;
 import com.compomics.util.experiment.massspectrometry.Charge;
 import com.compomics.util.experiment.massspectrometry.MSnSpectrum;
-import com.compomics.util.gui.spectrum.SequenceFragmentationPanel;
 import com.compomics.util.io.SerializationUtils;
 import com.compomics.util.preferences.IdentificationParameters;
 import com.compomics.util.preferences.SequenceMatchingPreferences;
@@ -26,19 +20,16 @@ import com.uib.web.peptideshaker.model.core.ModificationMatrix;
 import com.uib.web.peptideshaker.presenter.pscomponents.SpectrumInformation;
 import java.io.File;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -50,7 +41,7 @@ import uk.ac.ebi.pride.tools.braf.BufferedRandomAccessFile;
  *
  * @author Yehia Farag
  */
-public class PeptideShakerVisualizationDataset extends SystemDataSet {
+public class PeptideShakerVisualizationDataset extends SystemDataSet implements Comparable<PeptideShakerVisualizationDataset>{
 
     private final String projectName;
     private final File user_folder;
@@ -95,6 +86,17 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
     private final GalaxyDatasetServingUtil galaxyDatasetServingUtil;
 
     private IdentificationParameters identificationParameters;
+    private List<String>outputsIds;
+    
+    private Date jobDate;
+
+    public List<String> getOutputsIds() {
+        return outputsIds;
+    }
+
+    public void setOutputsIds(List<String> outputsIds) {
+        this.outputsIds = outputsIds;
+    }
 
 //
 //
@@ -164,7 +166,6 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
 
     public void setSearchGUIFileId(String searchGUIFileId) {
         this.searchGUIFileId = searchGUIFileId;
-        System.out.println("search gui is exist " + searchGUIFileId);
         //init fasta file 
         SystemDataSet ds = new SystemDataSet();
         ds.setName(this.projectName + "-Param");
@@ -178,7 +179,6 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
             searchParameters = SearchParameters.getIdentificationParameters(file.getFile());
             searchParameters.setFastaFile(null);
         } catch (IOException | ClassNotFoundException ex) {
-
             ex.printStackTrace();
             return;
         }
@@ -313,7 +313,6 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
                 GalaxyFile index_file = new GalaxyFile(user_folder, ds, true);
                 index_file.setDownloadUrl("to_ext=" + file_ext);
                 mgfFilesIndexers.put(key, index_file);
-                System.out.println("add reIndex cui file " + key);
 //                index_file.getFile();
             }
 
@@ -352,7 +351,7 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
         try {
             variableModification = jsonToMap(new JSONObject(searchingParameters.get("protein_modification_options").toString())).get("variable_modifications").toString().replace("[", "").replace("]", "");
             for (String mod : variableModification.split(",")) {
-                modificationMap.put(mod, new LinkedHashSet<>());
+                modificationMap.put(mod.trim(), new LinkedHashSet<>());
             }
         } catch (JSONException ex) {
 
@@ -365,7 +364,7 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
         try {
             fixedModification = jsonToMap(new JSONObject(searchingParameters.get("protein_modification_options").toString())).get("fixed_modifications").toString().replace("[", "").replace("]", "");
             for (String mod : fixedModification.split(",")) {
-                modificationMap.put(mod, new LinkedHashSet<>());
+                modificationMap.put(mod.trim(), new LinkedHashSet<>());
             }
         } catch (JSONException ex) {
 
@@ -429,7 +428,7 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
         readFastaFile();
         BufferedRandomAccessFile bufferedRandomAccessFile = null;
         //for testing
-        Random r = new Random();
+//        Random r = new Random();
 //        int[] chrom = new int[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24};
 
         try {//           
@@ -1235,4 +1234,18 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet {
 //    public boolean isAvailableOnGalaxy() {
 //        return super.isAvailableOnGalaxy(); //To change body of generated methods, choose Tools | Templates.
 //    }
+
+    public Date getJobDate() {
+        return jobDate;
+    }
+
+    public void setJobDate(Date jobDate) {
+        this.jobDate = jobDate;
+    }
+
+    @Override
+    public int compareTo(PeptideShakerVisualizationDataset t) {
+        return this.jobDate.compareTo(t.jobDate);
+    }
+    
 }

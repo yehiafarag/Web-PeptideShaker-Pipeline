@@ -80,7 +80,7 @@ public class PeptideShakerViewPresenter extends VerticalLayout implements Viewab
 
 //"img/peptides_3.png",
         BigSideBtn proteinoverviewBtn = new BigSideBtn("Protein Overview", 2);
-        proteinoverviewBtn.updateIcon(null);
+        proteinoverviewBtn.updateIconResource(null);
         proteinoverviewBtn.setData("proteinoverview");
         btnContainer.addComponent(proteinoverviewBtn);
         btnContainer.setComponentAlignment(proteinoverviewBtn, Alignment.TOP_CENTER);
@@ -90,7 +90,7 @@ public class PeptideShakerViewPresenter extends VerticalLayout implements Viewab
         Selection_Manager.addBtnLayout(proteinoverviewBtn, proteinsVisulizationLevelContainer);
 
         BigSideBtn psmoverviewBtn = new BigSideBtn("PSM Overview", 3);
-        psmoverviewBtn.updateIcon(null);
+        psmoverviewBtn.updateIconResource(null);
         psmoverviewBtn.setData("psmoverview");
         btnContainer.addComponent(psmoverviewBtn);
         btnContainer.setComponentAlignment(psmoverviewBtn, Alignment.TOP_CENTER);

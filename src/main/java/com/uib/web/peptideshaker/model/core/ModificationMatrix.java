@@ -1,7 +1,6 @@
 package com.uib.web.peptideshaker.model.core;
 
 import com.google.common.collect.Sets;
-import com.uib.web.peptideshaker.model.core.AlphanumComparator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,34 +34,32 @@ public class ModificationMatrix {
         return rows;
     }
 
-    public Map<String, Set<Comparable>> getCalculatedMatrix() {
+    public Map<String, Set<Comparable>> getCalculatedColumns() {
         return calculatedMatrix;
     }
-    
 
     private Map<String, Set<Comparable>> calculateMatrix(Map<String, Set<Comparable>> data) {
         //calculate matrix
         Map<String, Set<Comparable>> matrixData = new LinkedHashMap<>();
         TreeMap<AlphanumComparator, String> sortingMap = new TreeMap<>(Collections.reverseOrder());
-        for (String key : data.keySet()) {
+        data.keySet().forEach((key) -> {
             AlphanumComparator sortingKey = new AlphanumComparator(data.get(key).size() + "_" + key);
             sortingMap.put(sortingKey, key);
-        }
+        });
         Map<String, Set<Comparable>> sortedData = new LinkedHashMap<>();
-        for (String key : sortingMap.values()) {
+        sortingMap.values().stream().map((key) -> {
             int size = data.get(key).size();
             this.rows.put(key, size);
+            return key;
+        }).forEachOrdered((key) -> {
             sortedData.put(key, data.get(key));
-        }
+        });
         Map<String, Set<Comparable>> rowsII = new LinkedHashMap<>(sortedData);
         Map<String, Set<Comparable>> tempColumns = new LinkedHashMap<>();
         tempColumns.putAll(sortedData);
         Map<String, Set<Comparable>> trows = new LinkedHashMap<>(sortedData);
-        for (String keyI : sortedData.keySet()) {
-            for (String keyII : rowsII.keySet()) {
-                if (keyI.equals(keyII) || keyII.contains(keyI)) {
-                    continue;
-                }
+        sortedData.keySet().stream().map((keyI) -> {
+            rowsII.keySet().stream().filter((keyII) -> !(keyI.equals(keyII) || keyII.contains(keyI))).forEachOrdered((keyII) -> {
                 String key = (keyII + "," + keyI).replace("[", "").replace("]", "");//.replace(" ", "");
                 keySorter.addAll(Arrays.asList(key.split(",")));
                 key = keySorter.toString();
@@ -84,19 +81,25 @@ public class ModificationMatrix {
                     tempSetII.removeAll(intersection);
                     sortedData.replace(keyI, tempSetII);
                 }
-            }
+            });
+            return keyI;
+        }).map((_item) -> {
             rowsII.clear();
+            return _item;
+        }).map((_item) -> {
             rowsII.putAll(trows);
+            return _item;
+        }).forEachOrdered((_item) -> {
             tempColumns.putAll(trows);
-        }
+        });
         Map<AlphanumComparator, String> sortingMap2 = new TreeMap<>(Collections.reverseOrder());
-        for (String key : tempColumns.keySet()) {
+        tempColumns.keySet().forEach((key) -> {
             AlphanumComparator sortingKey = new AlphanumComparator(tempColumns.get(key).size() + "_" + key);
             sortingMap2.put(sortingKey, key);
-        }
+        });
         List<String> sortingKeysList = new ArrayList<>(rows.keySet());
         Map<Integer, String> sortingKysMap = new TreeMap<>();
-        for (String key : sortingMap2.values()) {
+        sortingMap2.values().forEach((key) -> {
             String[] arr = key.split(",");
             String updatedKey = key;
             if (arr.length > 1) {
@@ -110,9 +113,9 @@ public class ModificationMatrix {
             if (!tempColumns.get(key).isEmpty()) {
                 matrixData.put(updatedKey, tempColumns.get(key));
             }
-        }
-        for (String key1 : matrixData.keySet()) {
-            for (String key2 : matrixData.keySet()) {
+        });
+        matrixData.keySet().forEach((key1) -> {
+            matrixData.keySet().forEach((key2) -> {
                 HashSet<Comparable> intersction = new HashSet<>();
                 intersction.addAll(Sets.intersection(matrixData.get(key2), matrixData.get(key1)));
                 if (!intersction.isEmpty() && !key2.equalsIgnoreCase(key1)) {
@@ -125,25 +128,35 @@ public class ModificationMatrix {
                         matrixData.get(key2).removeAll(intersction);
                     }
                 }
-            }
-        }
+            });
+        });
 
         Map<String, Set<Comparable>> tempMatrixData = new LinkedHashMap<>(matrixData);
-        for (String key1 : tempMatrixData.keySet()) {
-            if (matrixData.get(key1).isEmpty()) {
-                matrixData.remove(key1);
-            }
-        }
+        tempMatrixData.keySet().stream().filter((key1) -> (matrixData.get(key1).isEmpty())).forEachOrdered((key1) -> {
+            matrixData.remove(key1);
+        });
 
         TreeMap<AlphanumComparator, String> sortingKeyColumnsMap = new TreeMap<>(Collections.reverseOrder());
-        for (String key : matrixData.keySet()) {
+        matrixData.keySet().forEach((key) -> {
             AlphanumComparator sortKey = new AlphanumComparator(matrixData.get(key).size() + "_" + key);
             sortingKeyColumnsMap.put(sortKey, key);
-        }
+        });
         tempMatrixData.clear();
-        for (String key : sortingKeyColumnsMap.values()) {
+//        ArrayList<String> rowSortingList = new ArrayList<>(rows.keySet());
+        sortingKeyColumnsMap.values().forEach((key) -> {
+            //            if (key.contains("[")) {
+//                Set<Comparable> set = tempMatrixData.get(key);
+//                String[] columnKeys = key.replace("[", "").replace("]", "").split(",");
+//                TreeMap<Integer, String> sorter = new TreeMap<>();
+//                for (String s : columnKeys) {
+//                    sorter.put(rowSortingList.indexOf(s.trim()), s.trim());
+//                    System.out.println("---->> --->> " + key + "------>> " + rowSortingList.indexOf(s.trim()) + "," + s.trim()+"  "+rowSortingList.contains(s.trim())+"   "+rowSortingList);
+//                }
+//                System.out.println("at ---->> before --->> " + key + " --- after --->> " + sorter.values().toString());
+//            }
             tempMatrixData.put(key, matrixData.get(key));
-        }
+        });
+
         return tempMatrixData;
     }
 }

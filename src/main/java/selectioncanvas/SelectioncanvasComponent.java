@@ -95,7 +95,6 @@ public abstract class SelectioncanvasComponent extends AbstractJavaScriptCompone
         this.setWidth(width, Unit.PIXELS);
         this.setHeight(height, Unit.PIXELS);
         this.setValue(width + "," + height);
-        System.out.println("at size is " + width + "," + height);
 
     }
 

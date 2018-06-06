@@ -175,7 +175,7 @@ public class SelectionManager {
     public void setModificationsMap(ModificationMatrix modificationMatrix) {
         selectedModificationsMap.clear();
         this.modificationMatrix = modificationMatrix;
-        for (Set<Comparable> set : modificationMatrix.getCalculatedMatrix().values()) {
+        for (Set<Comparable> set : modificationMatrix.getCalculatedColumns().values()) {
             fullProteinSet.addAll(set);
         }
     }
@@ -299,7 +299,7 @@ public class SelectionManager {
         }
         if (filterId.equalsIgnoreCase("modifications_filter") && !selectedCategories.isEmpty()) {
             for (Comparable str : selectedCategories) {
-                tempProtenSet.addAll(Sets.difference(filteredProtenSet, this.modificationMatrix.getCalculatedMatrix().get(str.toString())));
+                tempProtenSet.addAll(Sets.difference(filteredProtenSet, this.modificationMatrix.getCalculatedColumns().get(str.toString())));
                 filteredProtenSet.removeAll(tempProtenSet);
                 tempProtenSet.clear();
             }

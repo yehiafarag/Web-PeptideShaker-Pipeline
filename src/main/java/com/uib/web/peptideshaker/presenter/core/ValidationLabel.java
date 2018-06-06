@@ -27,7 +27,7 @@ private final Label icon;
 
         } else if (validation.equalsIgnoreCase("doubtful")) {
             ValidationLabel.this.setStyleName("doubtfullabel");
-            this.icon.setValue(VaadinIcons.EXCLAMATION_CIRCLE.getHtml());
+            this.icon.setValue(VaadinIcons.WARNING.getHtml());
 
         } else {
             ValidationLabel.this.setStyleName("notvalidlabel");

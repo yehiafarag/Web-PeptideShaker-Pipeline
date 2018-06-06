@@ -13211,7 +13211,7 @@ div.v-layout.v-horizontal.v-widget {
 .webpeptideshakertheme .selectedsmallbtn {
 	background-color: white;
 	border-width: 2px;
-	border-color: rgba(18, 120, 239, 0.96);
+	border-color: rgba(131, 188, 255, 0.96);
 	padding: 0px !important;
 }
 
@@ -13319,7 +13319,7 @@ div.v-layout.v-horizontal.v-widget {
 	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
 	-webkit-box-shadow: 0 0px 20px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
 	-moz-box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
-	border-color: rgba(18, 120, 239, 0.96) !important;
+	border-color: rgba(131, 188, 255, 0.96) !important;
 	animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 	transform: translate3d(0, 0, 0);
 	backface-visibility: hidden;
@@ -13852,9 +13852,15 @@ div.v-layout.v-horizontal.v-widget {
 	overflow-x: hidden !important;
 }
 
-.webpeptideshakertheme .v-table-framedpanel.v-table-borderless {
+.webpeptideshakertheme .v-table-framedpanel, .webpeptideshakertheme .v-table-framedpanel.v-table-borderless {
 	border: 1px solid lightgray;
 	font-size: 12px;
+	font-weight: normal;
+}
+
+.webpeptideshakertheme .v-table-framedpanel .v-label {
+	font-size: 12px;
+	font-weight: normal;
 }
 
 .webpeptideshakertheme .peptidenode {
@@ -14773,7 +14779,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .resizableimg img:hover {
-	border-color: gray;
+	background-color: gray;
 	position: relative;
 	z-index: 2 !important;
 	border-top-right-radius: 5px;
@@ -14781,7 +14787,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .resizableselectedimg img {
-	border-color: orange !important;
+	background-color: orange !important;
 	position: relative;
 	z-index: 2 !important;
 	border-top-right-radius: 5px;
@@ -14825,6 +14831,7 @@ div.v-layout.v-horizontal.v-widget {
 	border-top-left-radius: 5px;
 	border-top-right-radius: 5px;
 	background-color: lightgray;
+	margin-top: -1px;
 }
 
 .webpeptideshakertheme .barlayout:hover {
@@ -15424,7 +15431,6 @@ div.v-layout.v-horizontal.v-widget {
 	content: "";
 	position: fixed;
 	background-color: rgba(0, 0, 0, 0.1);
-	background-image: url(img/preloader.gif);
 	background-position: center;
 	background-attachment: fixed;
 	background-repeat: no-repeat;
@@ -15652,11 +15658,192 @@ div.v-layout.v-horizontal.v-widget {
 	height: 12px !important;
 }
 
-.webpeptideshakertheme .yellowcolor {
+.webpeptideshakertheme .yellowincolor {
 	background-color: #f5f518 !important;
 	width: 20px !important;
 	height: 12px !important;
 	border: 1px solid #e8dddd;
+}
+
+.webpeptideshakertheme .orangeincolor {
+	background-color: orange !important;
+	width: 20px !important;
+	height: 12px !important;
+}
+
+.webpeptideshakertheme .redincolor {
+	background-color: red !important;
+	width: 20px !important;
+	height: 12px !important;
+	border: 1px solid #e8dddd;
+}
+
+.webpeptideshakertheme .v-table [class*="-row"].v-selected .tablelink {
+	color: #ecf2f8;
+}
+
+.webpeptideshakertheme .tablelink {
+	text-decoration: none !important;
+}
+
+.webpeptideshakertheme .tablelink :hover {
+	text-decoration: underline;
+}
+
+.webpeptideshakertheme .smalltable div {
+	font-size: 12px !important;
+}
+
+.webpeptideshakertheme .smalltable .v-label-smalltable.v-label {
+	font-size: 12px !important;
+	font-weight: normal !important;
+	text-decoration: none !important;
+	padding-left: 5px;
+}
+
+.webpeptideshakertheme .logocontainer {
+	top: -1px !important;
+	position: absolute;
+}
+
+.webpeptideshakertheme .v-slot-smallmenubtn {
+	max-height: 80px !important;
+	border: 2px solid lightgray;
+	border-right: none;
+	background-color: whitesmoke;
+	margin-top: -4px;
+	border-radius: 5px;
+	border-bottom-right-radius: 0px;
+	border-top-right-radius: 0px;
+	overflow: visible !important;
+	z-index: 3 !important;
+	position: relative !important;
+	margin-top: -6px;
+}
+
+.webpeptideshakertheme .v-slot-smallmenubtn.v-slot-selectedsmallbtn {
+	border-top: 2px solid lightgray;
+	border-radius: 5px;
+	border-top-left-radius: 0px;
+	border-bottom-left-radius: 0px;
+	background: linear, lightgray, lightgray right no-repeat;
+	background: -webkit-linear-gradient(lightgray, lightgray) right no-repeat;
+	background: -o-linear-gradient(lightgray, lightgray) right no-repeat;
+	background: -moz-linear-gradient(lightgray, lightgray) right no-repeat;
+	background: linear, lightgray, lightgray right no-repeat;
+	background-size: 2px 100%;
+	margin-left: -2px;
+	overflow: hidden;
+	z-index: 2 !important;
+	border-right: 2px solid lightgray;
+}
+
+.webpeptideshakertheme .v-slot-selectedsmallbtn.v-slot-middilesmallbtn {
+	border-right: none;
+	border-left-color: white;
+	background: linear, lightgray, lightgray right no-repeat;
+	background: -webkit-linear-gradient(lightgray, lightgray) right no-repeat;
+	background: -o-linear-gradient(lightgray, lightgray) right no-repeat;
+	background: -moz-linear-gradient(lightgray, lightgray) right no-repeat;
+	background-size: 2px 100%;
+	margin-left: -2px;
+	overflow: hidden;
+	z-index: 2 !important;
+}
+
+.webpeptideshakertheme #tbox {
+	height: 50px;
+	width: 200px;
+	border: 1px solid blue;
+	left: 10px !important;
+	top: 10px !important;
+	position: relative !important;
+	visibility: hidden;
+	display: none;
+}
+
+.webpeptideshakertheme #leftarrow, .webpeptideshakertheme #rightarrow {
+	visibility: hidden;
+	display: none;
+}
+
+.webpeptideshakertheme .textintablecell .v-absolutelayout-margin {
+	min-height: 20px !important;
+	overflow: visible !important;
+}
+
+.webpeptideshakertheme .textintablecell .v-label {
+	margin-top: 2px;
+}
+
+.webpeptideshakertheme .v-table [class*="-row"].v-selected .v-table-cell-content .sequencefragmentationchart img {
+	border-color: gray !important;
+}
+
+.webpeptideshakertheme .sequencefragmentationchart img {
+	border: 1px solid white !important;
+}
+
+.webpeptideshakertheme .sparklinecontainer {
+	background-color: lightgray;
+	height: 12px !important;
+}
+
+.webpeptideshakertheme .greenlayout {
+	background-color: #4dca4d !important;
+	border: 1px solid lightgray;
+}
+
+.webpeptideshakertheme .v-label-sparklinelabel {
+	width: 50px !important;
+	height: 20px !important;
+}
+
+.webpeptideshakertheme .v-absolutelayout-sparkline .v-absolutelayout-margin {
+	overflow: visible !important;
+}
+
+.webpeptideshakertheme .validlabel span {
+	color: #4dca4d;
+	background-color: white;
+	border-radius: 100%;
+	margin-left: -2px;
+}
+
+.webpeptideshakertheme .notvalidlabel span {
+	color: #ab0000;
+	background-color: white;
+	border-radius: 100%;
+	margin-left: -2px;
+}
+
+.webpeptideshakertheme .doubtfullabel span {
+	color: #ffbc00;
+	margin-left: -2px;
+}
+
+.webpeptideshakertheme .selectedbiglbtn .v-icon {
+	border-color: rgba(131, 188, 255, 0.96) !important;
+}
+
+.webpeptideshakertheme .bigmenubtn .v-icon {
+	font-size: 60px;
+	line-height: 70px;
+	text-align: center !important;
+	color: #7d7d7d;
+	border-radius: 5px;
+	background-color: white;
+	width: 100% !important;
+	height: auto !important;
+	border: 2px solid lightgray;
+	border-radius: 5px;
+	cursor: pointer;
+	position: relative;
+	z-index: 10 !important;
+}
+
+.webpeptideshakertheme .smallmenubtn .v-icon {
+	font-size: 20px;
 }
 
 .webpeptideshakertheme .horizontalcss .largetitle .v-label {
@@ -15707,7 +15894,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .horizontalcss .selectedbiglbtn img {
-	border-color: rgba(18, 120, 239, 0.96) !important;
+	border-color: rgba(131, 188, 255, 0.96) !important;
 }
 
 .webpeptideshakertheme .horizontalcss.autooverflow {
@@ -15845,136 +16032,16 @@ div.v-layout.v-horizontal.v-widget {
 	z-index: 2 !important;
 }
 
-.webpeptideshakertheme .smalltable div {
-	font-size: 12px !important;
-}
-
-.webpeptideshakertheme .smalltable .v-label-smalltable.v-label {
-	font-size: 12px !important;
-	font-weight: normal !important;
-	text-decoration: none !important;
-	padding-left: 5px;
-}
-
-.webpeptideshakertheme .logocontainer {
-	top: -1px !important;
+.webpeptideshakertheme .basicpeptidemodification {
+	width: 10px !important;
+	height: 10px !important;
+	background-color: orange;
+	border: 1px solid black;
+	border-radius: 100%;
+	top: 1px !important;
+	left: 50% !important;
 	position: absolute;
-}
-
-.webpeptideshakertheme .v-slot-smallmenubtn {
-	max-height: 80px !important;
-	border: 2px solid lightgray;
-	border-right: none;
-	background-color: whitesmoke;
-	margin-top: -4px;
-	border-radius: 5px;
-	border-bottom-right-radius: 0px;
-	border-top-right-radius: 0px;
-	overflow: visible !important;
 	z-index: 3 !important;
-	position: relative !important;
-	margin-top: -6px;
-}
-
-.webpeptideshakertheme .v-slot-smallmenubtn.v-slot-selectedsmallbtn {
-	border-top: 2px solid lightgray;
-	border-radius: 5px;
-	border-top-left-radius: 0px;
-	border-bottom-left-radius: 0px;
-	background: linear, lightgray, lightgray right no-repeat;
-	background: -webkit-linear-gradient(lightgray, lightgray) right no-repeat;
-	background: -o-linear-gradient(lightgray, lightgray) right no-repeat;
-	background: -moz-linear-gradient(lightgray, lightgray) right no-repeat;
-	background: linear, lightgray, lightgray right no-repeat;
-	background-size: 2px 100%;
-	margin-left: -2px;
-	overflow: hidden;
-	z-index: 2 !important;
-	border-right: 2px solid lightgray;
-}
-
-.webpeptideshakertheme .v-slot-selectedsmallbtn.v-slot-middilesmallbtn {
-	border-right: none;
-	border-left-color: white;
-	background: linear, lightgray, lightgray right no-repeat;
-	background: -webkit-linear-gradient(lightgray, lightgray) right no-repeat;
-	background: -o-linear-gradient(lightgray, lightgray) right no-repeat;
-	background: -moz-linear-gradient(lightgray, lightgray) right no-repeat;
-	background-size: 2px 100%;
-	margin-left: -2px;
-	overflow: hidden;
-	z-index: 2 !important;
-}
-
-.webpeptideshakertheme #tbox {
-	height: 50px;
-	width: 200px;
-	border: 1px solid blue;
-	left: 10px !important;
-	top: 10px !important;
-	position: relative !important;
-	visibility: hidden;
-	display: none;
-}
-
-.webpeptideshakertheme #leftarrow, .webpeptideshakertheme #rightarrow {
-	visibility: hidden;
-	display: none;
-}
-
-.webpeptideshakertheme .textintablecell .v-absolutelayout-margin {
-	min-height: 20px !important;
+	margin-left: -6px;
 	overflow: visible !important;
-}
-
-.webpeptideshakertheme .textintablecell .v-label {
-	margin-top: 2px;
-}
-
-.webpeptideshakertheme .v-table [class*="-row"].v-selected .v-table-cell-content .sequencefragmentationchart img {
-	border-color: gray !important;
-}
-
-.webpeptideshakertheme .sequencefragmentationchart img {
-	border: 1px solid white !important;
-}
-
-.webpeptideshakertheme .sparklinecontainer {
-	background-color: lightgray;
-	height: 12px !important;
-}
-
-.webpeptideshakertheme .greenlayout {
-	background-color: #4dca4d !important;
-	border: 1px solid lightgray;
-}
-
-.webpeptideshakertheme .v-label-sparklinelabel {
-	width: 50px !important;
-	height: 20px !important;
-}
-
-.webpeptideshakertheme .v-absolutelayout-sparkline .v-absolutelayout-margin {
-	overflow: visible !important;
-}
-
-.webpeptideshakertheme .validlabel span {
-	color: #4dca4d;
-	background-color: white;
-	border-radius: 100%;
-	margin-left: -2px;
-}
-
-.webpeptideshakertheme .notvalidlabel span {
-	color: #ab0000;
-	background-color: white;
-	border-radius: 100%;
-	margin-left: -2px;
-}
-
-.webpeptideshakertheme .doubtfullabel span {
-	color: #ffbc00;
-	background-color: white;
-	border-radius: 100%;
-	margin-left: -2px;
 }

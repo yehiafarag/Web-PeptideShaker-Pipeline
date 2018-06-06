@@ -140,17 +140,17 @@ public abstract class GalaxyLayer {
                         userFolder.mkdir();
                         VaadinSession.getCurrent().setAttribute("ApiKey", Galaxy_Instance.getApiKey() + "");
                         VaadinSession.getCurrent().setAttribute("galaxyUrl", Galaxy_Instance.getGalaxyUrl());
-System.out.println("at galaxy 0");
+                        System.out.println("at galaxy 0");
                         galaxyURL = Galaxy_Instance.getGalaxyUrl();
                         System.out.println("at galaxy I");
                         toolsHandler = new ToolsHandler(Galaxy_Instance.getToolsClient(), Galaxy_Instance.getWorkflowsClient(), Galaxy_Instance.getHistoriesClient()) {
                             @Override
-                            public void updateHistoryDatastructure(PeptideShakerVisualizationDataset tempWorkflowOutput) {
-                                historyHandler.updateHistory(tempWorkflowOutput);
+                            public void updateHistoryDatastructure() {
+                                historyHandler.updateHistory();
                             }
 
                         };
-System.out.println("at galaxy II");
+                        System.out.println("at galaxy II");
                         historyHandler = new HistoryHandler(Galaxy_Instance, userFolder) {
                             @Override
                             public void systemIsBusy(boolean busy, Map<String, SystemDataSet> historyFilesMap) {
@@ -373,7 +373,7 @@ System.out.println("at galaxy II");
             mgfMap.put(mgfId, historyHandler.getMgfFilesMap().get(mgfId).getName());
         });
         PeptideShakerVisualizationDataset tempWorkflowOutput = toolsHandler.executeWorkFlow(projectName, fastaFileId, mgfMap, searchEnginesList, historyHandler.getWorkingHistoryId(), searchParameters, otherSearchParameters);
-        toolsHandler.updateHistoryDatastructure(tempWorkflowOutput);
+        toolsHandler.updateHistoryDatastructure();
     }
 
     public void deleteDataset(SystemDataSet ds) {
@@ -389,12 +389,12 @@ System.out.println("at galaxy II");
             toolsHandler.deleteDataset(galaxyURL, ds.getHistoryId(), ds.getGalaxyId());
         }
 
-        historyHandler.updateHistory(null);
+        historyHandler.updateHistory();
     }
 
     public boolean sendDataToNels(String historyId, String datasetGalaxyId) {
         boolean check = toolsHandler.sendToNels(historyId, datasetGalaxyId, galaxyURL);
-        toolsHandler.updateHistoryDatastructure(null);
+        toolsHandler.updateHistoryDatastructure();
         return check;
 
     }

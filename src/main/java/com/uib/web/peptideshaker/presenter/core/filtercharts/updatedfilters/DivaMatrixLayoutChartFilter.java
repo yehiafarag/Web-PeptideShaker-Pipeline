@@ -154,21 +154,6 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
         topLeftCornerLayout.addComponent(chartTitle);
         topLeftCornerLayout.setComponentAlignment(chartTitle, Alignment.TOP_LEFT);
 
-//          removeFilterIcon = new FilterButton() {
-//            @Override
-//            public void layoutClick(LayoutEvents.LayoutClickEvent event) {
-////                applyFilter(null);
-//                
-//            }
-//        };
-//        removeFilterIcon.setWidth(25, Unit.PIXELS);
-//        removeFilterIcon.setHeight(25, Unit.PIXELS);
-//        removeFilterIcon.addStyleName("nomargin");
-//        removeFilterIcon.setVisible(true);
-//        removeFilterIcon.setActiveBtn(true);
-//        
-//        topLeftCornerLayout.addComponent(removeFilterIcon);
-//        topLeftCornerLayout.setComponentAlignment(removeFilterIcon, Alignment.TOP_CENTER);
         mainChartContainer = new AbsoluteLayout();
         mainChartContainer.setWidth(100, Unit.PERCENTAGE);
         mainChartContainer.setHeight(100, Unit.PERCENTAGE);
@@ -199,22 +184,10 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
             if ((tChartWidth == mainWidth || Math.abs(tChartWidth - mainWidth) < 10) && (mainHeight == tChartHeight || Math.abs(tChartHeight - mainHeight) < 10)) {
                 return;
             }
-//            if (imageRepaintCounter < 2) {
-//                imageRepaintCounter++;
-//                return;
-//            }
 
             mainWidth = tChartWidth;
             mainHeight = tChartHeight;
             redrawChart();
-//                int tWidth = event.getWidth();
-//            int tHeight = event.getHeight();
-//            if (mainWidth == tWidth && mainHeight == tHeight) {
-//                return;
-//            }
-//            mainWidth = tWidth;
-//            mainHeight = tHeight;
-//            redrawChart();
         });
         initChart();
         /**
@@ -267,7 +240,7 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
         rowLabelsMap.clear();
         this.dataColors = dataColors;
         rows.putAll(modificationMatrix.getRows());
-        columns = modificationMatrix.getCalculatedMatrix();
+        columns = modificationMatrix.getCalculatedColumns();
         barChartValues.clear();
         fullItemsSet.clear();
         int coulmnIndx = 0;
@@ -276,22 +249,6 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
             barChartValues.put(coulmnIndx++, (double) columns.get(key).size());
         }
         updateChartDataset(barChartValues);
-//        int totHehight = ((rows.size() + 1) * 30);
-//        float expandingRatio = DivaMatrixLayoutChartFilter.this.getExpandRatio(topLayoutPanel);
-//        double containerHeight = mainHeight * 100.00 / expandingRatio;
-//        double currentBottomActualRatio = (double) (totHehight / containerHeight * 100.0) + 5.0;
-//        double bottomPanelRatio;
-//        if (currentBottomActualRatio >= 70) {
-//            bottomPanelRatio = 70f;
-//        } else if (currentBottomActualRatio > 50 && currentBottomActualRatio < 70) {
-//            bottomPanelRatio = currentBottomActualRatio;
-//        } else {
-//            bottomPanelRatio = 50;
-//        }
-//
-//        double topPanelRation = 100 - bottomPanelRatio;
-//        DivaMatrixLayoutChartFilter.this.setExpandRatio(topLayoutPanel, (float) topPanelRation);
-//        DivaMatrixLayoutChartFilter.this.setExpandRatio(bottomLayoutPanel, (float) bottomPanelRatio);
         allowDrawing = true;
     }
 
@@ -364,6 +321,7 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
                 min = i;
             }
         }
+        
         int rowIndex = 0;
         for (String rowKey : rows.keySet()) {
             SparkLine sl = new SparkLine(rowKey, rows.get(rowKey), 0, max, dataColors.get(rowKey));
@@ -373,17 +331,22 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
             leftBottomCorner.setComponentAlignment(sl, Alignment.TOP_LEFT);
             rowLabelsMap.put(rowKey, sl);
 
-            List<String> sortingKeysList = new ArrayList<>(rows.keySet());
+            List<String> sortedKeysList = new ArrayList<>(rows.keySet());
             for (int columnIndex : barChartValues.keySet()) {
                 String columnKey = columns.keySet().toArray()[columnIndex] + "";
                 String[] subArr = columnKey.replace("]", "").replace("[", "").trim().split(",");
-                int startLineRange = sortingKeysList.indexOf(subArr[0]);
-                int endLineRange = sortingKeysList.indexOf(subArr[subArr.length - 1].trim());
+                int startLineRange = sortedKeysList.indexOf(subArr[0]);
+                int endLineRange = sortedKeysList.indexOf(subArr[subArr.length - 1].trim());
+               
+//                System.out.println("at node selection "  + "  coulmn key  " + columnKey + "  " + rowIndex + "  startLineRange " + startLineRange+"  end "+subArr[subArr.length - 1].trim()+"  sortedKeysList: "+sortedKeysList);
                 if (!nodesTable.containsKey(columnKey) || nodesTable.get(columnKey).get(rowIndex) == null) {
                     columnPreIndex++;
                     continue;
                 }
                 SelectableNode node = nodesTable.get(columnKey).get(rowIndex);
+                if (columnIndex == 4) {
+                    
+                }
                 if (columnKey.contains(node.getNodeId())) {
                     node.setSelecatble(true);
                     node.setUpperSelected(true);
@@ -395,7 +358,7 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
                     node.setUpperSelected(false);
                     node.setLowerSelected(false);
                 } else {
-                    int nodeIndex = sortingKeysList.indexOf(node.getNodeId());
+                    int nodeIndex = sortedKeysList.indexOf(node.getNodeId());
                     if (nodeIndex == startLineRange) {
                         node.setUpperSelected(false);
                         node.setLowerSelected(true);

@@ -26,6 +26,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
+import org.apache.commons.math.MathException;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.encoders.ImageEncoder;
 import org.jfree.chart.encoders.ImageEncoderFactory;
@@ -111,7 +112,13 @@ public class SecondarySpectraChartsGenerator {
             Logger.getLogger(PeptideShakerVisualizationDataset.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        ArrayList<IonMatch> annotations = spectrumAnnotator.getSpectrumAnnotation(annotationPreferences, specificAnnotationPreferences, spectrumInformation.getSpectrum(), currentPeptide);
+        ArrayList<IonMatch> annotations;
+        try {
+            annotations = spectrumAnnotator.getSpectrumAnnotation(annotationPreferences, specificAnnotationPreferences, spectrumInformation.getSpectrum(), currentPeptide);
+        } catch (InterruptedException | MathException ex) {
+            Logger.getLogger(SecondarySpectraChartsGenerator.class.getName()).log(Level.SEVERE, null, ex);
+            return;
+        }
         Integer forwardIon = spectrumInformation.getIdentificationParameters().getSearchParameters().getForwardIons().get(0);
         Integer rewindIon = spectrumInformation.getIdentificationParameters().getSearchParameters().getRewindIons().get(0);//
         String taggedPeptideSequence = currentPeptide.getTaggedModifiedSequence(spectrumInformation.getIdentificationParameters().getSearchParameters().getPtmSettings(), false, false, false);
@@ -128,7 +135,6 @@ public class SecondarySpectraChartsGenerator {
             errorPlot.setSize(270, 68);
             errorPlot.getChartPanel().setSize(270, 68);
             errorPlot.updateUI();
-
 //            this.massErrorPlotComponent.setWidth(errorPlot.getWidth() + 2, Unit.PIXELS);
 //            this.massErrorPlotComponent.setHeight(errorPlot.getHeight() + 2, Unit.PIXELS);
             XYPlot plot = (XYPlot) errorPlot.getChartPanel().getChart().getPlot();

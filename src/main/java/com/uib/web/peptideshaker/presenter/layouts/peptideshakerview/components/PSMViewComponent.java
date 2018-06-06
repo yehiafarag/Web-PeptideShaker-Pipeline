@@ -102,6 +102,9 @@ public abstract class PSMViewComponent extends VerticalLayout {
         this.listener = (LayoutEvents.LayoutClickEvent event) -> {
             psmOverviewTable.setValue(((VerticalLayout) (event.getComponent())).getData());
         };
+        psmOverviewTable.addColumnResizeListener((Table.ColumnResizeEvent event) -> {
+            psmOverviewTable.setColumnWidth(event.getPropertyId(), event.getPreviousWidth());
+        });
 
     }
 

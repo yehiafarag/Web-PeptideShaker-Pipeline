@@ -4,7 +4,6 @@ import com.uib.web.peptideshaker.model.core.ModificationMatrix;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.updatedfilters.ChromosomesFilter;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.updatedfilters.DivaMatrixLayoutChartFilter;
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.SelectionManager;
-import com.uib.web.peptideshaker.presenter.core.filtercharts.charts.RangeFilter;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.updatedfilters.DivaPieChartFilter;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.updatedfilters.DivaRangeFilter;
 import com.vaadin.ui.Alignment;
@@ -14,7 +13,6 @@ import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -191,13 +189,9 @@ public class FiltersContainer extends HorizontalLayout {
 
     public void updateFiltersData(ModificationMatrix modificationMatrix, Map<String, Color> modificationsColorMap, Map<Integer, Set<Comparable>> chromosomeMap, Map<String, Set<Comparable>> piMap, Map<String, Set<Comparable>> proteinValidationMap, TreeMap<Comparable, Set<Comparable>> proteinPeptidesNumberMap, TreeMap<Comparable, Set<Comparable>> proteinPSMNumberMap, TreeMap<Comparable, Set<Comparable>> proteinCoverageMap) {
         Selection_Manager.reset();
-//        if (modificationMatrix.size() < 10) {
         Selection_Manager.setModificationsMap(modificationMatrix);
         modificationFilter.initializeFilterData(modificationMatrix, modificationsColorMap, new HashSet<>(), Selection_Manager.getFullProteinSet().size());
 
-//        } else {
-//            Selection_Manager.setModificationsMap(new HashMap<>());
-//        }
         chromosomeFilter.initializeFilterData(chromosomeMap);
         Selection_Manager.setChromosomeMap(chromosomeMap);
 

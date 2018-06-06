@@ -105,10 +105,10 @@ public class PSMVisulizationLevelContainer extends HorizontalLayout implements R
             if (Selection_Manager.getSelectedPeptideId() != null) {
                 headerLabel.setValue("Peptide Spectrum Matches ( " + Selection_Manager.getSelectedPeptideId() + " )");
                 this.psmViewComponent.updateView(peptideShakerVisualizationDataset.getPSM(Selection_Manager.getSelectedPeptideId()),Selection_Manager.getSelectedPeptideId().length());
-                this.psmViewBtn.updateIcon(new ThemeResource("img/spectra_1.png"));
+                this.psmViewBtn.updateIconResource(new ThemeResource("img/spectra_1.png"));
             } else {
                 headerLabel.setValue("Peptide Spectrum Matches");
-                this.psmViewBtn.updateIcon(null);
+                this.psmViewBtn.updateIconResource(null);
             }
 
         }

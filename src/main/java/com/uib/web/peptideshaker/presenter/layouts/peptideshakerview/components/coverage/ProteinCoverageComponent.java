@@ -6,8 +6,10 @@ import com.vaadin.event.LayoutEvents;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
+import java.awt.Color;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -26,6 +28,8 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
     private final AbsoluteLayout chainCoverage3dLayout;
     private final Set<PeptideLayout> peptideDistMap;
     private final Set<PeptideObject> peptideObjectsSet;
+    
+    Map<String, Color> ModificationColorMap ;
 
     public ProteinCoverageComponent(ProteinObject protein, Map<String, PeptideObject> peptidesNodes) {
         ProteinCoverageComponent.this.setWidth(100, Unit.PERCENTAGE);
@@ -40,6 +44,17 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
         styles.put("Predicted", "purplebackground");
         styles.put("Uncertain", "redbackground");
         styles.put("Not Applicable", "lightgraybackground");
+        ModificationColorMap = new LinkedHashMap<>();
+//        for(String key :peptidesNodes.keySet())
+//            System.out.println("at peptide modification "+key+"---->>"+peptidesNodes.get(key).getFixedModifications()+" -- "+peptidesNodes.get(key).getVariableModifications());
+//        ModificationMatrix modificationMatrix = peptideShakerVisualizationDataset.getModificationMatrix();
+//        modificationMatrix.getRows().keySet().forEach((mod) -> {
+//            if (PTM.containsPTM(mod)) {
+//                ModificationColorMap.put(mod, PTMFactory.getDefaultColor(mod));
+//            } else {
+//                ModificationColorMap.put(mod, Color.LIGHT_GRAY);
+//            }
+//        });
 
         if (protein.getValidation() == null) {
             protein.setValidation("Not Available");
@@ -80,13 +95,11 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
         
 
         proteinCoverageLayout = new ProteinCoverageLayout(styles.get(protein.getValidation()), styles.get(protein.getProteinEvidence()));
-//        ProteinCoverageComponent.this.addComponent(proteinCoverageLayout, "left:0; top:10px;");
 
         peptideDistributionLayout = new AbsoluteLayout();
         peptideDistributionLayout.setWidth(100, Unit.PERCENTAGE);
         peptideDistributionLayout.setHeight(100, Unit.PERCENTAGE);
         peptideDistributionLayout.addStyleName("peptidecoverage");
-//        ProteinCoverageComponent.this.addComponent(peptideDistributionLayout, "left:0; top:25px;");
 
         LayoutEvents.LayoutClickListener peptidesListener = (LayoutEvents.LayoutClickEvent event) -> {
             PeptideLayout genPeptid = (PeptideLayout) event.getComponent();

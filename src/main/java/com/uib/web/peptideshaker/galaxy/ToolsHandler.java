@@ -43,6 +43,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
@@ -97,21 +99,23 @@ public abstract class ToolsHandler {
     /**
      * Constructor to initialize the main data structure and other variables.
      *
-     * @param Galaxy_Instance the main Galaxy instance in the system
+     * @param galaxyToolClient
+     * @param galaxyWorkFlowClient
+     * @param galaxyHistoriesClient
      *
      */
     public ToolsHandler(ToolsClient galaxyToolClient, WorkflowsClient galaxyWorkFlowClient, HistoriesClient galaxyHistoriesClient) {
 
         this.galaxyWorkFlowClient = galaxyWorkFlowClient;
         this.galaxyHistoriesClient = galaxyHistoriesClient;
-        List<History>availableHistories = galaxyHistoriesClient.getHistories();
+        List<History> availableHistories = galaxyHistoriesClient.getHistories();
         for (History h : availableHistories) {
             if (h.getName().equalsIgnoreCase("Online-PeptideShaker-Job-History")) {
                 galaxyWorkingHistory = h;
                 break;
             }
         }
-        
+
         if (galaxyWorkingHistory == null) {
             galaxyWorkingHistory = galaxyHistoriesClient.getHistories().get(0);
         }
@@ -224,8 +228,13 @@ public abstract class ToolsHandler {
     /**
      * Save search settings file into galaxy
      *
-     * @param fileId search parameters file name
+     * @param galaxyURL
+     * @param userFolder
      * @param searchParameters searchParameters .par file
+     * @param workHistoryId
+     * @param searchSetiingsFilesMap
+     * @param editMode
+     * @return
      */
     public Map<String, GalaxyFile> saveSearchGUIParameters(String galaxyURL, File userFolder, Map<String, GalaxyFile> searchSetiingsFilesMap, String workHistoryId, SearchParameters searchParameters, boolean editMode) {
 
@@ -298,8 +307,7 @@ public abstract class ToolsHandler {
                 // Always close files.
             }
         } catch (FileNotFoundException ex) {
-            System.out.println(
-                    "Unable to open file '" + "'");
+            System.out.println("Unable to open file '" + "'");
         } catch (IOException ex) {
             System.out.println("Error reading file '" + "'");
         }
@@ -340,13 +348,13 @@ public abstract class ToolsHandler {
                 writer.write(payload);
             }
             conn.connect();
-            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            StringBuilder jsonString = new StringBuilder();
-            String line;
-            while ((line = br.readLine()) != null) {
-                jsonString.append(line);
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+                StringBuilder jsonString = new StringBuilder();
+                String line;
+                while ((line = br.readLine()) != null) {
+                    jsonString.append(line);
+                }
             }
-            br.close();
             conn.disconnect();
 
         } catch (MalformedURLException ex) {
@@ -356,6 +364,7 @@ public abstract class ToolsHandler {
 
         }
     }
+    private WorkflowOutputs tempDsOutput;
 
     /**
      * Run Online Peptide-Shaker work-flow
@@ -379,15 +388,16 @@ public abstract class ToolsHandler {
                 file = new File(basepath + "/VAADIN/Galaxy-Workflow-Web-Peptide-Shaker-Multiple-MGF.ga");
                 input2 = prepareWorkflowCollectionList(WorkflowInputs.InputSourceType.HDCA, mgfIdsList.keySet(), historyId);
             } else {
-                file = new File(basepath + "/VAADIN/Galaxy-Workflow-Web-Peptide-Shaker-Single-MGF.ga");
+                file = new File(basepath + "/VAADIN/Galaxy-Workflow-Web-Peptide-Shaker-Single-MGF-2018.ga");
                 input2 = new WorkflowInputs.WorkflowInput(mgfIdsList.keySet().iterator().next(), WorkflowInputs.InputSourceType.HDA);
             }
             String json = readWorkflowFile(file);
             Map<String, Object> workflowMap = jsonToMap(new JSONObject(json));
-            Map<String, Object> StepsMap = (Map<String, Object>) workflowMap.get("steps");//
+            Map<String, Object> StepsMap = (Map<String, Object>) workflowMap.get("steps");//            
             Map<String, Object> searchGUIStepMap = (Map<String, Object>) StepsMap.get("2");
-            json = json.replace(searchGUIStepMap.get("content_id").toString(), search_GUI_Tool_Id);
-            json = json.replace(searchGUIStepMap.get("tool_version").toString(), search_GUI_Tool_Id.split("\\/")[search_GUI_Tool_Id.split("\\/").length - 1]);
+            json = json.replace("\"toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/search_gui/3.2.13.3\"", "\\\"" + search_GUI_Tool_Id + "\\\"");
+            json = json.replace(searchGUIStepMap.get("tool_version").toString(), search_GUI_Tool_Id.split("\\/")[search_GUI_Tool_Id.split("\\/").length - 1].trim());
+//            System.out.println("at step map : "+searchGUIStepMap.get("content_id").toString()+"   search_GUI_Tool_Id: "+search_GUI_Tool_Id);
             Map<String, Object> innerMap = (Map<String, Object>) ((Map<String, Object>) ((Map<String, Object>) searchGUIStepMap.get("post_job_actions")).get("RenameDatasetActionsearchgui_results")).get("action_arguments");
             json = json.replace(innerMap.get("newname").toString(), projectName + "-SearchGUI Results").replace("ZIP_Label", projectName + "-ZIP");
 //            //protein_digest_options     
@@ -422,21 +432,20 @@ public abstract class ToolsHandler {
                 });
                 json = json.replace("\\\\\\\"fixed_modifications\\\\\\\": null", "\\\\\\\"fixed_modifications\\\\\\\": " + modifications.toString());
             }
-//            search_engines_options 
+////            search_engines_options 
             Set<String> search_engines = new HashSet<>();
             searchEnginesList.forEach((searchEng) -> {
                 search_engines.add(("\\\\\\\"" + searchEng + "\\\\\\\"").replace(" (Select for noncommercial use only)", "").replace("+", "").replace("-", ""));
             });
-            json = json.replace("{\\\\\\\"__class__\\\\\\\": \\\\\\\"RuntimeValue\\\\\\\"}", search_engines.toString());
-            //precursor_options
-            //  //precursor_options
-
+            json = json.replace("{\\\\\\\"engines\\\\\\\": null}", "{\\\\\\\"engines\\\\\\\": " + search_engines.toString() + "}");
+//            //precursor_options
+//            //  //precursor_options
+//
             String updated = "{\\\\\\\"forward_ion\\\\\\\": \\\\\\\"" + forwardIons.get(searchParameters.getForwardIons().get(0)) + "\\\\\\\", \\\\\\\"max_charge\\\\\\\": \\\\\\\"" + searchParameters.getMaxChargeSearched().value + "\\\\\\\", \\\\\\\"fragment_tol_units\\\\\\\": \\\\\\\"" + (searchParameters.getFragmentAccuracyType().ordinal() - 1) + "\\\\\\\", \\\\\\\"max_isotope\\\\\\\": \\\\\\\"" + (searchParameters.getMaxIsotopicCorrection()) + "\\\\\\\", \\\\\\\"precursor_ion_tol_units\\\\\\\": \\\\\\\"" + (searchParameters.getPrecursorAccuracyType().ordinal() + 1) + "\\\\\\\", \\\\\\\"min_isotope\\\\\\\": \\\\\\\"" + searchParameters.getMinIsotopicCorrection() + "\\\\\\\", \\\\\\\"fragment_tol\\\\\\\": \\\\\\\"" + searchParameters.getFragmentIonAccuracyInDaltons() + "\\\\\\\", \\\\\\\"min_charge\\\\\\\": \\\\\\\"" + searchParameters.getMinChargeSearched().value + "\\\\\\\", \\\\\\\"reverse_ion\\\\\\\": \\\\\\\"" + rewindIons.get(searchParameters.getRewindIons().get(0)) + "\\\\\\\", \\\\\\\"precursor_ion_tol\\\\\\\": \\\\\\\"" + searchParameters.getPrecursorAccuracy() + "\\\\\\\"}\\\",";
             json = json.replace("{\\\\\\\"forward_ion\\\\\\\": \\\\\\\"b\\\\\\\", \\\\\\\"max_charge\\\\\\\": \\\\\\\"4\\\\\\\", \\\\\\\"fragment_tol_units\\\\\\\": \\\\\\\"0\\\\\\\", \\\\\\\"max_isotope\\\\\\\": \\\\\\\"1\\\\\\\", \\\\\\\"precursor_ion_tol_units\\\\\\\": \\\\\\\"1\\\\\\\", \\\\\\\"min_isotope\\\\\\\": \\\\\\\"0\\\\\\\", \\\\\\\"fragment_tol\\\\\\\": \\\\\\\"0.02\\\\\\\", \\\\\\\"min_charge\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"reverse_ion\\\\\\\": \\\\\\\"y\\\\\\\", \\\\\\\"precursor_ion_tol\\\\\\\": \\\\\\\"10.0\\\\\\\"}\\\",", updated);
 
-            json = json.replace("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/peptide_shaker/1.16.17", peptideShaker_Tool_Id);
-            json = json.replace("1.16.17", peptideShaker_Tool_Id.split("\\/")[peptideShaker_Tool_Id.split("\\/").length - 1]);
-
+            json = json.replace("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/peptide_shaker/1.16.4", peptideShaker_Tool_Id);
+            json = json.replace("1.16.4", peptideShaker_Tool_Id.split("\\/")[peptideShaker_Tool_Id.split("\\/").length - 1]);
             selectedWf = galaxyWorkFlowClient.importWorkflow(json);
 
             WorkflowInputs workflowInputs = new WorkflowInputs();
@@ -446,9 +455,22 @@ public abstract class ToolsHandler {
             WorkflowInputs.WorkflowInput input = new WorkflowInputs.WorkflowInput(fastaFileId, WorkflowInputs.InputSourceType.HDA);
             workflowInputs.setInput("0", input);
             workflowInputs.setInput("1", input2);
+//
+            PeptideShakerVisualizationDataset tempWorkflowOutput = new PeptideShakerVisualizationDataset(projectName, null, "", "", null);
+            tempWorkflowOutput.setName(projectName);
+            tempWorkflowOutput.setGalaxyId("tempID");
+            tempWorkflowOutput.setDownloadUrl("tempID");
+            tempWorkflowOutput.setHistoryId(historyId);
+            tempWorkflowOutput.setStatus("running");
+            tempWorkflowOutput.setType("Web Peptide Shaker Dataset");
+            tempWorkflowOutput.setJobId("tempID");
 
+            tempDsOutput = null;
             Thread t = new Thread(() -> {
-                galaxyWorkFlowClient.runWorkflow(workflowInputs);
+                tempDsOutput = galaxyWorkFlowClient.runWorkflow(workflowInputs);
+                if (tempDsOutput != null) {
+                    tempWorkflowOutput.setOutputsIds(tempDsOutput.getOutputIds());
+                }
 
             });
             t.start();
@@ -461,16 +483,19 @@ public abstract class ToolsHandler {
 
             });
             t1.start();
-
-            PeptideShakerVisualizationDataset tempWorkflowOutput = new PeptideShakerVisualizationDataset("tempID", null, "", "",null);
-            tempWorkflowOutput.setName(projectName);
-            tempWorkflowOutput.setGalaxyId("tempID");
-            tempWorkflowOutput.setDownloadUrl("tempID");
-            tempWorkflowOutput.setHistoryId(historyId);
-            tempWorkflowOutput.setStatus("new");
-            tempWorkflowOutput.setType("Web Peptide Shaker Dataset");
-            tempWorkflowOutput.setJobId("tempID");
+//            try {
+//                Thread.sleep(100);
+//            } catch (InterruptedException ex) {
+//                ex.printStackTrace();
+//            }
             galaxyWorkFlowClient.deleteWorkflowRequest(selectedWf.getId());
+            while (t.isAlive()) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+            }
             return tempWorkflowOutput;
 //
         } catch (JSONException e) {
@@ -508,21 +533,21 @@ public abstract class ToolsHandler {
         CollectionDescription collectionDescription = new CollectionDescription();
         collectionDescription.setCollectionType("list");
         collectionDescription.setName("collection");
-        for (String inputId : inputIds) {
+        inputIds.stream().map((inputId) -> {
             HistoryDatasetElement element = new HistoryDatasetElement();
             element.setId(inputId);
             element.setName(inputId);
+            return element;
+        }).forEachOrdered((element) -> {
             collectionDescription.addDatasetElement(element);
-        }
+        });
         return galaxyHistoriesClient.createDatasetCollection(historyId, collectionDescription);
     }
 
     private boolean isFirmwareNewer(String testFW, String baseFW) {
 
         int[] testVer = getVersionNumbers(testFW);
-        System.out.println("at group end " + testVer.length);
         int[] baseVer = getVersionNumbers(baseFW);
-        System.out.println("at group end " + baseVer.length);
         for (int i = 0; i < testVer.length; i++) {
             if (testVer[i] != baseVer[i]) {
                 return testVer[i] > baseVer[i];
@@ -579,20 +604,15 @@ public abstract class ToolsHandler {
             OutputDataset ds = exc.getOutputs().iterator().next();
             if (!galaxyHistoriesClient.showHistory(galaxyWorkingHistory.getId()).isReady()) {
                 Thread.sleep(1000);
-                System.out.println("data sent :-) " + ds.getId());
             }
 
             deleteDataset(galaxyURL, galaxyWorkingHistory.getId(), ds.getId());
-        } catch (GalaxyResponseException e) {
-            e.printStackTrace();
-            Notification.show("Could not send it to NeLS :-( ", Notification.Type.ERROR_MESSAGE);
-            return false;
-        } catch (Exception e) {
+        } catch (GalaxyResponseException | InterruptedException e) {
             e.printStackTrace();
             Notification.show("Could not send it to NeLS :-( ", Notification.Type.ERROR_MESSAGE);
             return false;
         }
-        updateHistoryDatastructure(null);
+        updateHistoryDatastructure();
         return true;
 
     }
@@ -606,7 +626,6 @@ public abstract class ToolsHandler {
         inputDict.put("selectedFiles", nelsFolder + "/" + dsId);
         final ToolInputs toolInput = new ToolInputs("nels_file_browser", inputDict);
         toolInput.setHistoryId(historyId);
-        System.out.println("at history id " + historyId);
         try {
             ToolExecution exc = galaxyToolClient.create(galaxyWorkingHistory, toolInput);
             System.out.println("data sent :-) " + exc.getOutputs().iterator().next().getState());
@@ -617,7 +636,7 @@ public abstract class ToolsHandler {
             Notification.show("Could not send it to NeLS :-( ", Notification.Type.ERROR_MESSAGE);
             return false;
         }
-        updateHistoryDatastructure(null);
+        updateHistoryDatastructure();
         return true;
 
     }
@@ -662,6 +681,6 @@ public abstract class ToolsHandler {
         return list;
     }
 
-    public abstract void updateHistoryDatastructure(PeptideShakerVisualizationDataset tempWorkflowOutput);
+    public abstract void updateHistoryDatastructure();
 
 }

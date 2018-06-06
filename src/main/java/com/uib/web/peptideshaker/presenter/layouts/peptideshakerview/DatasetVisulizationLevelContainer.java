@@ -39,7 +39,7 @@ public class DatasetVisulizationLevelContainer extends HorizontalLayout {
 
         defaultThemeIcon = new ThemeResource("img/ds_filters_icon.png");
         activeThemeIcon = new ThemeResource("img/ds_filters_icon_color.png");
-        datasetsOverviewBtn.updateIcon(defaultThemeIcon);
+        datasetsOverviewBtn.updateIconResource(defaultThemeIcon);
         container = new VerticalLayout();
         container.setSizeFull();
         container.setSpacing(true);
@@ -83,9 +83,9 @@ public class DatasetVisulizationLevelContainer extends HorizontalLayout {
                 removeFilterIcon.setVisible(Selection_Manager.isDatasetFilterApplied());
                 super.updateFilterSelection(selection, selectedCategories, topFilter, selectOnly, selfAction);
                 if (Selection_Manager.isDatasetFilterApplied()) {
-                    datasetsOverviewBtn.updateIcon(activeThemeIcon);
+                    datasetsOverviewBtn.updateIconResource(activeThemeIcon);
                 } else {
-                    datasetsOverviewBtn.updateIcon(defaultThemeIcon);
+                    datasetsOverviewBtn.updateIconResource(defaultThemeIcon);
                 }
             }
         };

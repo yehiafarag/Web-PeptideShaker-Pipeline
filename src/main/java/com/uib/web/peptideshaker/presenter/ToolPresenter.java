@@ -104,7 +104,7 @@ public abstract class ToolPresenter extends VerticalLayout implements ViewableFr
         VerticalLayout nelsLayout = new VerticalLayout();
 
         BigSideBtn nelsBtn = new BigSideBtn("Get Data",1);
-        nelsBtn.updateIcon(new ThemeResource("img/NeLS2.png"));
+        nelsBtn.updateIconResource(new ThemeResource("img/NeLS3.png"));
         nelsBtn.setData("nels");
         btnContainer.addComponent(nelsBtn);
         btnContainer.setComponentAlignment(nelsBtn, Alignment.TOP_CENTER);
@@ -112,7 +112,7 @@ public abstract class ToolPresenter extends VerticalLayout implements ViewableFr
         btnsLayoutMap.put(nelsBtn, nelsLayout);
 
         BigSideBtn workFlowBtn = new BigSideBtn("Work-Flow",2);
-         workFlowBtn.updateIcon(new ThemeResource("img/workflow.png"));
+         workFlowBtn.updateIconResource(new ThemeResource("img/workflow3.png"));
         workFlowBtn.setData("workflow");
         workFlowBtn.addStyleName("zeropadding");
         btnContainer.addComponent(workFlowBtn);

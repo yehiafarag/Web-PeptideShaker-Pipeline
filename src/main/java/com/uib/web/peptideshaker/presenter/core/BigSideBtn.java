@@ -1,11 +1,12 @@
 package com.uib.web.peptideshaker.presenter.core;
 
 import com.vaadin.event.LayoutEvents;
-import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Resource;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
+import com.vaadin.ui.Label;
 
 /**
  * This class represent the top right small button
@@ -14,16 +15,22 @@ import com.vaadin.ui.Image;
  */
 public class BigSideBtn extends HorizontalLayout {
 
-    private final Image icon;
+    private final Image iconImage;
+    private final Label iconLabel;
     private final MobileSideBtn mobileModeBtn;
     private final int btnId;
 
-    public BigSideBtn(String text,int btnId) {
-        icon = new Image();
-        icon.setSizeFull();
+    public BigSideBtn(String text, int btnId) {
+        iconImage = new Image();
+        iconImage.setSizeFull();
+        this.iconLabel = new Label();
+        this.iconLabel.setSizeFull();
+        this.iconLabel.setContentMode(ContentMode.HTML);
         this.btnId = btnId;
-        BigSideBtn.this.addComponent(icon);
-        BigSideBtn.this.setComponentAlignment(icon, Alignment.MIDDLE_CENTER);
+        BigSideBtn.this.addComponent(iconImage);
+        BigSideBtn.this.setComponentAlignment(iconImage, Alignment.MIDDLE_CENTER);
+        BigSideBtn.this.addComponent(iconLabel);
+        BigSideBtn.this.setComponentAlignment(iconLabel, Alignment.MIDDLE_CENTER);
         BigSideBtn.this.setSizeFull();
         BigSideBtn.this.setStyleName("bigmenubtn");
 
@@ -45,14 +52,15 @@ public class BigSideBtn extends HorizontalLayout {
         return mobileModeBtn;
     }
 
-    public void updateIcon(Resource imageURL) {
-        this.setVisible(!(imageURL == null));
-        if (imageURL == null || icon.getSource()==imageURL) {
+    public void updateIconResource(Resource imageURL) {
+        this.setVisible((imageURL != null));
+        if (imageURL == null || iconImage.getSource() == imageURL) {
             return;
         }
-
-        icon.setSource(imageURL);
-        mobileModeBtn.updateIcon(imageURL);
+        iconImage.setVisible(true);
+        iconLabel.setVisible(false);
+        iconImage.setSource(imageURL);
+        mobileModeBtn.updateIconResource(imageURL);
         if (this.getStyleName().contains("reshake")) {
             this.removeStyleName("reshake");
             this.addStyleName("shake");
@@ -63,7 +71,28 @@ public class BigSideBtn extends HorizontalLayout {
             this.addStyleName("reshake");
             mobileModeBtn.removeStyleName("shake");
             mobileModeBtn.addStyleName("reshake");
+        }
+    }
 
+    public void updateIcon(String HTML) {
+        this.setVisible((HTML != null));
+        if (HTML == null || iconLabel.getValue().equalsIgnoreCase(HTML)) {
+            return;
+        }
+        iconImage.setVisible(false);
+        iconLabel.setVisible(true);
+        iconLabel.setValue(HTML);
+        mobileModeBtn.updateIconHTML(HTML);
+        if (this.getStyleName().contains("reshake")) {
+            this.removeStyleName("reshake");
+            this.addStyleName("shake");
+            mobileModeBtn.removeStyleName("reshake");
+            mobileModeBtn.addStyleName("shake");
+        } else {
+            this.removeStyleName("shake");
+            this.addStyleName("reshake");
+            mobileModeBtn.removeStyleName("shake");
+            mobileModeBtn.addStyleName("reshake");
         }
     }
 
@@ -72,7 +101,6 @@ public class BigSideBtn extends HorizontalLayout {
             this.mobileModeBtn.addStyleName("selectedbiglbtn");
             BigSideBtn.this.addStyleName("selectedbiglbtn");
         } else {
-
             this.mobileModeBtn.removeStyleName("selectedbiglbtn");
             BigSideBtn.this.removeStyleName("selectedbiglbtn");
         }
