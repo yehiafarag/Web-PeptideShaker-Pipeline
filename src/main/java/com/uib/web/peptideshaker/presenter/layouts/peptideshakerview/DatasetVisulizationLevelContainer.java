@@ -30,7 +30,7 @@ public class DatasetVisulizationLevelContainer extends HorizontalLayout {
     private final ThemeResource activeThemeIcon;
 
     /**
-     * Constructor to initialize the main layout and variables.
+     * Constructor to initialise the main layout and variables.
      */
     public DatasetVisulizationLevelContainer(SelectionManager Selection_Manager, BigSideBtn datasetsOverviewBtn) {
         DatasetVisulizationLevelContainer.this.setSizeFull();

@@ -41,7 +41,7 @@ import uk.ac.ebi.pride.tools.braf.BufferedRandomAccessFile;
  *
  * @author Yehia Farag
  */
-public class PeptideShakerVisualizationDataset extends SystemDataSet implements Comparable<PeptideShakerVisualizationDataset>{
+public class PeptideShakerVisualizationDataset extends SystemDataSet implements Comparable<PeptideShakerVisualizationDataset> {
 
     private final String projectName;
     private final File user_folder;
@@ -86,8 +86,8 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
     private final GalaxyDatasetServingUtil galaxyDatasetServingUtil;
 
     private IdentificationParameters identificationParameters;
-    private List<String>outputsIds;
-    
+    private List<String> outputsIds;
+
     private Date jobDate;
 
     public List<String> getOutputsIds() {
@@ -998,7 +998,7 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
 
     }
 
-    public Map<Object, SpectrumInformation> getSelectedPsmData(List<PSMObject> psms, String peptideSequence) {//SpectrumPlot plot
+    public Map<Object, SpectrumInformation> getSelectedPsmData(List<PSMObject> psms, PeptideObject peptideObject) {//SpectrumPlot plot
         Map<Object, SpectrumInformation> spectrumInformationMap = new LinkedHashMap<>();
         int maxCharge = Integer.MIN_VALUE;
         double maxError = Double.MIN_VALUE;;
@@ -1029,21 +1029,16 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
             if (selectedPsm.getPrecursorMZError_PPM() > maxError) {
                 maxError = selectedPsm.getPrecursorMZError_PPM();
             }
-            try {
-                System.out.println("at spectrum " + spectrum.getFileName() + "  " + spectrum.getPeakListAsString() + "  " + spectrum.getScanNumber());
-            } catch (InterruptedException ex) {
-                ex.printStackTrace();
+            
+            ArrayList<ModificationMatch> psModificationMatches = null;
+            if (peptideObject.isModified()) {
+                psModificationMatches = new ArrayList<>(peptideObject.getNModifications());
+                for (ModificationMatch seModMatch : peptideObject.getModificationMatches()) {
+                    psModificationMatches.add(new ModificationMatch(seModMatch.getTheoreticPtm(), seModMatch.isVariable(), seModMatch.getModificationSite()));
+                }
             }
 
-            ArrayList<ModificationMatch> psModificationMatches = null;
-//        if (sePeptide.isModified()) {
-//            psModificationMatches = new ArrayList<ModificationMatch>(sePeptide.getNModifications());
-//            for (ModificationMatch seModMatch : sePeptide.getModificationMatches()) {
-//                psModificationMatches.add(new ModificationMatch(seModMatch.getTheoreticPtm(), seModMatch.isVariable(), seModMatch.getModificationSite()));
-//            }
-//        }
-
-            Peptide psPeptide = new Peptide(peptideSequence.replace("NH2-", "").replace("-COOH", ""), psModificationMatches);
+            Peptide psPeptide = new Peptide(peptideObject.getSequence(), psModificationMatches);//modifiedPeptideSequence.replace("NH2-", "").replace("-COOH", "")
             psPeptide.setParentProteins(new ArrayList<>(selectedPsm.getProteins()));
             PeptideAssumption psAssumption = new PeptideAssumption(psPeptide, new Charge(+2, 2));
             SpectrumMatch spectrumMatch = new SpectrumMatch(spectrum.getSpectrumKey());
@@ -1234,7 +1229,6 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
 //    public boolean isAvailableOnGalaxy() {
 //        return super.isAvailableOnGalaxy(); //To change body of generated methods, choose Tools | Templates.
 //    }
-
     public Date getJobDate() {
         return jobDate;
     }
@@ -1247,5 +1241,5 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
     public int compareTo(PeptideShakerVisualizationDataset t) {
         return this.jobDate.compareTo(t.jobDate);
     }
-    
+
 }

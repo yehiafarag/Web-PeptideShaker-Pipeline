@@ -2,14 +2,13 @@ package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components
 
 import com.compomics.util.experiment.biology.PTMFactory;
 import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideObject;
-import com.uib.web.peptideshaker.model.core.ModificationMatrix;
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import java.awt.Color;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -24,6 +23,8 @@ public class PeptideLayout extends AbsoluteLayout implements Comparable<PeptideL
     private final String validationStatuesStyle;
     private final String proteinEvidenceStyle;
     private boolean selected;
+    private VerticalLayout modificationLayout;
+    private final String modificationStyleName ="nodemodificationbackground";
     /**
      * The post translational modifications factory.
      */
@@ -36,6 +37,7 @@ public class PeptideLayout extends AbsoluteLayout implements Comparable<PeptideL
         PeptideLayout.this.addStyleName("lightbluelayout");
         PeptideLayout.this.addStyleName("peptidelayout");
         PeptideLayout.this.addStyleName("transparent");
+        
         if (enzymatic) {
             PeptideLayout.this.addStyleName("blackborder");
         } else {
@@ -45,37 +47,44 @@ public class PeptideLayout extends AbsoluteLayout implements Comparable<PeptideL
         this.startIndex = startIndex;
         this.x = x;
         this.peptide = peptide;
-
         this.validationStatuesStyle = validationStatuesStyle;
         this.proteinEvidenceStyle = proteinEvidenceStyle;
-//        System.out.println("inside peptide modifications " + peptide.getModifiedSequence() + "  fixed " + peptide.getFixedModifications() + "  " + peptide.getVariableModifications());
-//        for (String mod : peptide.getFixedModifications().split(",")) {
-//            VerticalLayout modification = new VerticalLayout();
-//            modification.setStyleName("basicpeptidemodification");
-//            PeptideLayout.this.addComponent(modification);
-//            modification.setDescription(mod);
-//            System.out.println("at modification found " + mod + peptide.getProteinGroups());
-//
-//        }
 
-        String modifiedSequence = peptide.getModifiedSequence();
-
+        modificationLayout = new VerticalLayout();
+        modificationLayout.setSizeFull();
+        PeptideLayout.this.addComponent(modificationLayout);
+        modificationLayout.setStyleName("basicpeptidemodification");
+        String subTooltip = "";
+        Map<String, String> modificationsTooltip = new HashMap<>();
         for (String mod : peptide.getVariableModifications().split(",")) {
-            if (mod.trim().equalsIgnoreCase("") || mod.contains("Pyrolidone")) {
+            if (mod.trim().equalsIgnoreCase("") || mod.contains("Pyrolidone") || mod.contains("Acetylation of protein N-term")) {
                 continue;
             }
-            String tmod = mod.replace("(", "__").split("__")[0].trim();
-            Label modification = new Label("<center style='color:rgb("+PTMFactory.getDefaultColor(tmod).getRed()+","+PTMFactory.getDefaultColor(tmod).getGreen()+","+PTMFactory.getDefaultColor(tmod).getBlue()+")'>"+VaadinIcons.CIRCLE.getHtml()+"</center>", ContentMode.HTML);           
-            modification.setStyleName("basicpeptidemodification");
+            String[] tmod = mod.replace("(", "__").split("__");
+            Color c = PTMFactory.getDefaultColor(tmod[0].trim());
+            Label modification = new Label("<div  style='background:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ");;width: 100%;height: 100%;'></div>", ContentMode.HTML);
             modification.setSizeFull();
-            PeptideLayout.this.addComponent(modification);
-            modification.setDescription(mod);
+            modificationLayout.addComponent(modification);
 
-           
-
+            int i = Integer.valueOf(tmod[1].trim().replace(")", "")) - 1;
+            modificationsTooltip.put(peptide.getSequence().charAt(i) + "<" + PTM.getPTM(tmod[0].trim()).getShortName() + ">", "<font style='background-color:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")'>" + peptide.getSequence().charAt(i) + "</font>");
+            subTooltip += "</br><span style='width:20px;height:10px;background-color:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")'>" + peptide.getSequence().charAt(i) + "</span> - " + mod;
         }
-
-        PeptideLayout.this.setDescription(peptide.getModifiedSequence().replace("<", "&lt;").replace(">", "&gt;"));
+        
+        String tooltip = peptide.getModifiedSequence();
+        for (String key : modificationsTooltip.keySet()) {
+            tooltip = tooltip.replace(key, modificationsTooltip.get(key));
+        }
+        tooltip += subTooltip;
+        peptide.setTooltip(tooltip);
+        PeptideLayout.this.setDescription(tooltip);//peptide.getModifiedSequence().replace("<", "&lt;").replace(">", "&gt;")
+        if (modificationLayout.getComponentCount() > 1) {
+            modificationLayout.removeAllComponents();
+            Label modification = new Label("<div style='background:orange; width:100%;height:100%;'></div>", ContentMode.HTML);
+            modification.setSizeFull();
+            modificationLayout.addComponent(modification);
+        }
+        this.modificationLayout.setVisible(false);
 
     }
 
@@ -116,14 +125,14 @@ public class PeptideLayout extends AbsoluteLayout implements Comparable<PeptideL
     }
 
     public void updateStylingMode(String statues) {
-//        this.resetStyle();
         resetStyle();
         if (statues.equalsIgnoreCase("Validation Status")) {
             this.addStyleName(validationStatuesStyle);
-//            this.removeStyleName(proteinEvidenceStyle);
         } else if (statues.equalsIgnoreCase("Protein Evidence")) {
-//            this.removeStyleName(validationStatuesStyle);
             this.addStyleName(proteinEvidenceStyle);
+        } else if (statues.equalsIgnoreCase("Modification  Status")) {
+            this.modificationLayout.setVisible(true);
+             this.addStyleName(modificationStyleName);
         }
 
     }
@@ -135,6 +144,10 @@ public class PeptideLayout extends AbsoluteLayout implements Comparable<PeptideL
         if (this.getStyleName().contains(validationStatuesStyle)) {
             this.removeStyleName(validationStatuesStyle);
         }
+         if (this.getStyleName().contains(modificationStyleName)) {
+            this.removeStyleName(modificationStyleName);
+        }
+        this.modificationLayout.setVisible(false);
 
     }
 

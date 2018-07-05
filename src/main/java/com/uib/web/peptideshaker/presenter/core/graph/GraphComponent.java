@@ -231,8 +231,10 @@ public abstract class GraphComponent extends VerticalLayout {
         proteinsControl.addStyleName(ValoTheme.OPTIONGROUP_SMALL);
         proteinsControl.addStyleName("smallertext");
         proteinsControl.addItem("Validation Status");
+        proteinsControl.addItem("Modification  Status");
         proteinsControl.addItem("Protein Evidence");
         proteinsControl.addItem("Molecule Type");
+
         proteinsControl.setValue("Molecule Type");
         lefTtopPanel.addComponent(proteinsControl);
 
@@ -359,9 +361,9 @@ public abstract class GraphComponent extends VerticalLayout {
 
     private void updateNodeColourType(String modeType) {
 
-        for (Object key : nodesMap.keySet()) {
+        nodesMap.keySet().forEach((key) -> {
             nodesMap.get(key).setNodeStatues(modeType);
-        }
+        });
         updateProteinsMode(modeType);
 
     }
@@ -386,7 +388,14 @@ public abstract class GraphComponent extends VerticalLayout {
         this.edges = edges;
         setUpGraph();
         for (String node : graph.getVertices()) {
-            Node n = new Node(node) {
+            String modifications = "";
+            String sequence = "";
+
+            if (peptidesNodes.containsKey(node)) {
+                modifications = peptidesNodes.get(node).getVariableModifications();
+                sequence=peptidesNodes.get(node).getSequence();
+            }
+            Node n = new Node(node, modifications,sequence) {
                 @Override
                 public void selected(String id) {
                     selectNodes(new Object[]{id});
@@ -424,21 +433,22 @@ public abstract class GraphComponent extends VerticalLayout {
                     dropHandler);
             wrapper.setSizeUndefined();
             wrapper.setData(node);
-            wrapper.setDescription(node);
+            wrapper.setDescription(n.getDescription());
             canvas.addComponent(wrapper, "left: " + n.getX() + "px; top: " + n.getY() + "px");
         }
-        for (String key : edges.keySet()) {
+        edges.keySet().forEach((key) -> {
             ArrayList<String> edg = edges.get(key);
-            for (String node : edg) {
+            edg.stream().map((node) -> {
                 Node n1 = nodesMap.get(key);
                 Node n2 = nodesMap.get(node);
                 n1.addEdge();
                 n2.addEdge();
                 Edge edge = new Edge(n1, n2, !proteinNodes.get(node).isEnymaticPeptide(key));
+                return edge;
+            }).forEachOrdered((edge) -> {
                 edgesMap.add(edge);
-            }
-
-        }
+            });
+        });
         selectNodes(selectedProtein.getProteinGroupSet().toArray());
         proteinsControl.removeValueChangeListener(proteinsControlListener);
         proteinsControl.setValue("Molecule Type");

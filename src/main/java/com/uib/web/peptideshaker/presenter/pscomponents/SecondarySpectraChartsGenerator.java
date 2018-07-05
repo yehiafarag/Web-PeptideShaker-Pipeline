@@ -64,7 +64,7 @@ public class SecondarySpectraChartsGenerator {
         return massErrorPlot;
     }
 
-    public SecondarySpectraChartsGenerator(String sequence, Object objectId, SpectrumInformation spectrumInformation) {
+    public SecondarySpectraChartsGenerator(String sequence,String tooltip, Object objectId, SpectrumInformation spectrumInformation) {
         this.sequenceFragmentationChart = new VerticalLayout();
         this.massErrorPlot = new VerticalLayout();
         this.sequenceFragmentationChart.setHeight(70, Unit.PIXELS);
@@ -84,7 +84,7 @@ public class SecondarySpectraChartsGenerator {
          
          
 //        SecondarySpectraChartsGenerator.this.setComponentAlignment(this.plotImage, Alignment.TOP_CENTER);
-        sequenceFragmentationChart.setDescription(sequence);
+        sequenceFragmentationChart.setDescription(tooltip);
 //        this.sequenceLabel = new Label(sequence, ContentMode.HTML);
 //        this.sequenceLabel.setStyleName(ValoTheme.LABEL_SMALL);
 //        this.sequenceLabel.setSizeFull();
@@ -122,21 +122,16 @@ public class SecondarySpectraChartsGenerator {
         Integer forwardIon = spectrumInformation.getIdentificationParameters().getSearchParameters().getForwardIons().get(0);
         Integer rewindIon = spectrumInformation.getIdentificationParameters().getSearchParameters().getRewindIons().get(0);//
         String taggedPeptideSequence = currentPeptide.getTaggedModifiedSequence(spectrumInformation.getIdentificationParameters().getSearchParameters().getPtmSettings(), false, false, false);
-        SequenceFragmentationPanel sequenceFragmentationPanel = new SequenceFragmentationPanel(taggedPeptideSequence, annotations, false, spectrumInformation.getIdentificationParameters().getSearchParameters().getPtmSettings(), forwardIon, rewindIon);
+        SequenceFragmentationPanel sequenceFragmentationPanel = new SequenceFragmentationPanel(taggedPeptideSequence, annotations, currentPeptide.isModified(), spectrumInformation.getIdentificationParameters().getSearchParameters().getPtmSettings(), forwardIon, rewindIon);
         sequenceFragmentationPanel.setOpaque(true);
         sequenceFragmentationPanel.setBackground(Color.WHITE);
-
         sequenceFragmentationPanel.setSize(1000, 68);
-//        this.sequenceFragmentationChartComponent.setWidth(sequenceFragmentationPanel.getWidth()+2, Unit.PIXELS);
-//        this.sequenceFragmentationChartComponent.setHeight(sequenceFragmentationPanel.getHeight()+2, Unit.PIXELS);
         sequenceFragmentationChartComponent.setSource(new ExternalResource(drawImage(sequenceFragmentationPanel)));
         try {
             errorPlot = new MassErrorPlot(annotations, spectrumInformation.getSpectrum(), accuracy, spectrumInformation.getIdentificationParameters().getSearchParameters().getFragmentAccuracyType() == SearchParameters.MassAccuracyType.PPM);
             errorPlot.setSize(270, 68);
             errorPlot.getChartPanel().setSize(270, 68);
             errorPlot.updateUI();
-//            this.massErrorPlotComponent.setWidth(errorPlot.getWidth() + 2, Unit.PIXELS);
-//            this.massErrorPlotComponent.setHeight(errorPlot.getHeight() + 2, Unit.PIXELS);
             XYPlot plot = (XYPlot) errorPlot.getChartPanel().getChart().getPlot();
             plot.getDomainAxis().setVisible(false);
             plot.getRangeAxis().setVisible(false);
@@ -187,7 +182,6 @@ public class SecondarySpectraChartsGenerator {
         }
         base64 = Base64.encodeBytes(imageData);
         base64 = "data:image/png;base64," + base64;
-        System.out.println("at ->> "+image.getWidth()+"  "+image.getHeight()+"----->>>"+base64);
         //total chain coverage     
         return base64;
     }

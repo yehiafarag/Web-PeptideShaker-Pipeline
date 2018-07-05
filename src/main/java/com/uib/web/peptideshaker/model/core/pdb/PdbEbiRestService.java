@@ -138,7 +138,7 @@ public class PdbEbiRestService {
                     l = (List<Object>) subMap.get("molecules");
                     subMap = (Map<String, Object>) l.get(pdbMatch.getEntity_id() - 1);
                     l = (List<Object>) subMap.get("chains");
-
+//
                     for (Object o : l) {
                         subMap = (Map<String, Object>) o;
                         String chain_id = subMap.get("chain_id") + "";
@@ -151,37 +151,50 @@ public class PdbEbiRestService {
                             subChainData = (Map<String, Object>) chainData.get("end");
                             int end_author_residue_number = (Integer) subChainData.get("author_residue_number");
                             int end_residue_number = (Integer) subChainData.get("residue_number");
+                            
+                          
 
                             String chainSequence = pdbMatch.getSequence().substring(start_residue_number - 1, end_residue_number - 1);
-                            int uniprotStart = -5;
-                            int uniprotEnd = -5;
+                            int tstart_author_residue_number = -5;
+                            int tend_author_residue_number = -5;
 
                             int uniprotLength = end_author_residue_number - start_author_residue_number;
                             int diffrent = (end_residue_number - start_residue_number) - uniprotLength;
-
-                            String uProtSeq = proteinSequence.replace("L", "I");
-                            String uChainSeq = chainSequence.replace("L", "I").substring(0, 20);
+                             String uProtSeq = proteinSequence.replace("L", "I");
+                            String uChainSeq = chainSequence.replace("L", "I");
+                            
+                            
                             if (uProtSeq.contains(uChainSeq)) {
-                                uniprotStart = uProtSeq.indexOf(uChainSeq);
-                                uniprotEnd = uniprotStart + chainSequence.length();
-                            } else {
-                                for (int i = 1; i < uChainSeq.length(); i++) {
-                                    String t = uChainSeq.substring(i);
-                                    if (uProtSeq.contains(t)) {
-                                        uniprotStart = uProtSeq.indexOf(t);
-                                        uniprotEnd = uniprotStart + chainSequence.length() - i + 1;
-                                        break;
-                                    }
-                                }
-
+                                tstart_author_residue_number = uProtSeq.indexOf(uChainSeq);
+                                tend_author_residue_number = tstart_author_residue_number + chainSequence.length();
+                            } 
+//                            else if (uChainSeq.length()>25 && uProtSeq.contains(uChainSeq.substring(20))) {
+////                                 System.out.println("case II");
+////                                tstart_author_residue_number = uProtSeq.indexOf(uChainSeq);
+////                                tend_author_residue_number = tstart_author_residue_number + chainSequence.length();
+//                            } else {
+//                                 System.out.println("case III");
+////                                 System.out.println("at u seq "+uChainSeq+"   " );
+////                                for (int i = 1; i < uChainSeq.length(); i++) {
+////                                    String t = uChainSeq.substring(i);
+////                                    if (uProtSeq.contains(t)) {
+////                                        tstart_author_residue_number = uProtSeq.indexOf(t);
+////                                        tend_author_residue_number = tstart_author_residue_number + chainSequence.length() - i + 1;
+////                                        break;
+////                                    }
+////                                }
+////
+//                            }
+                            if (tstart_author_residue_number <  0) {
+                                tstart_author_residue_number = start_author_residue_number;
                             }
-                            if (uniprotStart == -5) {
-                                uniprotStart = start_author_residue_number;
+                            if (tend_author_residue_number<  0) {
+                                tend_author_residue_number = end_author_residue_number;
                             }
-                            if (uniprotEnd == -5) {
-                                uniprotEnd = end_author_residue_number;
-                            }
-                            ChainBlock chainParam = new ChainBlock(struct_asym_id, chain_id, uniprotStart, start_residue_number, uniprotEnd, end_residue_number);
+                            
+//                              System.out.println("chain_id  "+chain_id+"   start_author_residue_number "+start_author_residue_number+"  to  "+tstart_author_residue_number+"   end_author_residue_number  "+end_author_residue_number+"  to  "+tend_author_residue_number);
+//                            
+                            ChainBlock chainParam = new ChainBlock(struct_asym_id, chain_id, tstart_author_residue_number, start_residue_number, tend_author_residue_number, end_residue_number,uChainSeq);
                             return chainParam;
                         }).forEachOrdered((chainParam) -> {
                             pdbMatch.addChain(chainParam);

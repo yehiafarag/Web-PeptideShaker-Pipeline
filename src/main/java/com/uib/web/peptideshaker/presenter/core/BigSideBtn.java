@@ -15,27 +15,56 @@ import com.vaadin.ui.Label;
  */
 public class BigSideBtn extends HorizontalLayout {
 
-    private final Image iconImage;
+    private Image btnThumbIconImage;
     private final Label iconLabel;
     private final MobileSideBtn mobileModeBtn;
     private final int btnId;
 
     public BigSideBtn(String text, int btnId) {
-        iconImage = new Image();
-        iconImage.setSizeFull();
+        mobileModeBtn = new MobileSideBtn(text);
+        btnThumbIconImage = new Image() {
+            @Override
+            public void setSource(Resource source) {
+                BigSideBtn.this.setVisible((source != null));
+                if (source == null || btnThumbIconImage.getSource() == source) {
+                    return;
+                }
+                btnThumbIconImage.setVisible(true);
+                iconLabel.setVisible(false);
+                super.setSource(source);
+                mobileModeBtn.updateIconResource(source);
+                if (this.getStyleName().contains("reshake")) {
+                    this.removeStyleName("reshake");
+                    this.addStyleName("shake");
+                    mobileModeBtn.removeStyleName("reshake");
+                    mobileModeBtn.addStyleName("shake");
+                } else {
+                    this.removeStyleName("shake");
+                    this.addStyleName("reshake");
+                    mobileModeBtn.removeStyleName("shake");
+                    mobileModeBtn.addStyleName("reshake");
+                }
+            }
+
+        };
+        btnThumbIconImage.setSizeFull();
         this.iconLabel = new Label();
         this.iconLabel.setSizeFull();
         this.iconLabel.setContentMode(ContentMode.HTML);
         this.btnId = btnId;
-        BigSideBtn.this.addComponent(iconImage);
-        BigSideBtn.this.setComponentAlignment(iconImage, Alignment.MIDDLE_CENTER);
+        BigSideBtn.this.addComponent(btnThumbIconImage);
+        BigSideBtn.this.setComponentAlignment(btnThumbIconImage, Alignment.MIDDLE_CENTER);
         BigSideBtn.this.addComponent(iconLabel);
         BigSideBtn.this.setComponentAlignment(iconLabel, Alignment.MIDDLE_CENTER);
         BigSideBtn.this.setSizeFull();
         BigSideBtn.this.setStyleName("bigmenubtn");
 
-        mobileModeBtn = new MobileSideBtn(text);
+        
 
+    }
+
+    public Image getBtnThumbIconImage() {
+        return btnThumbIconImage;
     }
 
     public int getBtnId() {
@@ -53,25 +82,7 @@ public class BigSideBtn extends HorizontalLayout {
     }
 
     public void updateIconResource(Resource imageURL) {
-        this.setVisible((imageURL != null));
-        if (imageURL == null || iconImage.getSource() == imageURL) {
-            return;
-        }
-        iconImage.setVisible(true);
-        iconLabel.setVisible(false);
-        iconImage.setSource(imageURL);
-        mobileModeBtn.updateIconResource(imageURL);
-        if (this.getStyleName().contains("reshake")) {
-            this.removeStyleName("reshake");
-            this.addStyleName("shake");
-            mobileModeBtn.removeStyleName("reshake");
-            mobileModeBtn.addStyleName("shake");
-        } else {
-            this.removeStyleName("shake");
-            this.addStyleName("reshake");
-            mobileModeBtn.removeStyleName("shake");
-            mobileModeBtn.addStyleName("reshake");
-        }
+        btnThumbIconImage.setSource(imageURL);
     }
 
     public void updateIcon(String HTML) {
@@ -79,7 +90,7 @@ public class BigSideBtn extends HorizontalLayout {
         if (HTML == null || iconLabel.getValue().equalsIgnoreCase(HTML)) {
             return;
         }
-        iconImage.setVisible(false);
+        btnThumbIconImage.setVisible(false);
         iconLabel.setVisible(true);
         iconLabel.setValue(HTML);
         mobileModeBtn.updateIconHTML(HTML);

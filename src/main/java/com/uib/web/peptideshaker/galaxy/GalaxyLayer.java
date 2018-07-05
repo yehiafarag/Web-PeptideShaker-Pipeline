@@ -16,15 +16,22 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.PopupView;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import java.io.File;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class represents Galaxy layer that work as middle layer between the
@@ -33,7 +40,7 @@ import java.util.Set;
  * @author Yehia Farag
  */
 public abstract class GalaxyLayer {
-
+    
     private final HorizontalLayout galaxyConnectionPanel;
     private final PopupView connectionSettingsPanel;
 //    /**
@@ -59,28 +66,28 @@ public abstract class GalaxyLayer {
      *
      */
     private ToolsHandler toolsHandler;
-
+    
     private File userFolder;
-
+    
     private String galaxyURL;
-
+    
     private final GalaxyConnectionPanelLayout galaxyConnectionSettingsPanel;
-
+    
     private final Button connectionBtn;
 
     /**
      * Constructor to initialise Galaxy layer.
      */
     public GalaxyLayer() {
-
+        
         galaxyConnectionPanel = new HorizontalLayout();
         galaxyConnectionPanel.setHeight(60, Sizeable.Unit.PIXELS);
         galaxyConnectionPanel.setWidth(100, Sizeable.Unit.PERCENTAGE);
         galaxyConnectionPanel.setSpacing(true);
-
+        
         Label connectionStatuesLabel = new Label("Galaxy is<font color='red'>  not connected </font><font size='3' color='red'> " + FontAwesome.FROWN_O.getHtml() + "</font>");
         connectionStatuesLabel.setContentMode(ContentMode.HTML);
-
+        
         connectionStatuesLabel.setHeight(25, Sizeable.Unit.PIXELS);
         connectionStatuesLabel.setWidth(160, Sizeable.Unit.PIXELS);
         connectionStatuesLabel.setStyleName(ValoTheme.LABEL_SMALL);
@@ -89,14 +96,14 @@ public abstract class GalaxyLayer {
         connectionStatuesLabel.addStyleName(ValoTheme.LABEL_NO_MARGIN);
         galaxyConnectionPanel.addComponent(connectionStatuesLabel);
         galaxyConnectionPanel.setComponentAlignment(connectionStatuesLabel, Alignment.BOTTOM_LEFT);
-
+        
         HorizontalLayout galaxyConnectionBtnContainer = new HorizontalLayout();
         galaxyConnectionBtnContainer.setWidthUndefined();
         galaxyConnectionBtnContainer.setHeight(100, Sizeable.Unit.PERCENTAGE);
         galaxyConnectionBtnContainer.setSpacing(false);
         galaxyConnectionPanel.addComponent(galaxyConnectionBtnContainer);
         galaxyConnectionPanel.setComponentAlignment(galaxyConnectionBtnContainer, Alignment.BOTTOM_RIGHT);
-
+        
         connectionBtn = new Button("Connect");
         connectionBtn.setDisableOnClick(true);
         connectionBtn.setStyleName("galaxybtn");
@@ -107,7 +114,7 @@ public abstract class GalaxyLayer {
         connectionBtn.setHeight(25, Sizeable.Unit.PIXELS);
         galaxyConnectionBtnContainer.addComponent(connectionBtn);
         galaxyConnectionBtnContainer.setComponentAlignment(connectionBtn, Alignment.BOTTOM_RIGHT);
-
+        
         VerticalLayout settingBtn = new VerticalLayout();
         settingBtn.addStyleName("settingbtn");
         settingBtn.setDescription("Galaxy server settings");
@@ -115,7 +122,7 @@ public abstract class GalaxyLayer {
         settingBtn.setHeight(25, Sizeable.Unit.PIXELS);
         galaxyConnectionBtnContainer.addComponent(settingBtn);
         galaxyConnectionBtnContainer.setComponentAlignment(settingBtn, Alignment.BOTTOM_RIGHT);
-
+        
         String userDataFolderUrl = VaadinSession.getCurrent().getAttribute("userDataFolderUrl") + "";
         galaxyConnectionSettingsPanel = new GalaxyConnectionPanelLayout() {
             @Override
@@ -124,7 +131,7 @@ public abstract class GalaxyLayer {
                     if (Galaxy_Instance != null) {
                         if (VaadinSession.getCurrent().getAttribute("ApiKey") != null) {
                             String APIKey = VaadinSession.getCurrent().getAttribute("ApiKey").toString();
-
+                            
                             if (!APIKey.equalsIgnoreCase(Galaxy_Instance.getApiKey())) {
                                 //clean history and create new folder
                                 userFolder = new File(userDataFolderUrl, APIKey);
@@ -142,13 +149,20 @@ public abstract class GalaxyLayer {
                         VaadinSession.getCurrent().setAttribute("galaxyUrl", Galaxy_Instance.getGalaxyUrl());
                         System.out.println("at galaxy 0");
                         galaxyURL = Galaxy_Instance.getGalaxyUrl();
-                        System.out.println("at galaxy I");
+                        if (!checkConn(galaxyURL)) {
+                            systemDisconnected();
+                            galaxyConnectionSettingsPanel.disconnectGalaxy();
+                            connectionBtn.setEnabled(true);
+                            Notification.show("Error in connection check the web address", Notification.Type.ERROR_MESSAGE);
+                            return;
+                        }
+                        System.out.println("at galaxy I ");
                         toolsHandler = new ToolsHandler(Galaxy_Instance.getToolsClient(), Galaxy_Instance.getWorkflowsClient(), Galaxy_Instance.getHistoriesClient()) {
                             @Override
                             public void updateHistoryDatastructure() {
                                 historyHandler.updateHistory();
                             }
-
+                            
                         };
                         System.out.println("at galaxy II");
                         historyHandler = new HistoryHandler(Galaxy_Instance, userFolder) {
@@ -157,7 +171,7 @@ public abstract class GalaxyLayer {
                                 //update history in the system 
                                 jobsInProgress(busy, historyFilesMap);
                             }
-
+                            
                         };//    
                         System.out.println("at galaxy III");
                         connectionBtn.setCaption("Disconnect");
@@ -177,7 +191,7 @@ public abstract class GalaxyLayer {
                     Thread t = new Thread(() -> {
                         try {
                             Thread.sleep(1000);
-
+                            
                         } catch (InterruptedException ex) {
                             ex.printStackTrace();
                         }
@@ -190,20 +204,20 @@ public abstract class GalaxyLayer {
 
                 }
             }
-
+            
             @Override
             public void hideGalaxyPanel() {
                 connectionSettingsPanel.setPopupVisible(false);
             }
-
+            
         };
         connectionSettingsPanel = new PopupView(null, galaxyConnectionSettingsPanel);
         connectionSettingsPanel.setSizeFull();
         connectionSettingsPanel.setHideOnMouseOut(false);
         settingBtn.addComponent(connectionSettingsPanel);
-
+        
         connectionBtn.addClickListener((Button.ClickEvent event) -> {
-
+            
             if (connectionBtn.getCaption().equalsIgnoreCase("Disconnect")) {
                 //disconnect from galaxy
                 connectionBtn.setCaption("Connect");
@@ -216,19 +230,19 @@ public abstract class GalaxyLayer {
                 UI.getCurrent().getSession().close();
                 VaadinSession.getCurrent().getSession().invalidate();
                 Page.getCurrent().reload();
-
+                
             } else {
                 //connect to galaxy
                 galaxyConnectionSettingsPanel.validateAndConnect();
             }
-
+            
         });
-
+        
     }
-
+    
     public Layout getGalaxyConnectionPanel() {
         return galaxyConnectionPanel;
-
+        
     }
 
 //    /**
@@ -249,7 +263,7 @@ public abstract class GalaxyLayer {
 //    return true;
 //    }
     public abstract void systemConnected();
-
+    
     public abstract void systemDisconnected();
 
     /**
@@ -303,9 +317,9 @@ public abstract class GalaxyLayer {
             return new HashMap<>();
         }
     }
-
+    
     public boolean checkToolsAvailable() {
-
+        
         return toolsHandler.isValidTools();
     }
 
@@ -349,12 +363,12 @@ public abstract class GalaxyLayer {
      * @param searchParameters searchParameters .par file
      */
     public Map<String, GalaxyFile> saveSearchGUIParameters(SearchParameters searchParameters, boolean editMode) {
-
+        
         if (toolsHandler != null) {
             return toolsHandler.saveSearchGUIParameters(galaxyURL, userFolder, historyHandler.getSearchSettingsFilesMap(), historyHandler.getWorkingHistoryId(), searchParameters, editMode);
         }
         return null;
-
+        
     }
 
     /**
@@ -375,7 +389,7 @@ public abstract class GalaxyLayer {
         PeptideShakerVisualizationDataset tempWorkflowOutput = toolsHandler.executeWorkFlow(projectName, fastaFileId, mgfMap, searchEnginesList, historyHandler.getWorkingHistoryId(), searchParameters, otherSearchParameters);
         toolsHandler.updateHistoryDatastructure();
     }
-
+    
     public void deleteDataset(SystemDataSet ds) {
         if (ds.getType().equalsIgnoreCase("Web Peptide Shaker Dataset")) {
             PeptideShakerVisualizationDataset vDs = (PeptideShakerVisualizationDataset) ds;
@@ -384,32 +398,51 @@ public abstract class GalaxyLayer {
 //            toolsHandler.deleteDataset(galaxyURL, vDs.getHistoryId(), vDs.getPeptideFileId());
 //            toolsHandler.deleteDataset(galaxyURL, vDs.getHistoryId(), vDs.getPsmFileId());
             toolsHandler.deleteDataset(galaxyURL, vDs.getHistoryId(), vDs.getSearchGUIFileId());
-
+            
         } else {
             toolsHandler.deleteDataset(galaxyURL, ds.getHistoryId(), ds.getGalaxyId());
         }
-
+        
         historyHandler.updateHistory();
     }
-
+    
     public boolean sendDataToNels(String historyId, String datasetGalaxyId) {
         boolean check = toolsHandler.sendToNels(historyId, datasetGalaxyId, galaxyURL);
         toolsHandler.updateHistoryDatastructure();
         return check;
-
+        
     }
-
+    
     public boolean getFromNels(String historyId, String datasetGalaxyId) {
         return toolsHandler.getFromNels(historyId, datasetGalaxyId);
-
+        
     }
-
+    
     public abstract void jobsInProgress(boolean inprogress, Map<String, SystemDataSet> historyFilesMap);
-
+    
     public void reConnectToGalaxy(String APIKEy, String galaxyUrl) {
         galaxyConnectionSettingsPanel.reConnectToGalaxy(APIKEy, galaxyUrl);
         connectionBtn.click();
-
+        
     }
-
+    
+    private boolean checkConn(String urlAddress) {
+        try {
+            URL url = new URL(urlAddress);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.connect();
+            int code = connection.getResponseCode();
+            if (code == 404) {
+                return false;
+            }
+            
+        } catch (MalformedURLException ex) {
+            return false;
+        } catch (IOException ex) {
+            return false;
+        }
+        return true;
+    }
+    
 }

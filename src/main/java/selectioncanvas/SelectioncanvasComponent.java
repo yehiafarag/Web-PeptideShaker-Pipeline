@@ -30,12 +30,6 @@ public abstract class SelectioncanvasComponent extends AbstractJavaScriptCompone
         SelectioncanvasComponent.this.addValueChangeListener(() -> {
            
             String value = SelectioncanvasComponent.this.getValue();
-            System.out.println("massage from server received --- "+value);
-//            if (value.equalsIgnoreCase(lastSelectedValue)) {
-//                return;
-//            }
-//            lastSelectedValue = value;
-            
             String[] valueArr = value.split(",");
             if (valueArr.length < 4) {
                 return;

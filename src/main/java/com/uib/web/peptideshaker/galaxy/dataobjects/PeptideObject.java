@@ -1,6 +1,10 @@
 package com.uib.web.peptideshaker.galaxy.dataobjects;
 
+import com.compomics.util.experiment.biology.PTM;
+import com.compomics.util.experiment.biology.PTMFactory;
 import com.compomics.util.experiment.biology.Peptide;
+import com.compomics.util.experiment.identification.matches.ModificationMatch;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -29,11 +33,18 @@ public class PeptideObject extends Peptide {
     private int validatedPSMsNumber;
     private double confidence;
     private String validation;
+    private String tooltip;
 
     private final Set<String> proteinsSet;
     private final Set<String> proteinGroupsSet;
 
     private int validatedUniqueToGroupNumber;
+    public void setTooltip(String tooltip){
+        this.tooltip=tooltip;
+    }
+    public String getTooltip(){
+        return this.tooltip;
+    }
 
     public PeptideObject() {
         this.proteinsSet = new LinkedHashSet<>();
@@ -94,9 +105,28 @@ public class PeptideObject extends Peptide {
     public String getVariableModifications() {
         return variableModifications;
     }
+    private final PTMFactory ptmFactory = PTMFactory.getInstance();
+    /**
+     * The modifications carried by the peptide.
+     */
+    private ArrayList<ModificationMatch> modificationMatches = null;
 
     public void setVariableModifications(String variableModifications) {
         this.variableModifications = variableModifications;
+        if (variableModifications.trim().equalsIgnoreCase("")) {
+            return;
+        }
+        this.modificationMatches = new ArrayList<>();
+        for (String modStr : variableModifications.replace("),", "__").split("__")) {
+            String[] modStrArr = modStr.trim().replace("(", "__").split("__");
+            PTM ptm = ptmFactory.getPTM(modStrArr[0].trim());
+            String[] indexArr = modStrArr[1].trim().replace(")", "").trim().split(",");
+            for (String modIndex : indexArr) {
+                ModificationMatch mod = new ModificationMatch(ptm.getName(), true, Integer.parseInt(modIndex.trim()));
+                modificationMatches.add(mod);
+            }
+
+        }
     }
 
     public String getFixedModifications() {
@@ -194,6 +224,17 @@ public class PeptideObject extends Peptide {
 
     public void setIndex(int index) {
         this.index = index;
+    }
+
+    @Override
+    public boolean isModified() {
+        return !this.variableModifications.isEmpty();
+
+    }
+
+    @Override
+    public ArrayList<ModificationMatch> getModificationMatches() {
+        return modificationMatches;
     }
 
 }

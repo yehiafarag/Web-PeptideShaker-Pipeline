@@ -49,6 +49,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import javax.swing.JPanel;
+import org.apache.commons.math.MathException;
 import org.jfree.chart.encoders.ImageEncoder;
 import org.jfree.chart.encoders.ImageEncoderFactory;
 import org.jfree.chart.encoders.ImageFormat;
@@ -63,6 +64,8 @@ import selectioncanvas.SelectioncanvasComponent;
 public class SpectrumPlot extends AbsoluteLayout {
 
     private final Image plot;
+    private Image plotThumbImage;
+    private SelectioncanvasComponent selectionCanvas;
     private final Slider levelSlider;
     private final Slider annotationAccuracySlider;
     private WebSpectrumPanel spectrumPanel;
@@ -78,6 +81,20 @@ public class SpectrumPlot extends AbsoluteLayout {
     private final MenuItem resetAnnoItem;
     private final MenuItem deNovoItem;
     private final MenuItem settingsItem;
+    private boolean disableSizeReporter = false;
+
+    public boolean isDisableSizeReporter() {
+        return disableSizeReporter;
+    }
+
+    public void setDisableSizeReporter(boolean disableSizeReporter) {
+        this.disableSizeReporter = disableSizeReporter;
+    }
+
+    public void setPlotThumbImage(Image plotThumbImage) {
+        this.plotThumbImage = plotThumbImage;
+        this.plotThumbImage.addStyleName("nopadding");
+    }
 
     public SpectrumPlot() {
         SpectrumPlot.this.setStyleName("splotframe");
@@ -102,61 +119,24 @@ public class SpectrumPlot extends AbsoluteLayout {
         plot = new Image() {
             @Override
             public void setSource(Resource source) {
-                if (this.getStyleName().contains("imgI")) {
-                    this.removeStyleName("imgI");
-                    this.addStyleName("imgII");
-                    System.out.println("add imge II ");
-                } else {
-                    System.out.println("add imge I ");
+                if (this.getStyleName().contains("imgII")) {
                     this.removeStyleName("imgII");
                     this.addStyleName("imgI");
+                } else {
+                    this.removeStyleName("imgI");
+                    this.addStyleName("imgII");
+
                 }
                 super.setSource(source); //To change body of generated methods, choose Tools | Templates.
             }
 
         };
-        SpectrumPlot.this.addComponent(plot, "left:0px;top:0px");
-        SelectioncanvasComponent selectionCanvas = new SelectioncanvasComponent() {
-            @Override
-            public void dragSelectionIsPerformed(double startX, double startY, double endX, double endY) {
-                if (spectrumPanel != null) {
-                    spectrumPanel.zoom((int) startX, (int) startY, (int) endX, (int) endY);
-                    plot.setSource(new ExternalResource(drawImage(spectrumPanel)));
-                }
-            }
 
-            @Override
-            public void rightSelectionIsPerformed(double startX, double startY) {
-                if (spectrumPanel != null) {
-                    spectrumPanel.reset();
-                    plot.setSource(new ExternalResource(drawImage(spectrumPanel)));
-                }
-            }
-
-            @Override
-            public void leftSelectionIsPerformed(double startX, double startY) {
-                if (spectrumPanel != null) {
-
-//                    MouseEvent e = new MouseEvent(spectrumPanel, 0, 0, -1, (int) startX, (int) startY, 1, false, MouseEvent.BUTTON1);
-//                    spectrumPanel.mouseClickedAction(e);
-//                    plot.setSource(new ExternalResource(drawImage(spectrumPanel)));
-                }
-            }
-
-        };
-        selectionCanvas.setSize(1000, 500);
-
-        SpectrumPlot.this.addComponent(selectionCanvas, "left:0px;top:0px");
-
-        levelSlider = new Slider();
-        levelSlider.setMax(100);
-        levelSlider.setMin(0);
-        levelSlider.setStyleName("borderslider");
-        levelSlider.setHeight(100, Unit.PIXELS);
-        levelSlider.setCaptionAsHtml(true);
-        levelSlider.setCaption("<center>Level<br/>");
-        levelSlider.setOrientation(SliderOrientation.VERTICAL);
-        SpectrumPlot.this.addComponent(levelSlider, "right:10px;top:220px");
+        SpectrumPlot.this.addComponent(plot, "left:0px;bottom:40px");
+//        selectionCanvas = initSelectionCanvas(1000,500);
+//        
+//
+//        SpectrumPlot.this.addComponent(selectionCanvas, "left:0px;bottom:40px");
 
         annotationAccuracySlider = new Slider();
         annotationAccuracySlider.setMax(100);
@@ -168,12 +148,21 @@ public class SpectrumPlot extends AbsoluteLayout {
         annotationAccuracySlider.setDescription("Annotation accuracy : 0.02 Da");
 //        annotationAccuracySlider.setResolution(3);
         annotationAccuracySlider.setOrientation(SliderOrientation.VERTICAL);
-        SpectrumPlot.this.addComponent(annotationAccuracySlider, "right:10px;top:100px");
+        SpectrumPlot.this.addComponent(annotationAccuracySlider, "right:10px;top:10%");
 
+        levelSlider = new Slider();
+        levelSlider.setMax(100);
+        levelSlider.setMin(0);
+        levelSlider.setStyleName("borderslider");
+        levelSlider.setHeight(100, Unit.PIXELS);
+        levelSlider.setCaptionAsHtml(true);
+        levelSlider.setCaption("<center>Level<br/>");
+        levelSlider.setOrientation(SliderOrientation.VERTICAL);
+        SpectrumPlot.this.addComponent(levelSlider, "right:10px;bottom:10%");
         HorizontalLayout controlsLayout = new HorizontalLayout();
         controlsLayout.setWidth(100, Unit.PERCENTAGE);
         controlsLayout.setHeight(40, Unit.PIXELS);
-        SpectrumPlot.this.addComponent(controlsLayout, "left:0px;bottom:50px");
+        SpectrumPlot.this.addComponent(controlsLayout, "left:0px;bottom:0px");
         MenuBar menue = new MenuBar();
         menue.setStyleName(ValoTheme.MENUBAR_BORDERLESS);
         menue.addStyleName(ValoTheme.MENUBAR_SMALL);
@@ -183,25 +172,27 @@ public class SpectrumPlot extends AbsoluteLayout {
 
         //initialise ions tab
         ionsItem = menue.addItem("Ions", null, null);
-        annotationsItemsCommand = new MenuBar.Command() {
-            @Override
-            public void menuSelected(MenuItem selectedItem) {
-                defaultAnnotationInUse = false;
-                if (selectedItem.getText().equalsIgnoreCase("Adapt")) {
-                    MenuItem H2OItem = lossItem.getChildren().get(0);
-                    H2OItem.setEnabled(!selectedItem.isChecked());
-                    MenuItem NH3Item = lossItem.getChildren().get(1);
-                    NH3Item.setEnabled(!selectedItem.isChecked());
-                }
-                updateAnnotationPreferences();
-                resetAnnoItem.setVisible(true);
+        lossItem = menue.addItem("Loss", null, null);
+        resetAnnoItem = menue.addItem("Reset Annotations", null, (MenuItem selectedItem) -> {
+            selectedItem.setVisible(false);
+            resetAnnotations();
+            updateAnnotationPreferences();
+        });
+        annotationsItemsCommand = (MenuItem selectedItem) -> {
+            defaultAnnotationInUse = false;
+            if (selectedItem.getText().equalsIgnoreCase("Adapt")) {
+                MenuItem H2OItem = lossItem.getChildren().get(0);
+                H2OItem.setEnabled(!selectedItem.isChecked());
+                MenuItem NH3Item = lossItem.getChildren().get(1);
+                NH3Item.setEnabled(!selectedItem.isChecked());
             }
+            updateAnnotationPreferences();
+            resetAnnoItem.setVisible(true);
         };
         initIonsItem(ionsItem, annotationsItemsCommand);
         otherItem = menue.addItem("Other", null, null);
         initOtherItem(otherItem, annotationsItemsCommand);
 
-        lossItem = menue.addItem("Loss", null, null);
         MenuItem H2OItem = lossItem.addItem("H2O", annotationsItemsCommand);
         H2OItem.setEnabled(false);
         H2OItem.setCheckable(true);
@@ -256,18 +247,10 @@ public class SpectrumPlot extends AbsoluteLayout {
 
         mainSizeReporter = new SizeReporter(SpectrumPlot.this);
         mainSizeReporter.addResizeListener((ComponentResizeEvent event) -> {
-            int w = event.getWidth() - 52;
-            int h = event.getHeight() - 92;
-            if (w <= 0 || h <= 0) {
+            if (isDisableSizeReporter()) {
                 return;
             }
-            selectionCanvas.setSize(w, h);
-            if (spectrumPanel != null) {
-                spectrumPanel.setSize(w, h);
-                plot.setWidth(w, Unit.PIXELS);
-                plot.setHeight(h, Unit.PIXELS);
-                plot.setSource(new ExternalResource(drawImage(spectrumPanel)));
-            }
+            reDraw();
         });
         MenuBar.Command showPeakDetailsCommand = (MenuItem selectedItem) -> {
             spectrumPanel.showPeakDetails((selectedItem.getText().equals("Show Peak Details")));
@@ -278,13 +261,10 @@ public class SpectrumPlot extends AbsoluteLayout {
             }
             plot.setSource(new ExternalResource(drawImage(spectrumPanel)));
         };
-        menue.addItem("Show Peack Details", null, showPeakDetailsCommand);
-        resetAnnoItem = menue.addItem("Reset Annotations", null, (MenuItem selectedItem) -> {
-            selectedItem.setVisible(false);
-            resetAnnotations();
-            updateAnnotationPreferences();
-        });
+        menue.addItem("Show Peak Details", null, showPeakDetailsCommand);
+
         resetAnnoItem.setVisible(false);
+        disableSizeReporter = false;
 
     }
 
@@ -316,6 +296,66 @@ public class SpectrumPlot extends AbsoluteLayout {
             mi.setChecked(true);
         });
 
+    }
+
+    private SelectioncanvasComponent initSelectionCanvas(int w, int h) {
+        SelectioncanvasComponent sc = new SelectioncanvasComponent() {
+            @Override
+            public void dragSelectionIsPerformed(double startX, double startY, double endX, double endY) {
+                if (spectrumPanel != null) {
+                    spectrumPanel.zoom((int) startX, (int) startY, (int) endX, (int) endY);
+                    plot.setSource(new ExternalResource(drawImage(spectrumPanel)));
+
+                }
+            }
+
+            @Override
+            public void rightSelectionIsPerformed(double startX, double startY) {
+                if (spectrumPanel != null) {
+                    spectrumPanel.reset();
+                    plot.setSource(new ExternalResource(drawImage(spectrumPanel)));
+
+                }
+            }
+
+            @Override
+            public void leftSelectionIsPerformed(double startX, double startY) {
+                if (spectrumPanel != null) {
+
+//                    MouseEvent e = new MouseEvent(spectrumPanel, 0, 0, -1, (int) startX, (int) startY, 1, false, MouseEvent.BUTTON1);
+//                    spectrumPanel.mouseClickedAction(e);
+//                    plot.setSource(new ExternalResource(drawImage(spectrumPanel)));
+                }
+            }
+
+        };
+        sc.setSize(w, h);
+        return sc;
+    }
+
+    public void reDraw() {
+
+        int w = mainSizeReporter.getWidth() - 52;
+        int h = mainSizeReporter.getHeight() - 92;
+        if (w <= 0 || h <= 0) {
+            return;
+        }
+        if (selectionCanvas != null) {
+            SpectrumPlot.this.removeComponent(selectionCanvas);
+        }
+        selectionCanvas = initSelectionCanvas(w, h);
+        SpectrumPlot.this.addComponent(selectionCanvas, "left:0px;bottom:40px");
+        selectionCanvas.setSize(w, h);
+        if (spectrumPanel != null) {
+            spectrumPanel.setSize(w, h);
+            plot.setWidth(w, Unit.PIXELS);
+            plot.setHeight(h, Unit.PIXELS);
+            plot.setSource(new ExternalResource(drawImage(spectrumPanel)));
+
+        }
+        double tH = ((double) h * 0.8 * 0.5);
+        levelSlider.setHeight((int) tH, Unit.PIXELS);
+        annotationAccuracySlider.setHeight((int) tH, Unit.PIXELS);
     }
 
     /**
@@ -397,35 +437,10 @@ public class SpectrumPlot extends AbsoluteLayout {
                 annotationPreferences.setTiesResolution(tiesResolution); //@TODO: replace by a drop down menu
                 annotationPreferences.setShowAllPeaks(settingsItem.getChildren().get(0).isChecked());//@TODO:implement control btns
                 annotationPreferences.setAutomaticAnnotation(settingsItem.getChildren().get(3).isChecked());
-                System.out.println("at set show all " + annotationPreferences.showForwardIonDeNovoTags() + ","
-                        + annotationPreferences.showRewindIonDeNovoTags() + "   --  " + deNovoItem.getChildren().get(0).isChecked() + "   " + deNovoItem.getChildren().get(1).isChecked() + "  ");
             } catch (IOException | ClassNotFoundException | InterruptedException | SQLException e) {
                 e.printStackTrace();
             }
 
-//                    if (searchParameters.getForwardIons().contains(PeptideFragmentIon.A_ION)) {
-//            forwardIonsDeNovoCheckBoxMenuItem.setText("a-ions");
-//        }
-//        if (searchParameters.getForwardIons().contains(PeptideFragmentIon.B_ION)) {
-//            forwardIonsDeNovoCheckBoxMenuItem.setText("b-ions");
-//        }
-//        if (searchParameters.getForwardIons().contains(PeptideFragmentIon.C_ION)) {
-//            forwardIonsDeNovoCheckBoxMenuItem.setText("c-ions");
-//        }
-//
-//        forwardIonsDeNovoCheckBoxMenuItem.repaint();
-//
-//        if (searchParameters.getRewindIons().contains(PeptideFragmentIon.X_ION)) {
-//            rewindIonsDeNovoCheckBoxMenuItem.setText("x-ions");
-//        }
-//        if (searchParameters.getRewindIons().contains(PeptideFragmentIon.Y_ION)) {
-//            rewindIonsDeNovoCheckBoxMenuItem.setText("y-ions");
-//        }
-//        if (searchParameters.getRewindIons().contains(PeptideFragmentIon.Z_ION)) {
-//            rewindIonsDeNovoCheckBoxMenuItem.setText("z-ions");
-//        }
-//
-//       
             spectrumPanel.removeAllReferenceAreasXAxis();
             spectrumPanel.removeAllReferenceAreasYAxis();
             spectrumPanel.setDeltaMassWindow(accuracy);
@@ -446,11 +461,7 @@ public class SpectrumPlot extends AbsoluteLayout {
             spectrumPanel.updateUI();
             plot.setSource(new ExternalResource(drawImage(spectrumPanel)));
 
-            // create the sequence fragment ion view
-            String taggedPeptideSequence = currentPeptide.getTaggedModifiedSequence(getIdentificationParameters().getSearchParameters().getPtmSettings(), false, false, false);
-            SequenceFragmentationPanel sequenceFragmentationPanel = new SequenceFragmentationPanel(taggedPeptideSequence, annotations, false, getIdentificationParameters().getSearchParameters().getPtmSettings(), forwardIon, rewindIon);
-
-        } catch (Exception e) {
+        } catch (InterruptedException | MathException e) {
             e.printStackTrace();
 //            catchException(e);
         }
@@ -559,12 +570,10 @@ public class SpectrumPlot extends AbsoluteLayout {
         this.spectrumMatch = spectrumMatch;
         if (spectrumPanel != null) {
             spectrumPanel.reset();
-            plot.setSource(new ExternalResource(drawImage(spectrumPanel)));
             if (selectedSpectrumThread.isAlive()) {
                 selectedSpectrumThread.interrupt();
             }
         }
-
         selectedSpectrumThread = new Thread(() -> {
             Precursor precursor = currentSpectrum.getPrecursor();
             try {
@@ -573,7 +582,8 @@ public class SpectrumPlot extends AbsoluteLayout {
                 int w = mainSizeReporter.getWidth() - 52;
                 int h = mainSizeReporter.getHeight() - 92;
                 if (w <= 0 || h <= 0) {
-                    return;
+                    w = Math.max(h, w);
+                    h = Math.max(h, w);
                 }
                 spectrumPanel.setSize(w, h);
                 plot.setWidth(w, Unit.PIXELS);
@@ -599,45 +609,6 @@ public class SpectrumPlot extends AbsoluteLayout {
                     item.setChecked(true);
                 }
                 resetAnnotations();
-
-                //loss @todo
-//                HashMap<String, NeutralLoss> neutralLosses = new HashMap<String, NeutralLoss>();
-                // add the general neutral losses
-//        for (NeutralLoss neutralLoss : IonFactory.getInstance().getDefaultNeutralLosses()) {
-//            neutralLosses.put(neutralLoss.name, neutralLoss);
-//        }
-                // add the sequence specific neutral losses
-//                for (ModificationMatch modMatch : modificationMatches) {
-//                    PTM ptm = ptmFactory.getPTM(modMatch.getTheoreticPtm());
-//                    for (NeutralLoss neutralLoss : ptm.getNeutralLosses()) {
-//                        if (!neutralLosses.containsKey(neutralLoss.name)) {
-//                            neutralLosses.put(neutralLoss.name, neutralLoss);
-//                        }
-//                    }
-//                }
-//
-//                ArrayList<String> names = new ArrayList<String>(neutralLosses.keySet());
-//                Collections.sort(names);
-//
-//                if (neutralLosses.isEmpty()) {
-//                    lossMenu.setVisible(false);
-//                    lossSplitter.setVisible(false);
-//                } else {
-//
-//                    for (int i = 0; i < names.size(); i++) {
-//
-//                        String neutralLossName = names.get(i);
-//                        NeutralLoss neutralLoss = neutralLosses.get(neutralLossName);
-//
-//                        boolean selected = false;
-//                        for (String specificNeutralLossName : specificAnnotationPreferences.getNeutralLossesMap().getAccountedNeutralLosses()) {
-//                            NeutralLoss specificNeutralLoss = NeutralLoss.getNeutralLoss(specificNeutralLossName);
-//                            if (neutralLoss.isSameAs(specificNeutralLoss)) {
-//                                selected = true;
-//                                break;
-//                            }
-//                        }
-                // get the spectrum annotations
                 Property.ValueChangeListener listener = (Property.ValueChangeEvent event) -> {
                     updateAnnotationPreferences();
                 };
@@ -645,7 +616,22 @@ public class SpectrumPlot extends AbsoluteLayout {
                 levelSlider.setValue(75.0);
                 levelSlider.addValueChangeListener(listener);
                 annotationAccuracySlider.addValueChangeListener(listener);
+
                 updateAnnotationPreferences();
+
+                if (plotThumbImage != null) {
+                    spectrumPanel.setMiniature(true);
+                    spectrumPanel.setSize(100, 100);
+                    spectrumPanel.setPeakWidth(2f);
+                    spectrumPanel.setBackgroundPeakWidth(0.5f);
+                    spectrumPanel.setMaxPadding(10);
+                    plotThumbImage.setSource(new ExternalResource(drawImage(spectrumPanel)));
+                    spectrumPanel.setMiniature(false);
+                      spectrumPanel.setPeakWidth(1f);
+                      spectrumPanel.setBackgroundPeakWidth(1f);
+                    spectrumPanel.setMaxPadding(50);
+                }
+
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
@@ -663,7 +649,7 @@ public class SpectrumPlot extends AbsoluteLayout {
     }
 
     private String drawImage(JPanel panel) {
-        panel.revalidate();
+//        panel.revalidate();
         panel.repaint();
         if (panel.getWidth() <= 0) {
             panel.setSize(100, panel.getHeight());

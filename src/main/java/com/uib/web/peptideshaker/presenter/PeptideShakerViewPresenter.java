@@ -95,12 +95,9 @@ public class PeptideShakerViewPresenter extends VerticalLayout implements Viewab
         btnContainer.addComponent(psmoverviewBtn);
         btnContainer.setComponentAlignment(psmoverviewBtn, Alignment.TOP_CENTER);
         psmoverviewBtn.addLayoutClickListener(PeptideShakerViewPresenter.this);
-        
-        psmVisulizationLevelContainer = new PSMVisulizationLevelContainer(Selection_Manager, psmoverviewBtn);
-        Selection_Manager.addBtnLayout(psmoverviewBtn,psmVisulizationLevelContainer);
 
-        
-        
+        psmVisulizationLevelContainer = new PSMVisulizationLevelContainer(Selection_Manager, psmoverviewBtn);
+        Selection_Manager.addBtnLayout(psmoverviewBtn, psmVisulizationLevelContainer);
 
         VerticalLayout toolViewFrame = new VerticalLayout();
         toolViewFrame.setSizeFull();
@@ -186,17 +183,20 @@ public class PeptideShakerViewPresenter extends VerticalLayout implements Viewab
 
     }
 
+    private int lastSelectedBtn = 1;
+
     @Override
     public void layoutClick(LayoutEvents.LayoutClickEvent event) {
         BigSideBtn comp = (BigSideBtn) event.getComponent();
         Selection_Manager.selectBtn(comp);
         if (proteinsVisulizationLevelContainer != null) {
-            if (comp.getBtnId() == 2) {
+            if (comp.getBtnId() == 2 && lastSelectedBtn == 1) {
                 proteinsVisulizationLevelContainer.activate3DProteinView();
-            } else {
+            } else if (lastSelectedBtn == 1) {
                 proteinsVisulizationLevelContainer.reset3DProteinView();
             }
         }
+        lastSelectedBtn = comp.getBtnId();
 
     }
 

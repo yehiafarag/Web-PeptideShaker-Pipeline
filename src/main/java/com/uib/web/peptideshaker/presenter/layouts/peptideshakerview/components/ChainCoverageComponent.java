@@ -66,7 +66,6 @@ public class ChainCoverageComponent {
     }
 
     public void addChainRange(String chainId, int start, int end) {
-        System.out.println("--- --- "+chainId+" --- --- "+start+" --- --- "+end);
         start = Math.max(start, 0);
         end = Math.min(end, coverageArr.length - 1);
         Rectangle chain = new Rectangle(start, 10, (end - start + 1), 10);

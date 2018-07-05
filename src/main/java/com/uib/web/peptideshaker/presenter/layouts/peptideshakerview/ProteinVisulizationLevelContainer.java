@@ -16,7 +16,8 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -34,9 +35,11 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
     private final BigSideBtn proteinoverviewBtn;
     private final ProteinCoverageContainer proteinCoverageContainer;
     private final ProteinStructurePanel proteinStructurePanel;
+    private   Map<String,PeptideObject> proteinPeptides;
 
     /**
      * Constructor to initialise the main layout and variables.
+     *
      * @param Selection_Manager
      * @param proteinoverviewBtn
      */
@@ -87,17 +90,19 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
             public void selectedItem(Set<Object> selectedItems, Set<Object> selectedChildsItems) {
                 proteinCoverageContainer.setSelectedItems(selectedItems, selectedChildsItems);
                 if (selectedChildsItems.size() == 1) {
-                    peptideSelection(selectedChildsItems.iterator().next());
+                    Object peptideId = selectedChildsItems.iterator().next();
+                    peptideSelection(peptideId);
+                    proteinStructurePanel.selectPeptide(peptideId + "");
                 } else {
                     peptideSelection(null);
                 }
                 if (selectedItems.size() == 1) {
                     ProteinObject protien = this.getProteinNodes().get((String) selectedItems.iterator().next());
-                    Set<PeptideObject> proteinPeptides = new LinkedHashSet<>();
+                     proteinPeptides = new LinkedHashMap<>();
                     this.getPeptidesNodes().values().stream().filter((peptide) -> (peptide.getProteinsSet().contains(protien.getAccession()))).forEachOrdered((peptide) -> {
-                        proteinPeptides.add(peptide);
+                        proteinPeptides.put(peptide.getModifiedSequence(),peptide);
                     });
-                    proteinStructurePanel.updatePanel(protien.getAccession(), protien.getSequence(), proteinPeptides);
+                    proteinStructurePanel.updatePanel(protien.getAccession(), protien.getSequence(), proteinPeptides.values());
                 } else {
                     proteinStructurePanel.reset();
                 }
@@ -107,7 +112,16 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
             @Override
             public void updateProteinsMode(String modeType) {
                 proteinCoverageContainer.updateProteinsMode(modeType);
-                proteinStructurePanel.setMode(!modeType.equalsIgnoreCase("Validation Status"));
+                int mode = 1;
+                switch (modeType) {
+                    case "Validation Status":
+                        mode = 2;
+                        break;
+                    case "Modification  Status":
+                        mode = 3;
+                        break;
+                }
+                proteinStructurePanel.setMode(mode);
             }
 
         };
@@ -176,8 +190,10 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
 
     private void peptideSelection(Object peptideId) {
         if (peptideId == null) {
+            Selection_Manager.setSelectedPeptide(null);
             Selection_Manager.setSelection("peptide_selection", new HashSet<>(Arrays.asList(new Comparable[]{null})), null, getFilterId());
         } else {
+              Selection_Manager.setSelectedPeptide(proteinPeptides.get(peptideId.toString()));
             Selection_Manager.setSelection("peptide_selection", new HashSet<>(Arrays.asList(new Comparable[]{peptideId + ""})), null, getFilterId());
         }
 
@@ -188,7 +204,6 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
     }
 
     public void activate3DProteinView() {
-
         proteinStructurePanel.updatePdbMap(selectedProteinGraph.getProteinNodes().keySet());
         proteinStructurePanel.activate3DProteinView();
     }

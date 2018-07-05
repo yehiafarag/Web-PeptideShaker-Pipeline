@@ -1,6 +1,7 @@
 package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview;
 
 import com.google.common.collect.Sets;
+import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideObject;
 import com.uib.web.peptideshaker.model.core.FilteredProteins;
 import com.uib.web.peptideshaker.model.core.ModificationMatrix;
 import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
@@ -32,7 +33,7 @@ public class SelectionManager {
         return selectedProteinId;
     }
     private String selectedProteinId;
-     private String selectedPeptideId;
+     private PeptideObject selectedPeptide;
 
     private boolean singleProteinsFilter = false;
 
@@ -155,16 +156,16 @@ public class SelectionManager {
         piMap = null;
         chromosomeMap = null;
         proteinValidationMap = null;
-        for (String filterId : registeredDatasetAppliedFiltersMap.keySet()) {
+        registeredDatasetAppliedFiltersMap.keySet().forEach((filterId) -> {
             registeredDatasetAppliedFiltersMap.get(filterId).clear();
-        }
+        });
 
     }
 
     public void resetDatasetSelection() {
-        for (String filterId : datasetFilterOrderList) {
+        datasetFilterOrderList.forEach((filterId) -> {
             registeredDatasetAppliedFiltersMap.get(filterId).clear();
-        }
+        });
         filteredProteinsSet = new FilteredProteins();
         filteredProteinsSet.setWithoutTopFilterList(new LinkedHashSet<>(fullProteinSet));
         filteredProteinsSet.setWithTopFilterList(new LinkedHashSet<>(fullProteinSet));
@@ -175,9 +176,9 @@ public class SelectionManager {
     public void setModificationsMap(ModificationMatrix modificationMatrix) {
         selectedModificationsMap.clear();
         this.modificationMatrix = modificationMatrix;
-        for (Set<Comparable> set : modificationMatrix.getCalculatedColumns().values()) {
+        modificationMatrix.getCalculatedColumns().values().forEach((set) -> {
             fullProteinSet.addAll(set);
-        }
+        });
     }
 
     public SelectionManager() {
@@ -201,8 +202,7 @@ public class SelectionManager {
     }
 
     public void selectBtn(BigSideBtn btn) {
-        btnsLayoutMap.keySet().forEach((bbt) -> {
-            
+        btnsLayoutMap.keySet().forEach((bbt) -> {            
             if (btn.getData().toString().equalsIgnoreCase(bbt.getData().toString())) {
                 bbt.setSelected(true);
                 btnsLayoutMap.get(bbt).removeStyleName("hidepanel");
@@ -234,17 +234,19 @@ public class SelectionManager {
     }
 
     /**
-     * Set Selection in the system to update other registered listeners
-     *
-     * @param selectionType the type of the event
-     * @param filteringValue set of selected value ids
-     * @param filterId filter that create the event
+     * Set Selection in the system to update other registered listeners  
+     * @return 
      */
-    public String getSelectedPeptideId() {
+    public PeptideObject getSelectedPeptide() {
 
-        return selectedPeptideId;
+        return selectedPeptide;
 
     }
+
+    public void setSelectedPeptide(PeptideObject selectedPeptide) {
+        this.selectedPeptide = selectedPeptide;
+    }
+    
 
     public void setSelection(String selectionType, Set<Comparable> filteringValue, Set<Comparable> filteredItemsSet, String filterId) {
         if (selectionType.equalsIgnoreCase("dataset_filter_selection")) {
@@ -261,7 +263,7 @@ public class SelectionManager {
             selectedProteinId = (String)filteringValue.toArray()[0];
 
         }else if (selectionType.equalsIgnoreCase("peptide_selection")) {
-            selectedPeptideId = (String)filteringValue.toArray()[0];
+//            selectedPeptide = (String)filteringValue.toArray()[0];
 
         }
         
@@ -274,13 +276,9 @@ public class SelectionManager {
         Set<Comparable> filteredProtenSet = new LinkedHashSet<>(fullProteinSet);
         Set<Comparable> tempProtenSet = new LinkedHashSet<>();
         Integer onlyFilter = 0;
-        for (String filterId : registeredDatasetAppliedFiltersMap.keySet()) {
-            if (filterId.equals(topFilterId)) {
-                continue;
-            }
+        registeredDatasetAppliedFiltersMap.keySet().stream().filter((filterId) -> !(filterId.equals(topFilterId))).forEachOrdered((filterId) -> {
             proteinFilterUtility(filterId, onlyFilter, tempProtenSet, filteredProtenSet);
-
-        }
+        });
         FilteredProteins filteredProteinList = new FilteredProteins();
         filteredProteinList.setWithoutTopFilterList(new LinkedHashSet<>(filteredProtenSet));
         proteinFilterUtility(topFilterId, onlyFilter, tempProtenSet, filteredProtenSet);
@@ -298,11 +296,15 @@ public class SelectionManager {
             onlyFilter++;
         }
         if (filterId.equalsIgnoreCase("modifications_filter") && !selectedCategories.isEmpty()) {
-            for (Comparable str : selectedCategories) {
+            selectedCategories.stream().map((str) -> {
                 tempProtenSet.addAll(Sets.difference(filteredProtenSet, this.modificationMatrix.getCalculatedColumns().get(str.toString())));
+                return str;
+            }).map((_item) -> {
                 filteredProtenSet.removeAll(tempProtenSet);
+                return _item;
+            }).forEachOrdered((_item) -> {
                 tempProtenSet.clear();
-            }
+            });
         } else if (filterId.equalsIgnoreCase("chromosome_filter") && !selectedCategories.isEmpty()) {
             Set<Comparable> selectedData = new LinkedHashSet<>();
             selectedCategories.stream().filter((cat) -> !(cat == null)).forEachOrdered((cat) -> {
@@ -314,24 +316,18 @@ public class SelectionManager {
 
         } else if (filterId.equalsIgnoreCase("PI_filter") && !selectedCategories.isEmpty()) {
             Set<Comparable> selectedData = new LinkedHashSet<>();
-            for (Comparable cat : selectedCategories) {
-                if (cat == null) {
-                    continue;
-                }
+            selectedCategories.stream().filter((cat) -> !(cat == null)).forEachOrdered((cat) -> {
                 selectedData.addAll(Sets.intersection(piMap.get(cat.toString()), filteredProtenSet));
-            }
+            });
             tempProtenSet.addAll(Sets.difference(filteredProtenSet, selectedData));
             filteredProtenSet.removeAll(tempProtenSet);
             tempProtenSet.clear();
 
         } else if (filterId.equalsIgnoreCase("validation_filter") && !selectedCategories.isEmpty()) {
             Set<Comparable> selectedData = new LinkedHashSet<>();
-            for (Comparable cat : selectedCategories) {
-                if (cat == null) {
-                    continue;
-                }
+            selectedCategories.stream().filter((cat) -> !(cat == null)).forEachOrdered((cat) -> {
                 selectedData.addAll(Sets.intersection(proteinValidationMap.get(cat.toString()), filteredProtenSet));
-            }
+            });
             tempProtenSet.addAll(Sets.difference(filteredProtenSet, selectedData));
             filteredProtenSet.removeAll(tempProtenSet);
             tempProtenSet.clear();
@@ -345,13 +341,12 @@ public class SelectionManager {
             } else {
                 max = (double) selectedCategories.toArray()[1];
             }
-            for (Comparable cat : proteinPeptidesNumberMap.keySet()) {
+            proteinPeptidesNumberMap.keySet().forEach((cat) -> {
                 int key = (int) cat;
                 if (key >= min && key <= max) {
                     selectedData.addAll(Sets.intersection(proteinPeptidesNumberMap.get(cat), filteredProtenSet));
                 }
-
-            }
+            });
             tempProtenSet.addAll(Sets.difference(filteredProtenSet, selectedData));
             filteredProtenSet.removeAll(tempProtenSet);
             tempProtenSet.clear();
@@ -365,13 +360,12 @@ public class SelectionManager {
             } else {
                 max = (double) selectedCategories.toArray()[1];
             }
-            for (Comparable cat : proteinPSMNumberMap.keySet()) {
+            proteinPSMNumberMap.keySet().forEach((cat) -> {
                 int key = (int) cat;
                 if (key >= min && key <= max) {
                     selectedData.addAll(Sets.intersection(proteinPSMNumberMap.get(cat), filteredProtenSet));
                 }
-
-            }
+            });
             tempProtenSet.addAll(Sets.difference(filteredProtenSet, selectedData));
             filteredProtenSet.removeAll(tempProtenSet);
             tempProtenSet.clear();
@@ -385,13 +379,12 @@ public class SelectionManager {
             } else {
                 max = (double) selectedCategories.toArray()[1];
             }
-            for (Comparable cat : proteinCoverageMap.keySet()) {
+            proteinCoverageMap.keySet().forEach((cat) -> {
                 int key = (int) cat;
                 if (key >= min && key <= max) {
                     selectedData.addAll(Sets.intersection(proteinCoverageMap.get(cat), filteredProtenSet));
                 }
-
-            }
+            });
             tempProtenSet.addAll(Sets.difference(filteredProtenSet, selectedData));
             filteredProtenSet.removeAll(tempProtenSet);
             tempProtenSet.clear();

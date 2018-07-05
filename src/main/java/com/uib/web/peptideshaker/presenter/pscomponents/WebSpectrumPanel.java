@@ -137,7 +137,6 @@ public class WebSpectrumPanel extends SpectrumPanel {
         int xAxisYLocation = (getHeight() - currentPadding) / 2;
         boolean aboveXAxis = e.getY() < xAxisYLocation;
 
-        System.out.println("x axis " + xAxisYLocation + "  " + aboveXAxis);
 
         if (dataSetCounterMirroredSpectra == 0) {
             aboveXAxis = true;
@@ -428,8 +427,7 @@ public class WebSpectrumPanel extends SpectrumPanel {
             drawDaisyChain(g, iClickedList, iClickedListDatasetIndices, iClickedIndex, iClickedDataSetIndex, iStoredSequence, iStoredSequenceDatasetIndices, false);
 
             // see if there are daisychains to display for the mirrored spectra
-            drawDaisyChain(g, iClickedListMirrored, iClickedListDatasetIndicesMirrored, iClickedIndexMirrored,
-                    iClickedDataSetIndexMirrored, iStoredSequenceMirrored, iStoredSequenceDatasetIndicesMirrored, true);
+            drawDaisyChain(g, iClickedListMirrored, iClickedListDatasetIndicesMirrored, iClickedIndexMirrored,    iClickedDataSetIndexMirrored, iStoredSequenceMirrored, iStoredSequenceDatasetIndicesMirrored, true);
 
             // annotate peaks
             annotatePeaks(g, iAnnotations, false);

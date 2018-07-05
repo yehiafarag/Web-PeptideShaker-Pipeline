@@ -98,54 +98,51 @@ public class PeptidShakerUI extends UI {
 //        sc.setSize(1000, 1000);
         this.setSizeFull();
 
-        VerticalLayout layoutContent = new VerticalLayout();
-        layoutContent.setSizeFull();
-//        setContent(layoutContent);
-
-        final SelectioncanvasComponent mycomponent = new SelectioncanvasComponent() {
-            @Override
-            public void dragSelectionIsPerformed(double startX, double startY, double endX, double endY) {
-                Notification.show("Drag and select");
-                System.out.println("Drag and select");
-            }
-
-            @Override
-            public void rightSelectionIsPerformed(double startX, double startY) {
-                Notification.show("Right click select");
-                System.out.println("Right click select");
-            }
-
-            @Override
-            public void leftSelectionIsPerformed(double startX, double startY) {
-                Notification.show("left and select");
-                System.out.println("left and select");
-            }
-
-        };
-        mycomponent.setHeight(300, Unit.PIXELS);
-        mycomponent.setWidth(500, Unit.PIXELS);
-//// Set the value from server-side
-////        mycomponent.setValue("Server-side value");
+//        VerticalLayout layoutContent = new VerticalLayout();
+//        layoutContent.setSizeFull();
+////        setContent(layoutContent);
 //
-// Process a value input by the user from the client-side
-        mycomponent.addValueChangeListener(new SelectioncanvasComponent.ValueChangeListener() {
-            @Override
-            public void valueChange() {
-                Notification.show("Value: " + mycomponent.getValue());
-            }
-        });
-        layoutContent.addComponent(mycomponent);
-        Button l = new Button("Kokowawa ");
-        layoutContent.addComponent(l);
-        layoutContent.markAsDirty();
-        l.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent event) {
-                mycomponent.setHeight(600, Unit.PIXELS);
-                mycomponent.setWidth(600, Unit.PIXELS);
-                mycomponent.setValue("600,600");
-            }
-        });
+//        final SelectioncanvasComponent mycomponent = new SelectioncanvasComponent() {
+//            @Override
+//            public void dragSelectionIsPerformed(double startX, double startY, double endX, double endY) {
+//                Notification.show("Drag and select");
+//                System.out.println("Drag and select");
+//            }
+//
+//            @Override
+//            public void rightSelectionIsPerformed(double startX, double startY) {
+//                Notification.show("Right click select");
+//                System.out.println("Right click select");
+//            }
+//
+//            @Override
+//            public void leftSelectionIsPerformed(double startX, double startY) {
+//                Notification.show("left and select");
+//                System.out.println("left and select");
+//            }
+//
+//        };
+//        mycomponent.setHeight(300, Unit.PIXELS);
+//        mycomponent.setWidth(500, Unit.PIXELS);
+////// Set the value from server-side
+//////        mycomponent.setValue("Server-side value");
+////
+//// Process a value input by the user from the client-side
+//        mycomponent.addValueChangeListener(() -> {
+//            Notification.show("Value: " + mycomponent.getValue());
+//        });
+//        layoutContent.addComponent(mycomponent);
+//        Button l = new Button("Kokowawa ");
+//        layoutContent.addComponent(l);
+//        layoutContent.markAsDirty();
+//        l.addClickListener(new Button.ClickListener() {
+//            @Override
+//            public void buttonClick(Button.ClickEvent event) {
+//                mycomponent.setHeight(600, Unit.PIXELS);
+//                mycomponent.setWidth(600, Unit.PIXELS);
+//                mycomponent.setValue("600,600");
+//            }
+//        });
 
     }
 
@@ -156,7 +153,7 @@ public class PeptidShakerUI extends UI {
     }
 
     @WebServlet(urlPatterns = "/*", name = "PeptidShakerUIServlet", asyncSupported = true)
-    @VaadinServletConfiguration(ui = PeptidShakerUI.class, productionMode = false, resourceCacheTime = 1)
+    @VaadinServletConfiguration(ui = PeptidShakerUI.class, productionMode = true, resourceCacheTime = 0)//, resourceCacheTime = 1
     public static class PeptidShakerUIServlet extends VaadinServlet {
     }
 

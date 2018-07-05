@@ -127,8 +127,8 @@ public abstract class GalaxyConnectionPanelLayout extends VerticalLayout impleme
         galaxyLink.setNullSelectionAllowed(false);
         galaxyLink.setTextInputAllowed(true);
         galaxyLink.setNewItemsAllowed(true);
-          galaxyLink.addItem("http://129.177.231.22/galaxy/");
-        galaxyLink.setItemCaption("http://129.177.231.22/galaxy/", "PROBE Galaxy");
+          galaxyLink.addItem("http://129.177.231.63:8081/galaxy/");
+        galaxyLink.setItemCaption("http://129.177.231.63:8081/galaxy/", "PROBE Galaxy");
         
         galaxyLink.addItem("http://129.177.123.195:8080/");
         galaxyLink.setItemCaption("http://129.177.123.195:8080/", "CBU Galaxy");
@@ -162,7 +162,7 @@ public abstract class GalaxyConnectionPanelLayout extends VerticalLayout impleme
         userInputPanelLayout.setComponentAlignment(galaxyLinkContainer, Alignment.BOTTOM_CENTER);
         userInputPanelLayout.setExpandRatio(galaxyLinkContainer, 12);
 
-        galaxyLink.setValue("http://129.177.231.22/galaxy/");//"http://129.177.123.195:8080/");//https://usegalaxyp.org
+        galaxyLink.setValue("http://129.177.231.63:8081/galaxy/");//"http://129.177.123.195:8080/");//https://usegalaxyp.org
 
         inputTabSheet = new TabSheet();
         inputTabSheet.setWidth(100, Unit.PERCENTAGE);
@@ -262,7 +262,7 @@ public abstract class GalaxyConnectionPanelLayout extends VerticalLayout impleme
             } else if (galaxyLink.getValue().toString().equalsIgnoreCase("https://usegalaxyp.org/")) {
                 APIKey.setValue("61062cd3acb2433c1e1ed66d6560357f");
             }
-       else if (galaxyLink.getValue().toString().equalsIgnoreCase("http://129.177.231.22/galaxy/")) {
+       else if (galaxyLink.getValue().toString().equalsIgnoreCase("http://129.177.231.63:8081/galaxy/")) {
                 APIKey.setValue("ab84003e53c247bd7e2ca7ec949ab2cb");
             } });
         return userInputPanelLayout;

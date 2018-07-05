@@ -38,6 +38,7 @@ public class PSMObject {
     private double confidence;
     private String validation;
     private int index;
+    private String tooltip;
 
     public int getIndex() {
         return index;
@@ -235,6 +236,14 @@ public class PSMObject {
 
     public void setValidation(String validation) {
         this.validation = validation;
+    }
+
+    public String getTooltip() {
+        return tooltip;
+    }
+
+    public void setTooltip(String tooltip) {
+        this.tooltip = tooltip;
     }
 
 }
