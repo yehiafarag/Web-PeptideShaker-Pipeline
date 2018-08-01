@@ -268,13 +268,13 @@ public class GalaxyDatasetServingUtil {
 //                        break;
 //                    }
 //                }
-                bin.close();
+//                bin.close();
             }
 
         } catch (MalformedURLException ex) {
-            Logger.getLogger(GalaxyDatasetServingUtil.class.getName()).log(Level.SEVERE, null, ex);
+          ex.printStackTrace();
         } catch (IOException ex) {
-            Logger.getLogger(GalaxyDatasetServingUtil.class.getName()).log(Level.SEVERE, null, ex);
+           ex.printStackTrace();
         }
         return null;
     }

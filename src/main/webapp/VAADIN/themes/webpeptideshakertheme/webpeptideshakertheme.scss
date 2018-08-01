@@ -1217,7 +1217,7 @@
         background-color:gray;
         border-radius:0px;       
         /*max-width:4px;*/
-        width:3px !important;
+        width:2px !important;
         z-index: 2 !important;
         position:relative;
     }
@@ -1802,11 +1802,11 @@
     }
     .selectablenode center {
 
-
+font-size: 10px !important;
         z-index: 3 !important;
         position: relative;
         text-shadow: 0 0 3px #000000, 0 0 3px #000000;
-        line-height: 200% !important;
+        line-height: 400% !important;
         text-align: center;
 
     }

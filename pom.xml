@@ -14,8 +14,8 @@
     </prerequisites>
 
     <properties>
-        <vaadin.version>7.7.8</vaadin.version>
-        <vaadin.plugin.version>7.7.8</vaadin.plugin.version>
+        <vaadin.version>7.7.13</vaadin.version>
+        <vaadin.plugin.version>7.7.13</vaadin.plugin.version>
         <jetty.plugin.version>9.3.9.v20160517</jetty.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
@@ -91,7 +91,7 @@
             <groupId>com.github.jmchilton.blend4j</groupId>
             <artifactId>blend4j</artifactId>
             <version>0.2.0-SNAPSHOT</version>
-           <!--<version>3-SNAPSHOT</version>-->
+            <!--<version>3-SNAPSHOT</version>-->
         </dependency>
         <dependency>
             <groupId>org.vaadin.addons</groupId>
@@ -177,12 +177,23 @@
             <artifactId>truezip-path</artifactId>
             <version>7.7.10</version>
         </dependency>      
-       
+    
       
-
-
-      
+        <dependency>
+            <groupId>org.biojava</groupId>
+            <artifactId>biojava-core</artifactId>
+            <version>5.0.2</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+            </exclusions> 
+        </dependency>
+        <!-- other biojava jars as needed -->
     </dependencies>
+
+   
 
     <build>
         <plugins>

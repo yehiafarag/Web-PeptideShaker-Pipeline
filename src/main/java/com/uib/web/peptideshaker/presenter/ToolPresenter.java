@@ -40,7 +40,7 @@ public abstract class ToolPresenter extends VerticalLayout implements ViewableFr
     /**
      * The work-flow layout container.
      */
-    private WorkFlowLayout workflowLayout;
+    private WorkFlowLayout peptideshakerToolInputForm;
 
     private final Map<BigSideBtn, Component> btnsLayoutMap;
 //    private VerticalLayout rightLayoutContainer;
@@ -76,8 +76,8 @@ public abstract class ToolPresenter extends VerticalLayout implements ViewableFr
      * @param fastaFilesMap The main FASTA File Map (ID to Name).
      * @param mgfFilesMap The main MGF File Map (ID to Name).
      */
-    public void updateHistoryHandler(Map<String, GalaxyFile> searchSettingsMap, Map<String, SystemDataSet> fastaFilesMap, Map<String, SystemDataSet> mgfFilesMap) {
-        workflowLayout.updateForm(searchSettingsMap, fastaFilesMap, mgfFilesMap);
+    public void updatePeptideShakerToolInputForm(Map<String, GalaxyFile> searchSettingsMap, Map<String, SystemDataSet> fastaFilesMap, Map<String, SystemDataSet> mgfFilesMap) {
+        peptideshakerToolInputForm.updateForm(searchSettingsMap, fastaFilesMap, mgfFilesMap);
     }
 
     private void initLayout() {
@@ -89,7 +89,7 @@ public abstract class ToolPresenter extends VerticalLayout implements ViewableFr
         btnContainer.setSpacing(true);
         btnContainer.setMargin(new MarginInfo(false, false, true, false));
 
-        workflowLayout = new WorkFlowLayout() {
+        peptideshakerToolInputForm = new WorkFlowLayout() {
             @Override
             public void executeWorkFlow(String projectName,String fastaFileId, Set<String> mgfIdsList, Set<String> searchEnginesList,SearchParameters searchParam,Map<String,Boolean>searchEngines) {
                 ToolPresenter.this.executeWorkFlow(projectName,fastaFileId, mgfIdsList, searchEnginesList,searchParam,searchEngines);
@@ -119,7 +119,7 @@ public abstract class ToolPresenter extends VerticalLayout implements ViewableFr
         btnContainer.setComponentAlignment(workFlowBtn, Alignment.TOP_CENTER);
         workFlowBtn.addLayoutClickListener(ToolPresenter.this);
         workFlowBtn.setSelected(true);
-        btnsLayoutMap.put(workFlowBtn, workflowLayout);
+        btnsLayoutMap.put(workFlowBtn, peptideshakerToolInputForm);
 
         VerticalLayout toolViewFrame = new VerticalLayout();
         toolViewFrame.setSizeFull();
@@ -134,7 +134,7 @@ public abstract class ToolPresenter extends VerticalLayout implements ViewableFr
         toolViewFrame.addComponent(toolViewFrameContent);
 
         toolViewFrameContent.addComponent(nelsLayout);
-        toolViewFrameContent.addComponent(workflowLayout);
+        toolViewFrameContent.addComponent(peptideshakerToolInputForm);
 
         mobilebtnContainer = new HorizontalLayout();
         mobilebtnContainer.setHeight(100, Unit.PERCENTAGE);

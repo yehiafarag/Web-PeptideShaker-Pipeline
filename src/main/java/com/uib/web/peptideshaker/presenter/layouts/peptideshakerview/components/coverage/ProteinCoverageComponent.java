@@ -104,7 +104,7 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
             PeptideLayout genPeptid = (PeptideLayout) event.getComponent();
             selectPeptide(protein.getAccession(), genPeptid.getPeptideId());
         };
-
+       
         float factor = 100f / Float.valueOf(protein.getSequence().length());
         int[] distArr = new int[protein.getSequence().length()];
         peptideDistMap = new TreeSet<>(Collections.reverseOrder());

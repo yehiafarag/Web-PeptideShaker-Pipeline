@@ -1,6 +1,7 @@
 package com.uib.web.peptideshaker.presenter.core;
 
 import com.compomics.util.experiment.biology.PTMFactory;
+import com.compomics.util.preferences.IdentificationParameters;
 import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDataset;
 import com.uib.web.peptideshaker.presenter.core.form.ColorLabel;
 import com.uib.web.peptideshaker.presenter.core.form.Horizontal2Label;
@@ -19,6 +20,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -26,8 +28,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -46,6 +46,10 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
      * The post translational modifications factory.
      */
     private final PTMFactory PTM = PTMFactory.getInstance();
+    /**
+     * Convenience array for forward ion type selection.
+     */
+    private final List<String> ionsList = new ArrayList(Arrays.asList(new String[]{"a", "b", "c", "x", "y", "z"}));
 
     private Table fixedModificationTable;
 
@@ -68,7 +72,7 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
         HorizontalLayout titleLayout = new HorizontalLayout();
         titleLayout.setSizeFull();
         titleLayout.addStyleName("subpanelframe");
-        if (dataset.getSearchingParameters() == null) {
+        if (dataset ==null || dataset.getSearchingParameters() == null) {
             return;
         }
         DatasetOverviewLayout.this.addComponent(titleLayout);
@@ -121,17 +125,13 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
         Horizontal2Label fastaFileLabel = new Horizontal2Label("Protein Database (FASTA) :", dataset.getFastaFileName());
         upperPanel.addComponent(fastaFileLabel);
 
-        if (dataset.getSearchingParameters().get("protein_database_options").toString().split("\"create_decoy\": ")[1].startsWith("\"true\"")) {
+        if (dataset.isDecoyDBAdded()) {
             Horizontal2Label addDecoy = new Horizontal2Label("Decoy Sequences :", "Added");
             upperPanel.addComponent(addDecoy);
 
         }
-        try {
-            Horizontal2Label searchEnginesLabel = new Horizontal2Label("Search Engines :", jsonToMap(new JSONObject(dataset.getSearchingParameters().get("search_engines_options").toString())).get("engines").toString().replace("[", "").replace("]", ""));
-            upperPanel.addComponent(searchEnginesLabel);
-        } catch (JSONException ex) {
-            Logger.getLogger(DatasetOverviewLayout.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        Horizontal2Label searchEnginesLabel = new Horizontal2Label("Search Engines :", dataset.getSearchEngines());
+        upperPanel.addComponent(searchEnginesLabel);
 
         int index = 1;
         for (String mgf : dataset.getMgfFiles().keySet()) {
@@ -143,9 +143,9 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
         Map<String, String> paramMap = new LinkedHashMap<>();
         paramMap.put("create_decoy", "Add Decoy Sequences");
 
-        String fixedMod = dataset.getFixedModification();
-        String varMod = dataset.getVariableModification();
-        HorizontalLayout modificationContainer = inititModificationLayout(fixedMod.split(","), varMod.split(","));
+        List<String> fixedMod = dataset.getFixedModification();
+        List<String> varMod = dataset.getVariableModification();
+        HorizontalLayout modificationContainer = inititModificationLayout(fixedMod, varMod);
         modificationContainer.addStyleName("subpanelframe");
         if (!variableModificationTable.getItemIds().isEmpty() || !fixedModificationTable.getItemIds().isEmpty()) {
             DatasetOverviewLayout.this.addComponent(modificationContainer);
@@ -179,7 +179,7 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
         //search_engines_options  engines
     }
 
-    private HorizontalLayout inititModificationLayout(String[] fixedMod, String[] varMod) {
+    private HorizontalLayout inititModificationLayout(List<String> fixedMod, List<String> varMod) {
         HorizontalLayout modificationContainer = new HorizontalLayout();
         modificationContainer.setSpacing(true);
         modificationContainer.setStyleName("panelframe");
@@ -277,7 +277,7 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
         return modificationsTable;
     }
 
-    private GridLayout inititProteaseFragmentationLayout(Map<String, Object> parameters) {
+    private GridLayout inititProteaseFragmentationLayout(IdentificationParameters parameters) {
         GridLayout proteaseFragmentationContainer = new GridLayout(2, 6);
         proteaseFragmentationContainer.setWidth(100, Unit.PERCENTAGE);
         proteaseFragmentationContainer.setStyleName("panelframe");
@@ -288,15 +288,6 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
         proteaseFragmentationContainer.setHeight(190, Unit.PIXELS);
         proteaseFragmentationContainer.setSpacing(true);
 
-        try {
-            parameters = jsonToMap(new JSONObject(parameters));
-        } catch (JSONException ex) {
-        }
-
-//        Set<String> digestionOptionList = new LinkedHashSet<>();
-//        digestionOptionList.add("Enzyme");
-//        digestionOptionList.add("Unspecific");
-//        digestionOptionList.add("Whole Protein");
         String digestion = "";
         String specificity = "";
         Integer maxMissCleavValue = null;
@@ -306,44 +297,47 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
         String _charge = "";
         String iso = "";
         try {
-            Map<String, Object> jsonProtein_digest_optionsObjects = (Map<String, Object>) jsonToMap(new JSONObject(parameters.get("protein_digest_options").toString())).get("digestion");
+//            Map<String, Object> jsonProtein_digest_optionsObjects = (Map<String, Object>) jsonToMap(new JSONObject(parameters.get("protein_digest_options").toString())).get("digestion");
+            parameters.getSearchParameters().getDigestionPreferences();
 
             //cleavage
-            if (jsonProtein_digest_optionsObjects.get("cleavage").toString().equalsIgnoreCase("default")) {
-                digestion = "Enzyme";
-                enzyme = "Trypsin";
-                specificity = "Specific";
-                maxMissCleavValue = Integer.valueOf(jsonProtein_digest_optionsObjects.get("missed_cleavages").toString());
+            switch (parameters.getSearchParameters().getDigestionPreferences().getCleavagePreference().ordinal()) {
+                case 0:
+                    //jsonProtein_digest_optionsObjects.get("cleavage").toString().equalsIgnoreCase("default")) {
 
-            } else if (jsonProtein_digest_optionsObjects.get("cleavage").toString().equalsIgnoreCase("0")) {
-                digestion = "Enzyme";
-                enzyme = jsonProtein_digest_optionsObjects.get("Enzyme").toString();
-                maxMissCleavValue = (Integer) jsonProtein_digest_optionsObjects.get("missed_cleavages");
-                specificity = "Specific";
-
-            } else if (jsonProtein_digest_optionsObjects.get("cleavage").toString().equalsIgnoreCase("1")) {
-                digestion = "Unspecific";
-                enzyme = null;
-                specificity = null;
-
-            } else if (jsonProtein_digest_optionsObjects.get("cleavage").toString().equalsIgnoreCase("2")) {
-                digestion = "Whole Protein";
-                enzyme = null;
-                specificity = null;
-
+                    digestion = parameters.getSearchParameters().getDigestionPreferences().getCleavagePreference().name();
+                    enzyme = parameters.getSearchParameters().getDigestionPreferences().getEnzymes().get(0).getName();
+                    specificity = "Specific";
+                    maxMissCleavValue = parameters.getSearchParameters().getDigestionPreferences().getnMissedCleavages(enzyme);// Integer.valueOf(jsonProtein_digest_optionsObjects.get("missed_cleavages").toString());
+//
+                    break;
+//
+                case 1:
+                    //(jsonProtein_digest_optionsObjects.get("cleavage").toString().equalsIgnoreCase("1")) {
+                    digestion = "Unspecific";
+                    enzyme = null;
+                    specificity = null;
+//
+                    break;
+                case 2:
+                    //(jsonProtein_digest_optionsObjects.get("cleavage").toString().equalsIgnoreCase("2")) {
+                    digestion = "Whole Protein";
+                    enzyme = null;
+                    specificity = null;
+                    break;
+                default:
+                    break;
             }
-
-            Map<String, Object> json_Precursor_options_Objects = jsonToMap(new JSONObject(parameters.get("precursor_options").toString()));
-            ion = json_Precursor_options_Objects.get("forward_ion") + " , " + json_Precursor_options_Objects.get("reverse_ion");
-            precursor_ion = json_Precursor_options_Objects.get("precursor_ion_tol") + " " + json_Precursor_options_Objects.get("precursor_ion_tol_units").toString().replace("1", "ppm").replace("2", "Da");
-            fragment_tol = json_Precursor_options_Objects.get("fragment_tol") + " Da";
-            _charge = json_Precursor_options_Objects.get("min_charge") + " to " + json_Precursor_options_Objects.get("max_charge");
-            iso = json_Precursor_options_Objects.get("min_isotope") + " to " + json_Precursor_options_Objects.get("max_isotope");
         } catch (NumberFormatException ex) {
             ex.printStackTrace();
-        } catch (JSONException ex) {
-            Logger.getLogger(DatasetOverviewLayout.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+//            Map<String, Object> json_Precursor_options_Objects = jsonToMap(new JSONObject(parameters.get("precursor_options").toString()));
+        ion = ionsList.get(parameters.getSearchParameters().getForwardIons().get(0)) + " , " + ionsList.get(parameters.getSearchParameters().getRewindIons().get(0));//json_Precursor_options_Objects.get("forward_ion") + " , " + json_Precursor_options_Objects.get("reverse_ion");
+        precursor_ion = parameters.getSearchParameters().getPrecursorAccuracy() + " " + (parameters.getSearchParameters().getPrecursorAccuracyType().ordinal() + "").replace("0", "ppm").replace("1", "Da");//parameters.getSearchParameters().json_Precursor_options_Objects.get("precursor_ion_tol") + " " + json_Precursor_options_Objects.get("precursor_ion_tol_units").toString().replace("1", "ppm").replace("2", "Da");
+        fragment_tol = parameters.getSearchParameters().getFragmentIonAccuracyInDaltons() + " Da";// json_Precursor_options_Objects.get("fragment_tol") + " Da";
+        _charge = parameters.getSearchParameters().getMinChargeSearched() + " to " + parameters.getSearchParameters().getMaxChargeSearched();//json_Precursor_options_Objects.get("min_charge") + " to " + json_Precursor_options_Objects.get("max_charge");
+        iso = parameters.getSearchParameters().getMinIsotopicCorrection() + " to " + parameters.getSearchParameters().getMaxIsotopicCorrection();//json_Precursor_options_Objects.get("min_isotope") + " to " + json_Precursor_options_Objects.get("max_isotope");
         Horizontal2Label digestionList = new Horizontal2Label("Digestion :", digestion);
         Horizontal2Label enzymeList = new Horizontal2Label("Enzyme :", enzyme);
 //        specificityOptionList.add("Specific");
@@ -352,7 +346,6 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
 //        specificityOptionList.add("C-term Specific");
         Horizontal2Label specificityList = new Horizontal2Label("Specificity :", specificity);
         Horizontal2Label maxMissCleav = new Horizontal2Label("Max Missed Cleavages :", maxMissCleavValue);
-
 //        Set<String> ionListI = new LinkedHashSet<>();
 //        ionListI.add("a");
 //        ionListI.add("b");
@@ -362,27 +355,22 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
 //        ionListII.add("y");
 //        ionListII.add("z");
         Horizontal2Label fragmentIonTypes = new Horizontal2Label("Fragment Ion Types :", ion);
-
         proteaseFragmentationContainer.addComponent(digestionList, 0, 1);
         proteaseFragmentationContainer.addComponent(enzymeList, 0, 2);
         proteaseFragmentationContainer.addComponent(specificityList, 0, 3);
-
         proteaseFragmentationContainer.addComponent(maxMissCleav, 0, 4);
         proteaseFragmentationContainer.addComponent(fragmentIonTypes, 0, 5);
-
 //        Set<String> mzToleranceList = new LinkedHashSet<>();
 //        mzToleranceList.add("ppm");
 //        mzToleranceList.add("Da");
         Horizontal2Label precursorTolerance = new Horizontal2Label("Precursor m/z Tolerance :", precursor_ion);
         Horizontal2Label fragmentTolerance = new Horizontal2Label("Fragment m/z Tolerance :", fragment_tol);
-
         proteaseFragmentationContainer.addComponent(precursorTolerance, 1, 1);
         proteaseFragmentationContainer.addComponent(fragmentTolerance, 1, 2);
         Horizontal2Label precursorCharge = new Horizontal2Label("Precursor Charge :", _charge);
         proteaseFragmentationContainer.addComponent(precursorCharge, 1, 3);
         Horizontal2Label isotopes = new Horizontal2Label("Isotopes :", iso);
         proteaseFragmentationContainer.addComponent(isotopes, 1, 4);
-
         return proteaseFragmentationContainer;
 
     }

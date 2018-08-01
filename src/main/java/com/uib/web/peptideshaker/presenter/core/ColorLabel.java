@@ -1,5 +1,6 @@
 package com.uib.web.peptideshaker.presenter.core;
 
+import com.vaadin.event.LayoutEvents;
 import com.vaadin.ui.VerticalLayout;
 
 /**
@@ -17,6 +18,15 @@ private final Integer colorIndex;
         ColorLabel.this.setStyleName("colorlabelfortablecell");
         ColorLabel.this.addStyleName(colorStyles[colorIndex]);
         ColorLabel.this.setDescription(description);
+    }
+    public ColorLabel(int colorIndex, String description,Object data,LayoutEvents.LayoutClickListener listener) {
+        this.colorIndex=colorIndex;
+        ColorLabel.this.setSizeFull();
+        ColorLabel.this.setStyleName("colorlabelfortablecell");
+        ColorLabel.this.addStyleName(colorStyles[colorIndex]);
+        ColorLabel.this.setDescription(description);
+         ColorLabel.this.setData(data);
+         ColorLabel.this.addLayoutClickListener(listener);
     }
 
     @Override

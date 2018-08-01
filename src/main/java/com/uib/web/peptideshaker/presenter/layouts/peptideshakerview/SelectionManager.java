@@ -261,7 +261,6 @@ public class SelectionManager {
             filteredProteinsSet = filterProteinData();
         } else if (selectionType.equalsIgnoreCase("protein_selection")) {
             selectedProteinId = (String)filteringValue.toArray()[0];
-
         }else if (selectionType.equalsIgnoreCase("peptide_selection")) {
 //            selectedPeptide = (String)filteringValue.toArray()[0];
 

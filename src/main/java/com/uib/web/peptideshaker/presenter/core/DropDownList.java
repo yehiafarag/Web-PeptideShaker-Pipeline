@@ -105,6 +105,7 @@ public class DropDownList extends VerticalLayout {
         list.select(objectId);
         list.setData(list.getValue());
         }catch(Exception e){
+            
 //        Page.getCurrent().reload();
         }
 

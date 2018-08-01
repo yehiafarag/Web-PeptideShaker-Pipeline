@@ -270,19 +270,17 @@ public abstract class DivaPieChartFilter extends HorizontalLayout implements Reg
         Map<String, Set<Comparable>> filterfullData = new LinkedHashMap<>(fullData);
         colorsList = new ArrayList<>(colorsArr);
         int index = 0;
-        for (String key : filterfullData.keySet()) {
-            if (fullData.get(key).isEmpty()) {
-                fullData.remove(key);
-                colorsList.remove(index);
-            }
-        }
+        filterfullData.keySet().stream().filter((key) -> (fullData.get(key).isEmpty())).map((key) -> {
+            fullData.remove(key);
+            return key;
+        }).forEachOrdered((_item) -> {
+            colorsList.remove(index);
+        });
         this.fullData = fullData;
-//        this.appliedFilter.clear();
         fullItemsSet.clear();
-        for (String key : fullData.keySet()) {
+        fullData.keySet().forEach((key) -> {
             fullItemsSet.addAll(fullData.get(key));
-        }
-//        selectAllLabel.setValue("<center>" + fullItemsSet.size() + "</center>");
+        });
         updateChartDataset(fullData);
 
     }

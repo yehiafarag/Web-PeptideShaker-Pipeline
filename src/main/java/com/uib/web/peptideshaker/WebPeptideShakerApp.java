@@ -75,7 +75,7 @@ public class WebPeptideShakerApp extends VerticalLayout {
             public void jobsInProgress(boolean inprogress, Map<String, SystemDataSet> historyFilesMap) {
                 fileSystemView.setBusy(inprogress, historyFilesMap);
                 presentationManager.viewLayout(fileSystemView.getViewId());
-                toolsView.updateHistoryHandler(Galaxy_Layer.getSearchSettingsFilesMap(), Galaxy_Layer.getFastaFilesMap(), Galaxy_Layer.getMgfFilesMap());
+                toolsView.updatePeptideShakerToolInputForm(Galaxy_Layer.getSearchSettingsFilesMap(), Galaxy_Layer.getFastaFilesMap(), Galaxy_Layer.getMgfFilesMap());
 
             }
         };
@@ -130,7 +130,7 @@ public class WebPeptideShakerApp extends VerticalLayout {
 //                    if (!check) {
 //                        return check;
 //                    }
-                    check = Galaxy_Layer.sendDataToNels(vDs.getHistoryId(), vDs.getSearchGUIFileId());
+                    check = Galaxy_Layer.sendDataToNels(vDs.getHistoryId(), vDs.getSearchGUIFile().getGalaxyId());
                     if (!check) {
                         return check;
                     }
@@ -159,7 +159,7 @@ public class WebPeptideShakerApp extends VerticalLayout {
             toolsView.getTopView().setEnabled(true);
             toolsView.getRightView().setDescription("Click to view the tools layout");
             toolsView.getTopView().setDescription("Click to view the tools layout");
-            toolsView.updateHistoryHandler(Galaxy_Layer.getSearchSettingsFilesMap(), Galaxy_Layer.getFastaFilesMap(), Galaxy_Layer.getMgfFilesMap());
+            toolsView.updatePeptideShakerToolInputForm(Galaxy_Layer.getSearchSettingsFilesMap(), Galaxy_Layer.getFastaFilesMap(), Galaxy_Layer.getMgfFilesMap());
 
         } else {
             toolsView.getRightView().setDescription("Tools are not available");

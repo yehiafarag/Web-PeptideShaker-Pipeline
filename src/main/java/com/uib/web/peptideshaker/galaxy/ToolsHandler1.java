@@ -345,7 +345,7 @@ public abstract class ToolsHandler1 {
             while ((line = br.readLine()) != null) {
                 jsonString.append(line);
             }
-            br.close();
+//            br.close();
             conn.disconnect();
 
         } catch (MalformedURLException ex) {

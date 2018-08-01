@@ -31,7 +31,8 @@ public class PdbHandler {
         return valid;
     }
 
-    public final Callable<String> updatePdbMap(Set<String> uniprotAccessions) {
+    public final Callable<String> updatePdbMap(Set<String> uniprotAccessions) {      
+               
         readyFile = false;
         try {
 
@@ -42,7 +43,6 @@ public class PdbHandler {
                 } catch (Exception e) {
                     valid = false;
                     e.printStackTrace();
-//                    return "";
                 }
                 return "";
             };

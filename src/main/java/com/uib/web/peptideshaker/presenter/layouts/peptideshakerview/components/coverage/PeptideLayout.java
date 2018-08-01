@@ -24,7 +24,7 @@ public class PeptideLayout extends AbsoluteLayout implements Comparable<PeptideL
     private final String proteinEvidenceStyle;
     private boolean selected;
     private VerticalLayout modificationLayout;
-    private final String modificationStyleName ="nodemodificationbackground";
+    private final String modificationStyleName = "nodemodificationbackground";
     /**
      * The post translational modifications factory.
      */
@@ -37,7 +37,7 @@ public class PeptideLayout extends AbsoluteLayout implements Comparable<PeptideL
         PeptideLayout.this.addStyleName("lightbluelayout");
         PeptideLayout.this.addStyleName("peptidelayout");
         PeptideLayout.this.addStyleName("transparent");
-        
+
         if (enzymatic) {
             PeptideLayout.this.addStyleName("blackborder");
         } else {
@@ -56,21 +56,29 @@ public class PeptideLayout extends AbsoluteLayout implements Comparable<PeptideL
         modificationLayout.setStyleName("basicpeptidemodification");
         String subTooltip = "";
         Map<String, String> modificationsTooltip = new HashMap<>();
-        for (String mod : peptide.getVariableModifications().split(",")) {
+
+        for (String mod : peptide.getVariableModifications().split("\\),")) {
             if (mod.trim().equalsIgnoreCase("") || mod.contains("Pyrolidone") || mod.contains("Acetylation of protein N-term")) {
                 continue;
             }
-            String[] tmod = mod.replace("(", "__").split("__");
+            String[] tmod = mod.split("\\(");
             Color c = PTMFactory.getDefaultColor(tmod[0].trim());
             Label modification = new Label("<div  style='background:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ");;width: 100%;height: 100%;'></div>", ContentMode.HTML);
             modification.setSizeFull();
             modificationLayout.addComponent(modification);
-
-            int i = Integer.valueOf(tmod[1].trim().replace(")", "")) - 1;
-            modificationsTooltip.put(peptide.getSequence().charAt(i) + "<" + PTM.getPTM(tmod[0].trim()).getShortName() + ">", "<font style='background-color:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")'>" + peptide.getSequence().charAt(i) + "</font>");
-            subTooltip += "</br><span style='width:20px;height:10px;background-color:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")'>" + peptide.getSequence().charAt(i) + "</span> - " + mod;
+            String[] indexArr = tmod[1].replace(")", "").replace(" ", "").split(",");
+            for (String indexStr : indexArr) {
+                int i = Integer.valueOf(indexStr) - 1;
+                modificationsTooltip.put(peptide.getSequence().charAt(i) + "<" + PTM.getPTM(tmod[0].trim()).getShortName() + ">", "<font style='background-color:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")'>" + peptide.getSequence().charAt(i) + "</font>");
+                if (!subTooltip.contains("</br><span style='width:20px;height:10px;background-color:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")'>" + peptide.getSequence().charAt(i) + "</span> - " + mod)) {
+                    subTooltip += "</br><span style='width:20px;height:10px;background-color:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")'>" + peptide.getSequence().charAt(i) + "</span> - " + mod;
+                }
+            }
+//            int i = Integer.valueOf(tmod[1].trim().replace(")", "")) - 1;
+//            modificationsTooltip.put(peptide.getSequence().charAt(i) + "<" + PTM.getPTM(tmod[0].trim()).getShortName() + ">", "<font style='background-color:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")'>" + peptide.getSequence().charAt(i) + "</font>");
+//            subTooltip += "</br><span style='width:20px;height:10px;background-color:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")'>" + peptide.getSequence().charAt(i) + "</span> - " + mod;
         }
-        
+
         String tooltip = peptide.getModifiedSequence();
         for (String key : modificationsTooltip.keySet()) {
             tooltip = tooltip.replace(key, modificationsTooltip.get(key));
@@ -132,7 +140,7 @@ public class PeptideLayout extends AbsoluteLayout implements Comparable<PeptideL
             this.addStyleName(proteinEvidenceStyle);
         } else if (statues.equalsIgnoreCase("Modification  Status")) {
             this.modificationLayout.setVisible(true);
-             this.addStyleName(modificationStyleName);
+            this.addStyleName(modificationStyleName);
         }
 
     }
@@ -144,7 +152,7 @@ public class PeptideLayout extends AbsoluteLayout implements Comparable<PeptideL
         if (this.getStyleName().contains(validationStatuesStyle)) {
             this.removeStyleName(validationStatuesStyle);
         }
-         if (this.getStyleName().contains(modificationStyleName)) {
+        if (this.getStyleName().contains(modificationStyleName)) {
             this.removeStyleName(modificationStyleName);
         }
         this.modificationLayout.setVisible(false);

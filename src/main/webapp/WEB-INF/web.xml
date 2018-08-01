@@ -7,7 +7,7 @@
     <context-param>
         <description>exported files folder url D:\users_temp_files /home/yehia/users_temp_files    /home/probe/user/CSF-PR-FILES    </description>
         <param-name>filesURL</param-name>
-        <param-value>D:\users_temp_files </param-value>
+        <param-value>D:\users_temp_files</param-value>
     </context-param>
     <!-- Session Configuration -->
     <session-config>

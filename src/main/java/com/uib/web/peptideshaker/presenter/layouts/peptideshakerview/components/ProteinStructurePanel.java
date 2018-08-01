@@ -2,6 +2,7 @@ package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components
 
 import com.compomics.util.experiment.biology.PTMFactory;
 import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideObject;
+import com.uib.web.peptideshaker.galaxy.dataobjects.ProteinObject;
 import com.uib.web.peptideshaker.model.core.pdb.PdbHandler;
 import com.uib.web.peptideshaker.model.core.pdb.ChainBlock;
 import com.uib.web.peptideshaker.model.core.pdb.PdbMatch;
@@ -18,7 +19,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -230,16 +230,16 @@ public class ProteinStructurePanel extends AbsoluteLayout {
     } 
 
     public void updatePdbMap(Set<String> accessionList) {
-        List<Callable<String>> tasks = new ArrayList<>();
-        Callable<String> task = pdbHandler.updatePdbMap(accessionList);
-        tasks.add(task);
-        try {
-            executor = Executors.newSingleThreadExecutor();
-            executor.invokeAll(tasks, Math.min(tasks.size() * 2, 10), TimeUnit.SECONDS); // Timeout of 10 minutes.
-            executor.shutdown();
-        } catch (InterruptedException ex) {
-            ex.printStackTrace();
-        }
+//        List<Callable<String>> tasks = new ArrayList<>();
+//        Callable<String> task = pdbHandler.updatePdbMap(accessionList);
+//        tasks.add(task);
+//        try {
+//            executor = Executors.newFixedThreadPool(2);
+//            executor.invokeAll(tasks, Math.min(tasks.size() * 2, 10), TimeUnit.SECONDS); // Timeout of 10 minutes.
+//            executor.shutdown();
+//        } catch (InterruptedException ex) {
+//            ex.printStackTrace();
+//        }
     }
 
     private void loadData(Object accessionObject, String proteinSequence) {
@@ -581,4 +581,6 @@ public class ProteinStructurePanel extends AbsoluteLayout {
     public AbsoluteLayout getChainCoverageLayout() {
         return chainCoverageLayout;
     }
+    
+
 }

@@ -28,12 +28,16 @@ import org.codehaus.jettison.json.JSONObject;
 public class PdbEbiRestService {
 
     public Map<String, Map<String, PdbMatch>> getPdbIds(Set<String> uniprotAccessionSet) {
+
         String accessions = uniprotAccessionSet.toString().replace("[", "").replace("]", "");
         return this.getPdbIds(accessions, uniprotAccessionSet.size() == 1);
     }
 
     public Map<String, Map<String, PdbMatch>> getPdbIds(String accessions, boolean isDoGet) {
         Map<String, Map<String, PdbMatch>> pdbMap = new LinkedHashMap<>();
+        if (accessions == null || accessions.trim().equalsIgnoreCase("")) {
+            return pdbMap;
+        }
         try {
             String url = "https://www.ebi.ac.uk/pdbe/api/mappings/best_structures/";
             String urlParameters = accessions;
@@ -43,6 +47,59 @@ public class PdbEbiRestService {
             } else {
                 respond = sendPost(url, urlParameters);
             }
+            if (respond.equalsIgnoreCase("")) {
+                return pdbMap;
+            }
+            JSONObject jsonObject = new JSONObject(respond);
+
+            if (jsonObject != JSONObject.NULL) {
+                Map<String, Object> retMap = toMap(jsonObject);
+                String[] accArr = accessions.split(",");
+                System.out.println("respond is " + jsonObject.toString());
+                for (String acc : accArr) {
+                    Map<String, PdbMatch> map = new LinkedHashMap<>();
+                    List<Object> l = (List<Object>) retMap.get(acc.toUpperCase().trim());
+                    if (l != null) {
+                        l.stream().map((o) -> (Map<String, Object>) o).forEachOrdered((supMap) -> {
+                            String pdbId = supMap.get("pdb_id") + "";
+                            if (!map.containsKey(pdbId)) {
+                                map.put(pdbId, new PdbMatch(pdbId));
+                            }
+                            PdbMatch tMatch = map.get(pdbId);
+                            tMatch.addChainId(supMap.get("chain_id") + "");
+                        });
+                    } else {
+                        System.out.println("not exist pdb for it " + acc);
+                    }
+                    pdbMap.put(acc, map);
+                }
+
+            }
+            
+            
+            
+            
+        } catch (JSONException ex) {
+            ex.printStackTrace();
+        }
+        return pdbMap;
+    }
+
+    private Map<String, Map<String, PdbMatch>> getUniprotPdbId(String accessions, boolean isDoGet) {
+        Map<String, Map<String, PdbMatch>> pdbMap = new LinkedHashMap<>();
+        if (accessions == null || accessions.trim().equalsIgnoreCase("")) {
+            return pdbMap;
+        }
+        try {
+            String url = "https://www.uniprot.org/uniprot/?query=P0DMV9+AND+database:pdb&format=tab&columns=id,database(PDB)";
+            String urlParameters = accessions;
+            String respond;
+            if (isDoGet) {
+                respond = sendGet(url + urlParameters);
+            } else {
+                respond = sendPost(url, urlParameters);
+            }
+            System.out.println("respond is " + respond.toString());
             if (respond.equalsIgnoreCase("")) {
                 return pdbMap;
             }
@@ -151,8 +208,6 @@ public class PdbEbiRestService {
                             subChainData = (Map<String, Object>) chainData.get("end");
                             int end_author_residue_number = (Integer) subChainData.get("author_residue_number");
                             int end_residue_number = (Integer) subChainData.get("residue_number");
-                            
-                          
 
                             String chainSequence = pdbMatch.getSequence().substring(start_residue_number - 1, end_residue_number - 1);
                             int tstart_author_residue_number = -5;
@@ -160,14 +215,13 @@ public class PdbEbiRestService {
 
                             int uniprotLength = end_author_residue_number - start_author_residue_number;
                             int diffrent = (end_residue_number - start_residue_number) - uniprotLength;
-                             String uProtSeq = proteinSequence.replace("L", "I");
+                            String uProtSeq = proteinSequence.replace("L", "I");
                             String uChainSeq = chainSequence.replace("L", "I");
-                            
-                            
+
                             if (uProtSeq.contains(uChainSeq)) {
                                 tstart_author_residue_number = uProtSeq.indexOf(uChainSeq);
                                 tend_author_residue_number = tstart_author_residue_number + chainSequence.length();
-                            } 
+                            }
 //                            else if (uChainSeq.length()>25 && uProtSeq.contains(uChainSeq.substring(20))) {
 ////                                 System.out.println("case II");
 ////                                tstart_author_residue_number = uProtSeq.indexOf(uChainSeq);
@@ -185,16 +239,16 @@ public class PdbEbiRestService {
 ////                                }
 ////
 //                            }
-                            if (tstart_author_residue_number <  0) {
+                            if (tstart_author_residue_number < 0) {
                                 tstart_author_residue_number = start_author_residue_number;
                             }
-                            if (tend_author_residue_number<  0) {
+                            if (tend_author_residue_number < 0) {
                                 tend_author_residue_number = end_author_residue_number;
                             }
-                            
+
 //                              System.out.println("chain_id  "+chain_id+"   start_author_residue_number "+start_author_residue_number+"  to  "+tstart_author_residue_number+"   end_author_residue_number  "+end_author_residue_number+"  to  "+tend_author_residue_number);
 //                            
-                            ChainBlock chainParam = new ChainBlock(struct_asym_id, chain_id, tstart_author_residue_number, start_residue_number, tend_author_residue_number, end_residue_number,uChainSeq);
+                            ChainBlock chainParam = new ChainBlock(struct_asym_id, chain_id, tstart_author_residue_number, start_residue_number, tend_author_residue_number, end_residue_number, uChainSeq);
                             return chainParam;
                         }).forEachOrdered((chainParam) -> {
                             pdbMatch.addChain(chainParam);

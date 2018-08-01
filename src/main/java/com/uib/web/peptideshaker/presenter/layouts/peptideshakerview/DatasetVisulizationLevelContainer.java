@@ -31,6 +31,9 @@ public class DatasetVisulizationLevelContainer extends HorizontalLayout {
 
     /**
      * Constructor to initialise the main layout and variables.
+     *
+     * @param Selection_Manager
+     * @param datasetsOverviewBtn
      */
     public DatasetVisulizationLevelContainer(SelectionManager Selection_Manager, BigSideBtn datasetsOverviewBtn) {
         DatasetVisulizationLevelContainer.this.setSizeFull();
@@ -69,14 +72,12 @@ public class DatasetVisulizationLevelContainer extends HorizontalLayout {
             }
         };
         topLeftLabelContainer.addComponent(removeFilterIcon);
-
         Label commentLabel = new Label("<i style='padding-right: 50px;'>* Click in the charts to select and filter data</i>", ContentMode.HTML);
         commentLabel.setWidthUndefined();
         commentLabel.setStyleName("resizeabletext");
         commentLabel.addStyleName("margintop10");
         topLabelContainer.addComponent(commentLabel);
         topLabelContainer.setComponentAlignment(commentLabel, Alignment.TOP_RIGHT);
-
         datasetVisulizationLevelComponent = new DatasetVisulizationLevelComponent(Selection_Manager) {
             @Override
             public void updateFilterSelection(Set<Comparable> selection, Set<Comparable> selectedCategories, boolean topFilter, boolean selectOnly, boolean selfAction) {

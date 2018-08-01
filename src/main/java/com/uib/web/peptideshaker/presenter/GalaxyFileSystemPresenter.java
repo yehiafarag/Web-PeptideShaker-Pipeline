@@ -7,6 +7,7 @@ import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
 import com.uib.web.peptideshaker.presenter.core.SmallSideBtn;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
@@ -36,6 +37,7 @@ public abstract class GalaxyFileSystemPresenter extends VerticalLayout implement
     private HorizontalLayout mobilebtnContainer;
     private final Map<BigSideBtn, Component> btnsLayoutMap;
     private DataViewLayout dataLayout;
+    private  BigSideBtn viewDataBtn ;
 
     /**
      * Initialise the web tool main attributes.
@@ -45,7 +47,7 @@ public abstract class GalaxyFileSystemPresenter extends VerticalLayout implement
         GalaxyFileSystemPresenter.this.setSizeFull();
         GalaxyFileSystemPresenter.this.setStyleName("activelayout");
 //        this.toolsBtn = new SmallSideBtn("img/jobs2.png");
- this.toolsBtn = new SmallSideBtn(VaadinIcons.GLOBE);
+        this.toolsBtn = new SmallSideBtn(VaadinIcons.GLOBE);
         this.toolsBtn.setData(GalaxyFileSystemPresenter.this.getViewId());
 //  this.topToolsBtn = new SmallSideBtn("img/jobs2.png");
         this.topToolsBtn = new SmallSideBtn(VaadinIcons.GLOBE);
@@ -61,12 +63,14 @@ public abstract class GalaxyFileSystemPresenter extends VerticalLayout implement
         if (busy) {
             toolsBtn.updateIconURL("img/globe-earth-animation-26.gif");//loading.gif
             topToolsBtn.updateIconURL("img/globe-earth-animation-26.gif");//loading.gif
-            return;
+            viewDataBtn.updateIconResource(new ThemeResource("img/globe-earth-animation-26.gif"));
+//            return;
         } else {
 //            toolsBtn.updateIconURL("img/jobs2.png");
 //            topToolsBtn.updateIconURL("img/jobs2.png");
             toolsBtn.updateIconURL(VaadinIcons.GLOBE);
             topToolsBtn.updateIconURL(VaadinIcons.GLOBE);
+            viewDataBtn.updateIcon(VaadinIcons.GLOBE.getHtml());
         }
         this.dataLayout.updateDatasetsTable(historyFilesMap);
     }
@@ -79,7 +83,7 @@ public abstract class GalaxyFileSystemPresenter extends VerticalLayout implement
         btnContainer.setSpacing(true);
         btnContainer.setMargin(new MarginInfo(false, false, true, false));
 //
-        BigSideBtn viewDataBtn = new BigSideBtn("Show Data", 1);
+        viewDataBtn = new BigSideBtn("Show Data", 1);
 //        viewDataBtn.updateIcon(new ThemeResource("img/jobs2.png"));
         viewDataBtn.updateIcon(VaadinIcons.GLOBE.getHtml());
         viewDataBtn.setData("datasetoverview");
@@ -160,7 +164,7 @@ public abstract class GalaxyFileSystemPresenter extends VerticalLayout implement
     @Override
     public void layoutClick(LayoutEvents.LayoutClickEvent event) {
         BigSideBtn comp = (BigSideBtn) event.getComponent();
-        for (BigSideBtn bbt : btnsLayoutMap.keySet()) {
+        btnsLayoutMap.keySet().forEach((bbt) -> {
             if (comp.getData().toString().equalsIgnoreCase(bbt.getData().toString())) {
                 bbt.setSelected(true);
                 btnsLayoutMap.get(bbt).removeStyleName("hidepanel");
@@ -168,7 +172,7 @@ public abstract class GalaxyFileSystemPresenter extends VerticalLayout implement
                 bbt.setSelected(false);
                 btnsLayoutMap.get(bbt).addStyleName("hidepanel");
             }
-        }
+        });
         if (comp.getData().toString().equalsIgnoreCase("datasetoverview")) {
 
         }
@@ -225,14 +229,6 @@ public abstract class GalaxyFileSystemPresenter extends VerticalLayout implement
         return container;
     }
 
-//    public void updatePresenter(Map<String, SystemDataSet> historyFilesMap) {
-//
-//        if (this.dataLayout != null) {
-//            this.dataLayout.updateDatasetsTable(historyFilesMap);
-//            System.out.println("at updated presenter ---->>>  ");
-//        }
-//
-//    }
     public abstract void deleteDataset(SystemDataSet ds);
 
     public abstract void viewDataset(PeptideShakerVisualizationDataset ds);

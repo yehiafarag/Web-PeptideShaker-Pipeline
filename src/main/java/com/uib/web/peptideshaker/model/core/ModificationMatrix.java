@@ -23,6 +23,7 @@ public class ModificationMatrix {
     private final Map<String, Integer> rows;
     private final Map<String, Set<Comparable>> calculatedMatrix;
     private final Set<String> keySorter;
+    private boolean ready=false;
 
     public ModificationMatrix(Map<String, Set<Comparable>> data) {
         rows = new LinkedHashMap<>();
@@ -142,21 +143,17 @@ public class ModificationMatrix {
             sortingKeyColumnsMap.put(sortKey, key);
         });
         tempMatrixData.clear();
-//        ArrayList<String> rowSortingList = new ArrayList<>(rows.keySet());
         sortingKeyColumnsMap.values().forEach((key) -> {
-            //            if (key.contains("[")) {
-//                Set<Comparable> set = tempMatrixData.get(key);
-//                String[] columnKeys = key.replace("[", "").replace("]", "").split(",");
-//                TreeMap<Integer, String> sorter = new TreeMap<>();
-//                for (String s : columnKeys) {
-//                    sorter.put(rowSortingList.indexOf(s.trim()), s.trim());
-//                    System.out.println("---->> --->> " + key + "------>> " + rowSortingList.indexOf(s.trim()) + "," + s.trim()+"  "+rowSortingList.contains(s.trim())+"   "+rowSortingList);
-//                }
-//                System.out.println("at ---->> before --->> " + key + " --- after --->> " + sorter.values().toString());
-//            }
             tempMatrixData.put(key, matrixData.get(key));
         });
-
+        ready=true;
         return tempMatrixData;
     }
+
+    public boolean isReady() {
+        return ready;
+    }
+    
+    
+    
 }

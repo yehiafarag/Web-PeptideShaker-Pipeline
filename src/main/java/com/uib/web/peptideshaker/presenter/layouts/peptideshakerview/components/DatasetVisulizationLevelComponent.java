@@ -37,6 +37,7 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
     private final FiltersContainer chartFiltersContainer;
     private final Map<String, Integer> inferenceMap;
     private final LayoutEvents.LayoutClickListener selectionListener;
+    private PeptideShakerVisualizationDataset peptideShakerVisualizationDataset;
 
     private final DecimalFormat df = new DecimalFormat("#.##");
 
@@ -82,6 +83,8 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
             public void itemSelected(Object itemId) {
                 selectedIds.clear();
                 selectedIds.add(itemId + "");
+                peptideShakerVisualizationDataset.setProteinInformation(selectedIds);
+                peptideShakerVisualizationDataset.initializePsmFile();
                 Selection_Manager.setSelection("protein_selection", selectedIds, null, getFilterId());
 
             }
@@ -97,9 +100,14 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
     }
 
     public void updateData(PeptideShakerVisualizationDataset peptideShakerVisualizationDataset) {
+        long start = System.currentTimeMillis();
+        this.peptideShakerVisualizationDataset = peptideShakerVisualizationDataset;
+
+        peptideShakerVisualizationDataset.processDataFiles();
         Map<String, ProteinObject> proteinTableMap = peptideShakerVisualizationDataset.getProteinsMap();
-        Map<Comparable, Object[]> proteinTableData = new LinkedHashMap<>();
         final Table mainTable = proteinTableContainer.getMainTable();
+
+        mainTable.sort(new Object[]{"peptides_number", "psm_number"}, new boolean[]{false, false});
         mainTable.setColumnWidth("index", 50);
         mainTable.setColumnWidth("proteinInference", 37);
         mainTable.setColumnWidth("Accession", 100);
@@ -117,16 +125,10 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
         mainTable.setColumnCollapsed("protein_group", true);
         mainTable.setColumnCollapsible("geneName", true);
         mainTable.setColumnCollapsed("geneName", true);
-        System.out.println("at protein table map size " + proteinTableMap.size());
-        for(ProteinObject protein :proteinTableMap.values()){
-//            System.out.println("at protein that was null "+protein.getAccession()+" --- "+protein.getProteinInference());
-            if (!inferenceMap.containsKey(protein.getProteinInference())) {
-                System.out.println("not included in the inference map --" + protein.getProteinInference()+"--  "+(!inferenceMap.containsKey(protein.getProteinInference().trim())));              
-            }
-            ColorLabel piLabel = new ColorLabel(inferenceMap.get(protein.getProteinInference().trim()), protein.getProteinInference());
-            piLabel.setData(protein.getAccession());
-            piLabel.addLayoutClickListener(selectionListener);
+        proteinTableContainer.resetTable();
+        proteinTableMap.values().forEach((protein) -> {
 
+            ColorLabel piLabel = new ColorLabel(inferenceMap.get(protein.getProteinInference().trim()), protein.getProteinInference(), protein.getAccession(), selectionListener);
             Link proteinAccLink = new Link(protein.getAccession(), new ExternalResource("http://www.uniprot.org/uniprot/" + protein.getAccession().toUpperCase()));
             proteinAccLink.setTargetName("_blank");
             proteinAccLink.setStyleName("tablelink");
@@ -186,13 +188,19 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
             validation.setData(protein.getAccession());
             validation.addLayoutClickListener(selectionListener);
 
-            proteinTableData.put(protein.getAccession(), new Object[]{protein.getIndex(), piLabel, proteinAccLink, protein.getDescription(), protein.getProteinGroup(), protein.getGeneName(), protein.getChromosome(), coverageLabel, peptidesNumberLabelLabel, psmNumberLabelLabel, ms2QuantLabelLabel, mwLabel, confidentLabel, validation});
-        };
-        int[] searchingIndexes = {2, 3, 4};
-        int keyIndex = 2;
-        this.proteinTableContainer.upateTableData(proteinTableData, searchingIndexes, keyIndex);
-        peptideShakerVisualizationDataset.getPeptidesMap();
+            String searchKey = protein.getAccession() + "_" + protein.getDescription() + "_" + protein.getProteinGroup().replace(",", "_");
+
+            proteinTableContainer.addTableItem(protein.getAccession(), new Object[]{protein.getIndex(), piLabel, proteinAccLink, protein.getDescription(), protein.getProteinGroup(), protein.getGeneName(), protein.getChromosome(), coverageLabel, peptidesNumberLabelLabel, psmNumberLabelLabel, ms2QuantLabelLabel, mwLabel, confidentLabel, validation}, searchKey);
+        });
+        this.proteinTableContainer.activateValueChangeListener();
+        this.proteinTableContainer.updateLabel();
         Map<String, Color> ModificationColorMap = new LinkedHashMap<>();
+        mainTable.sort();
+        int index = 1;
+        for (Object key : mainTable.getItemIds()) {
+            mainTable.getItem(key).getItemProperty("index").setValue(index++);
+        }
+        mainTable.setSortEnabled(false);
         ModificationMatrix modificationMatrix = peptideShakerVisualizationDataset.getModificationMatrix();
         modificationMatrix.getRows().keySet().forEach((mod) -> {
             if (PTM.containsPTM(mod)) {
@@ -201,21 +209,21 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
                 ModificationColorMap.put(mod, Color.LIGHT_GRAY);
             }
         });
-        this.chartFiltersContainer.updateFiltersData(modificationMatrix, ModificationColorMap, peptideShakerVisualizationDataset.getChromosomeMap(), peptideShakerVisualizationDataset.getPiMap(), peptideShakerVisualizationDataset.getProteinValidationMap(), peptideShakerVisualizationDataset.getProteinPeptidesNumberMap(), peptideShakerVisualizationDataset.getProteinPSMNumberMap(), peptideShakerVisualizationDataset.getProteinCoverageMap());
+        chartFiltersContainer.updateFiltersData(modificationMatrix, ModificationColorMap, peptideShakerVisualizationDataset.getChromosomeMap(), peptideShakerVisualizationDataset.getPiMap(), peptideShakerVisualizationDataset.getProteinValidationMap(), peptideShakerVisualizationDataset.getProteinPeptidesNumberMap(), peptideShakerVisualizationDataset.getProteinPSMNumberMap(), peptideShakerVisualizationDataset.getProteinCoverageMap());
 
-        mainTable.sort(new Object[]{"peptides_number", "psm_number"}, new boolean[]{false, false});
-        int index = 1;
-        for (Object key : mainTable.getItemIds()) {
-            mainTable.getItem(key).getItemProperty("index").setValue(index++);
-        }
-        mainTable.setSortEnabled(false);
+        System.out.println("to test III : " + (System.currentTimeMillis() - start) + "ms");
     }
 
     @Override
     public void selectionChange(String type) {
+
+        if (type.equalsIgnoreCase("protein_selection")) {
+
+        }
         if (type.equalsIgnoreCase("dataset_filter_selection")) {
 //            
         }
+
     }
 
     @Override

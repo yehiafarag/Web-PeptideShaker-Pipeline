@@ -1,5 +1,7 @@
 package com.uib.web.peptideshaker.galaxy.dataobjects;
 
+import java.util.Date;
+
 /**
  * This class represents the Galaxy Dataset in the application
  *
@@ -17,6 +19,24 @@ public class SystemDataSet {
     private String type;
     private String nelsKey;
     private String inputDsId;
+    private Date create_time;
+    private String overview;
+
+    public String getOverview() {
+        return overview;
+    }
+
+    public void setOverview(String overview) {
+        this.overview = overview;
+    }
+
+    public Date getCreate_time() {
+        return create_time;
+    }
+
+    public void setCreate_time(Date create_time) {
+        this.create_time = create_time;
+    }
 
     public String getNelsKey() {        
         return nelsKey;

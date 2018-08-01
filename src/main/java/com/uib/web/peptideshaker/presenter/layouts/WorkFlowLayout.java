@@ -106,9 +106,9 @@ public abstract class WorkFlowLayout extends Panel {
                     searchSettingsLayout.updateForms(searchParameters, null);
                     editSearchOption.setPopupVisible(true);
                 } else if (c != null && c instanceof Label && ((Label) c).getValue().equalsIgnoreCase("Edit")) {
-                    File file = searchSettingsMap.get(searchSettingsFileList.getSelectedValue()).getFile();
-                    SearchParameters searchParameters;
+
                     try {
+                        File file = searchSettingsMap.get(searchSettingsFileList.getSelectedValue()).getFile();
                         searchParameters = SearchParameters.getIdentificationParameters(file);
                     } catch (IOException | ClassNotFoundException ex) {
                         ex.printStackTrace();
@@ -194,7 +194,7 @@ public abstract class WorkFlowLayout extends Panel {
         bottomLayout.setExpandRatio(executeWorkFlow, 30);
 
         executeWorkFlow.addClickListener((Button.ClickEvent event) -> {
-            String fastFileId = searchSettingsLayout.getFataFileId();
+            String fastFileId = searchSettingsLayout.getFastaFileId();
             Set<String> spectrumIds = mgfFileList.getSelectedValue();
             Set<String> searchEnginesIds = searchEngines.getSelectedValue();
             String projectName = projectNameField.getSelectedValue().replace(" ", "_").replace("-", "_");
@@ -218,10 +218,9 @@ public abstract class WorkFlowLayout extends Panel {
                 searchEngines.setEnabled(true);
                 projectNameField.setEnabled(true);
                 editSearchSettings.setEnabled(true);
-                executeWorkFlow.setEnabled(true);
-                File file = searchSettingsMap.get(searchSettingsFileList.getSelectedValue()).getFile();
-                SearchParameters searchParameters;
-                try {
+                executeWorkFlow.setEnabled(true);  
+                try { 
+                    File file = searchSettingsMap.get(searchSettingsFileList.getSelectedValue()).getFile();  
                     searchParameters = SearchParameters.getIdentificationParameters(file);
                     String descrip = searchParameters.getShortDescription();
                     descrip = descrip.replace(searchParameters.getFastaFile().getName(), searchSettingsLayout.getFastaFileName(searchParameters.getFastaFile().getName().split("__")[0]));
@@ -255,11 +254,11 @@ public abstract class WorkFlowLayout extends Panel {
         }
         searchSettingsFileList.updateList(searchSettingsFileIdToNameMap);
         searchSettingsFileList.setSelected(selectedId);
-
+//
         Map<String, String> mgfFileIdToNameMap = new LinkedHashMap<>();
-        for (String id : mgfFilesMap.keySet()) {
+        mgfFilesMap.keySet().forEach((id) -> {
             mgfFileIdToNameMap.put(id, mgfFilesMap.get(id).getName());
-        }
+        });
         mgfFileList.updateList(mgfFileIdToNameMap);
         if (mgfFileIdToNameMap.size() == 1) {
             mgfFileList.setSelectedValue(mgfFileIdToNameMap.keySet());

@@ -77,12 +77,12 @@ public abstract class SelectableNode extends AbsoluteLayout implements LayoutEve
         nodeCircle.setContentMode(ContentMode.HTML);
 
         upperLine = new VerticalLayout();
-        upperLine.setHeight(105, Unit.PERCENTAGE);
+        upperLine.setHeight(100, Unit.PERCENTAGE);
         lineContainers.addComponent(upperLine);
         lineContainers.setComponentAlignment(upperLine, Alignment.TOP_CENTER);
 
         lowerLine = new VerticalLayout();
-        lowerLine.setHeight(105, Unit.PERCENTAGE);
+        lowerLine.setHeight(100, Unit.PERCENTAGE);
         lineContainers.addComponent(lowerLine);
         lineContainers.setComponentAlignment(lowerLine, Alignment.TOP_CENTER);
 

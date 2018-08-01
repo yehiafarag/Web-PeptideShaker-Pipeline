@@ -32,11 +32,11 @@ public class StatusLabel extends Image {
     public void setStatus(String status) {
         status=status+"";
         StatusLabel.this.setWidth(16, Unit.PIXELS);
-         StatusLabel.this.setDescription(status);
+         StatusLabel.this.setDescription((status+"").toUpperCase());
         if (status.equalsIgnoreCase("ok")) {
             StatusLabel.this.setSource(ok);
             this.status = 0;
-        } else if (status.equalsIgnoreCase("new") || status.equalsIgnoreCase("running")) {
+        } else if (status.equalsIgnoreCase("new") || status.equalsIgnoreCase("running")|| status.equalsIgnoreCase("queued")) {
             StatusLabel.this.setSource(processing);
             StatusLabel.this.setWidth(100, Unit.PIXELS);
             this.status = 1;

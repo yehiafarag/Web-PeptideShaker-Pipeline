@@ -80,11 +80,11 @@ public abstract class ProteinsPeptidesGraphComponent extends VerticalLayout {
             graphComponent.updateGraphData(null, null, null, null);
             thumbURL = null;
             return thumbURL;
-        }   
+        }
         ProteinObject protein = peptideShakerVisualizationDataset.getProtein(selectedProteinId);
-//        selectedProtiensLabel.setCaption(protein.getDescription());
-//        selectedProtiensLabel.setEnabled(true);
-//        selectedProtiensLabel.setResource(new ExternalResource("http://www.uniprot.org/uniprot/" + selectedProteinId));
+//        if (protein.getSequence() == null) {
+//            peptideShakerVisualizationDataset.setProteinInformation(protein);
+//        }
         protein.getProteinGroupSet().stream().map((acc) -> {
             proteinNodes.put(acc, peptideShakerVisualizationDataset.getProtein(acc));
             return acc;
@@ -115,7 +115,6 @@ public abstract class ProteinsPeptidesGraphComponent extends VerticalLayout {
         Map<String, ProteinObject> tempProteinNodes = new LinkedHashMap<>(proteinNodes);
         tempProteinNodes.keySet().forEach((accession) -> {
             proteinNodes.replace(accession, peptideShakerVisualizationDataset.updateProteinInformation(tempProteinNodes.get(accession), accession));
-//            proteinTableData.put(accession, proteinNodes.get(accession));
         });
 
         graphComponent.updateGraphData(protein, proteinNodes, peptidesNodes, edges);

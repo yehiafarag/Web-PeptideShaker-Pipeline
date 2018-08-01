@@ -23,11 +23,11 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
 
     private final String nodeId;
     private final VerticalLayout modificationLayout;
-     private boolean selected;
+    private boolean selected;
     private String defaultStyleName;
     private String validationStatuesStyle;
     private String proteinEvidenceStyle;
-    private final String modificationStyleName ="nodemodificationbackground";
+    private final String modificationStyleName = "nodemodificationbackground";
     private int edgesNumber;
 
     /**
@@ -36,6 +36,7 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
     private final PTMFactory PTM = PTMFactory.getInstance();
 
     public Node(String id, String modifications, String sequence) {
+
         Node.this.setWidth(20, Unit.PIXELS);
         Node.this.setHeight(20, Unit.PIXELS);
         Node.this.setStyleName("node");
@@ -46,18 +47,24 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
         Node.this.addComponent(modificationLayout);
         String subTooltip = "";
         Map<String, String> modificationsTooltip = new HashMap<>();
-        for (String mod : modifications.split(",")) {
+        for (String mod : modifications.split("\\),")) {
             if (mod.trim().equalsIgnoreCase("") || mod.contains("Pyrolidone") || mod.contains("Acetylation of protein N-term")) {
                 continue;
             }
-            String[] tmod = mod.replace("(", "__").split("__");
+            String[] tmod = mod.split("\\(");
             Color c = PTMFactory.getDefaultColor(tmod[0].trim());
             Label modification = new Label("<div  style='background:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ");border-radius:100%;width: 100%;height: 100%;opacity:0.2;'></div>", ContentMode.HTML);
             modification.setSizeFull();
             modificationLayout.addComponent(modification);
-            int i = Integer.valueOf(tmod[1].trim().replace(")", "")) - 1;
-            modificationsTooltip.put(sequence.charAt(i) + "<" + PTM.getPTM(tmod[0].trim()).getShortName() + ">", "<font style='background-color:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")'>" + sequence.charAt(i) + "</font>");
-            subTooltip += "</br><span style='width:20px;height:10px;background-color:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")'>" + sequence.charAt(i) + "</span> - " + mod;
+            String[] indexArr = tmod[1].replace(")", "").replace(" ", "").split(",");
+            for (String indexStr : indexArr) {
+                int i = Integer.valueOf(indexStr) - 1;
+                modificationsTooltip.put(sequence.charAt(i) + "<" + PTM.getPTM(tmod[0].trim()).getShortName() + ">", "<font style='background-color:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")'>" + sequence.charAt(i) + "</font>");
+
+                if (!subTooltip.contains("</br><span style='width:20px;height:10px;background-color:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")'>" + sequence.charAt(i) + "</span> - " + mod)) {
+                    subTooltip += "</br><span style='width:20px;height:10px;background-color:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")'>" + sequence.charAt(i) + "</span> - " + mod;
+                }
+            }
 
         }
         if (modificationLayout.getComponentCount() > 1) {
@@ -94,7 +101,7 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
     public void addEdge() {
         this.edgesNumber++;
     }
-   
+
     public int getType() {
         return type;
     }
@@ -182,7 +189,5 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
     }
 
     public abstract void selected(String id);
-
- 
 
 }

@@ -87,7 +87,7 @@ public class BigSideBtn extends HorizontalLayout {
 
     public void updateIcon(String HTML) {
         this.setVisible((HTML != null));
-        if (HTML == null || iconLabel.getValue().equalsIgnoreCase(HTML)) {
+        if (HTML == null) {
             return;
         }
         btnThumbIconImage.setVisible(false);

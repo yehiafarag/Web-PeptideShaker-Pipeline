@@ -40,7 +40,7 @@ public abstract class DataViewLayout extends Panel {
     private final float[] expandingRatio = new float[]{5f, 32f, 9f, 9f, 9f, 9f, 9f, 9f, 9f};
 
     /**
-     * Constructor to initialize the main layout and attributes.
+     * Constructor to initialise the main layout and attributes.
      */
     public DataViewLayout() {
         DataViewLayout.this.setWidth(100, Unit.PERCENTAGE);
@@ -150,7 +150,6 @@ public abstract class DataViewLayout extends Panel {
             if (ds.getName() == null || ds.getType().equalsIgnoreCase("FASTA File")) {
                 continue;
             }
-            boolean valid = true;
             Component viewLabel;
             StatusLabel statusLabel = new StatusLabel();
             statusLabel.setStatus(ds.getStatus());
@@ -251,15 +250,12 @@ public abstract class DataViewLayout extends Panel {
                 ((PopupWindow) nameLabel).setContent(dsOverview);
                 nameLabel.addStyleName("bluecolor");
                 if (statusLabel.getStatus() == 0 && !((PeptideShakerVisualizationDataset) ds).isValidFile()) {
-                    valid = false;
                     statusLabel.setStatus("Some files are missings or corrupted please re-run SearchGUI-PeptideShaker-WorkFlow");
-
                 }
 
                 viewLabel = new ActionLabel(VaadinIcons.CLUSTER, "View PeptideShaker results ") {
                     @Override
                     public void layoutClick(LayoutEvents.LayoutClickEvent event) {
-//                        Notification.show("View PeptideShaker Results");
                         viewDataset((PeptideShakerVisualizationDataset) ds);
                     }
 

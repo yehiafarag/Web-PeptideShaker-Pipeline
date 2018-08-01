@@ -54,6 +54,7 @@ public class GalaxyFile extends SystemDataSet {
         if (zipped && filesList.isEmpty()) {
             FileOutputStream fos = null;
             try {
+
                 URL downloadableFile = new URL(dataset.getDownloadUrl());
                 URLConnection conn = downloadableFile.openConnection();
                 conn.addRequestProperty("Accept", "*/*");
@@ -90,8 +91,11 @@ public class GalaxyFile extends SystemDataSet {
 
     }
 
-    public File getFile() {
+    public File getFile() throws IOException {
         String fileName = dataset.getGalaxyId().replace("/", "_");
+        if (dataset.getType().equalsIgnoreCase("Search Paramerters File (JSON)") && !zipped) {
+            fileName += dataset.getName() ;
+        }
         File file = new File(userFolder, fileName);
         if (file.exists()) {
             return file;
@@ -110,11 +114,21 @@ public class GalaxyFile extends SystemDataSet {
                 conn.addRequestProperty("Pragma", "no-cache");
                 conn.setDoInput(true);
                 ZipInputStream Zis = new ZipInputStream(conn.getInputStream());
-
-                ZipEntry entry = Zis.getNextEntry();
                 int counter = 0;
+                ZipEntry entry = Zis.getNextEntry();
+
                 while (entry != null && counter < 10) {
-                    if (!entry.isDirectory() && entry.getName().endsWith(dataset.getGalaxyId().split("__")[1].replace("reports/", ""))) //do something with entry  
+                    if (!entry.isDirectory() && entry.getName().equalsIgnoreCase("SEARCHGUI_IdentificationParameters.par")) //do something with entry  
+                    {
+                        try (ReadableByteChannel rbc = Channels.newChannel(Zis)) {
+                            fos = new FileOutputStream(file);
+                            fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+                            fos.close();
+                            rbc.close();
+                            Zis.close();
+                            break;
+                        }
+                    } else if (!entry.isDirectory() && entry.getName().endsWith(dataset.getGalaxyId().split("__")[1].replace("reports/", ""))) //do something with entry  
                     {
                         try (ReadableByteChannel rbc = Channels.newChannel(Zis)) {
                             fos = new FileOutputStream(file);
@@ -128,16 +142,15 @@ public class GalaxyFile extends SystemDataSet {
                     entry = Zis.getNextEntry();
                     counter++;
                 }
+
             } catch (MalformedURLException ex) {
-                ex.printStackTrace();
-            } catch (IOException ex) {
-                ex.printStackTrace();
+//                ex.printStackTrace();
             } finally {
                 if (fos != null) {
                     try {
                         fos.close();
                     } catch (IOException ex) {
-                        ex.printStackTrace();
+//                        ex.printStackTrace();
                     }
                 }
 
@@ -167,8 +180,6 @@ public class GalaxyFile extends SystemDataSet {
 
                 } catch (MalformedURLException ex) {
                     ex.printStackTrace();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
                 } finally {
                     if (fos != null) {
                         try {
@@ -180,8 +191,6 @@ public class GalaxyFile extends SystemDataSet {
 
                 }
             } catch (MalformedURLException ex) {
-                ex.printStackTrace();
-            } catch (IOException ex) {
                 ex.printStackTrace();
             }
         }

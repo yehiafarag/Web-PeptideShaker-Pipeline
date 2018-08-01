@@ -60,14 +60,12 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
      * The enzyme factory.
      */
     private final EnzymeFactory enzymeFactory = EnzymeFactory.getInstance();
+  
+    
     /**
-     * Convenience array for forward ion type selection.
+     * Convenience array for ion type selection.
      */
-    private final List<String> forwardIons = new ArrayList(Arrays.asList(new String[]{"a", "b", "c"}));
-    /**
-     * Convenience array for rewind ion type selection.
-     */
-    private final List<String> rewindIons = new ArrayList(Arrays.asList(new String[]{"x", "y", "z"}));
+    private final List<String> ions = new ArrayList(Arrays.asList(new String[]{"a", "b", "c","x", "y", "z"}));
     /**
      * The post translational modifications factory.
      */
@@ -165,7 +163,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         SearchSettingsLayout.this.addComponent(proteaseFragmentationContainer);
     }
 
-    public String getFataFileId() {
+    public String getFastaFileId() {
         return fastaFileList.getSelectedValue();
     }
 
@@ -624,8 +622,8 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
             enzymeList.setSelected(searchParameters.getDigestionPreferences().getEnzymes().get(0).getName());
             specificityList.setSelected(searchParameters.getDigestionPreferences().getSpecificity(searchParameters.getDigestionPreferences().getEnzymes().get(0).getName()));
             maxMissCleav.setSelectedValue(searchParameters.getDigestionPreferences().getnMissedCleavages(searchParameters.getDigestionPreferences().getEnzymes().get(0).getName()));
-            fragmentIonTypes.setSelectedI(forwardIons.get(searchParameters.getForwardIons().get(0)));
-            fragmentIonTypes.setSelectedII(rewindIons.get(searchParameters.getRewindIons().get(0)));
+            fragmentIonTypes.setSelectedI(ions.get(searchParameters.getForwardIons().get(0)));
+            fragmentIonTypes.setSelectedII(ions.get(searchParameters.getRewindIons().get(0)));
             precursorTolerance.setTextValue(searchParameters.getPrecursorAccuracy());
             precursorTolerance.setSelected(searchParameters.getPrecursorAccuracyType().toString());
             fragmentTolerance.setTextValue(searchParameters.getFragmentIonAccuracy());
@@ -742,10 +740,10 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         digPref.setCleavagePreference(DigestionPreferences.CleavagePreference.valueOf(digestionList.getSelectedValue().toLowerCase().replace("uns", "unS").replace("le p", "leP")));
         searchParameters.setDigestionPreferences(digPref);
         ArrayList<Integer> forwardIonsv = new ArrayList<>();
-        forwardIonsv.add(forwardIons.indexOf(fragmentIonTypes.getFirstSelectedValue()));
+        forwardIonsv.add(ions.indexOf(fragmentIonTypes.getFirstSelectedValue()));
         searchParameters.setForwardIons(forwardIonsv);
         ArrayList<Integer> rewindIonsv = new ArrayList<>();
-        rewindIonsv.add(rewindIons.indexOf(fragmentIonTypes.getSecondSelectedValue()));
+        rewindIonsv.add(ions.indexOf(fragmentIonTypes.getSecondSelectedValue()));
         searchParameters.setRewindIons(rewindIonsv);
         searchParameters.setPrecursorAccuracy(Double.valueOf(precursorTolerance.getFirstSelectedValue()));
         searchParameters.setPrecursorAccuracyType(SearchParameters.MassAccuracyType.valueOf(precursorTolerance.getSecondSelectedValue().toUpperCase()));

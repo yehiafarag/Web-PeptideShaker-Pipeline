@@ -93,6 +93,7 @@ public abstract class ProteinCoverageContainer extends VerticalLayout {
     public void selectDataset(Map<String, ProteinObject> proteinNodes, Map<String, PeptideObject> peptidesNodes, Set<Object> defaultSelectedProteinsItems, Set<Object> defaultSelectedPeptidesItems) {
         tableData.clear();
         proteinNodes.values().forEach((protein) -> {
+            
             ProteinCoverageComponent proteinLayout = new ProteinCoverageComponent(protein, peptidesNodes) {
                 @Override
                 public void selectPeptide(Object proteinId, Object peptideId) {
