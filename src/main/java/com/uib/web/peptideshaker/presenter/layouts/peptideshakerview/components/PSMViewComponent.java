@@ -150,22 +150,6 @@ public abstract class PSMViewComponent extends VerticalLayout {
         });
         resizeControlBtn.resize(2);
 
-//        splitpanel.addSplitPositionChangeListener(new AbstractSplitPanel.SplitPositionChangeListener() {
-//            @Override
-//            public void onSplitPositionChanged(AbstractSplitPanel.SplitPositionChangeEvent event) {
-//                System.out.println("split changed new redraw");
-//                spectrumPlot.reDraw();
-//                spectrumPlot.setDisableSizeReporter(false);
-////                SpectrumPlot.setDisableSizeReporter(true);                
-//            }
-//        });
-//        splitpanel.addSplitterClickListener(new AbstractSplitPanel.SplitterClickListener() {
-//            @Override
-//            public void splitterClick(AbstractSplitPanel.SplitterClickEvent event) {
-//                System.out.println("split clicked");
-////                SpectrumPlot.setDisableSizeReporter(true);
-//            }
-//        });
 
     }
 
@@ -174,6 +158,8 @@ public abstract class PSMViewComponent extends VerticalLayout {
         this.psmOverviewTable.removeAllItems();
         index = 1;
         spectrumInformationMap = getSpectrumData(psms);
+        if(spectrumInformationMap==null)
+            return;
         psms.stream().map((psm) -> {
             return psm;
         }).forEachOrdered((psm) -> {

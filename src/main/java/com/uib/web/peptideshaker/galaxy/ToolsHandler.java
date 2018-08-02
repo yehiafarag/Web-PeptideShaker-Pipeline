@@ -20,7 +20,6 @@ import com.github.jmchilton.blend4j.galaxy.beans.WorkflowOutputs;
 import com.github.jmchilton.blend4j.galaxy.beans.collection.request.CollectionDescription;
 import com.github.jmchilton.blend4j.galaxy.beans.collection.request.HistoryDatasetElement;
 import com.github.jmchilton.blend4j.galaxy.beans.collection.response.CollectionResponse;
-import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinSession;
@@ -45,8 +44,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
@@ -84,8 +81,8 @@ public abstract class ToolsHandler {
      * The main galaxy Work-Flow Client on galaxy server.
      */
     private final ToolsClient galaxyToolClient;
-    private String search_GUI_Tool_Id = null;
-    private String peptideShaker_Tool_Id = null;
+    private Tool search_GUI_Tool = null;
+    private Tool peptideShaker_Tool = null;
     private String nelsExporter_Tool_Id = null;
     private History galaxyWorkingHistory;
     /**
@@ -138,18 +135,17 @@ public abstract class ToolsHandler {
                         if (tool.getId().equalsIgnoreCase("nels_export")) {
                             nelsExporter_Tool_Id = tool.getId();
                         } else if (tool.getId().contains("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/search_gui/")) {
-                            String version = tool.getId().split("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/search_gui/")[1];
-
+                            String version = tool.getVersion();//getId().split("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/search_gui/")[1];
                             if (isFirmwareNewer(version, SGVersion)) {
                                 SGVersion = version;
-                                search_GUI_Tool_Id = tool.getId();
+                                search_GUI_Tool = tool;
                             }
                         } else if (tool.getId().contains("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/peptide_shaker/")) {
-                            String version = tool.getId().split("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/peptide_shaker/")[1];
+                            String version = tool.getVersion();//.getId().split("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/peptide_shaker/")[1];
                             boolean check = isFirmwareNewer(version, PSVersion);
                             if (check) {
                                 PSVersion = version;
-                                peptideShaker_Tool_Id = tool.getId();
+                                peptideShaker_Tool = tool;
 
                             }
                         }
@@ -157,11 +153,11 @@ public abstract class ToolsHandler {
                     }
                 }
 
-                if (peptideShaker_Tool_Id != null && search_GUI_Tool_Id != null && nelsExporter_Tool_Id != null) {
+                if (peptideShaker_Tool != null && search_GUI_Tool != null && nelsExporter_Tool_Id != null) {
                     validToolsAvailable = true;
                     nelsSupport = true;
 //                    break;
-                } else if (peptideShaker_Tool_Id != null && search_GUI_Tool_Id != null) {
+                } else if (peptideShaker_Tool != null && search_GUI_Tool != null) {
                     validToolsAvailable = true;
                 }
 
@@ -175,9 +171,6 @@ public abstract class ToolsHandler {
             } else {
                 System.out.println("at tools are not available");
                 e.printStackTrace();
-//                UI.getCurrent().getSession().close();
-//                VaadinSession.getCurrent().getSession().invalidate();
-//                Page.getCurrent().reload();
             }
         }
     }
@@ -386,19 +379,21 @@ public abstract class ToolsHandler {
             File file;
             WorkflowInputs.WorkflowInput input2;
             if (mgfIdsList.size() > 1) {
-                file = new File(basepath + "/VAADIN/Galaxy-Workflow-Web-Peptide-Shaker-Multiple-MGF.ga");
+                file = new File(basepath + "/VAADIN/Galaxy-Workflow-Web-Peptide-Shaker-Multi-MGF-2018.ga");
                 input2 = prepareWorkflowCollectionList(WorkflowInputs.InputSourceType.HDCA, mgfIdsList.keySet(), historyId);
             } else {
                 file = new File(basepath + "/VAADIN/Galaxy-Workflow-Web-Peptide-Shaker-Single-MGF-2018.ga");
                 input2 = new WorkflowInputs.WorkflowInput(mgfIdsList.keySet().iterator().next(), WorkflowInputs.InputSourceType.HDA);
             }
             String json = readWorkflowFile(file);
-            json = json.replace("\"toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/search_gui/3.2.13.3\"", "\\\"" + search_GUI_Tool_Id + "\\\"");
-            json = json.replace("3.2.13.3", search_GUI_Tool_Id.split("\\/")[search_GUI_Tool_Id.split("\\/").length - 1].trim());
+            System.out.println("setrach gui id " + search_GUI_Tool.getName() + "  " + search_GUI_Tool.getVersion() + " " + json.contains("3.2.24.0") + "  " + peptideShaker_Tool.getVersion() + "  " + json.contains("1.16.20"));
+//            json = json.replace("\"toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/search_gui/3.2.13.3\"", "\\\"" + search_GUI_Tool .getId()+ "\\\"");
+//            json = json.replace("3.2.13.3", search_GUI_Tool.split("\\/")[search_GUI_Tool.split("\\/").length - 1].trim());
+            json = json.replace("3.2.24.0", search_GUI_Tool.getVersion());
             json = json.replace("SearchGUI_Label", projectName + "-SearchGUI Results").replace("ZIP_Label", projectName + "-ZIP");
             String createDecoy = searchParameters.getFastaFile().getName().split("__")[2];
             json = json.replace("\\\\\\\"create_decoy\\\\\\\": \\\\\\\"true\\\\\\\"", "\\\\\\\"create_decoy\\\\\\\": \\\\\\\"" + createDecoy + "\\\\\\\"");
-//            //protein_digest_options     
+            //protein_digest_options     
             switch (searchParameters.getDigestionPreferences().getCleavagePreference().index) {
                 case 0:
                     if (searchParameters.getDigestionPreferences().getEnzymes().get(0).getName().equalsIgnoreCase("Trypsin")) {//
@@ -436,17 +431,13 @@ public abstract class ToolsHandler {
                 search_engines.add(("\\\\\\\"" + searchEng + "\\\\\\\"").replace(" (Select for noncommercial use only)", "").replace("+", "").replace("-", ""));
             });
             json = json.replace("{\\\\\\\"engines\\\\\\\": null}", "{\\\\\\\"engines\\\\\\\": " + search_engines.toString() + "}");
-//            //precursor_options
 //            //  //precursor_options
-//
             String updated = "\"{\\\\\\\"forward_ion\\\\\\\": \\\\\\\"" + ions.get(searchParameters.getForwardIons().get(0)) + "\\\\\\\", \\\\\\\"max_charge\\\\\\\": \\\\\\\"" + searchParameters.getMaxChargeSearched().value + "\\\\\\\", \\\\\\\"fragment_tol_units\\\\\\\": \\\\\\\"" + (searchParameters.getFragmentAccuracyType().ordinal() - 1) + "\\\\\\\", \\\\\\\"max_isotope\\\\\\\": \\\\\\\"" + (searchParameters.getMaxIsotopicCorrection()) + "\\\\\\\", \\\\\\\"precursor_ion_tol_units\\\\\\\": \\\\\\\"" + (searchParameters.getPrecursorAccuracyType().ordinal() + 1) + "\\\\\\\", \\\\\\\"min_isotope\\\\\\\": \\\\\\\"" + searchParameters.getMinIsotopicCorrection() + "\\\\\\\", \\\\\\\"fragment_tol\\\\\\\": \\\\\\\"" + searchParameters.getFragmentIonAccuracyInDaltons() + "\\\\\\\", \\\\\\\"min_charge\\\\\\\": \\\\\\\"" + searchParameters.getMinChargeSearched().value + "\\\\\\\", \\\\\\\"reverse_ion\\\\\\\": \\\\\\\"" + ions.get(searchParameters.getRewindIons().get(0)) + "\\\\\\\", \\\\\\\"precursor_ion_tol\\\\\\\": \\\\\\\"" + searchParameters.getPrecursorAccuracy() + "\\\\\\\"}\\\",";
-
             System.out.println("json contain " + json.contains("\"{\\\\\\\"forward_ion\\\\\\\": \\\\\\\"b\\\\\\\", \\\\\\\"max_charge\\\\\\\": \\\\\\\"4\\\\\\\", \\\\\\\"fragment_tol_units\\\\\\\": \\\\\\\"0\\\\\\\", \\\\\\\"max_isotope\\\\\\\": \\\\\\\"1\\\\\\\", \\\\\\\"precursor_ion_tol_units\\\\\\\": \\\\\\\"1\\\\\\\", \\\\\\\"min_isotope\\\\\\\": \\\\\\\"0\\\\\\\", \\\\\\\"fragment_tol\\\\\\\": \\\\\\\"0.5\\\\\\\", \\\\\\\"min_charge\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"reverse_ion\\\\\\\": \\\\\\\"y\\\\\\\", \\\\\\\"precursor_ion_tol\\\\\\\": \\\\\\\"10.0\\\\\\\"}\\\","));
             json = json.replace("\"{\\\\\\\"forward_ion\\\\\\\": \\\\\\\"b\\\\\\\", \\\\\\\"max_charge\\\\\\\": \\\\\\\"4\\\\\\\", \\\\\\\"fragment_tol_units\\\\\\\": \\\\\\\"0\\\\\\\", \\\\\\\"max_isotope\\\\\\\": \\\\\\\"1\\\\\\\", \\\\\\\"precursor_ion_tol_units\\\\\\\": \\\\\\\"1\\\\\\\", \\\\\\\"min_isotope\\\\\\\": \\\\\\\"0\\\\\\\", \\\\\\\"fragment_tol\\\\\\\": \\\\\\\"0.5\\\\\\\", \\\\\\\"min_charge\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"reverse_ion\\\\\\\": \\\\\\\"y\\\\\\\", \\\\\\\"precursor_ion_tol\\\\\\\": \\\\\\\"10.0\\\\\\\"}\\\",", updated);
-            json = json.replace("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/peptide_shaker/1.16.20", peptideShaker_Tool_Id);
-            json = json.replace("1.16.20", peptideShaker_Tool_Id.split("\\/")[peptideShaker_Tool_Id.split("\\/").length - 1]);
+////            json = json.replace("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/peptide_shaker/1.16.20", peptideShaker_Tool);
+            json = json.replace("1.16.20", peptideShaker_Tool.getVersion());//.split("\\/")[peptideShaker_Tool.split("\\/").length - 1]);            
             selectedWf = galaxyWorkFlowClient.importWorkflow(json);
-
             WorkflowInputs workflowInputs = new WorkflowInputs();
             workflowInputs.setWorkflowId(selectedWf.getId());
             workflowInputs.setDestination(new WorkflowInputs.ExistingHistory(historyId));
@@ -487,7 +478,7 @@ public abstract class ToolsHandler {
 //            } catch (InterruptedException ex) {
 //                ex.printStackTrace();
 //            }
-            galaxyWorkFlowClient.deleteWorkflowRequest(selectedWf.getId());
+//            galaxyWorkFlowClient.deleteWorkflowRequest(selectedWf.getId());
             while (t.isAlive()) {
                 try {
                     Thread.sleep(500);

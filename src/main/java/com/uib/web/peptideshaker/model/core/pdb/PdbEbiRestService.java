@@ -55,7 +55,6 @@ public class PdbEbiRestService {
             if (jsonObject != JSONObject.NULL) {
                 Map<String, Object> retMap = toMap(jsonObject);
                 String[] accArr = accessions.split(",");
-                System.out.println("respond is " + jsonObject.toString());
                 for (String acc : accArr) {
                     Map<String, PdbMatch> map = new LinkedHashMap<>();
                     List<Object> l = (List<Object>) retMap.get(acc.toUpperCase().trim());
@@ -99,7 +98,6 @@ public class PdbEbiRestService {
             } else {
                 respond = sendPost(url, urlParameters);
             }
-            System.out.println("respond is " + respond.toString());
             if (respond.equalsIgnoreCase("")) {
                 return pdbMap;
             }
