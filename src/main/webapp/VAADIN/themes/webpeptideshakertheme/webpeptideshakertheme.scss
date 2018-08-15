@@ -1802,7 +1802,7 @@
     }
     .selectablenode center {
 
-font-size: 10px !important;
+        font-size: 10px !important;
         z-index: 3 !important;
         position: relative;
         text-shadow: 0 0 3px #000000, 0 0 3px #000000;
@@ -2844,7 +2844,7 @@ font-size: 10px !important;
     }
     .bigmenubtn .v-icon {	       
         font-size: 60px;
-        line-height: 70px;
+        line-height: 77px;
         text-align: center !important;
         color: #7d7d7d;
         border-radius: 5px;
@@ -2862,6 +2862,30 @@ font-size: 10px !important;
     }
     .nopadding{
         padding:0px !important;
+    }
+    .uploaderlayout .v-label-no-margin{
+        margin-top:-10px;
+    }
+    .smooth, .v-absolutelayout-wrapper-smooth{
+        -webkit-transition: all 1s ease-in-out;
+        -moz-transition: all 1s ease-in-out;
+        -o-transition: all 1s ease-in-out;
+        transition: all 1s ease-in-out;
+
+
+
+    }
+    .hidebywidth, .v-absolutelayout-wrapper-hidebywidth{
+        width:0px !important;
+        overflow:hidden !important; 
+
+    }
+    .v-slot-uploaderlayout{
+        position: relative;
+        max-height: 15px;
+        margin-top: -30px;
+        padding-bottom:5px;
+        top:-4px;
     }
 
     /****mobile css**/

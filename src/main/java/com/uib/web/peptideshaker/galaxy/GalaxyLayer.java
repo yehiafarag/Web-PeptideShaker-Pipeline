@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import pl.exsio.plupload.PluploadFile;
 
 /**
  * This class represents Galaxy layer that work as middle layer between the
@@ -413,7 +414,10 @@ public abstract class GalaxyLayer {
 
     }
 
-    public abstract void jobsInProgress(boolean inprogress, Map<String, SystemDataSet> historyFilesMap);
+    public boolean uploadToGalaxy(PluploadFile[] toUploadFiles) {
+        return toolsHandler.uploadToGalaxy(historyHandler.getWorkingHistoryId(), toUploadFiles);
+
+    }public abstract void jobsInProgress(boolean inprogress, Map<String, SystemDataSet> historyFilesMap);
 
     public void reConnectToGalaxy(String APIKEy, String galaxyUrl) {
         galaxyConnectionSettingsPanel.reConnectToGalaxy(APIKEy, galaxyUrl);

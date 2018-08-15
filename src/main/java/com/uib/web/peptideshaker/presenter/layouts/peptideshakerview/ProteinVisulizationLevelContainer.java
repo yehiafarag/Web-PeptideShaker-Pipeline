@@ -89,13 +89,6 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
             @Override
             public void selectedItem(Set<Object> selectedItems, Set<Object> selectedChildsItems) {
                 proteinCoverageContainer.setSelectedItems(selectedItems, selectedChildsItems);
-                if (selectedChildsItems.size() == 1) {
-                    Object peptideId = selectedChildsItems.iterator().next();
-                    peptideSelection(peptideId);
-                    proteinStructurePanel.selectPeptide(peptideId + "");
-                } else {
-                    peptideSelection(null);
-                }
                 if (selectedItems.size() == 1) {
                     ProteinObject protein = this.getProteinNodes().get((String) selectedItems.iterator().next());
                     proteinPeptides = new LinkedHashMap<>();
@@ -105,6 +98,14 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
                     proteinStructurePanel.updatePanel(protein.getAccession(), protein.getSequence(), proteinPeptides.values());
                 } else {
                     proteinStructurePanel.reset();
+                }
+
+                if (selectedChildsItems.size() == 1) {
+                    Object peptideId = selectedChildsItems.iterator().next();
+                    peptideSelection(peptideId);
+                    proteinStructurePanel.selectPeptide(peptideId + "");
+                } else {
+                    peptideSelection(null);
                 }
 
             }
@@ -168,7 +169,7 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
         if (type.equalsIgnoreCase("protein_selection")) {
             String proteinsId = Selection_Manager.getSelectedProteinId();
             String imgUrl = selectedProteinGraph.updateGraphData(proteinsId);
-            
+
             proteinCoverageContainer.selectDataset(selectedProteinGraph.getProteinNodes(), selectedProteinGraph.getPeptidesNodes(), selectedProteinGraph.getSelectedProteins(), selectedProteinGraph.getSelectedPeptides());
             if (imgUrl != null) {
                 this.proteinoverviewBtn.updateIconResource(new ExternalResource(imgUrl));
@@ -193,6 +194,7 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
             Selection_Manager.setSelectedPeptide(null);
             Selection_Manager.setSelection("peptide_selection", new HashSet<>(Arrays.asList(new Comparable[]{null})), null, getFilterId());
         } else {
+            System.out.println("it is a selected peptide with id " + peptideId + "   " + proteinPeptides);
             Selection_Manager.setSelectedPeptide(proteinPeptides.get(peptideId.toString()));
             Selection_Manager.setSelection("peptide_selection", new HashSet<>(Arrays.asList(new Comparable[]{peptideId + ""})), null, getFilterId());
         }

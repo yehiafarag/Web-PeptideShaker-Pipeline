@@ -44,6 +44,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
@@ -51,6 +53,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+import pl.exsio.plupload.PluploadFile;
 
 /**
  * This class responsible for interaction with tools on Galaxy server
@@ -693,6 +696,33 @@ public abstract class ToolsHandler {
         ClientResponse res = galaxyToolClient.uploadRequest(request);
         System.out.println("at ~ response " + res.getProperties().values());
 
+    }
+
+    /**
+     * Save search settings file into galaxy
+     *
+     * @param workHistoryId
+     * @param toUploadFiles
+     * @return
+     */
+    public boolean uploadToGalaxy(String workHistoryId, PluploadFile[] toUploadFiles) {
+        Thread t = new Thread(() -> {
+            for (PluploadFile file : toUploadFiles) {
+                File tFile = (File) file.getUploadedFile();
+                final ToolsClient.FileUploadRequest request = new ToolsClient.FileUploadRequest(workHistoryId, tFile);
+                request.setDatasetName(file.getName());
+                galaxyToolClient.upload(request).getOutputs();
+                tFile.delete();
+            }
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+            updateHistoryDatastructure();
+        });
+        t.start();
+        return true;
     }
 
 }

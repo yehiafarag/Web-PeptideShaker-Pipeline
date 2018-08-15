@@ -15992,7 +15992,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .bigmenubtn .v-icon {
 	font-size: 60px;
-	line-height: 70px;
+	line-height: 77px;
 	text-align: center !important;
 	color: #7d7d7d;
 	border-radius: 5px;
@@ -16012,6 +16012,30 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .nopadding {
 	padding: 0px !important;
+}
+
+.webpeptideshakertheme .uploaderlayout .v-label-no-margin {
+	margin-top: -10px;
+}
+
+.webpeptideshakertheme .smooth, .webpeptideshakertheme .v-absolutelayout-wrapper-smooth {
+	-webkit-transition: all 1s ease-in-out;
+	-moz-transition: all 1s ease-in-out;
+	-o-transition: all 1s ease-in-out;
+	transition: all 1s ease-in-out;
+}
+
+.webpeptideshakertheme .hidebywidth, .webpeptideshakertheme .v-absolutelayout-wrapper-hidebywidth {
+	width: 0px !important;
+	overflow: hidden !important;
+}
+
+.webpeptideshakertheme .v-slot-uploaderlayout {
+	position: relative;
+	max-height: 15px;
+	margin-top: -30px;
+	padding-bottom: 5px;
+	top: -4px;
 }
 
 .webpeptideshakertheme .horizontalcss .largetitle .v-label {

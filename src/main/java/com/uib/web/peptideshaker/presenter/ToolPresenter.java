@@ -101,15 +101,15 @@ public abstract class ToolPresenter extends VerticalLayout implements ViewableFr
             }
 
         };
-        VerticalLayout nelsLayout = new VerticalLayout();
-
-        BigSideBtn nelsBtn = new BigSideBtn("Get Data",1);
-        nelsBtn.updateIconResource(new ThemeResource("img/NeLS3.png"));
-        nelsBtn.setData("nels");
-        btnContainer.addComponent(nelsBtn);
-        btnContainer.setComponentAlignment(nelsBtn, Alignment.TOP_CENTER);
-        nelsBtn.addLayoutClickListener(ToolPresenter.this);
-        btnsLayoutMap.put(nelsBtn, nelsLayout);
+//        VerticalLayout nelsLayout = new VerticalLayout();
+//
+//        BigSideBtn nelsBtn = new BigSideBtn("Get Data",1);
+//        nelsBtn.updateIconResource(new ThemeResource("img/NeLS3.png"));
+//        nelsBtn.setData("nels");
+//        btnContainer.addComponent(nelsBtn);
+//        btnContainer.setComponentAlignment(nelsBtn, Alignment.TOP_CENTER);
+//        nelsBtn.addLayoutClickListener(ToolPresenter.this);
+//        btnsLayoutMap.put(nelsBtn, nelsLayout);
 
         BigSideBtn workFlowBtn = new BigSideBtn("Work-Flow",2);
          workFlowBtn.updateIconResource(new ThemeResource("img/workflow3.png"));
@@ -133,7 +133,7 @@ public abstract class ToolPresenter extends VerticalLayout implements ViewableFr
         toolViewFrameContent.setSizeFull();
         toolViewFrame.addComponent(toolViewFrameContent);
 
-        toolViewFrameContent.addComponent(nelsLayout);
+//        toolViewFrameContent.addComponent(nelsLayout);
         toolViewFrameContent.addComponent(peptideshakerToolInputForm);
 
         mobilebtnContainer = new HorizontalLayout();
@@ -143,8 +143,8 @@ public abstract class ToolPresenter extends VerticalLayout implements ViewableFr
         mobilebtnContainer.setStyleName("bottomsidebtncontainer");
 
        
-        mobilebtnContainer.addComponent(nelsBtn.getMobileModeBtn());
-        mobilebtnContainer.setComponentAlignment(nelsBtn.getMobileModeBtn(), Alignment.TOP_CENTER);
+//        mobilebtnContainer.addComponent(nelsBtn.getMobileModeBtn());
+//        mobilebtnContainer.setComponentAlignment(nelsBtn.getMobileModeBtn(), Alignment.TOP_CENTER);
 
         mobilebtnContainer.addComponent(workFlowBtn.getMobileModeBtn());
         mobilebtnContainer.setComponentAlignment(workFlowBtn.getMobileModeBtn(), Alignment.TOP_CENTER);

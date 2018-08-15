@@ -33,17 +33,17 @@ public class BigSideBtn extends HorizontalLayout {
                 iconLabel.setVisible(false);
                 super.setSource(source);
                 mobileModeBtn.updateIconResource(source);
-                if (this.getStyleName().contains("reshake")) {
-                    this.removeStyleName("reshake");
-                    this.addStyleName("shake");
-                    mobileModeBtn.removeStyleName("reshake");
-                    mobileModeBtn.addStyleName("shake");
-                } else {
-                    this.removeStyleName("shake");
-                    this.addStyleName("reshake");
-                    mobileModeBtn.removeStyleName("shake");
-                    mobileModeBtn.addStyleName("reshake");
-                }
+//                if (this.getStyleName().contains("reshake")) {
+//                    this.removeStyleName("reshake");
+//                    this.addStyleName("shake");
+//                    mobileModeBtn.removeStyleName("reshake");
+//                    mobileModeBtn.addStyleName("shake");
+//                } else {
+//                    this.removeStyleName("shake");
+//                    this.addStyleName("reshake");
+//                    mobileModeBtn.removeStyleName("shake");
+//                    mobileModeBtn.addStyleName("reshake");
+//                }
             }
 
         };

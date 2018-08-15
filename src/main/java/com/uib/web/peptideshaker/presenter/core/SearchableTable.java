@@ -289,7 +289,7 @@ public abstract class SearchableTable extends VerticalLayout implements Property
 
     @Override
     public void valueChange(Property.ValueChangeEvent event) {
-        Object objcetId = mainTable.getValue();//"P01889";
+        Object objcetId = event.getProperty().getValue();//"P01889";
         itemSelected(objcetId);
 //        proteinNodes.clear();
 //        peptidesNodes.clear();

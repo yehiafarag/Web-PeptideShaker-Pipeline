@@ -16,6 +16,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import pl.exsio.plupload.PluploadFile;
 
 /**
  * This class represent PeptideShaker view presenter which is responsible for
@@ -37,7 +38,7 @@ public abstract class GalaxyFileSystemPresenter extends VerticalLayout implement
     private HorizontalLayout mobilebtnContainer;
     private final Map<BigSideBtn, Component> btnsLayoutMap;
     private DataViewLayout dataLayout;
-    private  BigSideBtn viewDataBtn ;
+    private BigSideBtn viewDataBtn;
 
     /**
      * Initialise the web tool main attributes.
@@ -222,6 +223,12 @@ public abstract class GalaxyFileSystemPresenter extends VerticalLayout implement
                 return GalaxyFileSystemPresenter.this.getFromNels(ds);
             }
 
+            @Override
+            public boolean uploadToGalaxy(PluploadFile[] toUploadFiles) {
+                return GalaxyFileSystemPresenter.this.uploadToGalaxy(toUploadFiles);
+            }
+            
+
         };
         container.addComponent(dataLayout);
         container.setComponentAlignment(dataLayout, Alignment.MIDDLE_CENTER);
@@ -236,5 +243,7 @@ public abstract class GalaxyFileSystemPresenter extends VerticalLayout implement
     public abstract boolean sendToNeLS(SystemDataSet ds);
 
     public abstract boolean getFromNels(SystemDataSet ds);
+    
+     public abstract boolean uploadToGalaxy(PluploadFile[] toUploadFiles);
 
 }

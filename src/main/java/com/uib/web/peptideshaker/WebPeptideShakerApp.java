@@ -16,6 +16,7 @@ import com.vaadin.ui.Link;
 import com.vaadin.ui.VerticalLayout;
 import java.util.Map;
 import java.util.Set;
+import pl.exsio.plupload.PluploadFile;
 
 /**
  * This class represents the main Web PeptideShaker application
@@ -146,6 +147,12 @@ public class WebPeptideShakerApp extends VerticalLayout {
             public boolean getFromNels(SystemDataSet ds) {
                 return Galaxy_Layer.getFromNels(ds.getHistoryId(), ds.getGalaxyId());
             }
+
+            @Override
+            public boolean uploadToGalaxy(PluploadFile[] toUploadFiles) {
+               return Galaxy_Layer.uploadToGalaxy(toUploadFiles);
+            }
+            
 
         };
 

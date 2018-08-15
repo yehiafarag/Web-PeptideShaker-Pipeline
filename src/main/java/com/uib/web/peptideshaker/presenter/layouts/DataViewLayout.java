@@ -6,9 +6,9 @@ import com.uib.web.peptideshaker.presenter.core.DatasetOverviewLayout;
 import com.uib.web.peptideshaker.presenter.core.ActionLabel;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
 import com.uib.web.peptideshaker.presenter.core.StatusLabel;
+import com.uib.web.peptideshaker.presenter.core.Uploader;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.MarginInfo;
@@ -20,7 +20,9 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import java.io.File;
 import java.util.Map;
+import pl.exsio.plupload.PluploadFile;
 
 /**
  * This class represents the data view layout (equal to history in galaxy) the
@@ -53,13 +55,25 @@ public abstract class DataViewLayout extends Panel {
         panelsContainers.setSpacing(true);
         DataViewLayout.this.setContent(panelsContainers);
 
+        Uploader uploader = new Uploader() {
+            @Override
+            public void filesUploaded(PluploadFile[] uploadedFiles) {
+                for (PluploadFile file : uploadedFiles) {
+                    System.out.println("at uploaded file " + file.getName());
+                }
+                uploadToGalaxy(uploadedFiles);
+            }
+
+        };
+
         topPanelLayout = new VerticalLayout();
         topPanelLayout.setWidth(100, Unit.PERCENTAGE);
         topPanelLayout.setHeightUndefined();
         topPanelLayout.setSpacing(true);
         topPanelLayout.setCaption("PeptideShaker Projects");
         panelsContainers.addComponent(topPanelLayout);
-
+        topPanelLayout.addComponent(uploader);
+        
         topDataTable = new VerticalLayout();
         topDataTable.setWidth(100, Unit.PERCENTAGE);
         topDataTable.setHeightUndefined();
@@ -172,19 +186,19 @@ public abstract class DataViewLayout extends Panel {
             ActionLabel nelsLabel = new ActionLabel("NeLS", "Backup in NeLS") {
                 @Override
                 public void layoutClick(LayoutEvents.LayoutClickEvent event) {
-                   
-                     String style = this.getStyleName();
+
+                    String style = this.getStyleName();
                     this.removeStyleName("activate");
                     this.removeStyleName("deactivate");
-                    
+
                     if (style.contains("deactivate")) {
                         if (sendToNeLS(ds)) {
                             this.removeStyleName("deactivate");
-                             this.addStyleName("activatenels");
+                            this.addStyleName("activatenels");
                         }
                     } else {
                         Notification.show("remove from nels");
-                         this.removeStyleName("activatenels");
+                        this.removeStyleName("activatenels");
                         this.addStyleName("deactivate");
                     }
                 }
@@ -234,7 +248,7 @@ public abstract class DataViewLayout extends Panel {
             getToGalaxyLabel.setVisible(nelsSupported);
 
             HorizontalLayout rowLayout;
-            
+
             if (ds.getType().equalsIgnoreCase("Web Peptide Shaker Dataset")) {
                 nameLabel = new PopupWindow(ds.getName());
                 DatasetOverviewLayout dsOverview = new DatasetOverviewLayout((PeptideShakerVisualizationDataset) ds) {
@@ -313,6 +327,8 @@ public abstract class DataViewLayout extends Panel {
 
         return row;
     }
+
+    public abstract boolean uploadToGalaxy(PluploadFile[] toUploadFiles);
 
     public abstract void deleteDataset(SystemDataSet ds);
 
