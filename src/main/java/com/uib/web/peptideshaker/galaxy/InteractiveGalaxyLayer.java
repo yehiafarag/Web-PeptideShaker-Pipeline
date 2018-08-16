@@ -38,22 +38,11 @@ import pl.exsio.plupload.PluploadFile;
  *
  * @author Yehia Farag
  */
-public abstract class GalaxyLayer {
+public abstract class InteractiveGalaxyLayer {
 
     private final HorizontalLayout galaxyConnectionPanel;
     private final PopupView connectionSettingsPanel;
-//    /**
-//     * The main galaxy Tools Client on galaxy server.
-//     */
-//    private  ToolsClient galaxyToolClient;
-//    /**
-//     * The main galaxy Work-Flow Client on galaxy server.
-//     */
-//    private  WorkflowsClient galaxyWorkFlowClient;
-//    /**
-//     * The main galaxy Work-Flow Client on galaxy server.
-//     */
-//    private  HistoriesClient galaxyHistoriesClient;
+
     /**
      * Galaxy server history management system
      *
@@ -77,7 +66,7 @@ public abstract class GalaxyLayer {
     /**
      * Constructor to initialise Galaxy layer.
      */
-    public GalaxyLayer() {
+    public InteractiveGalaxyLayer() {
 
         galaxyConnectionPanel = new HorizontalLayout();
         galaxyConnectionPanel.setHeight(60, Sizeable.Unit.PIXELS);

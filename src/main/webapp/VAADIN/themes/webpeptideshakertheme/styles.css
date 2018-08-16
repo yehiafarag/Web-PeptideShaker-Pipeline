@@ -16038,31 +16038,35 @@ div.v-layout.v-horizontal.v-widget {
 	top: -4px;
 }
 
-.webpeptideshakertheme .horizontalcss .largetitle .v-label {
+.webpeptideshakertheme .smallscreenstyle .largetitle .v-label {
 	margin-left: 10px;
 }
 
-.webpeptideshakertheme .horizontalcss .scrollinsideframe {
+.webpeptideshakertheme .smallscreenstyle .scrollinsideframe {
 	padding-left: 10px;
 	padding-right: 10px;
 }
 
-.webpeptideshakertheme .horizontalcss .v-slot-leftsidebtncontainer {
+.webpeptideshakertheme .smallscreenstyle .mainbodystyle {
+	margin-top: 100px !important;
+}
+
+.webpeptideshakertheme .smallscreenstyle .v-slot-leftsidebtncontainer {
 	width: 1% !important;
 	background-color: white;
 	opacity: 0;
 }
 
-.webpeptideshakertheme .horizontalcss .v-slot-integratedframe {
+.webpeptideshakertheme .smallscreenstyle .v-slot-integratedframe {
 	width: 99% !important;
 	height: 90% !important;
 }
 
-.webpeptideshakertheme .horizontalcss .v-slot-bottomsidebtncontainer {
+.webpeptideshakertheme .smallscreenstyle .v-slot-bottomsidebtncontainer {
 	opacity: 1;
 }
 
-.webpeptideshakertheme .horizontalcss .bigmenubtn img {
+.webpeptideshakertheme .smallscreenstyle .bigmenubtn img {
 	height: 100% !important;
 	width: 40px !important;
 	border: 2px solid lightgray;
@@ -16073,11 +16077,11 @@ div.v-layout.v-horizontal.v-widget {
 	position: relative;
 }
 
-.webpeptideshakertheme .horizontalcss zeropadding {
+.webpeptideshakertheme .smallscreenstyle zeropadding {
 	padding: 10px !important;
 }
 
-.webpeptideshakertheme .horizontalcss .selectedbiglbtn {
+.webpeptideshakertheme .smallscreenstyle .selectedbiglbtn {
 	background-color: whitesmoke;
 	margin-top: -2px !important;
 	border-top-color: whitesmoke;
@@ -16085,15 +16089,15 @@ div.v-layout.v-horizontal.v-widget {
 	border-bottom-right-radius: 5px;
 }
 
-.webpeptideshakertheme .horizontalcss .selectedbiglbtn img {
+.webpeptideshakertheme .smallscreenstyle .selectedbiglbtn img {
 	border-color: rgba(131, 188, 255, 0.96) !important;
 }
 
-.webpeptideshakertheme .horizontalcss.autooverflow {
+.webpeptideshakertheme .smallscreenstyle.autooverflow {
 	overflow: hidden !important;
 }
 
-.webpeptideshakertheme .horizontalcss .v-slot-rightsidebtncontainer {
+.webpeptideshakertheme .smallscreenstyle .v-slot-rightsidebtncontainer {
 	width: 0px !important;
 	z-index: 0 !important;
 	overflow: hidden;
@@ -16107,22 +16111,22 @@ div.v-layout.v-horizontal.v-widget {
 	z-index: 2222222336.0 !important;
 }
 
-.webpeptideshakertheme .horizontalcss .middleviewcontainer {
+.webpeptideshakertheme .smallscreenstyle .middleviewcontainer {
 	padding-left: 0px;
 	padding-right: 0px;
 	padding-bottom: 60px;
 }
 
-.webpeptideshakertheme .horizontalcss .leftsideviewcontainer .v-slot-bigmenubtn {
+.webpeptideshakertheme .smallscreenstyle .leftsideviewcontainer .v-slot-bigmenubtn {
 	visibility: hidden !important;
 }
 
-.webpeptideshakertheme .horizontalcss.frame {
+.webpeptideshakertheme .smallscreenstyle.frame {
 	min-height: 400px !important;
 	min-width: 495px !important;
 }
 
-.webpeptideshakertheme .horizontalcss .v-slot-bottomsidebtncontainer {
+.webpeptideshakertheme .smallscreenstyle .v-slot-bottomsidebtncontainer {
 	min-height: 60px !important;
 	visibility: visible !important;
 	opacity: 1 !important;
@@ -16131,7 +16135,7 @@ div.v-layout.v-horizontal.v-widget {
 	background-color: white !important;
 }
 
-.webpeptideshakertheme .horizontalcss .bottomsidebtncontainer {
+.webpeptideshakertheme .smallscreenstyle .bottomsidebtncontainer {
 	margin-top: -2px;
 	min-height: 60px !important;
 	visibility: visible !important;
@@ -16140,7 +16144,7 @@ div.v-layout.v-horizontal.v-widget {
 	margin-left: 20px;
 }
 
-.webpeptideshakertheme .horizontalcss .v-slot-topviewcontainer {
+.webpeptideshakertheme .smallscreenstyle .v-slot-topviewcontainer {
 	min-height: 50px;
 	max-width: 220px;
 	position: relative !important;
@@ -16158,7 +16162,7 @@ div.v-layout.v-horizontal.v-widget {
 	min-width: 50px;
 }
 
-.webpeptideshakertheme .horizontalcss .v-verticallayout-middleviewcontainer {
+.webpeptideshakertheme .smallscreenstyle .v-verticallayout-middleviewcontainer {
 	top: -39px !important;
 	overflow: visible;
 	visibility: visible !important;
@@ -16166,27 +16170,29 @@ div.v-layout.v-horizontal.v-widget {
 	position: absolute !important;
 }
 
-.webpeptideshakertheme .horizontalcss .logocontainer img {
+.webpeptideshakertheme .smallscreenstyle .logocontainer img {
 	height: 140px !important;
 	overflow: visible;
-	margin-top: -20px;
+	margin-top: 30px;
 	position: fixed;
 	z-index: 10 !important;
+	margin-left: 50%;
+	left: -53px;
 }
 
 .webpeptideshakertheme .v-verticallayout-hidepanel img {
 	visibility: hidden;
 }
 
-.webpeptideshakertheme .horizontalcss .v-link-headerlogo {
+.webpeptideshakertheme .smallscreenstyle .v-link-headerlogo {
 	visibility: hidden;
 }
 
-.webpeptideshakertheme .horizontalcss .v-slot-smallmenubtn {
+.webpeptideshakertheme .smallscreenstyle .v-slot-smallmenubtn {
 	min-width: 50px;
 }
 
-.webpeptideshakertheme .horizontalcss .v-label-frametitle {
+.webpeptideshakertheme .smallscreenstyle .v-label-frametitle {
 	padding-left: 10px;
 	padding-top: 20px;
 	font-size: 14px;
@@ -16195,7 +16201,7 @@ div.v-layout.v-horizontal.v-widget {
 	color: #464646;
 }
 
-.webpeptideshakertheme .horizontalcss .v-slot-smallmenubtn {
+.webpeptideshakertheme .smallscreenstyle .v-slot-smallmenubtn {
 	max-height: 40px !important;
 	border: 2px solid lightgray;
 	border-top: 2px solid rgba(211, 211, 211, 0);
@@ -16212,7 +16218,7 @@ div.v-layout.v-horizontal.v-widget {
 	float: bottom;
 }
 
-.webpeptideshakertheme .horizontalcss .v-slot-smallmenubtn.v-slot-selectedsmallbtn {
+.webpeptideshakertheme .smallscreenstyle .v-slot-smallmenubtn.v-slot-selectedsmallbtn {
 	border-bottom-color: white !important;
 	background: white !important;
 	border-top-color: lightgray;
@@ -16281,4 +16287,18 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .v-absolutelayout-splotframe {
 	margin-top: -25px;
+}
+
+.webpeptideshakertheme .smallscreenstyle.mobilestyle .logocontainer img {
+	height: 200px !important;
+	overflow: visible;
+	margin-top: 60px;
+	position: fixed;
+	z-index: 10 !important;
+	margin-left: 50%;
+	left: -113px;
+}
+
+.webpeptideshakertheme .smallscreenstyle.mobilestyle .mainbodystyle {
+	margin-top: 150px !important;
 }

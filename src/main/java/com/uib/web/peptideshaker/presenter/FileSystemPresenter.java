@@ -1,5 +1,6 @@
 package com.uib.web.peptideshaker.presenter;
 
+import com.uib.web.peptideshaker.presenter.core.ViewableFrame;
 import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDataset;
 import com.uib.web.peptideshaker.galaxy.dataobjects.SystemDataSet;
 import com.uib.web.peptideshaker.presenter.layouts.DataViewLayout;
@@ -24,7 +25,7 @@ import pl.exsio.plupload.PluploadFile;
  *
  * @author Yehia Farag
  */
-public abstract class GalaxyFileSystemPresenter extends VerticalLayout implements ViewableFrame, LayoutEvents.LayoutClickListener {
+public abstract class FileSystemPresenter extends VerticalLayout implements ViewableFrame, LayoutEvents.LayoutClickListener {
 
     /**
      * The small side button.
@@ -44,19 +45,19 @@ public abstract class GalaxyFileSystemPresenter extends VerticalLayout implement
      * Initialise the web tool main attributes.
      *
      */
-    public GalaxyFileSystemPresenter() {
-        GalaxyFileSystemPresenter.this.setSizeFull();
-        GalaxyFileSystemPresenter.this.setStyleName("activelayout");
+    public FileSystemPresenter() {
+        FileSystemPresenter.this.setSizeFull();
+        FileSystemPresenter.this.setStyleName("activelayout");
 //        this.toolsBtn = new SmallSideBtn("img/jobs2.png");
         this.toolsBtn = new SmallSideBtn(VaadinIcons.GLOBE);
-        this.toolsBtn.setData(GalaxyFileSystemPresenter.this.getViewId());
+        this.toolsBtn.setData(FileSystemPresenter.this.getViewId());
 //  this.topToolsBtn = new SmallSideBtn("img/jobs2.png");
         this.topToolsBtn = new SmallSideBtn(VaadinIcons.GLOBE);
-        this.topToolsBtn.setData(GalaxyFileSystemPresenter.this.getViewId());
+        this.topToolsBtn.setData(FileSystemPresenter.this.getViewId());
 
         this.btnsLayoutMap = new LinkedHashMap<>();
         this.initLayout();
-        GalaxyFileSystemPresenter.this.minimizeView();
+        FileSystemPresenter.this.minimizeView();
 
     }
 
@@ -90,7 +91,7 @@ public abstract class GalaxyFileSystemPresenter extends VerticalLayout implement
         viewDataBtn.setData("datasetoverview");
         btnContainer.addComponent(viewDataBtn);
         btnContainer.setComponentAlignment(viewDataBtn, Alignment.TOP_CENTER);
-        viewDataBtn.addLayoutClickListener(GalaxyFileSystemPresenter.this);
+        viewDataBtn.addLayoutClickListener(FileSystemPresenter.this);
 
         VerticalLayout dataContainerLayout = initDataViewLayout();
         btnsLayoutMap.put(viewDataBtn, dataContainerLayout);
@@ -133,7 +134,7 @@ public abstract class GalaxyFileSystemPresenter extends VerticalLayout implement
 
     @Override
     public String getViewId() {
-        return GalaxyFileSystemPresenter.class.getName();
+        return FileSystemPresenter.class.getName();
     }
 
     /**
@@ -205,27 +206,27 @@ public abstract class GalaxyFileSystemPresenter extends VerticalLayout implement
         dataLayout = new DataViewLayout() {
             @Override
             public void deleteDataset(SystemDataSet ds) {
-                GalaxyFileSystemPresenter.this.deleteDataset(ds);
+                FileSystemPresenter.this.deleteDataset(ds);
             }
 
             @Override
             public void viewDataset(PeptideShakerVisualizationDataset ds) {
-                GalaxyFileSystemPresenter.this.viewDataset(ds);
+                FileSystemPresenter.this.viewDataset(ds);
             }
 
             @Override
             public boolean sendToNeLS(SystemDataSet ds) {
-                return GalaxyFileSystemPresenter.this.sendToNeLS(ds);
+                return FileSystemPresenter.this.sendToNeLS(ds);
             }
 
             @Override
             public boolean getFromNels(SystemDataSet ds) {
-                return GalaxyFileSystemPresenter.this.getFromNels(ds);
+                return FileSystemPresenter.this.getFromNels(ds);
             }
 
             @Override
             public boolean uploadToGalaxy(PluploadFile[] toUploadFiles) {
-                return GalaxyFileSystemPresenter.this.uploadToGalaxy(toUploadFiles);
+                return FileSystemPresenter.this.uploadToGalaxy(toUploadFiles);
             }
             
 

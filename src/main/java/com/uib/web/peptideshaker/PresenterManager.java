@@ -7,7 +7,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import com.uib.web.peptideshaker.presenter.ViewableFrame;
+import com.uib.web.peptideshaker.presenter.core.ViewableFrame;
 
 /**
  * This class represents the main layout of the application and main view

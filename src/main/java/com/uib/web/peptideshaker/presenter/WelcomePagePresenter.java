@@ -3,6 +3,7 @@ package com.uib.web.peptideshaker.presenter;
 //import com.github.jmchilton.blend4j.galaxy.GalaxyInstance;
 //import com.uib.onlinepeptideshaker.managers.RegistrableView;
 //import com.uib.onlinepeptideshaker.presenter.view.SmallSideBtn;
+import com.uib.web.peptideshaker.presenter.core.ViewableFrame;
 import com.uib.web.peptideshaker.presenter.core.SmallSideBtn;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.ThemeResource;
@@ -27,17 +28,24 @@ import com.vaadin.ui.themes.ValoTheme;
 public class WelcomePagePresenter extends VerticalLayout implements ViewableFrame {
 
     /**
+     * The header layout panel.
+     */
+    private final VerticalLayout mainHeaderPanel;
+    /**
+     * The header layout container layout.
+     */
+    private final HorizontalLayout headerPanelContentLayout;
+
+    /**
      * The body layout panel.
      */
     private final HorizontalLayout bodyPanel;
+    
     /**
-     * The header layout panel.
+     * The connection button to NeLS login page
      */
-    private final VerticalLayout headerPanel;
-    /**
-     * The header layout container.
-     */
-    private final HorizontalLayout headerPanelLayout;
+    private final Link nelsGalaxyConnectionBtn;
+
     /**
      * Galaxy connection setting popup.
      */
@@ -57,31 +65,34 @@ public class WelcomePagePresenter extends VerticalLayout implements ViewableFram
     private SmallSideBtn topHomeBtn;
 
     /**
-     * Constructor to initialize the layout.
+     * Constructor to initialise the layout.
      *
      * @param galaxyConnectionLayout The Galaxy server connection layout
      */
-    public WelcomePagePresenter(Layout galaxyConnectionLayout, Link nelsGalaxyConnectionBtn) {
+    public WelcomePagePresenter(Layout galaxyConnectionLayout) {
         WelcomePagePresenter.this.setSizeFull();
-        WelcomePagePresenter.this.setStyleName("activelayout");
-        headerPanel = new VerticalLayout();
-        headerPanel.setHeight(50, Unit.PIXELS);
-        WelcomePagePresenter.this.addComponent(headerPanel);
-        WelcomePagePresenter.this.setComponentAlignment(headerPanel, Alignment.MIDDLE_LEFT);
-        WelcomePagePresenter.this.setExpandRatio(headerPanel, 10);
-        headerPanelLayout = initializeHeaderPanel();
-        headerPanel.addComponent(headerPanelLayout);
-        headerPanel.setMargin(new MarginInfo(false, false, false, false));
+        
+        mainHeaderPanel = new VerticalLayout();
+        mainHeaderPanel.setHeight(50, Unit.PIXELS);
+        WelcomePagePresenter.this.addComponent(mainHeaderPanel);
+        WelcomePagePresenter.this.setComponentAlignment(mainHeaderPanel, Alignment.MIDDLE_LEFT);
+        WelcomePagePresenter.this.setExpandRatio(mainHeaderPanel, 10);
+        headerPanelContentLayout = initializeHeaderPanel();
+        mainHeaderPanel.addComponent(headerPanelContentLayout);
+        mainHeaderPanel.setMargin(new MarginInfo(false, false, false, false));
 
+        
+               
         bodyPanel = new HorizontalLayout();
         bodyPanel.setSizeFull();
         bodyPanel.setMargin(new MarginInfo(true, false, false, false));
         WelcomePagePresenter.this.addComponent(bodyPanel);
         WelcomePagePresenter.this.setComponentAlignment(bodyPanel, Alignment.TOP_CENTER);
-        WelcomePagePresenter.this.setExpandRatio(bodyPanel, 70);
+        WelcomePagePresenter.this.setExpandRatio(bodyPanel, 90);
 
         VerticalLayout bodyContent = new VerticalLayout();
         bodyContent.setSizeFull();
+        bodyContent.addStyleName("mainbodystyle");
         bodyContent.setSpacing(true);
         bodyContent.setWidth(405, Unit.PIXELS);
         bodyContent.setHeight(200, Unit.PIXELS);
@@ -100,6 +111,9 @@ public class WelcomePagePresenter extends VerticalLayout implements ViewableFram
         bodyContent.addComponent(galaxyConnectionLayout);
         bodyContent.setComponentAlignment(galaxyConnectionLayout, Alignment.TOP_LEFT);
 
+        nelsGalaxyConnectionBtn = new Link("NeLS-Galaxy", new ExternalResource("http://localhost:8084/NelsGalaxyRedirectForm/"));
+        nelsGalaxyConnectionBtn.setStyleName("nelslogo");
+        
         bodyContent.addComponent(nelsGalaxyConnectionBtn);
         bodyContent.setComponentAlignment(nelsGalaxyConnectionBtn, Alignment.TOP_RIGHT);
 //
@@ -115,6 +129,7 @@ public class WelcomePagePresenter extends VerticalLayout implements ViewableFram
      * Initialise the header layout.
      */
     private HorizontalLayout initializeHeaderPanel() {
+        
         HorizontalLayout headerLayoutContainer = new HorizontalLayout();
         headerLayoutContainer.setSpacing(true);
         headerLayoutContainer.addStyleName("logocontainer");

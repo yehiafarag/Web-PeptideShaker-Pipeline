@@ -3,10 +3,10 @@ package com.uib.web.peptideshaker;
 import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
 import com.uib.web.peptideshaker.galaxy.dataobjects.SystemDataSet;
 import com.uib.web.peptideshaker.galaxy.dataobjects.GalaxyFile;
-import com.uib.web.peptideshaker.galaxy.GalaxyLayer;
+import com.uib.web.peptideshaker.galaxy.InteractiveGalaxyLayer;
 import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDataset;
-import com.uib.web.peptideshaker.presenter.GalaxyFileSystemPresenter;
-import com.uib.web.peptideshaker.presenter.PeptideShakerViewPresenter;
+import com.uib.web.peptideshaker.presenter.FileSystemPresenter;
+import com.uib.web.peptideshaker.presenter.InteractivePSPRojectResultsPresenter;
 import com.uib.web.peptideshaker.presenter.ToolPresenter;
 import com.uib.web.peptideshaker.presenter.WelcomePagePresenter;
 import com.vaadin.server.ExternalResource;
@@ -19,16 +19,27 @@ import java.util.Set;
 import pl.exsio.plupload.PluploadFile;
 
 /**
- * This class represents the main Web PeptideShaker application
+ * This class represents the main landing Online PeptideShaker application
  *
  * @author Yehia Farag
  */
 public class WebPeptideShakerApp extends VerticalLayout {
 
     /**
-     * The Galaxy server layer.
+     * PeptideShaker visualisation layer - Coordinator to organise the different
+     * views (home, analysis, data, or results visualisation).
      */
-    private final GalaxyLayer Galaxy_Layer;
+    private final PresenterManager presentationManager;
+    /**
+     * The Main Galaxy server layer that interact with Galaxy server.
+     */
+    private final InteractiveGalaxyLayer Interactive_Galaxy_Layer;
+
+    /**
+     * Container to view selected PeptideShaker projects.
+     */
+    private InteractivePSPRojectResultsPresenter interactivePSPRojectResultsPresenter;
+
     /**
      * The tools view component (frame to start analysis).
      */
@@ -37,30 +48,22 @@ public class WebPeptideShakerApp extends VerticalLayout {
      * Container to view the main available datasets and files on galaxy server
      * or in other databases.
      */
-    private final GalaxyFileSystemPresenter fileSystemView;
-    /**
-     * Container to view selected PeptideShaker projects.
-     */
-    private PeptideShakerViewPresenter peptideShakerView;
-    /**
-     * Coordinator to organize the different views (home, analysis, database, or
-     * PeptideShaker visualization layer).
-     */
-    private final PresenterManager presentationManager;
+    private final FileSystemPresenter fileSystemView;
 
-    private final Link nelsGalaxyConnectionBtn;
+    
 
     /**
-     * Constructor to initialize the application.
+     * Constructor to initialise the application.
      */
     public WebPeptideShakerApp() {
         WebPeptideShakerApp.this.setSizeFull();
         WebPeptideShakerApp.this.setMargin(new MarginInfo(true, true, true, true));
         WebPeptideShakerApp.this.addStyleName("frame");
+
         presentationManager = new PresenterManager();
         WebPeptideShakerApp.this.addComponent(presentationManager);
-        peptideShakerView = new PeptideShakerViewPresenter();
-        Galaxy_Layer = new GalaxyLayer() {
+
+        Interactive_Galaxy_Layer = new InteractiveGalaxyLayer() {
             @Override
             public void systemConnected() {
                 presentationManager.setSideButtonsVisible(true);
@@ -76,41 +79,52 @@ public class WebPeptideShakerApp extends VerticalLayout {
             public void jobsInProgress(boolean inprogress, Map<String, SystemDataSet> historyFilesMap) {
                 fileSystemView.setBusy(inprogress, historyFilesMap);
                 presentationManager.viewLayout(fileSystemView.getViewId());
-                toolsView.updatePeptideShakerToolInputForm(Galaxy_Layer.getSearchSettingsFilesMap(), Galaxy_Layer.getFastaFilesMap(), Galaxy_Layer.getMgfFilesMap());
+                toolsView.updatePeptideShakerToolInputForm(Interactive_Galaxy_Layer.getSearchSettingsFilesMap(), Interactive_Galaxy_Layer.getFastaFilesMap(), Interactive_Galaxy_Layer.getMgfFilesMap());
 
             }
         };
-
-        nelsGalaxyConnectionBtn = new Link("NeLS-Galaxy", new ExternalResource("http://localhost:8084/NelsGalaxyRedirectForm/"));
-        nelsGalaxyConnectionBtn.setStyleName("nelslogo");
-        WelcomePagePresenter welcomePage = new WelcomePagePresenter(Galaxy_Layer.getGalaxyConnectionPanel(), nelsGalaxyConnectionBtn);
+        
+         
+        
+        /**
+         * landing page initialisation.
+        *
+         */
+        WelcomePagePresenter welcomePage = new WelcomePagePresenter(Interactive_Galaxy_Layer.getGalaxyConnectionPanel());
         presentationManager.registerView(welcomePage);
         presentationManager.viewLayout(welcomePage.getViewId());
+
+        
+
+        interactivePSPRojectResultsPresenter = new InteractivePSPRojectResultsPresenter();
+
+    
+
         toolsView = new ToolPresenter() {
             @Override
             public void executeWorkFlow(String projectName, String fastaFileId, Set<String> mgfIdsList, Set<String> searchEnginesList, SearchParameters searchParameters, Map<String, Boolean> otherSearchParameters) {
-                Galaxy_Layer.executeWorkFlow(projectName, fastaFileId, mgfIdsList, searchEnginesList, searchParameters, otherSearchParameters);
+                Interactive_Galaxy_Layer.executeWorkFlow(projectName, fastaFileId, mgfIdsList, searchEnginesList, searchParameters, otherSearchParameters);
             }
 
             @Override
             public Map<String, GalaxyFile> saveSearchGUIParameters(SearchParameters searchParameters, boolean editMode) {
-                return Galaxy_Layer.saveSearchGUIParameters(searchParameters, editMode);
+                return Interactive_Galaxy_Layer.saveSearchGUIParameters(searchParameters, editMode);
             }
 
         };
         presentationManager.registerView(toolsView);
-        fileSystemView = new GalaxyFileSystemPresenter() {
+        fileSystemView = new FileSystemPresenter() {
             @Override
             public void deleteDataset(SystemDataSet ds) {
-                Galaxy_Layer.deleteDataset(ds);
+                Interactive_Galaxy_Layer.deleteDataset(ds);
             }
 
             @Override
             public void viewDataset(PeptideShakerVisualizationDataset ds) {
-                peptideShakerView = new PeptideShakerViewPresenter();
-                presentationManager.registerView(peptideShakerView);
-                peptideShakerView.setSelectedDataset(ds);
-                presentationManager.viewLayout(peptideShakerView.getViewId());
+                interactivePSPRojectResultsPresenter = new InteractivePSPRojectResultsPresenter();
+                presentationManager.registerView(interactivePSPRojectResultsPresenter);
+                interactivePSPRojectResultsPresenter.setSelectedDataset(ds);
+                presentationManager.viewLayout(interactivePSPRojectResultsPresenter.getViewId());
             }
 
             @Override
@@ -131,42 +145,41 @@ public class WebPeptideShakerApp extends VerticalLayout {
 //                    if (!check) {
 //                        return check;
 //                    }
-                    check = Galaxy_Layer.sendDataToNels(vDs.getHistoryId(), vDs.getSearchGUIFile().getGalaxyId());
+                    check = Interactive_Galaxy_Layer.sendDataToNels(vDs.getHistoryId(), vDs.getSearchGUIFile().getGalaxyId());
                     if (!check) {
                         return check;
                     }
-                    check = Galaxy_Layer.sendDataToNels(vDs.getHistoryId(), vDs.getZipFileId());
+                    check = Interactive_Galaxy_Layer.sendDataToNels(vDs.getHistoryId(), vDs.getZipFileId());
                     return check;
 
                 }
 
-                return Galaxy_Layer.sendDataToNels(ds.getHistoryId(), ds.getGalaxyId());
+                return Interactive_Galaxy_Layer.sendDataToNels(ds.getHistoryId(), ds.getGalaxyId());
             }
 
             @Override
             public boolean getFromNels(SystemDataSet ds) {
-                return Galaxy_Layer.getFromNels(ds.getHistoryId(), ds.getGalaxyId());
+                return Interactive_Galaxy_Layer.getFromNels(ds.getHistoryId(), ds.getGalaxyId());
             }
 
             @Override
             public boolean uploadToGalaxy(PluploadFile[] toUploadFiles) {
-               return Galaxy_Layer.uploadToGalaxy(toUploadFiles);
+                return Interactive_Galaxy_Layer.uploadToGalaxy(toUploadFiles);
             }
-            
 
         };
 
         presentationManager.registerView(fileSystemView);
-        presentationManager.registerView(peptideShakerView);
+        presentationManager.registerView(interactivePSPRojectResultsPresenter);
     }
 
     private void connectGalaxyServer() {
-        if (Galaxy_Layer.checkToolsAvailable()) {
+        if (Interactive_Galaxy_Layer.checkToolsAvailable()) {
             toolsView.getRightView().setEnabled(true);
             toolsView.getTopView().setEnabled(true);
             toolsView.getRightView().setDescription("Click to view the tools layout");
             toolsView.getTopView().setDescription("Click to view the tools layout");
-            toolsView.updatePeptideShakerToolInputForm(Galaxy_Layer.getSearchSettingsFilesMap(), Galaxy_Layer.getFastaFilesMap(), Galaxy_Layer.getMgfFilesMap());
+            toolsView.updatePeptideShakerToolInputForm(Interactive_Galaxy_Layer.getSearchSettingsFilesMap(), Interactive_Galaxy_Layer.getFastaFilesMap(), Interactive_Galaxy_Layer.getMgfFilesMap());
 
         } else {
             toolsView.getRightView().setDescription("Tools are not available");
@@ -175,18 +188,18 @@ public class WebPeptideShakerApp extends VerticalLayout {
             toolsView.getTopView().setEnabled(false);
         }
         if ((boolean) VaadinSession.getCurrent().getAttribute("nelsgalaxy")) {
-            nelsGalaxyConnectionBtn.addStyleName("disconnect");
+//            nelsGalaxyConnectionBtn.addStyleName("disconnect");
         } else {
-            nelsGalaxyConnectionBtn.removeStyleName("disconnect");
+//            nelsGalaxyConnectionBtn.removeStyleName("disconnect");
         }
     }
 
     public void reConnectToGalaxyServer(String APIKEy, String galaxyUrl) {
-        Galaxy_Layer.reConnectToGalaxy(APIKEy, galaxyUrl);
+        Interactive_Galaxy_Layer.reConnectToGalaxy(APIKEy, galaxyUrl);
         if ((boolean) VaadinSession.getCurrent().getAttribute("nelsgalaxy")) {
-            nelsGalaxyConnectionBtn.addStyleName("disconnect");
+//            nelsGalaxyConnectionBtn.addStyleName("disconnect");
         } else {
-            nelsGalaxyConnectionBtn.removeStyleName("disconnect");
+//            nelsGalaxyConnectionBtn.removeStyleName("disconnect");
 
         }
 

@@ -10,6 +10,7 @@ import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import javax.servlet.ServletContext;
 
@@ -21,6 +22,8 @@ import javax.servlet.ServletContext;
  * The UI is initialised using {@link #init(VaadinRequest)}. This method is
  * intended to be overridden to add component to the user interface and
  * initialise non-component functionality.
+ *
+ * @author Yehia Farag
  */
 @Theme("webpeptideshakertheme")
 public class PeptidShakerUI extends UI {
@@ -29,56 +32,92 @@ public class PeptidShakerUI extends UI {
      * The connection layer to NeLS-Galaxy server.
      */
     private NeLSGalaxy NeLS_Galaxy;
+    private Notification notification;
 
+    /**
+     * The entry point for the application .
+     *
+     * @param vaadinRequest represents the incoming request
+     */
     @Override
     protected void init(VaadinRequest vaadinRequest) {
 
         PeptidShakerUI.this.setSizeFull();
+        notification=new Notification("Use the device in landscape mode :-)", Notification.Type.ERROR_MESSAGE);
+        notification.setDelayMsec(-1);
+        notification.setStyleName("mobilealertnotification");
+        /**
+         * Initialise the context parameters and store them in Vaadin session.
+         *
+         */
         ServletContext scx = VaadinServlet.getCurrent().getServletContext();
         String localFileSystemFolderPath = (scx.getInitParameter("filesURL"));
         VaadinSession.getCurrent().setAttribute("userDataFolderUrl", localFileSystemFolderPath);
         VaadinSession.getCurrent().getSession().setAttribute("userDataFolderUrl", localFileSystemFolderPath);
         VaadinSession.getCurrent().setAttribute("ctxPath", vaadinRequest.getContextPath());
+
+        WebPeptideShakerApp webPeptideShakerApp = new WebPeptideShakerApp();
+        PeptidShakerUI.this.setContent(webPeptideShakerApp);
+
         /**
          * Check the visualisation mode based on screen size small screen for
          * mobile browser or tablet.
          *
          * @todo: we need better optimisation to detect the window ratio.
          */
-        WebPeptideShakerApp webPeptideShakerApp = new WebPeptideShakerApp();
-        if ((Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight()) || (Page.getCurrent().getBrowserWindowWidth() < 650) || (Page.getCurrent().getBrowserWindowHeight() < 600)) {
-            webPeptideShakerApp.addStyleName("horizontalcss");
+//        if ((Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight()) || (Page.getCurrent().getBrowserWindowWidth() < 650) || (Page.getCurrent().getBrowserWindowHeight() < 600)) {
+        if (Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile")) {
+            webPeptideShakerApp.addStyleName("mobilestyle");
+            webPeptideShakerApp.addStyleName("smallscreenstyle");
         } else {
-            webPeptideShakerApp.removeStyleName("horizontalcss");
+            webPeptideShakerApp.removeStyleName("mobilestyle");
         }
+
         /**
-         * On resize the browser re-arrange all the created windows to center.
+         * On resize the browser re-arrange all the created pop-up windows to
+         * the page center.
          */
         Page.getCurrent().addBrowserWindowResizeListener((Page.BrowserWindowResizeEvent event) -> {
-            if ((Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight()) || (Page.getCurrent().getBrowserWindowWidth() < 650) || (Page.getCurrent().getBrowserWindowHeight() < 600)) {
-                webPeptideShakerApp.addStyleName("horizontalcss");
+            if (Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile") && (Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight())) {
+                notification.setDelayMsec(-1);
+                notification.show(Page.getCurrent());
+                
+                webPeptideShakerApp.addStyleName("hidemode");
+            } else if(Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile") && (Page.getCurrent().getBrowserWindowWidth() >= Page.getCurrent().getBrowserWindowHeight())){
+                webPeptideShakerApp.removeStyleName("hidemode");
+                notification.setDelayMsec(1);
+            }
+            else  if ((Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight()) || (Page.getCurrent().getBrowserWindowWidth() < 650) || (Page.getCurrent().getBrowserWindowHeight() < 600)) {
+                webPeptideShakerApp.addStyleName("smallscreenstyle");
             } else {
-                webPeptideShakerApp.removeStyleName("horizontalcss");
+                webPeptideShakerApp.removeStyleName("smallscreenstyle");
             }
             UI.getCurrent().getWindows().forEach((w) -> {
                 w.center();
             });
         });
+
+        /**
+         * for future use to integrate with NeLS.
+         *
+         * @todo:re implement all concept in future
+         */
         NeLS_Galaxy = new NeLSGalaxy();
         boolean isNelsGalaxyConnection = NeLS_Galaxy.isNelsGalaxyConnection(vaadinRequest);
         VaadinSession.getCurrent().setAttribute("nelsgalaxy", isNelsGalaxyConnection);
-        setContent(webPeptideShakerApp);
+
+        /**
+         * Auto-reconnect to galaxy server if the session is still valid.
+         */
         if (isNelsGalaxyConnection || (VaadinSession.getCurrent().getAttribute("ApiKey") != null && VaadinSession.getCurrent().getAttribute("galaxyUrl") != null)) {
             webPeptideShakerApp.reConnectToGalaxyServer(VaadinSession.getCurrent().getAttribute("ApiKey") + "", VaadinSession.getCurrent().getAttribute("galaxyUrl") + "");
         }
-        this.setSizeFull();
-       
 
     }
 
     @Override
     public void addExtension(Extension extension) {
-        super.addExtension(extension); //To change body of generated methods, choose Tools | Templates.
+        super.addExtension(extension);
 
     }
 

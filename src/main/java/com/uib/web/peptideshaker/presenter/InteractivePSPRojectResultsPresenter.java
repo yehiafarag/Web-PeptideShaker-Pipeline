@@ -1,5 +1,6 @@
 package com.uib.web.peptideshaker.presenter;
 
+import com.uib.web.peptideshaker.presenter.core.ViewableFrame;
 import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDataset;
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.DatasetVisulizationLevelContainer;
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.ProteinVisulizationLevelContainer;
@@ -20,7 +21,7 @@ import com.vaadin.ui.VerticalLayout;
  *
  * @author Yehia Farag
  */
-public class PeptideShakerViewPresenter extends VerticalLayout implements ViewableFrame, LayoutEvents.LayoutClickListener {
+public class InteractivePSPRojectResultsPresenter extends VerticalLayout implements ViewableFrame, LayoutEvents.LayoutClickListener {
 
     /**
      * The small side button.
@@ -43,17 +44,17 @@ public class PeptideShakerViewPresenter extends VerticalLayout implements Viewab
      * Initialize the web tool main attributes
      *
      */
-    public PeptideShakerViewPresenter() {
-        PeptideShakerViewPresenter.this.setSizeFull();
-        PeptideShakerViewPresenter.this.setStyleName("activelayout");
+    public InteractivePSPRojectResultsPresenter() {
+        InteractivePSPRojectResultsPresenter.this.setSizeFull();
+        InteractivePSPRojectResultsPresenter.this.setStyleName("activelayout");
         this.toolsBtn = new SmallSideBtn("img/cluster.svg");
-        this.toolsBtn.setData(PeptideShakerViewPresenter.this.getViewId());
+        this.toolsBtn.setData(InteractivePSPRojectResultsPresenter.this.getViewId());
 
         this.topToolsBtn = new SmallSideBtn("img/cluster.svg");
-        this.topToolsBtn.setData(PeptideShakerViewPresenter.this.getViewId());
+        this.topToolsBtn.setData(InteractivePSPRojectResultsPresenter.this.getViewId());
         this.Selection_Manager = new SelectionManager();
         this.initLayout();
-        PeptideShakerViewPresenter.this.minimizeView();
+        InteractivePSPRojectResultsPresenter.this.minimizeView();
         this.topToolsBtn.setEnabled(false);
         this.toolsBtn.setEnabled(false);
 
@@ -72,7 +73,7 @@ public class PeptideShakerViewPresenter extends VerticalLayout implements Viewab
         datasetsOverviewBtn.setData("datasetoverview");
         btnContainer.addComponent(datasetsOverviewBtn);
         btnContainer.setComponentAlignment(datasetsOverviewBtn, Alignment.TOP_CENTER);
-        datasetsOverviewBtn.addLayoutClickListener(PeptideShakerViewPresenter.this);
+        datasetsOverviewBtn.addLayoutClickListener(InteractivePSPRojectResultsPresenter.this);
         Selection_Manager.addBtnLayout(datasetsOverviewBtn, datasetVisulizationLevelContainer);
         datasetVisulizationLevelContainer = new DatasetVisulizationLevelContainer(Selection_Manager, datasetsOverviewBtn);
         datasetVisulizationLevelContainer.setSizeFull();
@@ -84,7 +85,7 @@ public class PeptideShakerViewPresenter extends VerticalLayout implements Viewab
         proteinoverviewBtn.setData("proteinoverview");
         btnContainer.addComponent(proteinoverviewBtn);
         btnContainer.setComponentAlignment(proteinoverviewBtn, Alignment.TOP_CENTER);
-        proteinoverviewBtn.addLayoutClickListener(PeptideShakerViewPresenter.this);
+        proteinoverviewBtn.addLayoutClickListener(InteractivePSPRojectResultsPresenter.this);
 
         proteinsVisulizationLevelContainer = new ProteinVisulizationLevelContainer(Selection_Manager, proteinoverviewBtn);
         Selection_Manager.addBtnLayout(proteinoverviewBtn, proteinsVisulizationLevelContainer);
@@ -94,7 +95,7 @@ public class PeptideShakerViewPresenter extends VerticalLayout implements Viewab
         psmoverviewBtn.setData("psmoverview");
         btnContainer.addComponent(psmoverviewBtn);
         btnContainer.setComponentAlignment(psmoverviewBtn, Alignment.TOP_CENTER);
-        psmoverviewBtn.addLayoutClickListener(PeptideShakerViewPresenter.this);
+        psmoverviewBtn.addLayoutClickListener(InteractivePSPRojectResultsPresenter.this);
 
         psmVisulizationLevelContainer = new PSMVisulizationLevelContainer(Selection_Manager, psmoverviewBtn);
         Selection_Manager.addBtnLayout(psmoverviewBtn, psmVisulizationLevelContainer);
@@ -144,7 +145,7 @@ public class PeptideShakerViewPresenter extends VerticalLayout implements Viewab
 
     @Override
     public String getViewId() {
-        return PeptideShakerViewPresenter.class.getName();
+        return InteractivePSPRojectResultsPresenter.class.getName();
     }
 
     /**

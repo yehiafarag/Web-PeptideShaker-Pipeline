@@ -2888,33 +2888,34 @@
         top:-4px;
     }
 
-    /****mobile css**/
-    .horizontalcss  .largetitle .v-label{
+    /****small screen css**/
+    .smallscreenstyle  .largetitle .v-label{
         margin-left:10px;
     }
-    .horizontalcss .scrollinsideframe{
+    .smallscreenstyle .scrollinsideframe{
         padding-left: 10px;
         padding-right: 10px;
     }
-    .horizontalcss .mainlayout {
-
+    .smallscreenstyle .mainbodystyle  {
+        margin-top:100px !important;
     }
 
-    .horizontalcss .v-slot-leftsidebtncontainer {
+
+    .smallscreenstyle .v-slot-leftsidebtncontainer {
         width: 1% !important;
         background-color: white;
         opacity:0;
     }
 
-    .horizontalcss .v-slot-integratedframe {
+    .smallscreenstyle .v-slot-integratedframe {
         width: 99% !important;
         height: 90% !important;
     }
 
-    .horizontalcss .v-slot-bottomsidebtncontainer{       
+    .smallscreenstyle .v-slot-bottomsidebtncontainer{       
         opacity: 1;
     }
-    .horizontalcss .bigmenubtn img {
+    .smallscreenstyle .bigmenubtn img {
         height:100% !important;
         width: 40px !important;
         border: 2px solid lightgray;
@@ -2924,23 +2925,23 @@
         z-index:10000000000000000000000000000000 !important;
         position:relative;
     }
-    .horizontalcss zeropadding{
+    .smallscreenstyle zeropadding{
         padding:10px !important;
     }
-    .horizontalcss .selectedbiglbtn {
+    .smallscreenstyle .selectedbiglbtn {
         background-color:whitesmoke;
         margin-top:-2px !important;
         border-top-color:whitesmoke;
         border-right-color:lightgrey;
         border-bottom-right-radius:5px;
     }
-    .horizontalcss .selectedbiglbtn img{
+    .smallscreenstyle .selectedbiglbtn img{
         border-color:rgba(131, 188, 255, 0.96) !important;
     }
-    .horizontalcss.autooverflow{
+    .smallscreenstyle.autooverflow{
         overflow:hidden !important;
     }
-    .horizontalcss .v-slot-rightsidebtncontainer {	
+    .smallscreenstyle .v-slot-rightsidebtncontainer {	
         /*        background-color: white;
                 border-top: 2px solid white;
                 border-bottom: 2px solid white;
@@ -2950,7 +2951,7 @@
         overflow: hidden;
     }
 
-    /*    .horizontalcss .v-slot-rightsidebtncontainer {
+    /*    .smallscreenstyle .v-slot-rightsidebtncontainer {
             width: 50px !important;
             z-index: 10000000000.0 !important;
             position: absolute !important;
@@ -2966,20 +2967,20 @@
         position:fixed !important;
         z-index:2222222222 !important;
     }
-    .horizontalcss .middleviewcontainer {
+    .smallscreenstyle .middleviewcontainer {
         padding-left: 0px;
         padding-right: 0px;
         padding-bottom:60px;
     }
-    .horizontalcss .leftsideviewcontainer .v-slot-bigmenubtn {
+    .smallscreenstyle .leftsideviewcontainer .v-slot-bigmenubtn {
         visibility: hidden !important;
     }
-    .horizontalcss.frame {	
+    .smallscreenstyle.frame {	
         min-height: 400px !important;
         min-width: 495px !important;
 
     }
-    .horizontalcss .v-slot-bottomsidebtncontainer {
+    .smallscreenstyle .v-slot-bottomsidebtncontainer {
 
         min-height: 60px !important;
         visibility: visible !important;
@@ -2988,7 +2989,7 @@
         z-index: 2;
         background-color: white !important;
     }
-    .horizontalcss .bottomsidebtncontainer {
+    .smallscreenstyle .bottomsidebtncontainer {
         margin-top: -2px;	
         min-height: 60px !important;
         visibility: visible !important;
@@ -2996,7 +2997,7 @@
         position: relative;
         margin-left:20px;
     }
-    .horizontalcss .v-slot-topviewcontainer {
+    .smallscreenstyle .v-slot-topviewcontainer {
         min-height: 50px;
         max-width: 220px;
         position: relative !important;
@@ -3012,34 +3013,36 @@
     .v-slot-smallmenubtn{
         min-width:50px;
     }
-    .horizontalcss .v-verticallayout-middleviewcontainer{
+    .smallscreenstyle .v-verticallayout-middleviewcontainer{
         top:-39px !important;
         overflow:visible;
         visibility:visible !important;
         z-index:2 !important;
         position:absolute !important;
     }
-    .horizontalcss .logocontainer img {
-        height:140px !important;
-        overflow:visible;
-        margin-top:-20px;
-        position:fixed ;
-        z-index:10!important;
+    .smallscreenstyle .logocontainer img {
+        height: 140px !important;
+        overflow: visible;
+        margin-top: 30px;
+        position: fixed;
+        z-index: 10 !important;
+        margin-left:50%;
+        left:-53px;
     }
     .v-verticallayout-hidepanel img{
         visibility:hidden;
     }
-    .horizontalcss .v-link-headerlogo {
+    .smallscreenstyle .v-link-headerlogo {
         visibility:hidden;
     }
 
-    .horizontalcss .selectedsmallbtn {
+    .smallscreenstyle .selectedsmallbtn {
 
     }
-    .horizontalcss .v-slot-smallmenubtn {
+    .smallscreenstyle .v-slot-smallmenubtn {
         min-width: 50px;
     }
-    .horizontalcss .v-label-frametitle {
+    .smallscreenstyle .v-label-frametitle {
 
         padding-left: 10px;
         padding-top: 20px;
@@ -3050,7 +3053,7 @@
     }
 
 
-    .horizontalcss .v-slot-smallmenubtn {
+    .smallscreenstyle .v-slot-smallmenubtn {
         max-height: 40px !important;
         border: 2px solid lightgray;
         border-top: 2px solid rgba(211, 211, 211, 0);
@@ -3067,7 +3070,7 @@
         float:bottom;
     }
 
-    .horizontalcss .v-slot-smallmenubtn.v-slot-selectedsmallbtn {
+    .smallscreenstyle .v-slot-smallmenubtn.v-slot-selectedsmallbtn {
         border-bottom-color: white !important;	
         background:white !important;
         border-top-color:lightgray;
@@ -3158,5 +3161,28 @@
             height: 29px;
             margin-top: -10px;
         }*/
+
+
+
+    /**mobile screen style***/
+    .smallscreenstyle.mobilestyle .logocontainer img {
+        height: 200px !important;
+        overflow: visible;
+        margin-top: 60px;
+        position: fixed;
+        z-index: 10 !important;
+        margin-left: 50%;
+        left: -113px;
+    }
+    .smallscreenstyle.mobilestyle .mainbodystyle  {
+        margin-top:150px !important;
+    }
+    .hidemode{
+        display:none;
+    }
+    .mobilealertnotification .v-Notification-caption{
+        font-size:50px !important;
+        text-overflow:inherit !important;
+    }
 
 }
