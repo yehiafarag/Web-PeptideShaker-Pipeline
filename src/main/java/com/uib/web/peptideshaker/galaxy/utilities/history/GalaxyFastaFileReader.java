@@ -1,5 +1,6 @@
-package com.uib.web.peptideshaker.galaxy.dataobjects;
+package com.uib.web.peptideshaker.galaxy.utilities.history;
 
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.ProteinObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -8,15 +9,25 @@ import java.net.URL;
 import java.net.URLConnection;
 
 /**
- * This class represents FASTA file reader which allow partial reader from
- * galaxy server instead of full download for the files
+ * This class represents FASTA utilities that allow using the uniprot
+ * web-service to get protein information in case of some missing information in
+ * proteins file
  *
  * @author Yehia Farag
  */
 public class GalaxyFastaFileReader {
+    /**
+     * Protein evidence list.
+     */
+    private final String[] proteinEvidence = new String[]{"Not Available", "Protein", "Transcript", "Homology", "Predicted", "Uncertain"};
 
-    private final String[] proteinEvedence = new String[]{"Not Available", "Protein", "Transcript", "Homology", "Predicted", "Uncertain"};
-
+    /**
+     * Update protein information from Uniprot web service.
+     *
+     * @param protein protein object to store/update protein information
+     * @param accession the protein accession;
+     * @return updated protein object
+     */
     public ProteinObject updateProteinInformation(ProteinObject protein, String accession) {
         if (protein == null) {
             protein = new ProteinObject();
@@ -36,9 +47,8 @@ public class GalaxyFastaFileReader {
                         sequence += line;
                     }
                     protein.setSequence(sequence);
-                    protein.setProteinEvidence(proteinEvedence[Integer.parseInt(fastaHeader.split("PE=")[1].split(" ")[0])]);
+                    protein.setProteinEvidence(proteinEvidence[Integer.parseInt(fastaHeader.split("PE=")[1].split(" ")[0])]);
                 }
-                
 
             } catch (IOException ex) {
                 ex.printStackTrace();

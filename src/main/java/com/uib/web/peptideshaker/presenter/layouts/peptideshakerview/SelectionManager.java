@@ -1,7 +1,7 @@
 package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview;
 
 import com.google.common.collect.Sets;
-import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideObject;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideObject;
 import com.uib.web.peptideshaker.model.core.FilteredProteins;
 import com.uib.web.peptideshaker.model.core.ModificationMatrix;
 import com.uib.web.peptideshaker.presenter.core.BigSideBtn;

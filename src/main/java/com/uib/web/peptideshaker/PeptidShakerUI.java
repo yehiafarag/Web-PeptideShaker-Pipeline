@@ -1,6 +1,6 @@
 package com.uib.web.peptideshaker;
 
-import com.uib.web.peptideshaker.galaxy.nelsgalaxy.NeLSGalaxy;
+import com.uib.web.peptideshaker.galaxy.nelsgalaxy.NeLSStorageInteractiveLayer;
 import javax.servlet.annotation.WebServlet;
 
 import com.vaadin.annotations.Theme;
@@ -12,6 +12,10 @@ import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import javax.servlet.ServletContext;
 
 /**
@@ -31,7 +35,7 @@ public class PeptidShakerUI extends UI {
     /**
      * The connection layer to NeLS-Galaxy server.
      */
-    private NeLSGalaxy NeLS_Galaxy;
+    private NeLSStorageInteractiveLayer NeLS_Galaxy;
     private Notification notification;
 
     /**
@@ -43,8 +47,8 @@ public class PeptidShakerUI extends UI {
     protected void init(VaadinRequest vaadinRequest) {
 
         PeptidShakerUI.this.setSizeFull();
-        notification=new Notification("Use the device in landscape mode :-)", Notification.Type.ERROR_MESSAGE);
-        notification.setDelayMsec(-1);
+        notification = new Notification("Use the device in landscape mode :-)", Notification.Type.ERROR_MESSAGE);
+        notification.setDelayMsec(10000);
         notification.setStyleName("mobilealertnotification");
         /**
          * Initialise the context parameters and store them in Vaadin session.
@@ -55,6 +59,23 @@ public class PeptidShakerUI extends UI {
         VaadinSession.getCurrent().setAttribute("userDataFolderUrl", localFileSystemFolderPath);
         VaadinSession.getCurrent().getSession().setAttribute("userDataFolderUrl", localFileSystemFolderPath);
         VaadinSession.getCurrent().setAttribute("ctxPath", vaadinRequest.getContextPath());
+        String testUserAPIKey = (scx.getInitParameter("testUserAPIKey"));
+        VaadinSession.getCurrent().setAttribute("testUserAPIKey", testUserAPIKey);
+        String galaxyServerUrl = (scx.getInitParameter("galaxyServerUrl"));
+        VaadinSession.getCurrent().setAttribute("galaxyServerUrl", galaxyServerUrl);
+
+        if (testUserAPIKey == null || galaxyServerUrl == null) {
+            notification = new Notification("Error in Galaxy server address, Contact administrator :-(", Notification.Type.ERROR_MESSAGE);
+            notification.setDelayMsec(-1);
+            notification.show(Page.getCurrent());
+            return;
+        }
+        if (!checkConnectionToGalaxy(galaxyServerUrl)) {
+            notification = new Notification("Error, Galaxy server is not available , Contact administrator :-(", Notification.Type.ERROR_MESSAGE);
+            notification.setDelayMsec(-1);
+            notification.show(Page.getCurrent());
+            return;
+        }
 
         WebPeptideShakerApp webPeptideShakerApp = new WebPeptideShakerApp();
         PeptidShakerUI.this.setContent(webPeptideShakerApp);
@@ -69,8 +90,10 @@ public class PeptidShakerUI extends UI {
         if (Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile")) {
             webPeptideShakerApp.addStyleName("mobilestyle");
             webPeptideShakerApp.addStyleName("smallscreenstyle");
+            VaadinSession.getCurrent().setAttribute("smallscreenstyle", true);
         } else {
             webPeptideShakerApp.removeStyleName("mobilestyle");
+            VaadinSession.getCurrent().setAttribute("smallscreenstyle", false);
         }
 
         /**
@@ -79,18 +102,17 @@ public class PeptidShakerUI extends UI {
          */
         Page.getCurrent().addBrowserWindowResizeListener((Page.BrowserWindowResizeEvent event) -> {
             if (Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile") && (Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight())) {
-                notification.setDelayMsec(-1);
                 notification.show(Page.getCurrent());
-                
                 webPeptideShakerApp.addStyleName("hidemode");
-            } else if(Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile") && (Page.getCurrent().getBrowserWindowWidth() >= Page.getCurrent().getBrowserWindowHeight())){
+            } else if (Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile") && (Page.getCurrent().getBrowserWindowWidth() >= Page.getCurrent().getBrowserWindowHeight())) {
                 webPeptideShakerApp.removeStyleName("hidemode");
-                notification.setDelayMsec(1);
-            }
-            else  if ((Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight()) || (Page.getCurrent().getBrowserWindowWidth() < 650) || (Page.getCurrent().getBrowserWindowHeight() < 600)) {
+
+            } else if ((Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight()) || (Page.getCurrent().getBrowserWindowWidth() < 650) || (Page.getCurrent().getBrowserWindowHeight() < 600)) {
                 webPeptideShakerApp.addStyleName("smallscreenstyle");
+                VaadinSession.getCurrent().setAttribute("smallscreenstyle", true);
             } else {
                 webPeptideShakerApp.removeStyleName("smallscreenstyle");
+                VaadinSession.getCurrent().setAttribute("smallscreenstyle", false);
             }
             UI.getCurrent().getWindows().forEach((w) -> {
                 w.center();
@@ -102,7 +124,7 @@ public class PeptidShakerUI extends UI {
          *
          * @todo:re implement all concept in future
          */
-        NeLS_Galaxy = new NeLSGalaxy();
+        NeLS_Galaxy = new NeLSStorageInteractiveLayer();
         boolean isNelsGalaxyConnection = NeLS_Galaxy.isNelsGalaxyConnection(vaadinRequest);
         VaadinSession.getCurrent().setAttribute("nelsgalaxy", isNelsGalaxyConnection);
 
@@ -115,12 +137,40 @@ public class PeptidShakerUI extends UI {
 
     }
 
+    /**
+     * Check Galaxy server is available.
+     *
+     * @param urlAddress Galaxy server url
+     * @return is galaxy server available online
+     */
+    private boolean checkConnectionToGalaxy(String urlAddress) {
+        try {
+            URL url = new URL(urlAddress);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.connect();
+            int code = connection.getResponseCode();
+            if (code == 404) {
+                return false;
+            }
+
+        } catch (MalformedURLException ex) {
+            return false;
+        } catch (IOException ex) {
+            return false;
+        }
+        return true;
+    }
+
     @Override
     public void addExtension(Extension extension) {
         super.addExtension(extension);
 
     }
 
+    /**
+     * Main application servlet.
+     */
     @WebServlet(urlPatterns = "/*", name = "PeptidShakerUIServlet", asyncSupported = true)
     @VaadinServletConfiguration(ui = PeptidShakerUI.class, productionMode = true, resourceCacheTime = 0)//, resourceCacheTime = 1
     public static class PeptidShakerUIServlet extends VaadinServlet {

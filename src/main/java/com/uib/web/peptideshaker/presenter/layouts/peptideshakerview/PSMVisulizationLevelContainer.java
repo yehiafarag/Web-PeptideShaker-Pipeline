@@ -1,7 +1,7 @@
 package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview;
 
-import com.uib.web.peptideshaker.galaxy.dataobjects.PSMObject;
-import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDataset;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PSMObject;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
 import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.charts.RegistrableFilter;
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components.PSMViewComponent;

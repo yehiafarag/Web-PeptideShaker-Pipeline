@@ -1,10 +1,15 @@
-package com.uib.web.peptideshaker.galaxy.dataobjects;
+package archive;
 
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyFileObject;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyTransferableFile;
 import com.compomics.util.experiment.biology.AminoAcidPattern;
 import com.compomics.util.experiment.biology.Enzyme;
 import com.compomics.util.experiment.biology.EnzymeFactory;
 import com.compomics.util.preferences.SequenceMatchingPreferences;
 import com.google.common.collect.Sets;
+import com.uib.web.peptideshaker.galaxy.utilities.history.GalaxyFastaFileReader;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideObject;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.ProteinObject;
 import com.uib.web.peptideshaker.model.core.ModificationMatrix;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,7 +34,7 @@ import uk.ac.ebi.pride.tools.braf.BufferedRandomAccessFile;
  *
  * @author Yehia Farag
  */
-public class PeptideShakerVisualizationDataset1 extends SystemDataSet {
+public class PeptideShakerVisualizationDataset1 extends GalaxyFileObject {
 
     private Map<String, ProteinObject> proteinsMap;
     private final Map<Object, ProteinObject> fastaProteinsMap;
@@ -45,10 +50,10 @@ public class PeptideShakerVisualizationDataset1 extends SystemDataSet {
     private final TreeMap<Comparable, Set<Comparable>> proteinCoverageMap;
 
 
-    private GalaxyFile peptideFile;
-    private GalaxyFile fastaFile;
-    private GalaxyFile proteinFile;
-    private GalaxyFile psmFile;
+    private GalaxyTransferableFile peptideFile;
+    private GalaxyTransferableFile fastaFile;
+    private GalaxyTransferableFile proteinFile;
+    private GalaxyTransferableFile psmFile;
 
     private String proteinFileId;
     private String peptideFileId;
@@ -56,7 +61,7 @@ public class PeptideShakerVisualizationDataset1 extends SystemDataSet {
     private String psmFileId;
     private String jobId;
     private String searchGUIFileId;
-    private final Map<String, SystemDataSet> mgfFiles;
+    private final Map<String, GalaxyFileObject> mgfFiles;
     private final Map<String, String> mgfFilesIndexes;
     private String fastaFileName;
     private String fastaFileId;
@@ -66,11 +71,11 @@ public class PeptideShakerVisualizationDataset1 extends SystemDataSet {
         return zipFileId;
     }
 
-    public GalaxyFile getPsmFile() {
+    public GalaxyTransferableFile getPsmFile() {
         return psmFile;
     }
 
-    public void setPsmFile(GalaxyFile psmFile) {
+    public void setPsmFile(GalaxyTransferableFile psmFile) {
         this.psmFile = psmFile;
     }
 
@@ -389,23 +394,23 @@ public class PeptideShakerVisualizationDataset1 extends SystemDataSet {
 
     }
 
-    public void setProteinFile(GalaxyFile proteinFile) {
+    public void setProteinFile(GalaxyTransferableFile proteinFile) {
         this.proteinFile = proteinFile;
     }
 
-    public GalaxyFile getPeptideFile() {
+    public GalaxyTransferableFile getPeptideFile() {
         return peptideFile;
     }
 
-    public void setPeptideFile(GalaxyFile peptideFile) {
+    public void setPeptideFile(GalaxyTransferableFile peptideFile) {
         this.peptideFile = peptideFile;
     }
 
-    public GalaxyFile getFastaFile() {
+    public GalaxyTransferableFile getFastaFile() {
         return fastaFile;
     }
 
-    public void setFastaFile(GalaxyFile fastaFile) {
+    public void setFastaFile(GalaxyTransferableFile fastaFile) {
         this.fastaFile = fastaFile;
     }
 
@@ -595,11 +600,11 @@ public class PeptideShakerVisualizationDataset1 extends SystemDataSet {
         this.searchGUIFileId = searchGUIFileId;
     }
 
-    public Map<String, SystemDataSet> getMgfFiles() {
+    public Map<String, GalaxyFileObject> getMgfFiles() {
         return mgfFiles;
     }
 
-    public void addMgfFiles(String mgfFileID, SystemDataSet mgfDs) {
+    public void addMgfFiles(String mgfFileID, GalaxyFileObject mgfDs) {
         this.mgfFiles.put(mgfFileID, mgfDs);
     }
 

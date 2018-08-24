@@ -5,7 +5,7 @@
  */
 package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components;
 
-import com.uib.web.peptideshaker.galaxy.dataobjects.PSMObject;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PSMObject;
 import com.uib.web.peptideshaker.presenter.core.ColorLabel;
 import com.uib.web.peptideshaker.presenter.core.ResizeTableControlButtons;
 import com.uib.web.peptideshaker.presenter.core.SparkLineLabel;

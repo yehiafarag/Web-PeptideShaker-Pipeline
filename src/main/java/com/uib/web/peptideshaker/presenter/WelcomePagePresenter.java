@@ -5,19 +5,33 @@ package com.uib.web.peptideshaker.presenter;
 //import com.uib.onlinepeptideshaker.presenter.view.SmallSideBtn;
 import com.uib.web.peptideshaker.presenter.core.ViewableFrame;
 import com.uib.web.peptideshaker.presenter.core.SmallSideBtn;
+import com.vaadin.event.FieldEvents;
 import com.vaadin.server.ExternalResource;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Page;
+import com.vaadin.server.Sizeable;
 import com.vaadin.server.ThemeResource;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Layout;
 import com.vaadin.ui.Link;
-import com.vaadin.ui.PopupView;
+import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.concurrent.Task;
 //import sun.security.provider.certpath.Vertex;
 
 /**
@@ -25,7 +39,7 @@ import com.vaadin.ui.themes.ValoTheme;
  *
  * @author Yehia Farag
  */
-public class WelcomePagePresenter extends VerticalLayout implements ViewableFrame {
+public abstract class WelcomePagePresenter extends VerticalLayout implements ViewableFrame {
 
     /**
      * The header layout panel.
@@ -40,38 +54,81 @@ public class WelcomePagePresenter extends VerticalLayout implements ViewableFram
      * The body layout panel.
      */
     private final HorizontalLayout bodyPanel;
-    
     /**
      * The connection button to NeLS login page
      */
     private final Link nelsGalaxyConnectionBtn;
-
     /**
-     * Galaxy connection setting popup.
+     * Button to direct connection using testing account
+     *
      */
-    private PopupView connectionSettingsPanel;
-
+    private final Button loadExampleUserAccount;
     /**
-     * The galaxy server connection panel.
+     * Button to connect to user account.
+     *
      */
-//    private GalaxyConnectionPanel galaxyInputPanel;
+    private final Button galaxyConnectionBtn;
+    /**
+     * Test user Login account.
+     *
+     */
+    private final String testUserLogin = "test_User_Login";
+    /**
+     * Not valid API error message .
+     *
+     */
+    private final String apiErrorMessage = "Wrong API please try again";
+    /**
+     * Connection to galaxy statues label.
+     *
+     */
+    private final Label connectionStatuesLabel;
+    /**
+     * Galaxy login controls layout.
+     *
+     */
+    private final VerticalLayout galaxyLoginLayout;
+    /**
+     * User API login field.
+     *
+     */
+    private final TextField userAPIFeald;
+
     /**
      * The side home button .
      */
-    private SmallSideBtn homeBtn;
+    private final SmallSideBtn homeBtn;
     /**
      * The top home button .
      */
-    private SmallSideBtn topHomeBtn;
+    private final SmallSideBtn topHomeBtn;
+    /**
+     * Busy connecting window
+     */
+    private final Window busyConnectinWindow;
 
     /**
      * Constructor to initialise the layout.
-     *
-     * @param galaxyConnectionLayout The Galaxy server connection layout
      */
-    public WelcomePagePresenter(Layout galaxyConnectionLayout) {
+    public WelcomePagePresenter() {
         WelcomePagePresenter.this.setSizeFull();
-        
+        WelcomePagePresenter.this.addStyleName("welcomepagestyle");
+
+        VerticalLayout windowContent = new VerticalLayout();
+        windowContent.setSizeFull();
+
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
+
+        this.busyConnectinWindow = new Window(null, windowContent);
+        this.busyConnectinWindow.setSizeFull();
+        this.busyConnectinWindow.setStyleName("busyconnectingwindow");
+        this.busyConnectinWindow.setModal(false);
+        this.busyConnectinWindow.setDraggable(false);
+        this.busyConnectinWindow.setClosable(false);
+        this.busyConnectinWindow.setResizable(false);
+        busyConnectinWindow.center();
+        this.busyConnectinWindow.setWindowMode(WindowMode.NORMAL);
+
         mainHeaderPanel = new VerticalLayout();
         mainHeaderPanel.setHeight(50, Unit.PIXELS);
         WelcomePagePresenter.this.addComponent(mainHeaderPanel);
@@ -81,8 +138,6 @@ public class WelcomePagePresenter extends VerticalLayout implements ViewableFram
         mainHeaderPanel.addComponent(headerPanelContentLayout);
         mainHeaderPanel.setMargin(new MarginInfo(false, false, false, false));
 
-        
-               
         bodyPanel = new HorizontalLayout();
         bodyPanel.setSizeFull();
         bodyPanel.setMargin(new MarginInfo(true, false, false, false));
@@ -95,7 +150,7 @@ public class WelcomePagePresenter extends VerticalLayout implements ViewableFram
         bodyContent.addStyleName("mainbodystyle");
         bodyContent.setSpacing(true);
         bodyContent.setWidth(405, Unit.PIXELS);
-        bodyContent.setHeight(200, Unit.PIXELS);
+        bodyContent.setHeight(400, Unit.PIXELS);
         bodyPanel.addComponent(bodyContent);
         bodyPanel.setComponentAlignment(bodyContent, Alignment.TOP_CENTER);
 
@@ -103,25 +158,173 @@ public class WelcomePagePresenter extends VerticalLayout implements ViewableFram
         welcomeText.setSizeFull();
         welcomeText.setContentMode(ContentMode.HTML);
         welcomeText.setStyleName(ValoTheme.LABEL_NO_MARGIN);
-        welcomeText.setValue("<font style='font-weight: bold; font-size:23px'>Welcome to PeptideShaker <font size='2'><i>(online version)</i></font></font> <br/><br/>To start using the system connect to your Galaxy Server");
+        welcomeText.setValue("<font style='font-weight: bold; font-size:23px'>Welcome to PeptideShaker <font size='2'><i>(online version)</i></font></font>");// <br/><br/>To start using the system connect to your Galaxy Server");
 
         bodyContent.addComponent(welcomeText);
+        bodyContent.setExpandRatio(welcomeText, 0.05f);
         bodyContent.setComponentAlignment(welcomeText, Alignment.TOP_LEFT);
 
-        bodyContent.addComponent(galaxyConnectionLayout);
-        bodyContent.setComponentAlignment(galaxyConnectionLayout, Alignment.TOP_LEFT);
+        HorizontalLayout serviceButtonContainer = new HorizontalLayout();
+        serviceButtonContainer.setWidth(100, Unit.PERCENTAGE);
+        serviceButtonContainer.setHeight(100, Unit.PERCENTAGE);
+        serviceButtonContainer.setSpacing(true);
+        bodyContent.addComponent(serviceButtonContainer);
+        bodyContent.setExpandRatio(serviceButtonContainer, 0.1f);
+        bodyContent.setComponentAlignment(serviceButtonContainer, Alignment.TOP_LEFT);
+
+        loadExampleUserAccount = new Button("Example", new ThemeResource("img/peptideshaker_example_dataset_1.png"));
+        loadExampleUserAccount.setSizeFull();
+        serviceButtonContainer.addComponent(loadExampleUserAccount);
+        serviceButtonContainer.setComponentAlignment(loadExampleUserAccount, Alignment.TOP_LEFT);
+        loadExampleUserAccount.setDisableOnClick(true);
+
+        galaxyConnectionBtn = new Button("Galaxy", new ThemeResource("img/galaxyLogo_2.png"));
+        galaxyConnectionBtn.setSizeFull();
+        galaxyConnectionBtn.setCaptionAsHtml(true);
+
+        serviceButtonContainer.addComponent(galaxyConnectionBtn);
+        serviceButtonContainer.setComponentAlignment(galaxyConnectionBtn, Alignment.TOP_LEFT);
 
         nelsGalaxyConnectionBtn = new Link("NeLS-Galaxy", new ExternalResource("http://localhost:8084/NelsGalaxyRedirectForm/"));
         nelsGalaxyConnectionBtn.setStyleName("nelslogo");
-        
-        bodyContent.addComponent(nelsGalaxyConnectionBtn);
-        bodyContent.setComponentAlignment(nelsGalaxyConnectionBtn, Alignment.TOP_RIGHT);
+        /**
+         * @todo: to be remove in NeLS enable Online PeptideShaker
+         *
+         */
+        nelsGalaxyConnectionBtn.setVisible(false);
+
+        galaxyLoginLayout = new VerticalLayout();
+        galaxyLoginLayout.setSizeFull();
+        galaxyLoginLayout.setSpacing(true);
+        galaxyLoginLayout.setVisible(false);
+        bodyContent.addComponent(galaxyLoginLayout);
+        bodyContent.setExpandRatio(galaxyLoginLayout, 0.1f);
+        bodyContent.setComponentAlignment(galaxyLoginLayout, Alignment.TOP_LEFT);
+
+        userAPIFeald = new TextField("User API");
+        userAPIFeald.addFocusListener((FieldEvents.FocusEvent event) -> {
+            if (userAPIFeald.getValue().equals(apiErrorMessage)) {
+                userAPIFeald.clear();
+                userAPIFeald.removeStyleName("redfont");
+            }
+        });
+        userAPIFeald.setSizeFull();
+        userAPIFeald.setStyleName(ValoTheme.TEXTFIELD_TINY);
+        userAPIFeald.setRequired(true);
+        userAPIFeald.setRequiredError("API key is required");
+        userAPIFeald.setInputPrompt("Enter Galaxy API Key");
+        galaxyLoginLayout.addComponent(userAPIFeald);
+
+        HorizontalLayout galaxyServiceBtns = new HorizontalLayout();
+        galaxyServiceBtns.setSizeFull();
+        galaxyServiceBtns.setSpacing(true);
+        galaxyLoginLayout.addComponent(galaxyServiceBtns);
+        Link regLink = new Link("Register", new ExternalResource("http://129.177.231.63:8081/galaxy/user/create"));
+        regLink.setStyleName("newlink");
+        regLink.setTargetName("_blank");
+        galaxyServiceBtns.addComponent(regLink);
+        galaxyServiceBtns.setExpandRatio(regLink, 0.15f);
+
+        Link userAPI = new Link("Get User API", new ExternalResource("http://129.177.231.63:8081/galaxy/user/api_key"));
+        userAPI.setStyleName("newlink");
+        userAPI.setTargetName("_blank");
+        galaxyServiceBtns.addComponent(userAPI);
+        galaxyServiceBtns.setExpandRatio(userAPI, 0.25f);
+        Button loginButton = new Button("Login");
+        loginButton.setStyleName(ValoTheme.BUTTON_TINY);
+        galaxyServiceBtns.addComponent(loginButton);
+        galaxyServiceBtns.setExpandRatio(loginButton, 0.6f);
+        galaxyServiceBtns.setComponentAlignment(loginButton, Alignment.TOP_RIGHT);
+
+        VerticalLayout connectionCommentLayout = new VerticalLayout();
+        connectionCommentLayout.setSizeFull();
+        bodyContent.addComponent(connectionCommentLayout);
+        bodyContent.setExpandRatio(connectionCommentLayout, 0.1f);
+        bodyContent.setComponentAlignment(connectionCommentLayout, Alignment.TOP_LEFT);
+
+        connectionStatuesLabel = new Label("Galaxy is<font color='red'>  not connected </font><font size='3' color='red'> " + FontAwesome.FROWN_O.getHtml() + "</font>");
+        connectionStatuesLabel.setContentMode(ContentMode.HTML);
+        connectionStatuesLabel.setHeight(25, Sizeable.Unit.PIXELS);
+        connectionStatuesLabel.setWidth(160, Sizeable.Unit.PIXELS);
+        connectionStatuesLabel.setStyleName(ValoTheme.LABEL_SMALL);
+        connectionStatuesLabel.addStyleName(ValoTheme.LABEL_BOLD);
+        connectionStatuesLabel.addStyleName(ValoTheme.LABEL_TINY);
+        connectionStatuesLabel.addStyleName(ValoTheme.LABEL_NO_MARGIN);
+        connectionCommentLayout.addComponent(connectionStatuesLabel);
+        connectionCommentLayout.setComponentAlignment(connectionStatuesLabel, Alignment.TOP_CENTER);
+
+        final VerticalLayout spacerLayout = new VerticalLayout();
+        spacerLayout.setSizeFull();
+        spacerLayout.setSpacing(true);
+        spacerLayout.setVisible(true);
+        bodyContent.addComponent(spacerLayout);
+        bodyContent.setExpandRatio(spacerLayout, 0.1f);
+        bodyContent.setComponentAlignment(spacerLayout, Alignment.TOP_LEFT);
+
+        galaxyConnectionBtn.addClickListener((Button.ClickEvent event) -> {
+            if (galaxyConnectionBtn.getCaption().equalsIgnoreCase("<b>Disconnect</b>")) {
+                VaadinSession.getCurrent().getSession().invalidate();
+                Page.getCurrent().reload();
+            } else if (galaxyLoginLayout.isVisible()) {
+                galaxyLoginLayout.setVisible(false);
+            } else {
+                galaxyLoginLayout.setVisible(true);
+            }
+            spacerLayout.setVisible(!galaxyLoginLayout.isVisible());
+
+        });
+        loginButton.addClickListener((Button.ClickEvent event) -> {
+            userAPIFeald.commit();
+            connectionStatuesLabel.setValue("Connecting to galaxy....");
+            if (userAPIFeald.isValid() && !userAPIFeald.getValue().equalsIgnoreCase(testUserLogin)) {
+                Runnable t2 = () -> {
+                    boolean connected = connectToGalaxy(userAPIFeald.getValue());
+                    connectedToGalaxy(connected);
+                };
+
+                executorService.submit(t2);
+                executorService.shutdown();
+
+            }
+        });
+        loadExampleUserAccount.addClickListener((Button.ClickEvent event) -> {
+
+            Runnable t2 = () -> {
+                boolean connected = connectToGalaxy(testUserLogin);
+                connectedToGalaxy(connected);
+            };
+            connectionStatuesLabel.setValue("<h1 class='animation'>Connecting to galaxy....</h1>");
+            executorService.submit(t2);
+            executorService.shutdown();
+
+        });
+
 //
         homeBtn = new SmallSideBtn("img/home-o.svg");
         homeBtn.setData(WelcomePagePresenter.this.getViewId());
 
         topHomeBtn = new SmallSideBtn("img/home-o.svg");
         topHomeBtn.setData(WelcomePagePresenter.this.getViewId());
+        busyConnectinWindow.addStyleName("hidewindow");
+
+    }
+
+    /**
+     * update the layout based on connection to galaxy.
+     *
+     * @param connected connected to galaxy server
+     */
+    private void connectedToGalaxy(boolean connected) {
+        if (connected) {
+            connectionStatuesLabel.setValue("Galaxy is <font color='green'>connected </font><font size='3' color='green'> " + FontAwesome.SMILE_O.getHtml() + "</font>");
+            galaxyConnectionBtn.setCaption("<b>Disconnect</b>");
+            galaxyLoginLayout.setEnabled(false);
+            loadExampleUserAccount.setEnabled(false);
+
+        } else {
+            userAPIFeald.setValue(apiErrorMessage);
+            userAPIFeald.addStyleName("redfont");
+        }
 
     }
 
@@ -129,7 +332,7 @@ public class WelcomePagePresenter extends VerticalLayout implements ViewableFram
      * Initialise the header layout.
      */
     private HorizontalLayout initializeHeaderPanel() {
-        
+
         HorizontalLayout headerLayoutContainer = new HorizontalLayout();
         headerLayoutContainer.setSpacing(true);
         headerLayoutContainer.addStyleName("logocontainer");
@@ -190,5 +393,13 @@ public class WelcomePagePresenter extends VerticalLayout implements ViewableFram
     public SmallSideBtn getTopView() {
         return topHomeBtn;
     }
+
+    /**
+     * Start the Online PeptideShaker - Galaxy server connection.
+     *
+     * @param userAPI user API key that is required to connect to galaxy
+     * @return boolean successful connection to galaxy
+     */
+    public abstract boolean connectToGalaxy(String userAPI);
 
 }

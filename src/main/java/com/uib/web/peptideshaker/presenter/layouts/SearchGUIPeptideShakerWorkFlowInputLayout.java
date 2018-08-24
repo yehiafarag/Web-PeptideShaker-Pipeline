@@ -1,8 +1,8 @@
 package com.uib.web.peptideshaker.presenter.layouts;
 
 import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
-import com.uib.web.peptideshaker.galaxy.dataobjects.SystemDataSet;
-import com.uib.web.peptideshaker.galaxy.dataobjects.GalaxyFile;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyFileObject;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyTransferableFile;
 import com.uib.web.peptideshaker.presenter.core.DropDownList;
 import com.uib.web.peptideshaker.presenter.core.MultiSelectOptionGroup;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
@@ -32,42 +32,51 @@ import java.util.Set;
  *
  * @author Yehia Farag
  */
-public abstract class WorkFlowLayout extends Panel {
+public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
 
     /**
      * Search settings .par file drop-down list .
      */
     private final DropDownList searchSettingsFileList;
-
     /**
-     * select MGF file list.
+     * MGF file list available for user to select from.
      */
     private final MultiSelectOptionGroup mgfFileList;
-
+    /**
+     * layout contain project name field and execute button
+     */
     private final HorizontalLabelTextField projectNameField;
-//    /**
-//     * Create decoy database file list.
-//     */
-//    private final MultiSelectOptionGroup databaseOptionList;
-
+    /**
+     * Pop-up layout content that has search input available options
+     */
     private final SearchSettingsLayout searchSettingsLayout;
+    /**
+     * Pop-up layout container for edit user search input
+     */
     private final PopupWindow editSearchOption;
-    private Map<String, GalaxyFile> searchSettingsMap;
+    /**
+     * Available pre-saved search parameters files .par from previous searching
+     */
+    private Map<String, GalaxyTransferableFile> searchSettingsMap;
+    /**
+     * selected search parameters to perform the search at galaxy server
+     */
     private SearchParameters searchParameters;
 
     /**
-     * Constructor to initialize the main attributes.
+     * Constructor to initialise the main attributes.
      */
-    public WorkFlowLayout() {
-        WorkFlowLayout.this.setWidth(100, Unit.PERCENTAGE);
-        WorkFlowLayout.this.setHeight(100, Unit.PERCENTAGE);
+    @SuppressWarnings("Convert2Lambda")
+    public SearchGUIPeptideShakerWorkFlowInputLayout() {
+        SearchGUIPeptideShakerWorkFlowInputLayout.this.setWidth(100, Unit.PERCENTAGE);
+        SearchGUIPeptideShakerWorkFlowInputLayout.this.setHeight(100, Unit.PERCENTAGE);
 
         VerticalLayout content = new VerticalLayout();
         content.setHeightUndefined();
         content.setWidth(100, Unit.PERCENTAGE);
-        WorkFlowLayout.this.setContent(content);
-        WorkFlowLayout.this.setStyleName("subframe");
-
+        SearchGUIPeptideShakerWorkFlowInputLayout.this.setContent(content);
+        SearchGUIPeptideShakerWorkFlowInputLayout.this.setStyleName("subframe");
+        SearchGUIPeptideShakerWorkFlowInputLayout.this.addStyleName("floatrightinyscreen");
         content.setSpacing(true);
 
         Label titleLabel = new Label("SearchGUI-PeptideShaker-WorkFlow");
@@ -126,8 +135,8 @@ public abstract class WorkFlowLayout extends Panel {
         btnsFrame.addComponent(editSearchSettings);
         searchSettingsLayout = new SearchSettingsLayout() {
             @Override
-            public void saveSearchingFile(SearchParameters searchParameters, boolean editMode) {
-                checkAndSaveSearchSettingsFile(searchParameters, editMode);
+            public void saveSearchingFile(SearchParameters searchParameters, boolean isNew) {
+                checkAndSaveSearchSettingsFile(searchParameters, isNew);
                 editSearchOption.setPopupVisible(false);
             }
 
@@ -154,8 +163,11 @@ public abstract class WorkFlowLayout extends Panel {
         content.addComponent(mgfFileList);
         mgfFileList.setRequired(true, "Select at least 1 MGF file");
         mgfFileList.setViewList(true);
+        mgfFileList.addStyleName("smallscreenfloatright");
+        mgfFileList.addStyleName("top220");
 
         MultiSelectOptionGroup searchEngines = new MultiSelectOptionGroup("Search Engines", false);
+        searchEngines.addStyleName("smallscreenfloatright");
         content.addComponent(searchEngines);
         searchEngines.setRequired(true, "Select at least 1 search engine");
         searchEngines.setViewList(true);
@@ -205,7 +217,7 @@ public abstract class WorkFlowLayout extends Panel {
             searchEngienList.keySet().forEach((paramId) -> {
                 selectedSearchEngines.put(paramId, searchEngines.getSelectedValue().contains(paramId));
             });
-            executeWorkFlow(projectName, fastFileId, spectrumIds, searchEnginesIds, searchSettingsLayout.getSearchParameters(), selectedSearchEngines);
+            executeWorkFlow(projectName, fastFileId, spectrumIds, searchEnginesIds, searchSettingsLayout.getSearchParameters());
         });
         mgfFileList.setEnabled(false);
         searchEngines.setEnabled(false);
@@ -218,9 +230,9 @@ public abstract class WorkFlowLayout extends Panel {
                 searchEngines.setEnabled(true);
                 projectNameField.setEnabled(true);
                 editSearchSettings.setEnabled(true);
-                executeWorkFlow.setEnabled(true);  
-                try { 
-                    File file = searchSettingsMap.get(searchSettingsFileList.getSelectedValue()).getFile();  
+                executeWorkFlow.setEnabled(true);
+                try {
+                    File file = searchSettingsMap.get(searchSettingsFileList.getSelectedValue()).getFile();
                     searchParameters = SearchParameters.getIdentificationParameters(file);
                     String descrip = searchParameters.getShortDescription();
                     descrip = descrip.replace(searchParameters.getFastaFile().getName(), searchSettingsLayout.getFastaFileName(searchParameters.getFastaFile().getName().split("__")[0]));
@@ -242,19 +254,18 @@ public abstract class WorkFlowLayout extends Panel {
      * @param fastaFilesMap FASTA files map
      * @param mgfFilesMap MGF file map
      */
-    public void updateForm(Map<String, GalaxyFile> searchSettingsMap, Map<String, SystemDataSet> fastaFilesMap, Map<String, SystemDataSet> mgfFilesMap) {
+    public void updateForm(Map<String, GalaxyTransferableFile> searchSettingsMap, Map<String, GalaxyFileObject> fastaFilesMap, Map<String, GalaxyFileObject> mgfFilesMap) {
 
         this.searchSettingsMap = searchSettingsMap;
         searchSettingsLayout.updateFastaFileList(fastaFilesMap);
         Map<String, String> searchSettingsFileIdToNameMap = new LinkedHashMap<>();
         Object selectedId = "";
         for (String id : searchSettingsMap.keySet()) {
-            searchSettingsFileIdToNameMap.put(id, searchSettingsMap.get(id).getDataset().getName().replace(".par", ""));
+            searchSettingsFileIdToNameMap.put(id, searchSettingsMap.get(id).getGalaxyFileObject().getName().replace(".par", ""));
             selectedId = id;
         }
         searchSettingsFileList.updateList(searchSettingsFileIdToNameMap);
         searchSettingsFileList.setSelected(selectedId);
-//
         Map<String, String> mgfFileIdToNameMap = new LinkedHashMap<>();
         mgfFilesMap.keySet().forEach((id) -> {
             mgfFileIdToNameMap.put(id, mgfFilesMap.get(id).getName());
@@ -263,7 +274,6 @@ public abstract class WorkFlowLayout extends Panel {
         if (mgfFileIdToNameMap.size() == 1) {
             mgfFileList.setSelectedValue(mgfFileIdToNameMap.keySet());
         }
-
     }
 
     /**
@@ -274,17 +284,24 @@ public abstract class WorkFlowLayout extends Panel {
      * @param mgfIdsList list of MGF file dataset ids
      * @param searchEnginesList List of selected search engine names
      * @param searchParameters searching parameters
-     * @param searchEngines search engines
+//     * @param searchEngines search engines
      */
-    public abstract void executeWorkFlow(String projectName, String fastaFileId, Set<String> mgfIdsList, Set<String> searchEnginesList, SearchParameters searchParameters, Map<String, Boolean> searchEngines);
+    public abstract void executeWorkFlow(String projectName, String fastaFileId, Set<String> mgfIdsList, Set<String> searchEnginesList, SearchParameters searchParameters);
 
-    private void checkAndSaveSearchSettingsFile(SearchParameters searchParameters, boolean editMode) {
+    /**
+     * Validate and save search setting .par file on galaxy server for future
+     * use.
+     *
+     * @param searchParameters selected search parameters
+     * @param isNew create new file or edit exist file
+     */
+    private void checkAndSaveSearchSettingsFile(SearchParameters searchParameters, boolean isNew) {
         this.searchParameters = searchParameters;
-        searchSettingsMap = saveSearchGUIParameters(searchParameters, editMode);
+        searchSettingsMap = saveSearchGUIParameters(searchParameters, isNew);
         Map<String, String> searchSettingsFileIdToNameMap = new LinkedHashMap<>();
         String objectId = "";
         for (String id : searchSettingsMap.keySet()) {
-            searchSettingsFileIdToNameMap.put(id, searchSettingsMap.get(id).getDataset().getName().replace(".par", ""));
+            searchSettingsFileIdToNameMap.put(id, searchSettingsMap.get(id).getGalaxyFileObject().getName().replace(".par", ""));
             objectId = id;
         }
         searchSettingsFileList.updateList(searchSettingsFileIdToNameMap);
@@ -295,8 +312,10 @@ public abstract class WorkFlowLayout extends Panel {
     /**
      * Save search settings file into galaxy
      *
-     * @param fileName search parameters file name
+     *
      * @param searchParameters searchParameters .par file
+     * @param isNew create new file or edit exist file
+     * @return updated search parameters files map
      */
-    public abstract Map<String, GalaxyFile> saveSearchGUIParameters(SearchParameters searchParameters, boolean editMode);
+    public abstract Map<String, GalaxyTransferableFile> saveSearchGUIParameters(SearchParameters searchParameters, boolean isNew);
 }

@@ -114,6 +114,13 @@
         transform: translate3d(4px, 0, 0);
     }
 }
+@keyframes WelcomeAnimation {
+    100% { background-position: 100vw 0px; }
+}
+
+@keyframes Always {
+    100% { transform: scale(1.1);}
+}
 
 
 @mixin webpeptideshakertheme {
@@ -522,13 +529,13 @@
     .leftsideviewcontainer {
         padding-top: 20px;
         width: 100px !important;
-        z-index: 10000000000.0 !important;
+        z-index: 2 !important;
         position: absolute !important;
         overflow:visible;
     }
     .v-slot-rightsidebtncontainer {
         width: 50px !important;
-        z-index: 10000000000.0 !important;
+        z-index: 2 !important;
         position: absolute !important;
         overflow: visible;
         right: 10px;        
@@ -2887,7 +2894,58 @@
         padding-bottom:5px;
         top:-4px;
     }
+    .galaxylogobtn img{
+        left:-25px !important;
+        position:relative !important;
+        margin-left:0px !important;
+    }
+    .v-button-galaxylogobtn {
+        background:#262d41 !important;
+        color:white !important;
+        padding:0px !important;
+    }
+    .v-button-galaxylogobtn.v-button:after {
+        top: 0px; 
+        right: 0px;
+        bottom: 0px; 
+        left: 0px; 
+    }
+    .newlink{
+        text-decoration:none !important;
+        font-size:12px;
+        font-weight:bold !important;;
+    }
+    .newlink:hover{
+        text-decoration:underline !important;
+        color:blue !important;
+    }
+    .redfont{
+        color:red !important;
+    }
+    .v-absolutelayout-wrapper-welcomepagestyle{
 
+        background-color:white;
+        z-index:2!important;
+        overflow:visible !important;
+        position:fixed !important;
+    }
+    .animation{
+        font-family: 'Bowlby One SC', cursive;
+        font-size: 20px !important;
+        width: 500px !important;
+        margin-top: calc(50vh - 10vw);
+        text-align: left;
+        background: linear-gradient(50deg,#2c3143 30%,hsl(59, 81%, 30%) 40%,hsl(28, 99%, 57%) 30% );
+	background: -webkit-linear-gradient(50deg,#2c3143 30%,hsl(59, 81%, 30%) 40%,hsl(28, 99%, 57%) 30% );
+	background: -o-linear-gradient(50deg,#2c3143 30%,hsl(59, 81%, 30%) 40%,hsl(28, 99%, 57%) 30% );
+	background: -moz-linear-gradient(50deg,#2c3143 30%,hsl(59, 81%, 30%) 40%,hsl(28, 99%, 57%) 30% );
+        
+        color: #f7f7f7;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: 10s WelcomeAnimation linear infinite,
+            3s Always ease alternate infinite;
+    }
     /****small screen css**/
     .smallscreenstyle  .largetitle .v-label{
         margin-left:10px;
@@ -2897,7 +2955,7 @@
         padding-right: 10px;
     }
     .smallscreenstyle .mainbodystyle  {
-        margin-top:100px !important;
+        margin-top:50px !important;
     }
 
 
@@ -2970,7 +3028,27 @@
     .smallscreenstyle .middleviewcontainer {
         padding-left: 0px;
         padding-right: 0px;
-        padding-bottom:60px;
+        padding-bottom:20px;
+    }
+
+    .smallscreenstyle .smallscreenfloatright {
+        position:absolute !important;
+        top:60px ;
+        overflow: hidden !important;
+        left:430px !important;
+
+    }
+    .smallscreenstyle .smallscreenfloatright .v-select-optiongroup-optiongroup{
+        height:100px !important;
+    }
+    .smallscreenstyle .top220{
+        top:220px !important;	
+    }
+
+    .smallscreenstyle .v-caption-dropdownlist .v-captiontext, .smallscreenstyle .v-caption-optiongroup .v-captiontext{
+        font-size: 14px;
+        font-weight: bold;
+        font-family: "Open Sans", sans-serif;
     }
     .smallscreenstyle .leftsideviewcontainer .v-slot-bigmenubtn {
         visibility: hidden !important;
@@ -3166,23 +3244,57 @@
 
     /**mobile screen style***/
     .smallscreenstyle.mobilestyle .logocontainer img {
-        height: 200px !important;
+        height: 150px !important;
         overflow: visible;
-        margin-top: 60px;
+        margin-top: 10px;
         position: fixed;
         z-index: 10 !important;
         margin-left: 50%;
-        left: -113px;
+        left: -57px;
     }
     .smallscreenstyle.mobilestyle .mainbodystyle  {
-        margin-top:150px !important;
+        margin-top:80px !important;
     }
     .hidemode{
-        display:none;
+        display:none !important;
     }
     .mobilealertnotification .v-Notification-caption{
         font-size:50px !important;
         text-overflow:inherit !important;
     }
 
+
+    .minimizelayout{
+        max-height:40px;
+    }
+    .minimizelayout .v-slot {
+        color:rgba(255, 255, 255, 0) !important;
+    }
+    .minimizelayout .v-slot .v-label,.minimizelayout .v-gridlayout-slot .v-label{
+        cursor:pointer !important;
+        color: #6286a9 !important;
+        position:absolute !important;
+        width:700px !important;
+        height:20px !important;
+        z-index:2 !important;
+    }
+
+    .minimizelayout .v-button, .minimizelayout .v-filterselect,.minimizelayout .v-gridlayout-slot .v-horizontallayout{
+        display: none ;
+    }
+    .busyconnectingwindow{
+        background-color:rgba(249, 246, 249, 0.7) !important;
+        z-index:99999999 !important;
+        background-image:url("img/connecting.gif"),url("img/loading.gif");
+        background-repeat:no-repeat;
+        background-position:50% 50%,50% 50%;
+        background-size:400px, 200px;
+        pointer-events: none;
+        left:0px !important;
+        top:0px !important;
+        border:1px solid gray;
+    }
+    .hidewindow{
+        display:none;
+    }
 }

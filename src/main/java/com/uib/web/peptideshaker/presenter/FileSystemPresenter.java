@@ -1,8 +1,8 @@
 package com.uib.web.peptideshaker.presenter;
 
 import com.uib.web.peptideshaker.presenter.core.ViewableFrame;
-import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDataset;
-import com.uib.web.peptideshaker.galaxy.dataobjects.SystemDataSet;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyFileObject;
 import com.uib.web.peptideshaker.presenter.layouts.DataViewLayout;
 import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
 import com.uib.web.peptideshaker.presenter.core.SmallSideBtn;
@@ -61,7 +61,7 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
 
     }
 
-    public void setBusy(boolean busy, Map<String, SystemDataSet> historyFilesMap) {
+    public void setBusy(boolean busy, Map<String, GalaxyFileObject> historyFilesMap) {
         if (busy) {
             toolsBtn.updateIconURL("img/globe-earth-animation-26.gif");//loading.gif
             topToolsBtn.updateIconURL("img/globe-earth-animation-26.gif");//loading.gif
@@ -205,7 +205,7 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
 //        container.setMargin(new MarginInfo(true, true, true, true));
         dataLayout = new DataViewLayout() {
             @Override
-            public void deleteDataset(SystemDataSet ds) {
+            public void deleteDataset(GalaxyFileObject ds) {
                 FileSystemPresenter.this.deleteDataset(ds);
             }
 
@@ -215,12 +215,12 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
             }
 
             @Override
-            public boolean sendToNeLS(SystemDataSet ds) {
+            public boolean sendToNeLS(GalaxyFileObject ds) {
                 return FileSystemPresenter.this.sendToNeLS(ds);
             }
 
             @Override
-            public boolean getFromNels(SystemDataSet ds) {
+            public boolean getFromNels(GalaxyFileObject ds) {
                 return FileSystemPresenter.this.getFromNels(ds);
             }
 
@@ -237,13 +237,13 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
         return container;
     }
 
-    public abstract void deleteDataset(SystemDataSet ds);
+    public abstract void deleteDataset(GalaxyFileObject ds);
 
     public abstract void viewDataset(PeptideShakerVisualizationDataset ds);
 
-    public abstract boolean sendToNeLS(SystemDataSet ds);
+    public abstract boolean sendToNeLS(GalaxyFileObject ds);
 
-    public abstract boolean getFromNels(SystemDataSet ds);
+    public abstract boolean getFromNels(GalaxyFileObject ds);
     
      public abstract boolean uploadToGalaxy(PluploadFile[] toUploadFiles);
 

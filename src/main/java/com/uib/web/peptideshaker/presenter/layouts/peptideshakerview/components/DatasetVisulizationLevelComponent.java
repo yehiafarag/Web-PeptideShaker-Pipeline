@@ -1,8 +1,8 @@
 package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components;
 
 import com.compomics.util.experiment.biology.PTMFactory;
-import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDataset;
-import com.uib.web.peptideshaker.galaxy.dataobjects.ProteinObject;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.ProteinObject;
 import com.uib.web.peptideshaker.model.core.ModificationMatrix;
 import com.uib.web.peptideshaker.presenter.core.ColorLabel;
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.SelectionManager;

@@ -1,4 +1,4 @@
-package com.uib.web.peptideshaker.galaxy.dataobjects;
+package com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects;
 
 import com.vaadin.server.VaadinSession;
 import java.io.File;
@@ -21,41 +21,67 @@ import java.util.zip.ZipInputStream;
  *
  * @author Yehia Farag
  */
-public class GalaxyFile extends SystemDataSet {
+public class GalaxyTransferableFile extends GalaxyFileObject {
 
-    private final SystemDataSet dataset;
+    /**
+     * Galaxy file object.
+     */
+    private final GalaxyFileObject galaxyFileObject;
+    /**
+     * User data files folder.
+     */
     private final File userFolder;
+    /**
+     * The file on Galaxy server is compressed.
+     */
     private final boolean zipped;
-    private final Set<String> filesList;
-    private String originalFileName;
+    /**
+     * The list of files contained in folder (case of compressed folder).
+     */
+    private final Set<String> subFilesList;
 
-    public GalaxyFile(File userFolder, SystemDataSet dataset, boolean zipped) {
-        this.dataset = dataset;
+    /**
+     * Constructor to initialise the main variables
+     *
+     * @param userFolder User data files folder
+     * @param galaxyFileObject Galaxy file object
+     * @param zipped The file on Galaxy server is compressed
+     */
+    public GalaxyTransferableFile(File userFolder, GalaxyFileObject galaxyFileObject, boolean zipped) {
+        this.galaxyFileObject = galaxyFileObject;
         this.userFolder = userFolder;
         this.zipped = zipped;
-        this.filesList = new LinkedHashSet<>();
-        super.setName(dataset.getName());
-        super.setType(dataset.getType());
-        super.setStatus(dataset.getStatus());
-        super.setDownloadUrl(dataset.getDownloadUrl());
-        super.setGalaxyId(dataset.getGalaxyId());
-        super.setHistoryId(dataset.getHistoryId());
+        this.subFilesList = new LinkedHashSet<>();
+        super.setName(galaxyFileObject.getName());
+        super.setType(galaxyFileObject.getType());
+        super.setStatus(galaxyFileObject.getStatus());
+        super.setDownloadUrl(galaxyFileObject.getDownloadUrl());
+        super.setGalaxyId(galaxyFileObject.getGalaxyId());
+        super.setHistoryId(galaxyFileObject.getHistoryId());
     }
 
-    public SystemDataSet getDataset() {
-        return dataset;
+    /**
+     * Get the main Galaxy object that contains galaxy file information
+     *
+     * @return Galaxy File Object
+     */
+    public GalaxyFileObject getGalaxyFileObject() {
+        return galaxyFileObject;
     }
 
-    public String getOriginalFileName() {
-        return originalFileName;
-    }
-
-    public Set<String> getFileInformation() {
-        if (zipped && filesList.isEmpty()) {
+    /**
+     * Get the name list of the files exist in the compressed folder
+     *
+     * @return the sub files list of files contained in folder (case of
+     * compressed folder).
+     *
+     */
+    public Set<String> getSubFilesList() {
+        if (zipped && subFilesList.isEmpty()) {
             FileOutputStream fos = null;
             try {
 
-                URL downloadableFile = new URL(dataset.getDownloadUrl());
+                URL downloadableFile = new URL(galaxyFileObject.getDownloadUrl());
                 URLConnection conn = downloadableFile.openConnection();
                 conn.addRequestProperty("Accept", "*/*");
                 conn.addRequestProperty("Accept-Encoding", "gzip, deflate, sdch, br");
@@ -68,7 +94,7 @@ public class GalaxyFile extends SystemDataSet {
                 ZipInputStream Zis = new ZipInputStream(conn.getInputStream());
                 ZipEntry entry = Zis.getNextEntry();
                 while (entry != null) {
-                    filesList.add(entry.getName());
+                    subFilesList.add(entry.getName());
                     entry = Zis.getNextEntry();
                 }
             } catch (MalformedURLException ex) {
@@ -87,14 +113,21 @@ public class GalaxyFile extends SystemDataSet {
             }
 
         }
-        return filesList;
+        return subFilesList;
 
     }
 
+    /**
+     * Get the Java File Object that represents the downloaded file on Online
+     * Peptide Shaker
+     *
+     * @return File object that already downloaded on the user files folder
+     * @throws java.io.IOException*
+     */
     public File getFile() throws IOException {
-        String fileName = dataset.getGalaxyId().replace("/", "_");
-        if (dataset.getType().equalsIgnoreCase("Search Paramerters File (JSON)") && !zipped) {
-            fileName += dataset.getName() ;
+        String fileName = galaxyFileObject.getGalaxyId().replace("/", "_");
+        if (galaxyFileObject.getType().equalsIgnoreCase("Search Paramerters File (JSON)") && !zipped) {
+            fileName += galaxyFileObject.getName();
         }
         File file = new File(userFolder, fileName);
         if (file.exists()) {
@@ -103,7 +136,7 @@ public class GalaxyFile extends SystemDataSet {
         if (zipped) {
             FileOutputStream fos = null;
             try {
-                URL downloadableFile = new URL(dataset.getDownloadUrl());
+                URL downloadableFile = new URL(galaxyFileObject.getDownloadUrl());
                 URLConnection conn = downloadableFile.openConnection();
                 conn.addRequestProperty("Accept", "*/*");
                 conn.addRequestProperty("Accept-Encoding", "gzip, deflate, sdch, br");
@@ -128,7 +161,7 @@ public class GalaxyFile extends SystemDataSet {
                             Zis.close();
                             break;
                         }
-                    } else if (!entry.isDirectory() && entry.getName().endsWith(dataset.getGalaxyId().split("__")[1].replace("reports/", ""))) //do something with entry  
+                    } else if (!entry.isDirectory() && entry.getName().endsWith(galaxyFileObject.getGalaxyId().split("__")[1].replace("reports/", ""))) //do something with entry  
                     {
                         try (ReadableByteChannel rbc = Channels.newChannel(Zis)) {
                             fos = new FileOutputStream(file);
@@ -144,13 +177,11 @@ public class GalaxyFile extends SystemDataSet {
                 }
 
             } catch (MalformedURLException ex) {
-//                ex.printStackTrace();
             } finally {
                 if (fos != null) {
                     try {
                         fos.close();
                     } catch (IOException ex) {
-//                        ex.printStackTrace();
                     }
                 }
 
@@ -159,7 +190,7 @@ public class GalaxyFile extends SystemDataSet {
         } else {
             FileOutputStream fos = null;
             try {
-                URL downloadableFile = new URL(dataset.getDownloadUrl());
+                URL downloadableFile = new URL(galaxyFileObject.getDownloadUrl());
                 URLConnection conn = downloadableFile.openConnection();
                 conn.addRequestProperty("Cookie", VaadinSession.getCurrent().getAttribute("cookies") + "");
                 conn.addRequestProperty("Accept", "*/*");
@@ -195,10 +226,6 @@ public class GalaxyFile extends SystemDataSet {
             }
         }
         return file;
-    }
-
-    public void setOriginalFileName(String originalFileName) {
-        this.originalFileName = originalFileName;
     }
 
 }

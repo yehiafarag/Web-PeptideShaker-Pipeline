@@ -1,8 +1,8 @@
 package archive;
 
-import com.uib.web.peptideshaker.galaxy.dataobjects.GalaxyFile;
-import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDataset;
-import com.uib.web.peptideshaker.galaxy.dataobjects.SystemDataSet;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyTransferableFile;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyFileObject;
 import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
 import com.github.jmchilton.blend4j.galaxy.GalaxyResponseException;
 import com.github.jmchilton.blend4j.galaxy.HistoriesClient;
@@ -225,7 +225,7 @@ public abstract class ToolsHandler1 {
      * @param fileId search parameters file name
      * @param searchParameters searchParameters .par file
      */
-    public Map<String, GalaxyFile> saveSearchGUIParameters(String galaxyURL, File userFolder, Map<String, GalaxyFile> searchSetiingsFilesMap, String workHistoryId, SearchParameters searchParameters, boolean editMode) {
+    public Map<String, GalaxyTransferableFile> saveSearchGUIParameters(String galaxyURL, File userFolder, Map<String, GalaxyTransferableFile> searchSetiingsFilesMap, String workHistoryId, SearchParameters searchParameters, boolean editMode) {
 
         String fileName = searchParameters.getFastaFile().getName().split("__")[1] + ".par";
         String fileId;
@@ -256,12 +256,12 @@ public abstract class ToolsHandler1 {
         List<OutputDataset> excList = galaxyToolClient.upload(request).getOutputs();
         if (excList != null && !excList.isEmpty()) {
             OutputDataset oDs = excList.get(0);
-            SystemDataSet ds = new SystemDataSet();
+            GalaxyFileObject ds = new GalaxyFileObject();
             ds.setName(oDs.getName());
             ds.setHistoryId(workHistoryId);
             ds.setGalaxyId(oDs.getId());
             ds.setDownloadUrl(galaxyURL + "/datasets/" + ds.getGalaxyId() + "/display");
-            GalaxyFile userFolderfile = new GalaxyFile(userFolder, ds, false);
+            GalaxyTransferableFile userFolderfile = new GalaxyTransferableFile(userFolder, ds, false);
             searchSetiingsFilesMap.put(ds.getGalaxyId(), userFolderfile);
             File updated = new File(userFolder, ds.getGalaxyId());
             try {

@@ -5,6 +5,16 @@
         <listener-class>com.uib.web.peptideshaker.listeners.VaadinSessionListener</listener-class>
     </listener>
     <context-param>
+        <description>Test user API key for galaxy   </description>
+        <param-name>galaxyServerUrl</param-name>
+        <param-value>http://129.177.231.63:8081/galaxy/</param-value>
+    </context-param>
+    <context-param>
+        <description>Test user API key for galaxy   </description>
+        <param-name>testUserAPIKey</param-name>
+        <param-value>ab84003e53c247bd7e2ca7ec949ab2cb</param-value>
+    </context-param>
+    <context-param>
         <description>exported files folder url D:\users_temp_files /home/yehia/users_temp_files    /home/probe/user/CSF-PR-FILES    </description>
         <param-name>filesURL</param-name>
         <param-value>D:\users_temp_files</param-value>

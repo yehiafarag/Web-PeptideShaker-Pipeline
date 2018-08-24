@@ -1,11 +1,13 @@
-package com.uib.web.peptideshaker.galaxy;
+package archive;
 
-import com.uib.web.peptideshaker.galaxy.dataobjects.GalaxyFile;
-import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDataset;
-import com.uib.web.peptideshaker.galaxy.dataobjects.SystemDataSet;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyTransferableFile;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyFileObject;
 import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
 import com.github.jmchilton.blend4j.galaxy.GalaxyInstance;
-import com.uib.web.peptideshaker.presenter.layouts.GalaxyConnectionPanelLayout;
+import archive.GalaxyConnectionPanelLayout;
+import com.uib.web.peptideshaker.galaxy.utilities.GalaxyHistoryHandler;
+import com.uib.web.peptideshaker.galaxy.utilities.GalaxyToolsHandler;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
@@ -40,20 +42,20 @@ import pl.exsio.plupload.PluploadFile;
  */
 public abstract class InteractiveGalaxyLayer {
 
-    private final HorizontalLayout galaxyConnectionPanel;
-    private final PopupView connectionSettingsPanel;
+//    private final HorizontalLayout galaxyConnectionPanel;
+//    private final PopupView connectionSettingsPanel;
 
     /**
      * Galaxy server history management system
      *
      */
-    private HistoryHandler historyHandler;
+    private GalaxyHistoryHandler historyHandler;
 
     /**
      * Galaxy server tools management handler
      *
      */
-    private ToolsHandler toolsHandler;
+    private GalaxyToolsHandler toolsHandler;
 
     private File userFolder;
 
@@ -61,56 +63,12 @@ public abstract class InteractiveGalaxyLayer {
 
     private final GalaxyConnectionPanelLayout galaxyConnectionSettingsPanel;
 
-    private final Button connectionBtn;
+//    private final Button connectionBtn;
 
     /**
      * Constructor to initialise Galaxy layer.
      */
     public InteractiveGalaxyLayer() {
-
-        galaxyConnectionPanel = new HorizontalLayout();
-        galaxyConnectionPanel.setHeight(60, Sizeable.Unit.PIXELS);
-        galaxyConnectionPanel.setWidth(100, Sizeable.Unit.PERCENTAGE);
-        galaxyConnectionPanel.setSpacing(true);
-
-        Label connectionStatuesLabel = new Label("Galaxy is<font color='red'>  not connected </font><font size='3' color='red'> " + FontAwesome.FROWN_O.getHtml() + "</font>");
-        connectionStatuesLabel.setContentMode(ContentMode.HTML);
-
-        connectionStatuesLabel.setHeight(25, Sizeable.Unit.PIXELS);
-        connectionStatuesLabel.setWidth(160, Sizeable.Unit.PIXELS);
-        connectionStatuesLabel.setStyleName(ValoTheme.LABEL_SMALL);
-        connectionStatuesLabel.addStyleName(ValoTheme.LABEL_BOLD);
-        connectionStatuesLabel.addStyleName(ValoTheme.LABEL_TINY);
-        connectionStatuesLabel.addStyleName(ValoTheme.LABEL_NO_MARGIN);
-        galaxyConnectionPanel.addComponent(connectionStatuesLabel);
-        galaxyConnectionPanel.setComponentAlignment(connectionStatuesLabel, Alignment.BOTTOM_LEFT);
-
-        HorizontalLayout galaxyConnectionBtnContainer = new HorizontalLayout();
-        galaxyConnectionBtnContainer.setWidthUndefined();
-        galaxyConnectionBtnContainer.setHeight(100, Sizeable.Unit.PERCENTAGE);
-        galaxyConnectionBtnContainer.setSpacing(false);
-        galaxyConnectionPanel.addComponent(galaxyConnectionBtnContainer);
-        galaxyConnectionPanel.setComponentAlignment(galaxyConnectionBtnContainer, Alignment.BOTTOM_RIGHT);
-
-        connectionBtn = new Button("Connect");
-        connectionBtn.setDisableOnClick(true);
-        connectionBtn.setStyleName("galaxybtn");
-        connectionBtn.addStyleName(ValoTheme.BUTTON_LINK);
-        connectionBtn.setDescription("Connect / Disconnect to Galaxy server");
-        connectionBtn.addStyleName(ValoTheme.LABEL_NO_MARGIN);
-        connectionBtn.setWidth(150, Sizeable.Unit.PIXELS);
-        connectionBtn.setHeight(25, Sizeable.Unit.PIXELS);
-        galaxyConnectionBtnContainer.addComponent(connectionBtn);
-        galaxyConnectionBtnContainer.setComponentAlignment(connectionBtn, Alignment.BOTTOM_RIGHT);
-
-        VerticalLayout settingBtn = new VerticalLayout();
-        settingBtn.addStyleName("settingbtn");
-        settingBtn.setDescription("Galaxy server settings");
-        settingBtn.setWidth(25, Sizeable.Unit.PIXELS);
-        settingBtn.setHeight(25, Sizeable.Unit.PIXELS);
-        galaxyConnectionBtnContainer.addComponent(settingBtn);
-        galaxyConnectionBtnContainer.setComponentAlignment(settingBtn, Alignment.BOTTOM_RIGHT);
-
         String userDataFolderUrl = VaadinSession.getCurrent().getAttribute("userDataFolderUrl") + "";
         galaxyConnectionSettingsPanel = new GalaxyConnectionPanelLayout() {
             @Override
@@ -140,41 +98,42 @@ public abstract class InteractiveGalaxyLayer {
                         if (!checkConn(galaxyURL)) {
                             systemDisconnected();
                             galaxyConnectionSettingsPanel.disconnectGalaxy();
-                            connectionBtn.setEnabled(true);
+//                            connectionBtn.setEnabled(true);
                             Notification.show("Error in connection check the web address", Notification.Type.ERROR_MESSAGE);
                             return;
                         }
                         System.out.println("at galaxy I ");
-                        toolsHandler = new ToolsHandler(Galaxy_Instance.getToolsClient(), Galaxy_Instance.getWorkflowsClient(), Galaxy_Instance.getHistoriesClient()) {
+                        toolsHandler = new GalaxyToolsHandler(Galaxy_Instance.getToolsClient(), Galaxy_Instance.getWorkflowsClient(), Galaxy_Instance.getHistoriesClient()) {
                             @Override
-                            public void updateHistoryDatastructure() {
+                            public void synchronizeDataWithGalaxyServer() {
                                 historyHandler.updateHistory();
                             }
 
                         };
                         
                         System.out.println("at galaxy II ");
-                        historyHandler = new HistoryHandler(Galaxy_Instance, userFolder) {
+                        historyHandler = new GalaxyHistoryHandler() {
                             @Override
-                            public void systemIsBusy(boolean busy, Map<String, SystemDataSet> historyFilesMap) {
+                            public void synchronizeDataWithGalaxyServer(boolean busy, Map<String, GalaxyFileObject> historyFilesMap) {
                                 //update history in the system 
                                 jobsInProgress(busy, historyFilesMap);
                             }
 
-                        };//    
+                        };//  
+                        historyHandler.connectToGalaxy(Galaxy_Instance, userFolder);
                         System.out.println("at galaxy III");
-                        connectionBtn.setCaption("Disconnect");
-                        connectionBtn.addStyleName("disconnect");
-                        connectionStatuesLabel.setValue("Galaxy is <font color='green'>connected </font><font size='3' color='green'> " + FontAwesome.SMILE_O.getHtml() + "</font>");
+//                        connectionBtn.setCaption("Disconnect");
+//                        connectionBtn.addStyleName("disconnect");
+//                        connectionStatuesLabel.setValue("Galaxy is <font color='green'>connected </font><font size='3' color='green'> " + FontAwesome.SMILE_O.getHtml() + "</font>");
                         systemConnected();
                     } else {
                         System.out.println("at null galaxy");
-                        connectionSettingsPanel.setPopupVisible(true);
+//                        connectionSettingsPanel.setPopupVisible(true);
                         historyHandler = null;
                         toolsHandler = null;
                         systemDisconnected();
                     }
-                    connectionBtn.setEnabled(true);
+//                    connectionBtn.setEnabled(true);
                 } catch (Exception exp) {
                     Thread t = new Thread(() -> {
                         try {
@@ -192,43 +151,43 @@ public abstract class InteractiveGalaxyLayer {
 
             @Override
             public void hideGalaxyPanel() {
-                connectionSettingsPanel.setPopupVisible(false);
+//                connectionSettingsPanel.setPopupVisible(false);
             }
 
         };
-        connectionSettingsPanel = new PopupView(null, galaxyConnectionSettingsPanel);
-        connectionSettingsPanel.setSizeFull();
-        connectionSettingsPanel.setHideOnMouseOut(false);
-        settingBtn.addComponent(connectionSettingsPanel);
+//        connectionSettingsPanel = new PopupView(null, galaxyConnectionSettingsPanel);
+//        connectionSettingsPanel.setSizeFull();
+//        connectionSettingsPanel.setHideOnMouseOut(false);
+//        settingBtn.addComponent(connectionSettingsPanel);
 
-        connectionBtn.addClickListener((Button.ClickEvent event) -> {
-
-            if (connectionBtn.getCaption().equalsIgnoreCase("Disconnect")) {
-                //disconnect from galaxy
-                connectionBtn.setCaption("Connect");
-                connectionBtn.removeStyleName("disconnect");
-                connectionStatuesLabel.setValue("Galaxy is<font color='red'>  not connected </font><font size='3' color='red'> " + FontAwesome.FROWN_O.getHtml() + "</font>");
-                galaxyConnectionSettingsPanel.disconnectGalaxy();
-                historyHandler = null;
-                toolsHandler = null;
-                connectionBtn.setEnabled(true);
-                UI.getCurrent().getSession().close();
-                VaadinSession.getCurrent().getSession().invalidate();
-                Page.getCurrent().reload();
-
-            } else {
+//        connectionBtn.addClickListener((Button.ClickEvent event) -> {
+//
+//            if (connectionBtn.getCaption().equalsIgnoreCase("Disconnect")) {
+//                //disconnect from galaxy
+//                connectionBtn.setCaption("Connect");
+//                connectionBtn.removeStyleName("disconnect");
+//                connectionStatuesLabel.setValue("Galaxy is<font color='red'>  not connected </font><font size='3' color='red'> " + FontAwesome.FROWN_O.getHtml() + "</font>");
+//                galaxyConnectionSettingsPanel.disconnectGalaxy();
+//                historyHandler = null;
+//                toolsHandler = null;
+//                connectionBtn.setEnabled(true);
+//                UI.getCurrent().getSession().close();
+//                VaadinSession.getCurrent().getSession().invalidate();
+//                Page.getCurrent().reload();
+//
+//            } else {
                 //connect to galaxy
                 galaxyConnectionSettingsPanel.validateAndConnect();
-            }
-
-        });
-
-    }
-
-    public Layout getGalaxyConnectionPanel() {
-        return galaxyConnectionPanel;
+//            }
+//
+//        });
 
     }
+
+//    public Layout getGalaxyConnectionPanel() {
+//        return galaxyConnectionPanel;
+//
+//    }
 
 //    /**
 //     * Connect to Galaxy server
@@ -256,7 +215,7 @@ public abstract class InteractiveGalaxyLayer {
      *
      * @return searchSettingsFilesMap
      */
-    public Map<String, GalaxyFile> getSearchSettingsFilesMap() {
+    public Map<String, GalaxyTransferableFile> getSearchSettingsFilesMap() {
         if (historyHandler != null) {
             return historyHandler.getSearchSettingsFilesMap();
         } else {
@@ -282,7 +241,7 @@ public abstract class InteractiveGalaxyLayer {
      *
      * @return fastaFilesMap
      */
-    public Map<String, SystemDataSet> getFastaFilesMap() {
+    public Map<String, GalaxyFileObject> getFastaFilesMap() {
         if (historyHandler != null) {
             return historyHandler.getFastaFilesMap();
         } else {
@@ -295,7 +254,7 @@ public abstract class InteractiveGalaxyLayer {
      *
      * @return fastaFilesMap
      */
-    public Map<String, SystemDataSet> getHistoryFilesMap() {
+    public Map<String, GalaxyFileObject> getHistoryFilesMap() {
         if (historyHandler != null) {
             return historyHandler.getHistoryFilesMap();
         } else {
@@ -305,7 +264,7 @@ public abstract class InteractiveGalaxyLayer {
 
     public boolean checkToolsAvailable() {
 
-        return toolsHandler.isValidTools();
+        return toolsHandler.isToolsAvailable();
     }
 
     /**
@@ -314,7 +273,7 @@ public abstract class InteractiveGalaxyLayer {
      * @return mgfFilesMap
      *
      */
-    public Map<String, SystemDataSet> getMgfFilesMap() {
+    public Map<String, GalaxyFileObject> getMgfFilesMap() {
         if (historyHandler != null) {
             return historyHandler.getMgfFilesMap();
         } else {
@@ -347,7 +306,7 @@ public abstract class InteractiveGalaxyLayer {
      * @param fileName search parameters file name
      * @param searchParameters searchParameters .par file
      */
-    public Map<String, GalaxyFile> saveSearchGUIParameters(SearchParameters searchParameters, boolean editMode) {
+    public Map<String, GalaxyTransferableFile> saveSearchGUIParameters(SearchParameters searchParameters, boolean editMode) {
 
         if (toolsHandler != null) {
             return toolsHandler.saveSearchGUIParameters(galaxyURL, userFolder, historyHandler.getSearchSettingsFilesMap(), historyHandler.getWorkingHistoryId(), searchParameters, editMode);
@@ -371,11 +330,11 @@ public abstract class InteractiveGalaxyLayer {
         mgfIdsList.forEach((mgfId) -> {
             mgfMap.put(mgfId, historyHandler.getMgfFilesMap().get(mgfId).getName());
         });
-        PeptideShakerVisualizationDataset tempWorkflowOutput = toolsHandler.executeWorkFlow(projectName, fastaFileId, mgfMap, searchEnginesList, historyHandler.getWorkingHistoryId(), searchParameters, otherSearchParameters);
-        toolsHandler.updateHistoryDatastructure();
+        PeptideShakerVisualizationDataset tempWorkflowOutput = toolsHandler.executeWorkFlow(projectName, fastaFileId, mgfMap, searchEnginesList, historyHandler.getWorkingHistoryId(), searchParameters);
+        toolsHandler.synchronizeDataWithGalaxyServer();
     }
 
-    public void deleteDataset(SystemDataSet ds) {
+    public void deleteDataset(GalaxyFileObject ds) {
         if (ds.getType().equalsIgnoreCase("Web Peptide Shaker Dataset")) {
             PeptideShakerVisualizationDataset vDs = (PeptideShakerVisualizationDataset) ds;
 //            toolsHandler.deleteDataset(galaxyURL, vDs.getHistoryId(), vDs.getCpsId());
@@ -393,7 +352,7 @@ public abstract class InteractiveGalaxyLayer {
 
     public boolean sendDataToNels(String historyId, String datasetGalaxyId) {
         boolean check = toolsHandler.sendToNels(historyId, datasetGalaxyId, galaxyURL);
-        toolsHandler.updateHistoryDatastructure();
+        toolsHandler.synchronizeDataWithGalaxyServer();
         return check;
 
     }
@@ -406,11 +365,12 @@ public abstract class InteractiveGalaxyLayer {
     public boolean uploadToGalaxy(PluploadFile[] toUploadFiles) {
         return toolsHandler.uploadToGalaxy(historyHandler.getWorkingHistoryId(), toUploadFiles);
 
-    }public abstract void jobsInProgress(boolean inprogress, Map<String, SystemDataSet> historyFilesMap);
+    }
+    public abstract void jobsInProgress(boolean inprogress, Map<String, GalaxyFileObject> historyFilesMap);
 
     public void reConnectToGalaxy(String APIKEy, String galaxyUrl) {
         galaxyConnectionSettingsPanel.reConnectToGalaxy(APIKEy, galaxyUrl);
-        connectionBtn.click();
+//        connectionBtn.click();
 
     }
 

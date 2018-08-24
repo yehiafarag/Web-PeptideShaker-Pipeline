@@ -1,7 +1,7 @@
 package com.uib.web.peptideshaker.presenter;
 
 import com.uib.web.peptideshaker.presenter.core.ViewableFrame;
-import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDataset;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.DatasetVisulizationLevelContainer;
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.ProteinVisulizationLevelContainer;
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.SelectionManager;
@@ -41,7 +41,7 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
     private PSMVisulizationLevelContainer psmVisulizationLevelContainer;
 
     /**
-     * Initialize the web tool main attributes
+     * Initialise the web tool main attributes
      *
      */
     public InteractivePSPRojectResultsPresenter() {

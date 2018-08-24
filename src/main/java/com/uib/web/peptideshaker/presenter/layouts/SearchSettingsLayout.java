@@ -7,7 +7,7 @@ import com.compomics.util.experiment.identification.identification_parameters.Pt
 import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
 import com.compomics.util.experiment.massspectrometry.Charge;
 import com.compomics.util.preferences.DigestionPreferences;
-import com.uib.web.peptideshaker.galaxy.dataobjects.SystemDataSet;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyFileObject;
 import com.uib.web.peptideshaker.presenter.core.DropDownList;
 import com.uib.web.peptideshaker.presenter.core.MultiSelectOptionGroup;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
@@ -21,8 +21,11 @@ import com.uib.web.peptideshaker.presenter.core.form.SparkLine;
 import com.vaadin.data.Property;
 import com.vaadin.data.validator.DoubleRangeValidator;
 import com.vaadin.data.validator.IntegerRangeValidator;
+import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
@@ -44,58 +47,146 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+//need to be documeneted
 /**
- * This class represents the search settings form layout
+ * This class represents the search settings input form layout
  *
  * @author Yehia Farag
  */
 public abstract class SearchSettingsLayout extends VerticalLayout {
 
-//    private final SearchParameters searchParameters;
-    /**
-     * The sequence factory.
-     */
-//    private final SequenceFactory sequenceFactory = SequenceFactory.getInstance();
     /**
      * The enzyme factory.
      */
     private final EnzymeFactory enzymeFactory = EnzymeFactory.getInstance();
-  
-    
     /**
      * Convenience array for ion type selection.
      */
-    private final List<String> ions = new ArrayList(Arrays.asList(new String[]{"a", "b", "c","x", "y", "z"}));
+    private final List<String> ions = new ArrayList(Arrays.asList(new String[]{"a", "b", "c", "x", "y", "z"}));
     /**
      * The post translational modifications factory.
      */
     private final PTMFactory PTM = PTMFactory.getInstance();
-
+    /**
+     * The common modifications list.
+     */
     private final Set<String> commonModificationIds;
+    /**
+     * The selected fixed modifications table.
+     */
     private Table fixedModificationTable;
+    /**
+     * The selected variable modifications table.
+     */
     private Table variableModificationTable;
+    /**
+     * The full modifications list table.
+     */
     private Table allModificationsTable;
+    /**
+     * The most selected modifications list table.
+     */
     private Table mostUsedModificationsTable;
-    private Button toFixedModBtn;
-    private Button toVariableModBtn;
-    private Button fromVariableModBtn;
-    private Button fromFixedModBtn;
+    /**
+     * The add to fixed modification table button.
+     */
+    private Button addToFixedModificationTableBtn;
+    /**
+     * The add to fixed modification table button.
+     */
+    private Button addToVariableModificationTableBtn;
+    /**
+     * The remove from fixed modification table button.
+     */
+    private Button removeFromVariableModificationTableBtn;
+    /**
+     * The remove from fixed modification table button.
+     */
+    private Button removeFromFixedModificationTableBtn;
+    /**
+     * The modification items that is used for initialise modifications tables.
+     */
     private final Map<Object, Object[]> completeModificationItems = new LinkedHashMap<>();
     /**
-     * Select FASTA file drop-down list .
+     * Select FASTA file drop-down list from available FAST files.
      */
     private final DropDownList fastaFileList;
+    /**
+     * Map Galaxy if for FASTA file to FAST files name.
+     */
     private Map<String, String> fastaFileIdToNameMap;
     /**
      * Create decoy database file list.
      */
-    private final MultiSelectOptionGroup databaseOptionList;
-
-    private HorizontalLabelTextField searchSettingsName;
-    private String paramFileId;
+    private final MultiSelectOptionGroup createDecoyDatabaseOptionList;
+    /**
+     * Search parameter file name input field.
+     */
+    private final HorizontalLabelTextField searchParametersFileNameInputField;
+    /**
+     * Selected parameter file .par file galaxy id.
+     */
+    private String parameterFileId;
+    /**
+     * Protein digestion options list.
+     */
+    private HorizontalLabelDropDounList digestionList;
+    /**
+     * Protein enzymes options list.
+     */
+    private HorizontalLabelDropDounList enzymeList;
+    /**
+     * Protein digestion specificity options list.
+     */
+    private HorizontalLabelDropDounList specificityList;
+    /**
+     * Maximum number of miss cleavages input field.
+     */
+    private HorizontalLabelTextField maxMissCleavages;
+    /**
+     * Fragment ions types selection (forward and rewind) input selection.
+     */
+    private HorizontalLabel2DropdownList fragmentIonTypes;
+    /**
+     * Precursor m/z Tolerance value and type input selection.
+     */
+    private HorizontalLabelTextFieldDropdownList precursorTolerance;
+    /**
+     * Fragment m/z Tolerance value and type input selection.
+     */
+    private HorizontalLabelTextFieldDropdownList fragmentTolerance;
+    /**
+     * Precursor Charge (minimum to maximum) value input fields.
+     */
+    private HorizontalLabel2TextField precursorCharge;
+    /**
+     * Isotopes (minimum to maximum) value input fields.
+     */
+    private HorizontalLabel2TextField isotopes;
+    /**
+     * Search Parameters object that is used to initialise parameter file
+     * (.par).
+     */
+    private SearchParameters searchParameters;
+    /**
+     * Search Parameters file (.par) is new or modified.
+     */
+    private boolean isNew = true;
+    /**
+     * Coordinate view of sub panels in mobile and small screen mode.
+     */
+    private final LayoutEvents.LayoutClickListener viewCoordinatorListener;    
+   /**
+     * Modification container layout.
+     */
+    private final HorizontalLayout modificationContainer;
+    /**
+     *Protease fragmentation container layout.
+     */
+    private final   GridLayout proteaseFragmentationContainer;
 
     /**
-     * Constructor to initialize the main setting parameters
+     * Constructor to initialise the main setting parameters.
      */
     public SearchSettingsLayout() {
         SearchSettingsLayout.this.setMargin(true);
@@ -116,22 +207,39 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         titleLayout.setExpandRatio(setteingsLabel, 20);
 
         PopupWindow advancedSearchOption = new PopupWindow("(Advanced Settings)");
-        advancedSearchOption.setContent( initAdvancedSearchOption());
+        advancedSearchOption.setContent(initAdvancedSearchOption());
+        advancedSearchOption.setDescription("Not supported yet!");
         advancedSearchOption.setSizeFull();
         advancedSearchOption.addStyleName("centerwindow");
         titleLayout.addComponent(advancedSearchOption);
         titleLayout.setComponentAlignment(advancedSearchOption, Alignment.MIDDLE_LEFT);
         titleLayout.setExpandRatio(advancedSearchOption, 80);
+        advancedSearchOption.setEnabled(false);
+
+        Button closeIconBtn = new Button("Close");
+        closeIconBtn.setIcon(VaadinIcons.CLOSE_SMALL, "Close window");
+        closeIconBtn.setStyleName(ValoTheme.BUTTON_SMALL);
+        closeIconBtn.addStyleName(ValoTheme.BUTTON_TINY);
+        closeIconBtn.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+        closeIconBtn.addStyleName("centerbackground");
+        closeIconBtn.setHeight(25, Unit.PIXELS);
+        closeIconBtn.setWidth(25, Unit.PIXELS);
+
+        closeIconBtn.addClickListener((Button.ClickEvent event) -> {
+            cancel();
+        });
+        titleLayout.addComponent(closeIconBtn);
+        titleLayout.setComponentAlignment(closeIconBtn, Alignment.TOP_RIGHT);
 
         VerticalLayout upperPanel = new VerticalLayout();
         upperPanel.setWidth(100, Unit.PERCENTAGE);
         upperPanel.addStyleName("subpanelframe");
         SearchSettingsLayout.this.addComponent(upperPanel);
 
-        searchSettingsName = new HorizontalLabelTextField("<b>Search Settings Name</b>", "New Searching Settings Name", null);
-        searchSettingsName.setWidth(60, Unit.PERCENTAGE);
-        searchSettingsName.setRequired(true);
-        upperPanel.addComponent(searchSettingsName);
+        searchParametersFileNameInputField = new HorizontalLabelTextField("<b>Search Settings Name</b>", "New Searching Settings Name", null);
+        searchParametersFileNameInputField.setWidth(60, Unit.PERCENTAGE);
+        searchParametersFileNameInputField.setRequired(true);
+        upperPanel.addComponent(searchParametersFileNameInputField);
 
         HorizontalLayout protDatabaseContainer = new HorizontalLayout();
         protDatabaseContainer.setWidthUndefined();
@@ -141,44 +249,116 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         protDatabaseContainer.addComponent(fastaFileList);
         fastaFileList.setRequired(true, "Select FASTA file");
         fastaFileList.addStyleName("paddingleft-20");
-        databaseOptionList = new MultiSelectOptionGroup(null, false);
+        createDecoyDatabaseOptionList = new MultiSelectOptionGroup(null, false);
 
-        protDatabaseContainer.addComponent(databaseOptionList);
-        protDatabaseContainer.setComponentAlignment(databaseOptionList, Alignment.BOTTOM_LEFT);
+        protDatabaseContainer.addComponent(createDecoyDatabaseOptionList);
+        protDatabaseContainer.setComponentAlignment(createDecoyDatabaseOptionList, Alignment.BOTTOM_LEFT);
         Map<String, String> paramMap = new LinkedHashMap<>();
         paramMap.put("create_decoy", "Add Decoy Sequences");
-//        paramMap.put("use_gene_mapping", "Use Gene Mappings (UniProt databases only)");
-//        paramMap.put("update_gene_mapping", "Update gene mappings automatically from Ensembl (UniProt databases only)");
 
-        databaseOptionList.updateList(paramMap);
-        databaseOptionList.setSelectedValue("create_decoy");
-        databaseOptionList.setViewList(true);
+        createDecoyDatabaseOptionList.updateList(paramMap);
+        createDecoyDatabaseOptionList.setSelectedValue("create_decoy");
+        createDecoyDatabaseOptionList.setViewList(true);
 
-        HorizontalLayout modificationContainer = inititModificationLayout();
+        modificationContainer = inititModificationLayout();
         modificationContainer.addStyleName("subpanelframe");
         SearchSettingsLayout.this.addComponent(modificationContainer);
 
-        GridLayout proteaseFragmentationContainer = inititProteaseFragmentationLayout();
+        proteaseFragmentationContainer = inititProteaseFragmentationLayout();
         proteaseFragmentationContainer.addStyleName("subpanelframe");
         SearchSettingsLayout.this.addComponent(proteaseFragmentationContainer);
+
+        HorizontalLayout actionButtonsLayout = new HorizontalLayout();
+        actionButtonsLayout.setSizeFull();
+        actionButtonsLayout.addStyleName("subpanelframe");
+        SearchSettingsLayout.this.addComponent(actionButtonsLayout);
+
+        HorizontalLayout btnsContainer = new HorizontalLayout();
+        btnsContainer.setHeight(25, Unit.PIXELS);
+        btnsContainer.setWidth(55, Unit.PERCENTAGE);
+        actionButtonsLayout.addComponent(btnsContainer);
+        actionButtonsLayout.setComponentAlignment(btnsContainer, Alignment.MIDDLE_CENTER);
+
+        Button saveBtn = new Button("Save");
+        saveBtn.setStyleName(ValoTheme.BUTTON_SMALL);
+        saveBtn.addStyleName(ValoTheme.BUTTON_TINY);
+        saveBtn.setHeight(25, Unit.PIXELS);
+        saveBtn.setWidth(100, Unit.PERCENTAGE);
+        saveBtn.addClickListener((Button.ClickEvent event) -> {
+            if (this.isValidForm()) {
+                if (this.isModifiedForm()) {
+                    saveSearchingFile(updateSearchingFile(), isNew);
+                } else {
+                    cancel();
+                }
+            }
+        });
+        btnsContainer.addComponent(saveBtn);
+        Button closeBtn = new Button("Close");
+        closeBtn.setStyleName(ValoTheme.BUTTON_SMALL);
+        closeBtn.addStyleName(ValoTheme.BUTTON_TINY);
+        closeBtn.setHeight(25, Unit.PIXELS);
+        closeBtn.setWidth(100, Unit.PERCENTAGE);
+        closeBtn.addClickListener((Button.ClickEvent event) -> {
+            cancel();
+        });
+        btnsContainer.addComponent(closeBtn);
+
+        this.viewCoordinatorListener = (LayoutEvents.LayoutClickEvent event) -> {
+            Component comp = event.getClickedComponent();
+            if ((comp instanceof Label)) {
+                Label modificationLabel = (Label) ((VerticalLayout) modificationContainer.getComponent(0)).getComponent(0);
+                Label protFragLabel = (Label) (proteaseFragmentationContainer.getComponent(0, 0));
+                Label l = (Label) comp;
+                if (l.getData() != null) {
+                    Integer i = new Integer(l.getData().toString());
+                    if (i == 1) { //action on top label
+                        if (l.getValue().contains(VaadinIcons.ANGLE_DOUBLE_DOWN.getHtml())) { //hide top and show bottom
+                            modificationLabel.setValue(modificationLabel.getValue().replace(VaadinIcons.ANGLE_DOUBLE_DOWN.getHtml(), VaadinIcons.ANGLE_DOUBLE_RIGHT.getHtml()));
+                            protFragLabel.setValue(protFragLabel.getValue().replace(VaadinIcons.ANGLE_DOUBLE_RIGHT.getHtml(), VaadinIcons.ANGLE_DOUBLE_DOWN.getHtml()));
+                            modificationContainer.addStyleName("minimizelayout");
+                            proteaseFragmentationContainer.removeStyleName("minimizelayout");
+                        } else { //show top and hide bottom
+                            protFragLabel.setValue(protFragLabel.getValue().replace(VaadinIcons.ANGLE_DOUBLE_DOWN.getHtml(), VaadinIcons.ANGLE_DOUBLE_RIGHT.getHtml()));
+                            modificationLabel.setValue(modificationLabel.getValue().replace(VaadinIcons.ANGLE_DOUBLE_RIGHT.getHtml(), VaadinIcons.ANGLE_DOUBLE_DOWN.getHtml()));
+                            modificationContainer.removeStyleName("minimizelayout");
+                            proteaseFragmentationContainer.addStyleName("minimizelayout");
+                        }
+                    } else {//action on bottom label                        
+                        if (l.getValue().contains(VaadinIcons.ANGLE_DOUBLE_DOWN.getHtml())) { //hide bottom and show top
+                            protFragLabel.setValue(protFragLabel.getValue().replace(VaadinIcons.ANGLE_DOUBLE_DOWN.getHtml(), VaadinIcons.ANGLE_DOUBLE_RIGHT.getHtml()));
+                            modificationLabel.setValue(modificationLabel.getValue().replace(VaadinIcons.ANGLE_DOUBLE_RIGHT.getHtml(), VaadinIcons.ANGLE_DOUBLE_DOWN.getHtml()));
+                            modificationContainer.removeStyleName("minimizelayout");
+                            proteaseFragmentationContainer.addStyleName("minimizelayout");
+                        } else { //show bottom and hide top
+                            modificationLabel.setValue(modificationLabel.getValue().replace(VaadinIcons.ANGLE_DOUBLE_DOWN.getHtml(), VaadinIcons.ANGLE_DOUBLE_RIGHT.getHtml()));
+                            protFragLabel.setValue(protFragLabel.getValue().replace(VaadinIcons.ANGLE_DOUBLE_RIGHT.getHtml(), VaadinIcons.ANGLE_DOUBLE_DOWN.getHtml()));
+                            modificationContainer.addStyleName("minimizelayout");
+                            proteaseFragmentationContainer.removeStyleName("minimizelayout");
+                        }
+                    }
+                }
+            }
+        };
+
     }
 
-    public String getFastaFileId() {
-        return fastaFileList.getSelectedValue();
-    }
-
-    public void updateFastaFileList(Map<String, SystemDataSet> fastaFilesMap) {
-        fastaFileIdToNameMap = new LinkedHashMap<>();
-        String selectedId = "";
-        for (String id : fastaFilesMap.keySet()) {
-            fastaFileIdToNameMap.put(id, fastaFilesMap.get(id).getName());
-            selectedId = id;
-        }
-        fastaFileList.updateList(fastaFileIdToNameMap);
-        fastaFileList.setSelected(selectedId);
+    /**
+     * Initialise the layout for search advanced setting
+     *
+     * @todo: to be implemented
+     * @return initialised advanced search setting layout
+     */
+    private VerticalLayout initAdvancedSearchOption() {
+        return new VerticalLayout();
 
     }
 
+    /**
+     * Initialise the modifications layout
+     *
+     * @return initialised modification layout
+     */
     private HorizontalLayout inititModificationLayout() {
         HorizontalLayout modificationContainer = new HorizontalLayout();
         modificationContainer.setStyleName("panelframe");
@@ -194,10 +374,11 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         modificationContainer.addComponent(leftSideLayout);
         modificationContainer.setExpandRatio(leftSideLayout, 45);
 
-        Label modificationLabel = new Label("Modifications");
+        Label modificationLabel = new Label(VaadinIcons.ANGLE_DOUBLE_DOWN.getHtml() + "  Modifications", ContentMode.HTML);
         modificationLabel.setSizeFull();
         leftSideLayout.addComponent(modificationLabel);
         leftSideLayout.setExpandRatio(modificationLabel, 4);
+        modificationLabel.setData("1");
 
         HorizontalLayout leftTopLayout = new HorizontalLayout();
         leftTopLayout.setSizeFull();
@@ -232,30 +413,30 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         middleSideLayout.setComponentAlignment(sideTopButtons, Alignment.BOTTOM_CENTER);
         middleSideLayout.setExpandRatio(sideTopButtons, 48);
 
-        toFixedModBtn = new Button(VaadinIcons.ARROW_LEFT);
-        toFixedModBtn.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
-        sideTopButtons.addComponent(toFixedModBtn);
-        sideTopButtons.setComponentAlignment(toFixedModBtn, Alignment.BOTTOM_CENTER);
+        addToFixedModificationTableBtn = new Button(VaadinIcons.ARROW_LEFT);
+        addToFixedModificationTableBtn.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
+        sideTopButtons.addComponent(addToFixedModificationTableBtn);
+        sideTopButtons.setComponentAlignment(addToFixedModificationTableBtn, Alignment.BOTTOM_CENTER);
 
-        fromFixedModBtn = new Button(VaadinIcons.ARROW_RIGHT);
-        fromFixedModBtn.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
-        sideTopButtons.addComponent(fromFixedModBtn);
-        sideTopButtons.setComponentAlignment(fromFixedModBtn, Alignment.MIDDLE_CENTER);
+        removeFromFixedModificationTableBtn = new Button(VaadinIcons.ARROW_RIGHT);
+        removeFromFixedModificationTableBtn.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
+        sideTopButtons.addComponent(removeFromFixedModificationTableBtn);
+        sideTopButtons.setComponentAlignment(removeFromFixedModificationTableBtn, Alignment.MIDDLE_CENTER);
 
         VerticalLayout sideBottomButtons = new VerticalLayout();
         middleSideLayout.addComponent(sideBottomButtons);
         middleSideLayout.setComponentAlignment(sideBottomButtons, Alignment.BOTTOM_CENTER);
         middleSideLayout.setExpandRatio(sideBottomButtons, 48);
 
-        toVariableModBtn = new Button(VaadinIcons.ARROW_LEFT);
-        toVariableModBtn.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
-        sideBottomButtons.addComponent(toVariableModBtn);
-        sideBottomButtons.setComponentAlignment(toVariableModBtn, Alignment.MIDDLE_CENTER);
+        addToVariableModificationTableBtn = new Button(VaadinIcons.ARROW_LEFT);
+        addToVariableModificationTableBtn.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
+        sideBottomButtons.addComponent(addToVariableModificationTableBtn);
+        sideBottomButtons.setComponentAlignment(addToVariableModificationTableBtn, Alignment.MIDDLE_CENTER);
 
-        fromVariableModBtn = new Button(VaadinIcons.ARROW_RIGHT);
-        fromVariableModBtn.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
-        sideBottomButtons.addComponent(fromVariableModBtn);
-        sideBottomButtons.setComponentAlignment(fromVariableModBtn, Alignment.MIDDLE_CENTER);
+        removeFromVariableModificationTableBtn = new Button(VaadinIcons.ARROW_RIGHT);
+        removeFromVariableModificationTableBtn.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
+        sideBottomButtons.addComponent(removeFromVariableModificationTableBtn);
+        sideBottomButtons.setComponentAlignment(removeFromVariableModificationTableBtn, Alignment.MIDDLE_CENTER);
 
         VerticalLayout rightSideLayout = new VerticalLayout();
         rightSideLayout.setSizeFull();
@@ -299,11 +480,9 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
             completeModificationItems.put(allModiList.get(x), modificationArr);
         }
         rightSideLayout.addComponent(mostUsedModificationsTable);
-        for (Object id : completeModificationItems.keySet()) {
-            if (commonModificationIds.contains(id.toString())) {
-                mostUsedModificationsTable.addItem(completeModificationItems.get(id), id);
-            }
-        }
+        completeModificationItems.keySet().stream().filter((id) -> (commonModificationIds.contains(id.toString()))).forEachOrdered((id) -> {
+            mostUsedModificationsTable.addItem(completeModificationItems.get(id), id);
+        });
         mostUsedModificationsTable.setCaption("(" + mostUsedModificationsTable.getItemIds().size() + ")");
         mostUsedModificationsTable.setVisible(false);
         rightSideLayout.setExpandRatio(mostUsedModificationsTable, 96);
@@ -316,24 +495,16 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
             allModificationsTable.removeAllItems();
             mostUsedModificationsTable.removeAllItems();
             if (modificationListControl.getValue().toString().equalsIgnoreCase("All Modifications")) {
-                for (Object id : completeModificationItems.keySet()) {
-                    if (fixedModificationTable.containsId(id) || variableModificationTable.containsId(id)) {
-                        continue;
-                    }
+                completeModificationItems.keySet().stream().filter((id) -> !(fixedModificationTable.containsId(id) || variableModificationTable.containsId(id))).forEachOrdered((id) -> {
                     allModificationsTable.addItem(completeModificationItems.get(id), id);
-                }
+                });
                 allModificationsTable.setVisible(true);
                 mostUsedModificationsTable.setVisible(false);
 
             } else {
-                for (Object id : completeModificationItems.keySet()) {
-                    if (fixedModificationTable.containsId(id) || variableModificationTable.containsId(id)) {
-                        continue;
-                    }
-                    if (commonModificationIds.contains(id.toString())) {
-                        mostUsedModificationsTable.addItem(completeModificationItems.get(id), id);
-                    }
-                }
+                completeModificationItems.keySet().stream().filter((id) -> !(fixedModificationTable.containsId(id) || variableModificationTable.containsId(id))).filter((id) -> (commonModificationIds.contains(id.toString()))).forEachOrdered((id) -> {
+                    mostUsedModificationsTable.addItem(completeModificationItems.get(id), id);
+                });
 
                 allModificationsTable.setVisible(false);
                 mostUsedModificationsTable.setVisible(true);
@@ -344,7 +515,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
             mostUsedModificationsTable.setCaption("(" + mostUsedModificationsTable.getItemIds().size() + ")");
             allModificationsTable.setCaption("(" + allModificationsTable.getItemIds().size() + ")");
         });
-        toFixedModBtn.addClickListener((Button.ClickEvent event) -> {
+        addToFixedModificationTableBtn.addClickListener((Button.ClickEvent event) -> {
             Table selectionTable;
             if (allModificationsTable.isVisible()) {
                 selectionTable = allModificationsTable;
@@ -352,17 +523,18 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
                 selectionTable = mostUsedModificationsTable;
             }
             Set<Object> selection = ((Set<Object>) selectionTable.getValue());
-            for (Object id : selection) {
+            selection.stream().map((id) -> {
                 selectionTable.removeItem(id);
+                return id;
+            }).forEachOrdered((id) -> {
                 fixedModificationTable.addItem(completeModificationItems.get(id), id);
-
-            }
+            });
             fixedModificationTable.sort(new Object[]{"name"}, new boolean[]{true});
             fixedModificationTable.setCaption("Fixed Modifications (" + fixedModificationTable.getItemIds().size() + ")");
             selectionTable.setCaption("(" + selectionTable.getItemIds().size() + ")");
 
         });
-        fromFixedModBtn.addClickListener((Button.ClickEvent event) -> {
+        removeFromFixedModificationTableBtn.addClickListener((Button.ClickEvent event) -> {
             Table selectionTable;
             if (allModificationsTable.isVisible()) {
                 selectionTable = allModificationsTable;
@@ -370,17 +542,18 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
                 selectionTable = mostUsedModificationsTable;
             }
             Set<Object> selection = ((Set<Object>) fixedModificationTable.getValue());
-            for (Object id : selection) {
+            selection.stream().map((id) -> {
                 fixedModificationTable.removeItem(id);
+                return id;
+            }).forEachOrdered((id) -> {
                 selectionTable.addItem(completeModificationItems.get(id), id);
-
-            }
+            });
             selectionTable.sort(new Object[]{"name"}, new boolean[]{true});
             fixedModificationTable.setCaption("Fixed Modifications (" + fixedModificationTable.getItemIds().size() + ")");
             selectionTable.setCaption("(" + selectionTable.getItemIds().size() + ")");
 
         });
-        toVariableModBtn.addClickListener((Button.ClickEvent event) -> {
+        addToVariableModificationTableBtn.addClickListener((Button.ClickEvent event) -> {
             Table selectionTable;
             if (allModificationsTable.isVisible()) {
                 selectionTable = allModificationsTable;
@@ -388,17 +561,18 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
                 selectionTable = mostUsedModificationsTable;
             }
             Set<Object> selection = ((Set<Object>) selectionTable.getValue());
-            for (Object id : selection) {
+            selection.stream().map((id) -> {
                 selectionTable.removeItem(id);
+                return id;
+            }).forEachOrdered((id) -> {
                 variableModificationTable.addItem(completeModificationItems.get(id), id);
-
-            }
+            });
             variableModificationTable.sort(new Object[]{"name"}, new boolean[]{true});
             variableModificationTable.setCaption("Variable Modifications (" + variableModificationTable.getItemIds().size() + ")");
             selectionTable.setCaption("(" + selectionTable.getItemIds().size() + ")");
 
         });
-        fromVariableModBtn.addClickListener((Button.ClickEvent event) -> {
+        removeFromVariableModificationTableBtn.addClickListener((Button.ClickEvent event) -> {
             Table selectionTable;
             if (allModificationsTable.isVisible()) {
                 selectionTable = allModificationsTable;
@@ -406,11 +580,12 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
                 selectionTable = mostUsedModificationsTable;
             }
             Set<Object> selection = ((Set<Object>) variableModificationTable.getValue());
-            for (Object id : selection) {
+            selection.stream().map((id) -> {
                 variableModificationTable.removeItem(id);
+                return id;
+            }).forEachOrdered((id) -> {
                 selectionTable.addItem(completeModificationItems.get(id), id);
-
-            }
+            });
             selectionTable.sort(new Object[]{"name"}, new boolean[]{true});
             variableModificationTable.setCaption("Variable Modifications (" + variableModificationTable.getItemIds().size() + ")");
             selectionTable.setCaption("(" + selectionTable.getItemIds().size() + ")");
@@ -422,11 +597,11 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
 
     }
 
-    private VerticalLayout initAdvancedSearchOption() {
-        return new VerticalLayout();
-
-    }
-
+    /**
+     * Initialise the modifications tables
+     *
+     * @return initialised modification table
+     */
     private Table initModificationTable(String cap) {
         Table modificationsTable = new Table(cap) {
             DecimalFormat df = new DecimalFormat("#.##");
@@ -450,9 +625,15 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         modificationsTable.addStyleName("smalltable");
         modificationsTable.setMultiSelect(true);
         modificationsTable.setSelectable(true);
-        modificationsTable.addContainerProperty("color", ColorLabel.class, null, "", null, Table.Align.CENTER);
-        modificationsTable.addContainerProperty("name", String.class, null, "Name", null, Table.Align.LEFT);
-        modificationsTable.addContainerProperty("mass", SparkLine.class, null, "Mass", null, Table.Align.LEFT);
+        modificationsTable
+                .addContainerProperty("color", ColorLabel.class,
+                        null, "", null, Table.Align.CENTER);
+        modificationsTable
+                .addContainerProperty("name", String.class,
+                        null, "Name", null, Table.Align.LEFT);
+        modificationsTable
+                .addContainerProperty("mass", SparkLine.class,
+                        null, "Mass", null, Table.Align.LEFT);
         modificationsTable.setColumnExpandRatio("color", 10);
         modificationsTable.setColumnExpandRatio("name", 55);
         modificationsTable.setColumnExpandRatio("mass", 35);
@@ -462,30 +643,24 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         return modificationsTable;
     }
 
-    private HorizontalLabelDropDounList digestionList;
-    private HorizontalLabelDropDounList enzymeList;
-    private HorizontalLabelDropDounList specificityList;
-    private HorizontalLabelTextField maxMissCleav;
-    private HorizontalLabel2DropdownList fragmentIonTypes;
-    private HorizontalLabelTextFieldDropdownList precursorTolerance;
-    private HorizontalLabelTextFieldDropdownList fragmentTolerance;
-    private HorizontalLabel2TextField precursorCharge;
-    private HorizontalLabel2TextField isotopes;
-    private SearchParameters searchParameters;
-    private boolean editMode = false;
-
+    /**
+     * Initialise the Protease and Fragmentation layout
+     *
+     * @return initialised layout
+     */
     private GridLayout inititProteaseFragmentationLayout() {
         GridLayout proteaseFragmentationContainer = new GridLayout(2, 6);
         proteaseFragmentationContainer.setStyleName("panelframe");
         proteaseFragmentationContainer.setColumnExpandRatio(0, 55);
         proteaseFragmentationContainer.setColumnExpandRatio(1, 45);
-        proteaseFragmentationContainer.setMargin(new MarginInfo(false, false, false, false));
+        proteaseFragmentationContainer.setMargin(new MarginInfo(false, false, true, false));
         proteaseFragmentationContainer.setWidth(700, Unit.PIXELS);
-        proteaseFragmentationContainer.setHeight(190, Unit.PIXELS);
+        proteaseFragmentationContainer.setHeight(205, Unit.PIXELS);
         proteaseFragmentationContainer.setSpacing(true);
 
-        Label label = new Label("Protease & Fragmentation");
+        Label label = new Label(VaadinIcons.ANGLE_DOUBLE_DOWN.getHtml() + "  Protease & Fragmentation", ContentMode.HTML);
         label.setSizeFull();
+        label.setData(2);
         proteaseFragmentationContainer.addComponent(label, 0, 0);
 
         Set<String> digestionOptionList = new LinkedHashSet<>();
@@ -499,21 +674,21 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
             if (digestionList.getSelectedValue().equalsIgnoreCase("Enzyme")) {
                 enzymeList.setEnabled(true);
                 specificityList.setEnabled(true);
-                maxMissCleav.setEnabled(true);
+                maxMissCleavages.setEnabled(true);
             } else {
-                maxMissCleav.setEnabled(false);
+                maxMissCleavages.setEnabled(false);
                 enzymeList.setEnabled(false);
                 specificityList.setEnabled(false);
-            } 
+            }
 
         });
 
         enzymeList = new HorizontalLabelDropDounList("Enzyme");
         Set<String> enzList = new LinkedHashSet<>();
         List<Enzyme> enzObjList = enzymeFactory.getEnzymes();
-        for (Enzyme enz : enzObjList) {
+        enzObjList.forEach((enz) -> {
             enzList.add(enz.getName());
-        }
+        });
         enzymeList.updateData(enzList);
         Set<String> specificityOptionList = new LinkedHashSet<>();
         specificityOptionList.add("Specific");
@@ -523,7 +698,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
 
         specificityList = new HorizontalLabelDropDounList("Specificity");
         specificityList.updateData(specificityOptionList);
-        maxMissCleav = new HorizontalLabelTextField("Max Missed Cleavages", 2, new IntegerRangeValidator("Error", Integer.MIN_VALUE, Integer.MAX_VALUE));
+        maxMissCleavages = new HorizontalLabelTextField("Max Missed Cleavages", 2, new IntegerRangeValidator("Error", Integer.MIN_VALUE, Integer.MAX_VALUE));
 
         Set<String> ionListI = new LinkedHashSet<>();
         ionListI.add("a");
@@ -539,7 +714,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         proteaseFragmentationContainer.addComponent(enzymeList, 0, 2);
         proteaseFragmentationContainer.addComponent(specificityList, 0, 3);
 
-        proteaseFragmentationContainer.addComponent(maxMissCleav, 0, 4);
+        proteaseFragmentationContainer.addComponent(maxMissCleavages, 0, 4);
         proteaseFragmentationContainer.addComponent(fragmentIonTypes, 0, 5);
 
         Set<String> mzToleranceList = new LinkedHashSet<>();
@@ -559,61 +734,63 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         isotopes = new HorizontalLabel2TextField("Isotopes", 0, 1, new IntegerRangeValidator("Error", Integer.MIN_VALUE, Integer.MAX_VALUE));
         proteaseFragmentationContainer.addComponent(isotopes, 1, 4);
 
-        HorizontalLayout btnsContainer = new HorizontalLayout();
-        btnsContainer.setHeight(25, Unit.PIXELS);
-        btnsContainer.setWidth(55, Unit.PERCENTAGE);
-        proteaseFragmentationContainer.addComponent(btnsContainer, 1, 5);
-        proteaseFragmentationContainer.setComponentAlignment(btnsContainer, Alignment.MIDDLE_RIGHT);
-
-        Button saveBtn = new Button("Save");
-        saveBtn.setStyleName(ValoTheme.BUTTON_SMALL);
-        saveBtn.addStyleName(ValoTheme.BUTTON_TINY);
-        saveBtn.setHeight(25, Unit.PIXELS);
-        saveBtn.setWidth(100, Unit.PERCENTAGE);
-        saveBtn.addClickListener((Button.ClickEvent event) -> {
-            if (this.isValidForm()) {
-                if (this.isModifiedForm()) {
-                    saveSearchingFile(updateSearchingFile(), editMode);
-                } else {
-                    cancel();
-                }
-            }
-        });
-        btnsContainer.addComponent(saveBtn);
-        Button closeBtn = new Button("Close");
-        closeBtn.setStyleName(ValoTheme.BUTTON_SMALL);
-        closeBtn.addStyleName(ValoTheme.BUTTON_TINY);
-        closeBtn.setHeight(25, Unit.PIXELS);
-        closeBtn.setWidth(100, Unit.PERCENTAGE);
-        closeBtn.addClickListener((Button.ClickEvent event) -> {
-            cancel();
-        });
-        btnsContainer.addComponent(closeBtn);
-
         return proteaseFragmentationContainer;
 
     }
 
+    /**
+     * Get selected FASTA file galaxy id
+     *
+     * @return FASTA file Galaxy id
+     */
+    public String getFastaFileId() {
+        return fastaFileList.getSelectedValue();
+    }
+
+    /**
+     * Update selection list for FASTA files
+     *
+     * @param fastaFilesMap Map of FASTA files galaxy ID and FASTA Files dataset
+     */
+    public void updateFastaFileList(Map<String, GalaxyFileObject> fastaFilesMap) {
+        fastaFileIdToNameMap = new LinkedHashMap<>();
+        String selectedId = "";
+        for (String id : fastaFilesMap.keySet()) {
+            fastaFileIdToNameMap.put(id, fastaFilesMap.get(id).getName());
+            selectedId = id;
+        }
+        fastaFileList.updateList(fastaFileIdToNameMap);
+        fastaFileList.setSelected(selectedId);
+
+    }
+
+    /**
+     * Update search input forms based on user selection (add/edit) from search
+     * files drop-down list
+     *
+     * @param searchParameters search parameter object from selected parameter
+     * file
+     * @param paramFileId Parameter file galaxy id
+     */
     public void updateForms(SearchParameters searchParameters, String paramFileId) {
         this.searchParameters = searchParameters;
-
         if (searchParameters.getFastaFile() != null) {
-            editMode = true;
-            this.paramFileId = paramFileId;
+            isNew = false;
+            this.parameterFileId = paramFileId;
             String[] fileInfo = searchParameters.getFastaFile().getName().split("__");
             if (fileInfo.length == 4) {
-                searchSettingsName.setSelectedValue(fileInfo[1]);
+                searchParametersFileNameInputField.setSelectedValue(fileInfo[1]);
                 if (Boolean.valueOf(fileInfo[2])) {
-                    databaseOptionList.setSelectedValue("create_decoy");
+                    createDecoyDatabaseOptionList.setSelectedValue("create_decoy");
                 } else {
-                    databaseOptionList.setSelectedValue(new HashSet<>());
+                    createDecoyDatabaseOptionList.setSelectedValue(new HashSet<>());
                 }
             }
         } else {
-            editMode = false;
-            this.paramFileId = "New_File";
-            searchSettingsName.setSelectedValue(null);
-            databaseOptionList.setSelectedValue("create_decoy");
+            isNew = true;
+            this.parameterFileId = "New_File";
+            searchParametersFileNameInputField.setSelectedValue(null);
+            createDecoyDatabaseOptionList.setSelectedValue("create_decoy");
 
         }
 
@@ -621,7 +798,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
             digestionList.setSelected(searchParameters.getDigestionPreferences().getCleavagePreference().toString());
             enzymeList.setSelected(searchParameters.getDigestionPreferences().getEnzymes().get(0).getName());
             specificityList.setSelected(searchParameters.getDigestionPreferences().getSpecificity(searchParameters.getDigestionPreferences().getEnzymes().get(0).getName()));
-            maxMissCleav.setSelectedValue(searchParameters.getDigestionPreferences().getnMissedCleavages(searchParameters.getDigestionPreferences().getEnzymes().get(0).getName()));
+            maxMissCleavages.setSelectedValue(searchParameters.getDigestionPreferences().getnMissedCleavages(searchParameters.getDigestionPreferences().getEnzymes().get(0).getName()));
             fragmentIonTypes.setSelectedI(ions.get(searchParameters.getForwardIons().get(0)));
             fragmentIonTypes.setSelectedII(ions.get(searchParameters.getRewindIons().get(0)));
             precursorTolerance.setTextValue(searchParameters.getPrecursorAccuracy());
@@ -636,28 +813,24 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
             mostUsedModificationsTable.removeAllItems();
             variableModificationTable.removeAllItems();
             fixedModificationTable.removeAllItems();
-            for (Object id : completeModificationItems.keySet()) {
-                if (commonModificationIds.contains(id.toString())) {
-                    mostUsedModificationsTable.addItem(completeModificationItems.get(id), id);
-                }
-            }
+            completeModificationItems.keySet().stream().filter((id) -> (commonModificationIds.contains(id.toString()))).forEachOrdered((id) -> {
+                mostUsedModificationsTable.addItem(completeModificationItems.get(id), id);
+            });
 
             ArrayList<String> vm = searchParameters.getPtmSettings().getVariableModifications();
             mostUsedModificationsTable.setValue(vm);
-            toVariableModBtn.click();
+            addToVariableModificationTableBtn.click();
             ArrayList<String> fm = searchParameters.getPtmSettings().getFixedModifications();
             mostUsedModificationsTable.setValue(fm);
-            toFixedModBtn.click();
+            addToFixedModificationTableBtn.click();
 
         } else {
             variableModificationTable.removeAllItems();
             fixedModificationTable.removeAllItems();
             mostUsedModificationsTable.removeAllItems();
-            for (Object id : completeModificationItems.keySet()) {
-                if (commonModificationIds.contains(id.toString())) {
-                    mostUsedModificationsTable.addItem(completeModificationItems.get(id), id);
-                }
-            }
+            completeModificationItems.keySet().stream().filter((id) -> (commonModificationIds.contains(id.toString()))).forEachOrdered((id) -> {
+                mostUsedModificationsTable.addItem(completeModificationItems.get(id), id);
+            });
             enzymeList.setSelected("Trypsin");
             digestionList.setSelected("Enzyme");
             specificityList.setSelected("Specific");
@@ -678,20 +851,43 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
 
         mostUsedModificationsTable.setCaption("(" + mostUsedModificationsTable.getItemIds().size() + ")");
         allModificationsTable.setCaption("(" + allModificationsTable.getItemIds().size() + ")");
+        
+        if (((boolean) VaadinSession.getCurrent().getAttribute("smallscreenstyle"))) {
+            modificationContainer.setHeight(270, Unit.PIXELS);
+            modificationContainer.addLayoutClickListener(viewCoordinatorListener);
+            proteaseFragmentationContainer.addLayoutClickListener(viewCoordinatorListener);
+            Label modificationLabel = (Label) ((VerticalLayout) modificationContainer.getComponent(0)).getComponent(0);
+            Label protFragLabel = (Label) (proteaseFragmentationContainer.getComponent(0, 0));
+            protFragLabel.setValue(protFragLabel.getValue().replace(VaadinIcons.ANGLE_DOUBLE_DOWN.getHtml(), VaadinIcons.ANGLE_DOUBLE_RIGHT.getHtml()));
+            modificationLabel.setValue(modificationLabel.getValue().replace(VaadinIcons.ANGLE_DOUBLE_RIGHT.getHtml(), VaadinIcons.ANGLE_DOUBLE_DOWN.getHtml()));
+            modificationContainer.removeStyleName("minimizelayout");
+            proteaseFragmentationContainer.addStyleName("minimizelayout");
+        }
 
     }
 
+    /**
+     * Validate input forms before save the results on Galaxy server
+     *
+     * @return is valid data user inputs
+     */
     public boolean isValidForm() {
         return (digestionList.isValid())
                 && enzymeList.isValid()
                 && specificityList.isValid()
-                && maxMissCleav.isValid()
+                && maxMissCleavages.isValid()
                 && fragmentIonTypes.isValid()
                 && precursorTolerance.isValid()
                 && fragmentTolerance.isValid()
-                && precursorCharge.isValid() && isotopes.isValid() && searchSettingsName.isValid() && fastaFileList.isValid();
+                && precursorCharge.isValid() && isotopes.isValid() && searchParametersFileNameInputField.isValid() && fastaFileList.isValid();
     }
 
+    /**
+     * The search forms is new or just modified forms for pre exist parameter
+     * file
+     *
+     * @return is file new or modified
+     */
     public boolean isModifiedForm() {
 
         Set<Object> idSet = (Set<Object>) variableModificationTable.getData();
@@ -709,34 +905,41 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         return (testFixedMod || testVarMod || digestionList.isModified())
                 || enzymeList.isModified()
                 || specificityList.isModified()
-                || maxMissCleav.isModified()
+                || maxMissCleavages.isModified()
                 || fragmentIonTypes.isModified()
                 || precursorTolerance.isModified()
                 || fragmentTolerance.isModified()
                 || precursorCharge.isModified()
                 || isotopes.isModified()
-                || searchSettingsName.isModified()
+                || searchParametersFileNameInputField.isModified()
                 || fastaFileList.isModified()
-                || databaseOptionList.isModified();
+                || createDecoyDatabaseOptionList.isModified();
 
     }
 
+    /**
+     * Updating search parameters object from user input selection before save
+     * it into .par file and store it on Galaxy server
+     *
+     * @return updates search parameters object that will be use for creating
+     * .par file
+     */
     private SearchParameters updateSearchingFile() {
 
         PtmSettings ptmSettings = new PtmSettings();
-        for (Object modificationId : fixedModificationTable.getItemIds()) {
+        fixedModificationTable.getItemIds().forEach((modificationId) -> {
             ptmSettings.addFixedModification(PTM.getPTM(modificationId.toString()));
-        }
-        for (Object modificationId : variableModificationTable.getItemIds()) {
+        });
+        variableModificationTable.getItemIds().forEach((modificationId) -> {
             ptmSettings.addVariableModification(PTM.getPTM(modificationId.toString()));
-        }
+        });
         searchParameters.setPtmSettings(ptmSettings);
         DigestionPreferences digPref = new DigestionPreferences();
         ArrayList<Enzyme> enzymes = new ArrayList<>();
         enzymes.add(enzymeFactory.getEnzyme(enzymeList.getSelectedValue()));
         digPref.setEnzymes(enzymes);
         digPref.setSpecificity(enzymeList.getSelectedValue(), DigestionPreferences.Specificity.valueOf(specificityList.getSelectedValue().toLowerCase()));
-        digPref.setnMissedCleavages(enzymeList.getSelectedValue(), Integer.valueOf(maxMissCleav.getSelectedValue()));
+        digPref.setnMissedCleavages(enzymeList.getSelectedValue(), Integer.valueOf(maxMissCleavages.getSelectedValue()));
         digPref.setCleavagePreference(DigestionPreferences.CleavagePreference.valueOf(digestionList.getSelectedValue().toLowerCase().replace("uns", "unS").replace("le p", "leP")));
         searchParameters.setDigestionPreferences(digPref);
         ArrayList<Integer> forwardIonsv = new ArrayList<>();
@@ -755,19 +958,26 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
 
         searchParameters.setMinIsotopicCorrection(Integer.valueOf(isotopes.getFirstSelectedValue()));
         searchParameters.setMaxIsotopicCorrection(Integer.valueOf(isotopes.getSecondSelectedValue()));
-        searchParameters.setFastaFile(new File(fastaFileList.getSelectedValue() + "__" + searchSettingsName.getSelectedValue() + "__" + ("[create_decoy]".equalsIgnoreCase(databaseOptionList.getSelectedValue() + "")) + "__" + paramFileId));
+        searchParameters.setFastaFile(new File(fastaFileList.getSelectedValue() + "__" + searchParametersFileNameInputField.getSelectedValue() + "__" + ("[create_decoy]".equalsIgnoreCase(createDecoyDatabaseOptionList.getSelectedValue() + "")) + "__" + parameterFileId));
         return searchParameters;
 
     }
 
-    public String getSettingsName() {
-        return searchSettingsName.getSelectedValue();
-    }
-
+    /**
+     * Get updated Search parameters object
+     *
+     * @return updated search parameters object
+     */
     public SearchParameters getSearchParameters() {
         return searchParameters;
     }
 
+    /**
+     * Get Selected FASTA file name
+     *
+     * @param fastaFileID FASTA file Galaxy ID
+     * @return FASTA file name
+     */
     public String getFastaFileName(String fastaFileID) {
         if (fastaFileIdToNameMap != null && fastaFileIdToNameMap.containsKey(fastaFileID)) {
             return fastaFileIdToNameMap.get(fastaFileID);
@@ -776,8 +986,20 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         }
     }
 
-    public abstract void saveSearchingFile(SearchParameters searchParameters, boolean edit);
+    /**
+     * Save user search input parameters into .par file and store it on Galaxy
+     * server
+     *
+     * @param searchParameters updated search parameters object that is used to
+     * create .par file
+     * @param isNew store the search parameters object in new file or over write
+     * existing .par file
+     */
+    public abstract void saveSearchingFile(SearchParameters searchParameters, boolean isNew);
 
+    /**
+     * cancel add/edit search parameters input process*
+     */
     public abstract void cancel();
 
 }

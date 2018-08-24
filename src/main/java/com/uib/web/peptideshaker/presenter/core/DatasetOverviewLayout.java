@@ -2,7 +2,7 @@ package com.uib.web.peptideshaker.presenter.core;
 
 import com.compomics.util.experiment.biology.PTMFactory;
 import com.compomics.util.preferences.IdentificationParameters;
-import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDataset;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
 import com.uib.web.peptideshaker.presenter.core.form.ColorLabel;
 import com.uib.web.peptideshaker.presenter.core.form.Horizontal2Label;
 import com.uib.web.peptideshaker.presenter.core.form.SparkLine;

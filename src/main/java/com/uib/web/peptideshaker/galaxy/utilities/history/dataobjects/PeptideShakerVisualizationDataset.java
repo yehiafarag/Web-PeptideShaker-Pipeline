@@ -1,5 +1,6 @@
-package com.uib.web.peptideshaker.galaxy.dataobjects;
+package com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects;
 
+import com.uib.web.peptideshaker.galaxy.utilities.history.GalaxyFastaFileReader;
 import com.compomics.util.experiment.biology.AminoAcidPattern;
 import com.compomics.util.experiment.biology.Enzyme;
 import com.compomics.util.experiment.biology.EnzymeFactory;
@@ -15,7 +16,7 @@ import com.compomics.util.io.SerializationUtils;
 import com.compomics.util.preferences.IdentificationParameters;
 import com.compomics.util.preferences.SequenceMatchingPreferences;
 import com.google.common.collect.Sets;
-import com.uib.web.peptideshaker.galaxy.GalaxyDatasetServingUtil;
+import com.uib.web.peptideshaker.galaxy.utilities.history.GalaxyDatasetServingUtil;
 import com.uib.web.peptideshaker.model.core.ModificationMatrix;
 import com.uib.web.peptideshaker.presenter.pscomponents.SpectrumInformation;
 import java.io.BufferedReader;
@@ -58,25 +59,25 @@ import org.codehaus.jettison.json.JSONObject;
  *
  * @author Yehia Farag
  */
-public class PeptideShakerVisualizationDataset extends SystemDataSet implements Comparable<PeptideShakerVisualizationDataset> {
+public class PeptideShakerVisualizationDataset extends GalaxyFileObject implements Comparable<PeptideShakerVisualizationDataset> {
 
     private final String projectName;
     private final File user_folder;
     private final String galaxyUrl;
     private final String apiKey;
-    private SystemDataSet searchGUIFileDs;
+    private GalaxyFileObject searchGUIFileDs;
     private String orgFastaFileId;
-    private final Map<String, SystemDataSet> mgfFiles;
+    private final Map<String, GalaxyFileObject> mgfFiles;
     private String zipFileId;
     private String file_ext;
-    private GalaxyFile fasta_file;
-    private GalaxyFile proteins_file;
-    private GalaxyFile peptides_file;
-    private GalaxyFile psm_file;
-    private  GalaxyFile zip_file ;
+    private GalaxyTransferableFile fasta_file;
+    private GalaxyTransferableFile proteins_file;
+    private GalaxyTransferableFile peptides_file;
+    private GalaxyTransferableFile psm_file;
+    private  GalaxyTransferableFile zip_file ;
     private String enzyme;
     private GalaxyFastaFileReader fastaFileReader;
-    private final Map<String, GalaxyFile> mgfFilesIndexers;
+    private final Map<String, GalaxyTransferableFile> mgfFilesIndexers;
     private final Map<String, MgfIndex> importedMgfFilesIndexers;
 
     private final String[] proteinEvedence = new String[]{"Not Available", "Protein", "Transcript", "Homology", "Predicted", "Uncertain"};
@@ -100,6 +101,14 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
     private Thread zipFolderThread;
     private Thread psmFileThread;
 
+    /**
+     *
+     * @param projectName
+     * @param user_folder
+     * @param galaxyUrl
+     * @param apiKey
+     * @param galaxyDatasetServingUtil
+     */
     public PeptideShakerVisualizationDataset(String projectName, File user_folder, String galaxyUrl, String apiKey, GalaxyDatasetServingUtil galaxyDatasetServingUtil) {
         this.projectName = projectName;
         this.user_folder = user_folder;
@@ -122,6 +131,10 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
         this.galaxyDatasetServingUtil = galaxyDatasetServingUtil;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getSearchEngines() {
         if (searchGUIFileDs != null) {
             return searchGUIFileDs.getOverview().split("DB:")[0];
@@ -129,6 +142,10 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
         return "";
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isDecoyDBAdded() {
         if (searchGUIFileDs != null) {
             return searchGUIFileDs.getOverview().contains("Creating decoy database");
@@ -136,6 +153,10 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
         return false;
     }
 
+    /**
+     *
+     * @return
+     */
     @Override
     public String getStatus() {
         if (searchGUIFileDs == null) {
@@ -147,28 +168,52 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
         return this.status;
     }
 
+    /**
+     *
+     * @param status
+     */
     @Override
     public void setStatus(String status) {
         this.status = status;
     }
 
+    /**
+     *
+     * @return
+     */
     public List<String> getOutputsIds() {
         return outputsIds;
     }
 
+    /**
+     *
+     * @param outputsIds
+     */
     public void setOutputsIds(List<String> outputsIds) {
         this.outputsIds = outputsIds;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getProjectName() {
         return projectName;
     }
 
-    public SystemDataSet getSearchGUIFile() {
+    /**
+     *
+     * @return
+     */
+    public GalaxyFileObject getSearchGUIFile() {
         return searchGUIFileDs;
     }
 
-    public void setSearchGUIFile(SystemDataSet searchGUIFileDs) {
+    /**
+     *
+     * @param searchGUIFileDs
+     */
+    public void setSearchGUIFile(GalaxyFileObject searchGUIFileDs) {
         this.searchGUIFileDs = searchGUIFileDs;
         if (zip_file != null) {
             initMgfIndexFiles();
@@ -181,13 +226,13 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
         for (String str : searchGUIFileDs.getOverview().split("Spectrums:")) {
             if (str.contains("API:")) {
                 String key = "data/" + str.split("\\(API:")[0].trim() + ".cui";
-                SystemDataSet ds = new SystemDataSet();
+                GalaxyFileObject ds = new GalaxyFileObject();
                 ds.setName(this.projectName + "-CUI");
                 ds.setType("MGF Index File");
                 ds.setGalaxyId(zipFileId + "__" + key);
                 ds.setHistoryId(zip_file.getHistoryId());
                 ds.setDownloadUrl(galaxyUrl + "/api/histories/" + zip_file.getHistoryId()+ "/contents/" + zip_file.getGalaxyId() + "/display?key=" + apiKey);
-                GalaxyFile index_file = new GalaxyFile(user_folder, ds, true);
+                GalaxyTransferableFile index_file = new GalaxyTransferableFile(user_folder, ds, true);
                 index_file.setDownloadUrl("to_ext=" + file_ext);
                 mgfFilesIndexers.put(key, index_file);
             }
@@ -195,12 +240,12 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
 
 //        for (String key : filesList) {
 //            if (key.endsWith("mgf.cui")) {
-//                ds = new SystemDataSet();
+//                ds = new GalaxyFileObject();
 //                ds.setName(this.projectName + "-CUI");
 //                ds.setType("MGF Index File");
 //                ds.setGalaxyId(zipFileId + "__" + key);
 //                ds.setDownloadUrl(galaxyUrl + "/api/histories/" + this.getHistoryId() + "/contents/" + zipFileId + "/display?key=" + apiKey);
-//                GalaxyFile index_file = new GalaxyFile(user_folder, ds, true);
+//                GalaxyTransferableFile index_file = new GalaxyTransferableFile(user_folder, ds, true);
 //                index_file.setDownloadUrl("to_ext=" + file_ext);
 //                mgfFilesIndexers.put(key, index_file);
 ////                index_file.getFile();
@@ -209,10 +254,18 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
 //        }
     }
 
+    /**
+     *
+     * @return
+     */
     public String getOrgFastaFileId() {
         return orgFastaFileId;
     }
 
+    /**
+     *
+     * @return
+     */
     public IdentificationParameters getSearchingParameters() {
 
         if (searchGUIFileDs == null || (!getStatus().equalsIgnoreCase("ok"))) {
@@ -225,26 +278,51 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
         return identificationParameters;
     }
 
-    public Map<String, SystemDataSet> getMgfFiles() {
+    /**
+     *
+     * @return
+     */
+    public Map<String, GalaxyFileObject> getMgfFiles() {
         return mgfFiles;
     }
 
-    public void addMgfFiles(String mgfFileID, SystemDataSet mgfDs) {
+    /**
+     *
+     * @param mgfFileID
+     * @param mgfDs
+     */
+    public void addMgfFiles(String mgfFileID, GalaxyFileObject mgfDs) {
         this.mgfFiles.put(mgfFileID, mgfDs);
     }
 
+    /**
+     *
+     * @return
+     */
     public String getFile_ext() {
         return file_ext;
     }
 
+    /**
+     *
+     * @param file_ext
+     */
     public void setFile_ext(String file_ext) {
         this.file_ext = file_ext;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getZipFileId() {
         return zipFileId;
     }
 
+    /**
+     *
+     * @param zipFileId
+     */
     public void setZipFileId(String zipFileId) {
         this.zipFileId = zipFileId;
         zipFolderThread = new Thread(() -> {
@@ -256,47 +334,47 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
 
     private void initialiseDataFiles(String zipFileId) {
         //validate zipFile
-        SystemDataSet ds = new SystemDataSet();
+        GalaxyFileObject ds = new GalaxyFileObject();
         ds.setName(this.projectName + "-ZIP");
         ds.setType("ZIP File");
         ds.setGalaxyId(zipFileId);
         ds.setDownloadUrl(galaxyUrl + "/api/histories/" + this.getHistoryId() + "/contents/" + zipFileId + "/display?key=" + apiKey);
         ds.setStatus(this.status);
-        zip_file = new GalaxyFile(user_folder, ds, true);
+        zip_file = new GalaxyTransferableFile(user_folder, ds, true);
         zip_file.setDownloadUrl("to_ext=" + file_ext);
         zip_file.setHistoryId(this.getHistoryId());
         //init fasta file 
-        ds = new SystemDataSet();
+        ds = new GalaxyFileObject();
         ds.setName(this.projectName + "-FASTA");
         ds.setType("FASTA File");
         ds.setGalaxyId(zipFileId + "__data/input_database.fasta");
         ds.setDownloadUrl(galaxyUrl + "/api/histories/" + this.getHistoryId() + "/contents/" + zipFileId + "/display?key=" + apiKey);
-        fasta_file = new GalaxyFile(user_folder, ds, true);
+        fasta_file = new GalaxyTransferableFile(user_folder, ds, true);
         fasta_file.setDownloadUrl("to_ext=" + file_ext);
         //init protein file
-        ds = new SystemDataSet();
+        ds = new GalaxyFileObject();
         ds.setName(this.projectName + "-PROTEINS");
         ds.setType("Protein File");
         ds.setGalaxyId(zipFileId + "__reports/Default_Protein_Report.txt");
         ds.setDownloadUrl(galaxyUrl + "/api/histories/" + this.getHistoryId() + "/contents/" + zipFileId + "/display?key=" + apiKey);
-        proteins_file = new GalaxyFile(user_folder, ds, true);
+        proteins_file = new GalaxyTransferableFile(user_folder, ds, true);
         proteins_file.setDownloadUrl("to_ext=" + file_ext);
 //        proteins_file.getFile();
 
         //init peptides file
-        ds = new SystemDataSet();
+        ds = new GalaxyFileObject();
         ds.setName(this.projectName + "-PEPTIDES");
         ds.setType("Peptides File");
         ds.setGalaxyId(zipFileId + "__reports/Default_Peptide_Report.txt");
         ds.setDownloadUrl(galaxyUrl + "/api/histories/" + this.getHistoryId() + "/contents/" + zipFileId + "/display?key=" + apiKey);
-        peptides_file = new GalaxyFile(user_folder, ds, true);
+        peptides_file = new GalaxyTransferableFile(user_folder, ds, true);
         peptides_file.setDownloadUrl("to_ext=" + file_ext);
-        ds = new SystemDataSet();
+        ds = new GalaxyFileObject();
         ds.setName(this.projectName + "-PSM");
         ds.setType("PSM File");
         ds.setGalaxyId(zipFileId + "__reports/Default_PSM_Report.txt");
         ds.setDownloadUrl(galaxyUrl + "/api/histories/" + this.getHistoryId() + "/contents/" + zipFileId + "/display?key=" + apiKey);
-        psm_file = new GalaxyFile(user_folder, ds, true);
+        psm_file = new GalaxyTransferableFile(user_folder, ds, true);
         psm_file.setDownloadUrl("to_ext=" + file_ext);
         if (searchGUIFileDs != null) {
             initMgfIndexFiles();
@@ -304,18 +382,34 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
 
     }
 
-    public GalaxyFile getFastaFile() {
+    /**
+     *
+     * @return
+     */
+    public GalaxyTransferableFile getFastaFile() {
         return fasta_file;
     }
 
-    public GalaxyFile getPsmFile() {
+    /**
+     *
+     * @return
+     */
+    public GalaxyTransferableFile getPsmFile() {
         return psm_file;
     }
 
-    public GalaxyFile getPeptideFile() {
+    /**
+     *
+     * @return
+     */
+    public GalaxyTransferableFile getPeptideFile() {
         return peptides_file;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getFastaFileName() {
         if (searchGUIFileDs != null) {
             return searchGUIFileDs.getOverview().split("sequences:")[0].split("DB:")[1].trim();
@@ -324,6 +418,10 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
         return "Input_database.fasta";
     }
 
+    /**
+     *
+     * @return
+     */
     public ArrayList<String> getVariableModification() {
 
         if (identificationParameters == null) {
@@ -337,6 +435,10 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
         return variableModifications;
     }
 
+    /**
+     *
+     * @return
+     */
     public ArrayList<String> getFixedModification() {
         if (identificationParameters == null) {
             initIdintificationParameters();
@@ -393,16 +495,28 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
         return list;
     }
 
+    /**
+     *
+     * @param enzyme
+     */
     public void setEnzyme(String enzyme) {
         this.enzyme = enzyme;
     }
 
+    /**
+     *
+     * @return
+     */
     public boolean isValidFile() {
         return true;//(searchingParameters != null && zipFileId != null && mgfFilesIndexers.size() == mgfFiles.size());
 //        System.out.println("at files "+(proteinFileId == null )+"  "+(peptideFileId == null )+"||"+(searchGUIFileId == null )+"||"+( psmFileId == null )+"||"+( mgfFiles.isEmpty() )+"||"+( fastaFileName == null )+"||"+(mgfFilesIndexes.isEmpty()));
 //        return !(proteinFileId == null || peptideFileId == null || fastaFileName == null/*|| searchGUIFileId == null || psmFileId == null || mgfFiles.isEmpty()  || mgfFilesIndexes.isEmpty()*/);
     }
 
+    /**
+     *
+     * @param selectedIds
+     */
     public void setProteinInformation(Set<Comparable> selectedIds) {
         if (selectedIds == null || selectedIds.isEmpty() || selectedIds.contains(null + "") || processFastaFileTask.getFastaProteinSequenceMap() == null) {
             return;
@@ -428,6 +542,10 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
 
     }
 
+    /**
+     *
+     * @param protein
+     */
     public void setProteinInformation(ProteinObject protein) {
         ProteinSequence entry = processFastaFileTask.getFastaProteinSequenceMap().get(protein.getAccession());
         String[] descArr = entry.getDescription().split("\\s");
@@ -445,6 +563,9 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
     private Future fastaProcessFuture;
     private Future peptideProcessFuture;
 
+    /**
+     *
+     */
     public void processDataFiles() {
         while (zipFolderThread.isAlive()) {
             System.out.println("the thread is still alive");
@@ -480,6 +601,9 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
     }
     private boolean psmInitialized = false;
 
+    /**
+     *
+     */
     public void initializePsmFile() {
         while (!peptideProcessFuture.isDone()) {
             System.out.println("the peptideProcessFuture  is still alive");
@@ -503,6 +627,10 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
 //    
     }
 
+    /**
+     *
+     * @return
+     */
     public Map<String, ProteinObject> getProteinsMap() {
         try {
             while (!proteinProcessFuture.isDone()) {
@@ -515,6 +643,10 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
         return null;
     }
 
+    /**
+     *
+     * @return
+     */
     public Map<Object, PeptideObject> getPeptidesMap() {
         while (!peptideProcessFuture.isDone()) {
             try {
@@ -526,18 +658,34 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
         return processPeptidesTask.getPeptidesMap();
     }
 
+    /**
+     *
+     * @return
+     */
     public double getMaxMW() {
         return processProteinsTask.getMaxMW();
     }
 
+    /**
+     *
+     * @return
+     */
     public double getMaxMS2Quant() {
         return processProteinsTask.getMaxMS2Quant();
     }
 
+    /**
+     *
+     * @return
+     */
     public int getMaxPeptideNumber() {
         return processProteinsTask.getMaxPeptideNumber();
     }
 
+    /**
+     *
+     * @return
+     */
     public int getMaxPsmNumber() {
         return processProteinsTask.getMaxPsmNumber();
     }
@@ -586,10 +734,10 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
                 psm.setMeasuredCharge((arr[14]));
                 psm.setIdentificationCharge((arr[15]));
                 if (!arr[16].equalsIgnoreCase("")) {
-                    psm.setTheoriticalMass(Double.parseDouble(arr[16]));
+                    psm.setTheoreticalMass(Double.parseDouble(arr[16]));
                 }
                 if (!arr[17].equalsIgnoreCase("")) {
-                    psm.setIsotopNumber(Integer.parseInt(arr[17]));
+                    psm.setIsotopeNumber(Integer.parseInt(arr[17]));
                 }
                 if (!arr[18].equalsIgnoreCase("")) {
                     psm.setPrecursorMZError_PPM(Double.parseDouble(arr[18]));
@@ -629,6 +777,10 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
 
     }
 
+    /**
+     *
+     * @return
+     */
     public ModificationMatrix getModificationMatrix() {
         try {
             while (!peptideProcessFuture.isDone()) {
@@ -642,30 +794,59 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
         return null;
     }
 
+    /**
+     *
+     * @return
+     */
     public Map<Integer, Set<Comparable>> getChromosomeMap() {
         return processProteinsTask.getChromosomeMap();
     }
 
+    /**
+     *
+     * @return
+     */
     public Map<String, Set<Comparable>> getPiMap() {
         return processProteinsTask.getPIMap();
     }
 
+    /**
+     *
+     * @return
+     */
     public Map<String, Set<Comparable>> getProteinValidationMap() {
         return processProteinsTask.getProteinValidationMap();
     }
 
+    /**
+     *
+     * @return
+     */
     public TreeMap<Comparable, Set<Comparable>> getProteinPeptidesNumberMap() {
         return proteinPeptidesNumberMap;
     }
 
+    /**
+     *
+     * @return
+     */
     public TreeMap<Comparable, Set<Comparable>> getProteinPSMNumberMap() {
         return processProteinsTask.getProteinPSMNumberMap();
     }
 
+    /**
+     *
+     * @return
+     */
     public TreeMap<Comparable, Set<Comparable>> getProteinCoverageMap() {
         return processProteinsTask.getProteinCoverageMap();
     }
 
+    /**
+     *
+     * @param proteinKey
+     * @return
+     */
     public ProteinObject getProtein(String proteinKey) {
         checkAndUpdateProtein(proteinKey);
         if (processProteinsTask.getProteinsMap().containsKey(proteinKey)) {
@@ -679,6 +860,12 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
 
     }
 
+    /**
+     *
+     * @param protein
+     * @param accession
+     * @return
+     */
     public ProteinObject updateProteinInformation(ProteinObject protein, String accession) {
         if (protein == null) {
             if (processFastaFileTask.getFastaProteinMap().containsKey(accession)) {
@@ -810,6 +997,11 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
         return aminoAcidPattern.getIndexes(sequence, sequenceMatchingPreferences);
     }
 
+    /**
+     *
+     * @param proteinKey
+     * @return
+     */
     public Set<PeptideObject> getPeptides(String proteinKey) {
         if (processPeptidesTask.getProtein_peptide_Map().containsKey(proteinKey)) {
             return processPeptidesTask.getProtein_peptide_Map().get(proteinKey);
@@ -818,6 +1010,11 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
 
     }
 
+    /**
+     *
+     * @param peptideModifiedSequence
+     * @return
+     */
     public List<PSMObject> getPSM(String peptideModifiedSequence) {
         if (processPeptidesTask.getPsmMap().containsKey(peptideModifiedSequence)) {
             return processPeptidesTask.getPsmMap().get(peptideModifiedSequence);
@@ -828,12 +1025,12 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
     }
 
     private void initIdintificationParameters() {
-        SystemDataSet ds = new SystemDataSet();
+        GalaxyFileObject ds = new GalaxyFileObject();
         ds.setName(this.projectName + "-Param");
         ds.setType("Param File");
         ds.setGalaxyId(searchGUIFileDs.getGalaxyId() + "__SEARCHGUI_IdentificationParameters.par");
         ds.setDownloadUrl(galaxyUrl + "/api/histories/" + this.getHistoryId() + "/contents/" + searchGUIFileDs.getGalaxyId() + "/display?key=" + apiKey);
-        GalaxyFile file = new GalaxyFile(user_folder, ds, true);
+        GalaxyTransferableFile file = new GalaxyTransferableFile(user_folder, ds, true);
         file.setDownloadUrl("to_ext=" + file_ext);
         SearchParameters searchParameters = null;
         try {
@@ -848,6 +1045,12 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
         this.identificationParameters = new IdentificationParameters(searchParameters);
     }
 
+    /**
+     *
+     * @param psms
+     * @param peptideObject
+     * @return
+     */
     public Map<Object, SpectrumInformation> getSelectedPsmData(List<PSMObject> psms, PeptideObject peptideObject) {//SpectrumPlot plot
 
         if (identificationParameters == null) {
@@ -869,7 +1072,7 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
             MgfIndex mgfIndex = importedMgfFilesIndexers.get(selectedPsm.getSpectrumFile());
             String galaxyFileId = "";
             String galaxyHistoryId = "";
-            for (SystemDataSet ds : mgfFiles.values()) {
+            for (GalaxyFileObject ds : mgfFiles.values()) {
                 if (ds.getName().split("-")[1].equalsIgnoreCase(selectedPsm.getSpectrumFile())) {
                     galaxyFileId = ds.getGalaxyId();
                     galaxyHistoryId = ds.getHistoryId();
@@ -917,14 +1120,27 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
 
     }
 
+    /**
+     *
+     * @return
+     */
     public Date getJobDate() {
         return jobDate;
     }
 
+    /**
+     *
+     * @param jobDate
+     */
     public void setJobDate(Date jobDate) {
         this.jobDate = jobDate;
     }
 
+    /**
+     *
+     * @param t
+     * @return
+     */
     @Override
     public int compareTo(PeptideShakerVisualizationDataset t) {
         return this.jobDate.compareTo(t.jobDate);
@@ -958,7 +1174,7 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
             return protein_peptide_Map;
         }
 
-        public ProcessPeptidesTask(GalaxyFile peptides_file, Map<String, ProteinObject> proteinsMap, ConcurrentHashMap<String, Set<Comparable>> modificationMap) {
+        public ProcessPeptidesTask(GalaxyTransferableFile peptides_file, Map<String, ProteinObject> proteinsMap, ConcurrentHashMap<String, Set<Comparable>> modificationMap) {
 
             this.modificationMap = new ConcurrentHashMap<>();
             this.modificationMap.put("No Modification", new LinkedHashSet<>());
@@ -1072,7 +1288,7 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
         private int maxPeptideNumber = Integer.MIN_VALUE;
         private int maxPsmNumber = Integer.MIN_VALUE;
 
-        public ProcessProteinsTask(GalaxyFile proteins_file) {
+        public ProcessProteinsTask(GalaxyTransferableFile proteins_file) {
             this.protein_relatedProteins_Map = new HashMap<>();
             proteinsMap = new LinkedHashMap<>();
             this.PIMap = new LinkedHashMap<>();
@@ -1278,7 +1494,7 @@ public class PeptideShakerVisualizationDataset extends SystemDataSet implements 
         private final Map<Object, ProteinObject> fastaProteinMap;
         private LinkedHashMap<String, ProteinSequence> fastaProteinSequenceMap;
 
-        public ProcessFastaFileTask(GalaxyFile fasta_file) {
+        public ProcessFastaFileTask(GalaxyTransferableFile fasta_file) {
             this.fastaProteinMap = new LinkedHashMap<>();
             fastaProteinSequenceMap = null;
             FileInputStream inStream;

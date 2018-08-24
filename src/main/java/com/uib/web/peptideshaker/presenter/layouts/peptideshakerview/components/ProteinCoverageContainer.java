@@ -1,7 +1,7 @@
 package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components;
 
-import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideObject;
-import com.uib.web.peptideshaker.galaxy.dataobjects.ProteinObject;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideObject;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.ProteinObject;
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components.coverage.ProteinCoverageComponent;
 import com.uib.web.peptideshaker.presenter.core.ActionLabel;
 import com.vaadin.event.LayoutEvents;

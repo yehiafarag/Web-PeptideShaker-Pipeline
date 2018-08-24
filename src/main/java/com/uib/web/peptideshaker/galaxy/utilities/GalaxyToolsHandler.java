@@ -1,8 +1,8 @@
-package com.uib.web.peptideshaker.galaxy;
+package com.uib.web.peptideshaker.galaxy.utilities;
 
-import com.uib.web.peptideshaker.galaxy.dataobjects.GalaxyFile;
-import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDataset;
-import com.uib.web.peptideshaker.galaxy.dataobjects.SystemDataSet;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyTransferableFile;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyFileObject;
 import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
 import com.github.jmchilton.blend4j.galaxy.GalaxyResponseException;
 import com.github.jmchilton.blend4j.galaxy.HistoriesClient;
@@ -44,8 +44,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
@@ -56,53 +54,64 @@ import org.codehaus.jettison.json.JSONObject;
 import pl.exsio.plupload.PluploadFile;
 
 /**
- * This class responsible for interaction with tools on Galaxy server
+ * This class responsible for interaction with tools on Galaxy Server
+ * (Search-GUI and Peptide Shaker)
  *
  * @author Yehia Farag
  */
-public abstract class ToolsHandler {
+public abstract class GalaxyToolsHandler {
 
-    private boolean validToolsAvailable;
-    private boolean nelsSupport;
-
-    public boolean isNelsSupport() {
-        return nelsSupport;
-    }
-
-    public String getNelsExporter_Tool_Id() {
-        return nelsExporter_Tool_Id;
-    }
     /**
-     * The main galaxy Work-Flow Client on galaxy server.
+     * Galaxy Server contains valid Search-GUI and Peptide Shaker tools.
+     */
+    private boolean validToolsAvailable;
+    /**
+     * NeLS storage is supported in the system.
+     */
+    private boolean nelsSupport;
+    /**
+     * The main galaxy Work-Flow Client on Galaxy Server.
      */
     private final WorkflowsClient galaxyWorkFlowClient;
     /**
-     * The main galaxy Work-Flow Client on galaxy server.
+     * The main galaxy History Client on Galaxy Server.
      */
     private final HistoriesClient galaxyHistoriesClient;
     /**
-     * The main galaxy Work-Flow Client on galaxy server.
+     * The main galaxy Tools Client on Galaxy Server.
      */
     private final ToolsClient galaxyToolClient;
+    /**
+     * SearchGUI tool representation for the tool on Galaxy Server.
+     */
     private Tool search_GUI_Tool = null;
+    /**
+     * Peptide Shaker tool representation for the tool on Galaxy Server.
+     */
     private Tool peptideShaker_Tool = null;
+    /**
+     * NeLS exporter tool representation for the tool on Galaxy Server.
+     */
     private String nelsExporter_Tool_Id = null;
+    /**
+     * The working history storage representation for the user on Galaxy Server.
+     */
     private History galaxyWorkingHistory;
     /**
      * Convenience array for rewind ion type selection.
      */
     private final List<String> ions = new ArrayList(Arrays.asList(new String[]{"a", "b", "c", "x", "y", "z"}));
 
-    // , 
     /**
-     * Constructor to initialize the main data structure and other variables.
+     * Constructor to initialise the main data structure and other variables.
      *
-     * @param galaxyToolClient
-     * @param galaxyWorkFlowClient
-     * @param galaxyHistoriesClient
-     *
+     * @param galaxyToolClient The main galaxy Tools Client on Galaxy Server.
+     * @param galaxyWorkFlowClient The main galaxy Work-Flow Client on Galaxy
+     * Server.
+     * @param galaxyHistoriesClient The main galaxy History Client on Galaxy
+     * Server
      */
-    public ToolsHandler(ToolsClient galaxyToolClient, WorkflowsClient galaxyWorkFlowClient, HistoriesClient galaxyHistoriesClient) {
+    public GalaxyToolsHandler(ToolsClient galaxyToolClient, WorkflowsClient galaxyWorkFlowClient, HistoriesClient galaxyHistoriesClient) {
 
         this.galaxyWorkFlowClient = galaxyWorkFlowClient;
         this.galaxyHistoriesClient = galaxyHistoriesClient;
@@ -118,16 +127,7 @@ public abstract class ToolsHandler {
             galaxyWorkingHistory = galaxyHistoriesClient.getHistories().get(0);
         }
         this.galaxyToolClient = galaxyToolClient;
-        /**
-         * The SearchGUI tool on galaxy server.
-         */
-//        String galaxySearchGUIToolId = null;
-        /**
-         * The PeptideShaker tool on galaxy server.
-         */
-//        String galaxyPeptideShakerToolId = null;
         try {
-
             List<ToolSection> toolSections = galaxyToolClient.getTools();
             String PSVersion = "0.0.0";
             String SGVersion = "0.0.0.0";
@@ -159,11 +159,9 @@ public abstract class ToolsHandler {
                 if (peptideShaker_Tool != null && search_GUI_Tool != null && nelsExporter_Tool_Id != null) {
                     validToolsAvailable = true;
                     nelsSupport = true;
-//                    break;
                 } else if (peptideShaker_Tool != null && search_GUI_Tool != null) {
                     validToolsAvailable = true;
                 }
-
             }
         } catch (Exception e) {
             if (e.toString().contains("Service Temporarily Unavailable")) {
@@ -178,7 +176,13 @@ public abstract class ToolsHandler {
         }
     }
 
-    public boolean isValidTools() {
+    /**
+     * Check if the Search-GUI and Peptide shaker tools are available on Galaxy
+     * Server
+     *
+     * @return Tools are valid and available
+     */
+    public boolean isToolsAvailable() {
         if (!validToolsAvailable) {
             Notification.show("PeptideShaker tools are not available on this Galaxy Server", Notification.Type.WARNING_MESSAGE);
         }
@@ -186,9 +190,10 @@ public abstract class ToolsHandler {
     }
 
     /**
-     * Re-Index the files (FASTA or MGF files)
+     * Re-Index the files MGF files (Convert the stored files in MGF file format
+     * to Tab separated format to support byte serving on the server side)
      *
-     * @param id file id on galaxy server
+     * @param id file id on Galaxy Server
      * @param historyId the history id that the file belong to
      * @param workHistoryId the history id that the new re-indexed file will be
      * stored in
@@ -222,21 +227,22 @@ public abstract class ToolsHandler {
     /**
      * Save search settings file into galaxy
      *
-     * @param galaxyURL
-     * @param userFolder
+     * @param galaxyURL Galaxy Server web address
+     * @param userFolder Personal user folder where the user temporary files are
+     * stored
      * @param searchParameters searchParameters .par file
-     * @param workHistoryId
-     * @param searchSetiingsFilesMap
-     * @param editMode
-     * @return
+     * @param workHistoryId The working History ID on Galaxy Server
+     * @param searchParametersFilesMap The Search Parameters files (.par) Map
+     * @param isNew the .par file is new
+     * @return updated Search Parameters files (.par) Map
      */
-    public Map<String, GalaxyFile> saveSearchGUIParameters(String galaxyURL, File userFolder, Map<String, GalaxyFile> searchSetiingsFilesMap, String workHistoryId, SearchParameters searchParameters, boolean editMode) {
+    public Map<String, GalaxyTransferableFile> saveSearchGUIParameters(String galaxyURL, File userFolder, Map<String, GalaxyTransferableFile> searchParametersFilesMap, String workHistoryId, SearchParameters searchParameters, boolean isNew) {
 
         String fileName = searchParameters.getFastaFile().getName().split("__")[1].replace(".", "_") + ".par";
         String fileId;
-        if (editMode) {
+        if (!isNew) {
             fileId = searchParameters.getFastaFile().getName().split("__")[3];
-            searchSetiingsFilesMap.remove(fileId);
+            searchParametersFilesMap.remove(fileId);
             //delete the file and make new one 
             this.deleteDataset(galaxyURL, workHistoryId, fileId);
 
@@ -261,14 +267,14 @@ public abstract class ToolsHandler {
         List<OutputDataset> excList = galaxyToolClient.upload(request).getOutputs();
         if (excList != null && !excList.isEmpty()) {
             OutputDataset oDs = excList.get(0);
-            SystemDataSet ds = new SystemDataSet();
+            GalaxyFileObject ds = new GalaxyFileObject();
             ds.setName(oDs.getName());
             ds.setType("Search Paramerters File (JSON)");
             ds.setHistoryId(workHistoryId);
             ds.setGalaxyId(oDs.getId());
             ds.setDownloadUrl(galaxyURL + "/datasets/" + ds.getGalaxyId() + "/display?to_ext=" + oDs.getDataTypeExt());
-            GalaxyFile userFolderfile = new GalaxyFile(userFolder, ds, false);
-            searchSetiingsFilesMap.put(ds.getGalaxyId(), userFolderfile);
+            GalaxyTransferableFile userFolderfile = new GalaxyTransferableFile(userFolder, ds, false);
+            searchParametersFilesMap.put(ds.getGalaxyId(), userFolderfile);
             String temFileName = ds.getGalaxyId().replace("/", "_") + ds.getName();
 
             File updated = new File(userFolder, temFileName);
@@ -280,7 +286,7 @@ public abstract class ToolsHandler {
                 ex.printStackTrace();
             }
         }
-        return searchSetiingsFilesMap;
+        return searchParametersFilesMap;
     }
 
     /**
@@ -311,6 +317,13 @@ public abstract class ToolsHandler {
         return json;
     }
 
+    /**
+     * Delete files (galaxy datasets) from Galaxy server
+     *
+     * @param galaxyURL Galaxy Server web address
+     * @param historyId The Galaxy Server History ID where the file belong
+     * @param dsId The file (galaxy dataset) ID on Galaxy Server
+     */
     public void deleteDataset(String galaxyURL, String historyId, String dsId) {
         try {
             if (dsId == null || historyId == null || galaxyURL == null) {
@@ -338,9 +351,7 @@ public abstract class ToolsHandler {
                 final ObjectMapper mapper = new ObjectMapper();
                 HashMap<String, Object> payLoadParamMap = new LinkedHashMap<>();
                 payLoadParamMap.put("deleted", Boolean.TRUE);
-//                if (purgeSupport) {
                 payLoadParamMap.put("purged", Boolean.TRUE);
-//                }
                 String payload = mapper.writer().writeValueAsString(payLoadParamMap);
                 writer.write(payload);
             }
@@ -361,21 +372,19 @@ public abstract class ToolsHandler {
 
         }
     }
-    private WorkflowOutputs tempDsOutput;
 
     /**
-     * Run Online Peptide-Shaker work-flow
+     * Run Online Peptide-Shaker (Search-GUI -> Peptide Shaker)work-flow
      *
-     * @param projectName
+     * @param projectName The project name
      * @param fastaFileId FASTA file dataset id
-     * @param mgfIdsList list of MGF file dataset ids
+     * @param mgfIdsList list of input MGF file dataset IDs on Galaxy Server
      * @param searchEnginesList List of selected search engine names
-     * @param historyId galaxy history id that will store the results
-     * @param searchParameters
-     * @param otherSearchParameters
-     * @return
+     * @param historyId Galaxy history id that will store the results
+     * @param searchParameters Search Parameter object
+     * @return Generated PeptideShaker visualisation dataset (Temporary dataset)
      */
-    public PeptideShakerVisualizationDataset executeWorkFlow(String projectName, String fastaFileId, Map<String, String> mgfIdsList, Set<String> searchEnginesList, String historyId, SearchParameters searchParameters, Map<String, Boolean> otherSearchParameters) {
+    public PeptideShakerVisualizationDataset executeWorkFlow(String projectName, String fastaFileId, Map<String, String> mgfIdsList, Set<String> searchEnginesList, String historyId, SearchParameters searchParameters) {
         Workflow selectedWf = null;
         try {
             String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
@@ -389,14 +398,16 @@ public abstract class ToolsHandler {
                 input2 = new WorkflowInputs.WorkflowInput(mgfIdsList.keySet().iterator().next(), WorkflowInputs.InputSourceType.HDA);
             }
             String json = readWorkflowFile(file);
-            System.out.println("setrach gui id " + search_GUI_Tool.getName() + "  " + search_GUI_Tool.getVersion() + " " + json.contains("3.2.24.0") + "  " + peptideShaker_Tool.getVersion() + "  " + json.contains("1.16.20"));
-//            json = json.replace("\"toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/search_gui/3.2.13.3\"", "\\\"" + search_GUI_Tool .getId()+ "\\\"");
-//            json = json.replace("3.2.13.3", search_GUI_Tool.split("\\/")[search_GUI_Tool.split("\\/").length - 1].trim());
+            /**
+             * @todo: find better way to override the search parameters ?
+             */
             json = json.replace("3.2.24.0", search_GUI_Tool.getVersion());
             json = json.replace("SearchGUI_Label", projectName + "-SearchGUI Results").replace("ZIP_Label", projectName + "-ZIP");
             String createDecoy = searchParameters.getFastaFile().getName().split("__")[2];
             json = json.replace("\\\\\\\"create_decoy\\\\\\\": \\\\\\\"true\\\\\\\"", "\\\\\\\"create_decoy\\\\\\\": \\\\\\\"" + createDecoy + "\\\\\\\"");
-            //protein_digest_options     
+            /**
+             * Protein_digest_options.
+             */
             switch (searchParameters.getDigestionPreferences().getCleavagePreference().index) {
                 case 0:
                     if (searchParameters.getDigestionPreferences().getEnzymes().get(0).getName().equalsIgnoreCase("Trypsin")) {//
@@ -412,7 +423,9 @@ public abstract class ToolsHandler {
                     json = json.replace("{\\\\\\\"cleavage\\\\\\\": \\\\\\\"default\\\\\\\", \\\\\\\"missed_cleavages\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 0}}\\\",", "{\\\\\\\"cleavage\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 3}}\\\",");
                     break;
             }
-            //protein_modification_options           
+            /**
+             * Protein_modification_options.
+             */
             if (!searchParameters.getPtmSettings().getVariableModifications().isEmpty()) {
                 Set<String> modifications = new HashSet<>();
                 searchParameters.getPtmSettings().getVariableModifications().forEach((modification) -> {
@@ -420,7 +433,9 @@ public abstract class ToolsHandler {
                 });
                 json = json.replace("\\\\\\\"variable_modifications\\\\\\\": null", "\\\\\\\"variable_modifications\\\\\\\": " + modifications.toString());
             }
-            //fixed_modifications
+            /**
+             * Fixed_modifications.
+             */
             if (!searchParameters.getPtmSettings().getFixedModifications().isEmpty()) {
                 Set<String> modifications = new HashSet<>();
                 searchParameters.getPtmSettings().getFixedModifications().forEach((modification) -> {
@@ -428,18 +443,20 @@ public abstract class ToolsHandler {
                 });
                 json = json.replace("\\\\\\\"fixed_modifications\\\\\\\": null", "\\\\\\\"fixed_modifications\\\\\\\": " + modifications.toString());
             }
-////            search_engines_options 
+            /**
+             * Search engines options.
+             */
             Set<String> search_engines = new HashSet<>();
             searchEnginesList.forEach((searchEng) -> {
                 search_engines.add(("\\\\\\\"" + searchEng + "\\\\\\\"").replace(" (Select for noncommercial use only)", "").replace("+", "").replace("-", ""));
             });
             json = json.replace("{\\\\\\\"engines\\\\\\\": null}", "{\\\\\\\"engines\\\\\\\": " + search_engines.toString() + "}");
-//            //  //precursor_options
+            /**
+             * Precursor Options.
+             */
             String updated = "\"{\\\\\\\"forward_ion\\\\\\\": \\\\\\\"" + ions.get(searchParameters.getForwardIons().get(0)) + "\\\\\\\", \\\\\\\"max_charge\\\\\\\": \\\\\\\"" + searchParameters.getMaxChargeSearched().value + "\\\\\\\", \\\\\\\"fragment_tol_units\\\\\\\": \\\\\\\"" + (searchParameters.getFragmentAccuracyType().ordinal() - 1) + "\\\\\\\", \\\\\\\"max_isotope\\\\\\\": \\\\\\\"" + (searchParameters.getMaxIsotopicCorrection()) + "\\\\\\\", \\\\\\\"precursor_ion_tol_units\\\\\\\": \\\\\\\"" + (searchParameters.getPrecursorAccuracyType().ordinal() + 1) + "\\\\\\\", \\\\\\\"min_isotope\\\\\\\": \\\\\\\"" + searchParameters.getMinIsotopicCorrection() + "\\\\\\\", \\\\\\\"fragment_tol\\\\\\\": \\\\\\\"" + searchParameters.getFragmentIonAccuracyInDaltons() + "\\\\\\\", \\\\\\\"min_charge\\\\\\\": \\\\\\\"" + searchParameters.getMinChargeSearched().value + "\\\\\\\", \\\\\\\"reverse_ion\\\\\\\": \\\\\\\"" + ions.get(searchParameters.getRewindIons().get(0)) + "\\\\\\\", \\\\\\\"precursor_ion_tol\\\\\\\": \\\\\\\"" + searchParameters.getPrecursorAccuracy() + "\\\\\\\"}\\\",";
-            System.out.println("json contain " + json.contains("\"{\\\\\\\"forward_ion\\\\\\\": \\\\\\\"b\\\\\\\", \\\\\\\"max_charge\\\\\\\": \\\\\\\"4\\\\\\\", \\\\\\\"fragment_tol_units\\\\\\\": \\\\\\\"0\\\\\\\", \\\\\\\"max_isotope\\\\\\\": \\\\\\\"1\\\\\\\", \\\\\\\"precursor_ion_tol_units\\\\\\\": \\\\\\\"1\\\\\\\", \\\\\\\"min_isotope\\\\\\\": \\\\\\\"0\\\\\\\", \\\\\\\"fragment_tol\\\\\\\": \\\\\\\"0.5\\\\\\\", \\\\\\\"min_charge\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"reverse_ion\\\\\\\": \\\\\\\"y\\\\\\\", \\\\\\\"precursor_ion_tol\\\\\\\": \\\\\\\"10.0\\\\\\\"}\\\","));
             json = json.replace("\"{\\\\\\\"forward_ion\\\\\\\": \\\\\\\"b\\\\\\\", \\\\\\\"max_charge\\\\\\\": \\\\\\\"4\\\\\\\", \\\\\\\"fragment_tol_units\\\\\\\": \\\\\\\"0\\\\\\\", \\\\\\\"max_isotope\\\\\\\": \\\\\\\"1\\\\\\\", \\\\\\\"precursor_ion_tol_units\\\\\\\": \\\\\\\"1\\\\\\\", \\\\\\\"min_isotope\\\\\\\": \\\\\\\"0\\\\\\\", \\\\\\\"fragment_tol\\\\\\\": \\\\\\\"0.5\\\\\\\", \\\\\\\"min_charge\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"reverse_ion\\\\\\\": \\\\\\\"y\\\\\\\", \\\\\\\"precursor_ion_tol\\\\\\\": \\\\\\\"10.0\\\\\\\"}\\\",", updated);
-////            json = json.replace("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/peptide_shaker/1.16.20", peptideShaker_Tool);
-            json = json.replace("1.16.20", peptideShaker_Tool.getVersion());//.split("\\/")[peptideShaker_Tool.split("\\/").length - 1]);            
+            json = json.replace("1.16.20", peptideShaker_Tool.getVersion());
             selectedWf = galaxyWorkFlowClient.importWorkflow(json);
             WorkflowInputs workflowInputs = new WorkflowInputs();
             workflowInputs.setWorkflowId(selectedWf.getId());
@@ -448,26 +465,14 @@ public abstract class ToolsHandler {
             WorkflowInputs.WorkflowInput input = new WorkflowInputs.WorkflowInput(fastaFileId, WorkflowInputs.InputSourceType.HDA);
             workflowInputs.setInput("0", input);
             workflowInputs.setInput("1", input2);
-//
-//            PeptideShakerVisualizationDataset tempWorkflowOutput = new PeptideShakerVisualizationDataset(projectName, null, "", "", null);
-//            tempWorkflowOutput.setName(projectName);
-//            tempWorkflowOutput.setGalaxyId("tempID");
-//            tempWorkflowOutput.setDownloadUrl("tempID");
-//            tempWorkflowOutput.setHistoryId(historyId);
-//            tempWorkflowOutput.setStatus("running");
-//            tempWorkflowOutput.setType("Web Peptide Shaker Dataset");
-//            tempWorkflowOutput.setJobId("tempID");
 
-            tempDsOutput = null;
             Thread t = new Thread(() -> {
-                tempDsOutput = galaxyWorkFlowClient.runWorkflow(workflowInputs);
-//                if (tempDsOutput != null) {
-//                    tempWorkflowOutput.setOutputsIds(tempDsOutput.getOutputIds());
-//                }
-
+                galaxyWorkFlowClient.runWorkflow(workflowInputs);
             });
             t.start();
-            //reindex mgf files
+            /**
+             * Re-index MGF files.
+             */
             Thread t1 = new Thread(() -> {
                 int index = 1;
                 for (String mgfId : mgfIdsList.keySet()) {
@@ -476,12 +481,8 @@ public abstract class ToolsHandler {
 
             });
             t1.start();
-//            try {
-//                Thread.sleep(100);
-//            } catch (InterruptedException ex) {
-//                ex.printStackTrace();
-//            }
-//            galaxyWorkFlowClient.deleteWorkflowRequest(selectedWf.getId());
+
+            galaxyWorkFlowClient.deleteWorkflowRequest(selectedWf.getId());
             while (t.isAlive()) {
                 try {
                     Thread.sleep(500);
@@ -490,7 +491,6 @@ public abstract class ToolsHandler {
                 }
             }
             return null;
-//
         } catch (Exception e) {
             e.printStackTrace();
             if (selectedWf != null) {
@@ -504,8 +504,11 @@ public abstract class ToolsHandler {
      * Prepares a work flow which takes as input a collection list.
      *
      * @param inputSource The type of input source for this work flow.
+     * @param dsIds The set of files IDs on Galaxy Server that will be used to
+     * generate the collection dataset
+     * @param historyId The history ID on Galaxy Server where the collection
+     * will be saved
      * @return A WorkflowInputs describing the work flow.
-     * @throws InterruptedException
      */
     private WorkflowInputs.WorkflowInput prepareWorkflowCollectionList(WorkflowInputs.InputSourceType inputSource, Set<String> dsIds, String historyId) {
 
@@ -518,8 +521,10 @@ public abstract class ToolsHandler {
      * Constructs a list collection from the given files within the given
      * history.
      *
-     * @param historyId The id of the history to build the collection within.
-     * @param inputIds The IDs of the files to add to the collection.
+     * @param historyId The history id on Galaxy Server to store the collection
+     * in.
+     * @param inputIds The IDs of the files (galaxy datasets) on Galaxy Server
+     * that will be added to the collection.
      * @return A CollectionResponse object for the constructed collection.
      */
     private CollectionResponse constructFileCollectionList(String historyId, Set<String> inputIds) {
@@ -537,6 +542,13 @@ public abstract class ToolsHandler {
         return galaxyHistoriesClient.createDatasetCollection(historyId, collectionDescription);
     }
 
+    /**
+     * Compare the tools versions and select the newer version.
+     *
+     * @param testFW the comparable version
+     * @param baseFW the base version to compare with
+     * @return if the testFW is newer than the baseFW
+     */
     private boolean isFirmwareNewer(String testFW, String baseFW) {
 
         int[] testVer = getVersionNumbers(testFW);
@@ -546,17 +558,23 @@ public abstract class ToolsHandler {
                 return testVer[i] > baseVer[i];
             }
         }
-
         return true;
     }
 
+    /**
+     * Convert the version (String) into integer array.
+     *
+     * @param ver the string version
+     * @return integer array contain the version parts
+     */
     private int[] getVersionNumbers(String ver) {
         Matcher m;
         if (ver.split("\\.").length == 4) {
-            m = Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+).(\\d+)")
-                    .matcher(ver);
+            m = Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+).(\\d+)").matcher(ver);
             if (m != null && !m.matches()) {
                 throw new IllegalArgumentException("Malformed FW version");
+            } else if (m == null) {
+                throw new IllegalArgumentException("Matcher is null");
             }
             return new int[]{
                 Integer.parseInt(m.group(1)), // major
@@ -569,6 +587,8 @@ public abstract class ToolsHandler {
                     .matcher(ver);
             if (m != null && !m.matches()) {
                 throw new IllegalArgumentException("Malformed FW version");
+            } else if (m == null) {
+                throw new IllegalArgumentException("Matcher is null");
             }
             return new int[]{Integer.parseInt(m.group(1)), // major
                 Integer.parseInt(m.group(2)), // minor
@@ -578,6 +598,15 @@ public abstract class ToolsHandler {
 
     }
 
+    /**
+     * Store files on NeLS storage system.
+     *
+     * @param historyId The galaxy history ID on Galaxy Server that contains the
+     * file
+     * @param dsId the galaxy file (dataset) ID on Galaxy Server
+     * @param galaxyURL the web address of the Galaxy Server
+     * @return the file successfully stored on NeLS storage system
+     */
     public boolean sendToNels(String historyId, String dsId, String galaxyURL) {
 
         final HashMap inputDict = new HashMap();
@@ -606,14 +635,22 @@ public abstract class ToolsHandler {
             Notification.show("Could not send it to NeLS :-( ", Notification.Type.ERROR_MESSAGE);
             return false;
         }
-        updateHistoryDatastructure();
+        synchronizeDataWithGalaxyServer();
         return true;
 
     }
 
+    /**
+     * Import files from NeLS storage system to Galaxy Server.
+     *
+     * @param historyId The galaxy history ID on Galaxy Server that will
+     * contains the transferred file
+     * @param dsId the file (dataset) ID on NeLS storage system
+     * @return the file successfully imported from NeLS storage system to Galaxy
+     * Server
+     */
     public boolean getFromNels(String historyId, String dsId) {
         final HashMap inputDict = new HashMap();
-//        final HashMap values = initToolDatasetDict(dsId);
         String nelsFolder = VaadinSession.getCurrent().getAttribute("nelsFolderPath") + "";
         String nelsUserId = VaadinSession.getCurrent().getAttribute("nelsUserId") + "";
         inputDict.put("nelsId", nelsUserId);
@@ -630,11 +667,18 @@ public abstract class ToolsHandler {
             Notification.show("Could not send it to NeLS :-( ", Notification.Type.ERROR_MESSAGE);
             return false;
         }
-        updateHistoryDatastructure();
+        synchronizeDataWithGalaxyServer();
         return true;
 
     }
 
+    /**
+     * Initialise the file (dataset) to be used on Work-flow on Galaxy Server.
+     *
+     * @param datasetId the file (dataset) ID on NeLS storage system
+     * @return HashMap that contains all the dataset information required by
+     * Galaxy Server
+     */
     private HashMap initToolDatasetDict(String datasetId) {
         final HashMap values = new HashMap();
         values.put("src", "hda");
@@ -643,6 +687,13 @@ public abstract class ToolsHandler {
 
     }
 
+    /**
+     * Convert JSON object to readable java HashMap.
+     *
+     * @param object the JSON object to be converted
+     * @return HashMap that contains the information
+     * @throws JSONException
+     */
     private Map<String, Object> jsonToMap(JSONObject object) throws JSONException {
         Map<String, Object> map = new HashMap<>();
 
@@ -661,6 +712,13 @@ public abstract class ToolsHandler {
         return map;
     }
 
+    /**
+     * Convert JSON object to readable java List.
+     *
+     * @param object the JSON object to be converted
+     * @return List that contains the information
+     * @throws JSONException
+     */
     private List<Object> toList(JSONArray array) throws JSONException {
         List<Object> list = new ArrayList<>();
         for (int i = 0; i < array.length(); i++) {
@@ -675,35 +733,12 @@ public abstract class ToolsHandler {
         return list;
     }
 
-    public abstract void updateHistoryDatastructure();
-
     /**
-     * Save search settings file into galaxy
+     * Upload Files (FASTA and MGF files to Galaxy Server)
      *
-     * @param galaxyURL
-     * @param userFolder
-     * @param searchParameters searchParameters .par file
-     * @param workHistoryId
-     * @param searchSetiingsFilesMap
-     * @param editMode
-     * @return
-     */
-    public void uploaderupload(String workHistoryId) {
-        String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
-        File file = new File(basepath + "/VAADIN/index.html");
-        final ToolsClient.FileUploadRequest request = new ToolsClient.FileUploadRequest(workHistoryId, file);
-        request.setDatasetName("index.html");
-        ClientResponse res = galaxyToolClient.uploadRequest(request);
-        System.out.println("at ~ response " + res.getProperties().values());
-
-    }
-
-    /**
-     * Save search settings file into galaxy
-     *
-     * @param workHistoryId
-     * @param toUploadFiles
-     * @return
+     * @param workHistoryId The galaxy history ID where the files will be stored
+     * @param toUploadFiles list of the files to be uploaded to Galaxy Server
+     * @return files are successfully uploaded to Galaxy Server
      */
     public boolean uploadToGalaxy(String workHistoryId, PluploadFile[] toUploadFiles) {
         Thread t = new Thread(() -> {
@@ -719,10 +754,25 @@ public abstract class ToolsHandler {
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
-            updateHistoryDatastructure();
+            synchronizeDataWithGalaxyServer();
         });
         t.start();
         return true;
     }
+
+    /**
+     * Check if the system support NeLS storage.
+     *
+     * @return system support NeLS storage
+     */
+    public boolean isNelsSupport() {
+        return nelsSupport;
+    }
+
+    /**
+     * Synchronise and update Online PEptideShaker file system with Galaxy
+     * Server.
+     */
+    public abstract void synchronizeDataWithGalaxyServer();
 
 }

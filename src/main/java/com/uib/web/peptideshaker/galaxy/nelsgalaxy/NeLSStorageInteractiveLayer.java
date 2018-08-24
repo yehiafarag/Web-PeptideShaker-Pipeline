@@ -4,6 +4,7 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Notification;
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.CookieHandler;
 import java.net.CookieManager;
@@ -24,21 +25,24 @@ import org.jsoup.select.Elements;
  *
  * @author Yehia Farag
  */
-public class NeLSGalaxy {
+public class NeLSStorageInteractiveLayer {
 
     private final LinkedHashMap<String, String> NeLSFilesMap;
 
-    public NeLSGalaxy() {
+    /**
+     * Constructor to initialise the main data structure objects.
+     */
+    public NeLSStorageInteractiveLayer() {
         NeLSFilesMap = new LinkedHashMap<>();
-         VaadinSession.getCurrent().setAttribute("nelsFilesMap", NeLSFilesMap);
+        VaadinSession.getCurrent().setAttribute("nelsFilesMap", NeLSFilesMap);
     }
 
     /**
      * Reading the initial cookies coming with the request to find if it is
      * redirected from NeLS.
      *
-     * @param vaadinRequest the request used to initialize the application UI
-     * @return boolean is Nels-Galaxy server
+     * @param vaadinRequest the request used to initialise the application UI
+     * @return boolean is Nels Storage supported server
      * @todo: will be updated based on final agreement with UiB NeLS-Galaxy
      * administrators on the best authentication method available to access the
      * user date
@@ -54,15 +58,6 @@ public class NeLSGalaxy {
                 NeLSGalaxyDomainURL = cookie.getValue();
                 VaadinSession.getCurrent().setAttribute("galaxyUrl", NeLSGalaxyDomainURL + "/galaxy");
             }
-//            if (cookie.getName().equalsIgnoreCase("PHPSESSID") || cookie.getName().equalsIgnoreCase("SimpleSAMLAuthToken")) {
-//                nelsCookiesRequestProperty += ";" + cookie.getName() + "=" + cookie.getValue();
-//            }
-//            if (cookie.getName().equalsIgnoreCase("NelsJSESSIONID")) {
-//                nelsCookiesRequestProperty += ";" + "JSESSIONID" + "=" + cookie.getValue();
-//            }
-//            if (cookie.getName().equalsIgnoreCase("AuthMemCookie") || cookie.getName().equalsIgnoreCase("PHPSESSID") || cookie.getName().equalsIgnoreCase("SimpleSAMLAuthToken")) {
-//                cookiesRequestProperty += ";" + cookie.getName() + "=" + cookie.getValue();
-//            }
         }
         isNelsGalaxyConnection = Boolean.FALSE;
         cookiesRequestProperty = cookiesRequestProperty.replaceFirst(";", "");
@@ -121,8 +116,7 @@ public class NeLSGalaxy {
             VaadinSession.getCurrent().setAttribute("ApiKey", nelsGalaxyAPI);
             VaadinSession.getCurrent().getSession().setAttribute("ApiKey", nelsGalaxyAPI);
             VaadinSession.getCurrent().getSession().setAttribute("galaxysession", con.getHeaderField("Set-Cookie").split(";")[0]);
-        } catch (Exception e) {
-//            Page.getCurrent().open("http://localhost:8084/NelsGalaxyRedirectForm/", "_self");
+        } catch (IOException e) {
             System.out.println("at Error at line 109 in class " + this.getClass().getName() + "  " + e.getMessage());
         }
     }
@@ -174,16 +168,14 @@ public class NeLSGalaxy {
                 }
             }
 
-//             openLink = domainURL + "/nels/pages/file-browse.xhtml" + (response.toString().split("nels/pages/file-browse.xhtml")[1].split("==&isFolder=True'")[0]) + "==&isFolder=True";
             getNelsFiles(cookiesRequestProperty, openLink, domainURL);
 
-        } catch (Exception e) {
+        } catch (IOException e) {
 
             Notification.show("Could not connect to all service - redirect to NeLsGalaxy login form", Notification.Type.ERROR_MESSAGE);
             Thread t = new Thread(() -> {
                 try {
-                    Thread.currentThread().sleep(4000);
-//                    Page.getCurrent().open("http://localhost:8084/NelsGalaxyRedirectForm/", "_self");
+                    Thread.sleep(4000);
                 } catch (InterruptedException ex) {
                     ex.printStackTrace();
                 }
@@ -234,7 +226,7 @@ public class NeLSGalaxy {
             String folderId = element.getElementsByClass("folder").first().getElementsByTag("ul").text().replace("/", "");
             Elements eList = element.getElementsByClass("ui-widget-content");
             for (Element e : eList) {
-                if (!e.tagName().contains("tr")||e.attr("data-rk").startsWith("fldr") ) {
+                if (!e.tagName().contains("tr") || e.attr("data-rk").startsWith("fldr")) {
                     continue;
                 }
                 String name = e.getElementsByTag("a").first().text();
@@ -244,18 +236,9 @@ public class NeLSGalaxy {
             VaadinSession.getCurrent().setAttribute("nelsFolderPath", folderId);
             VaadinSession.getCurrent().setAttribute("nelsFilesMap", NeLSFilesMap);
 
-        } catch (Exception e) {
+        } catch (IOException e) {
             e.printStackTrace();
             System.out.println("at Error at line 215 in class " + this.getClass().getName() + "  " + e.getCause().getMessage());
         }
     }
-///send file from nels to galaxy
-    //https://test-fe.cbu.uib.no/nels/pages/file-browse.xhtml
-
-    /**
-     * j_idt74:j_idt74 j_idt74:fileFolders_checkbox:on
-     * j_idt74:fileFolders_selection:fl-Modifications.par.json
-     * j_idt74:j_idt105:Send to GALAXY
-     * javax.faces.ViewState:-908705674925128393:7755376270687521036*
-     */
 }

@@ -1,4 +1,4 @@
-package com.uib.web.peptideshaker.galaxy;
+package com.uib.web.peptideshaker.galaxy.utilities.history;
 
 import com.compomics.util.experiment.massspectrometry.Charge;
 import com.compomics.util.experiment.massspectrometry.MSnSpectrum;
@@ -17,20 +17,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
+ * Utility class for galaxy files that helps in managing the integration and
+ * data transfer between Galaxy Server and Online Peptide Shaker (managing
+ * requests and responses)
  *
  * @author Yehia Farag
  */
 public class GalaxyDatasetServingUtil {
 
     /**
-     * user API key for galaxy.
-     */
-    private final String userApiKey;
-
-    /**
      * The Galaxy server address (URL).
      */
     private final String galaxyURL;
+    /**
+     * Requests parameters values.
+     */
     private final GalaxyDatasetServingUtil.ParameterNameValue[] params;
 
     /**
@@ -41,18 +42,26 @@ public class GalaxyDatasetServingUtil {
      */
     public GalaxyDatasetServingUtil(String galaxyURL, String userApiKey) {
         this.galaxyURL = galaxyURL;
-        this.userApiKey = userApiKey;
         params = new GalaxyDatasetServingUtil.ParameterNameValue[]{
-            new GalaxyDatasetServingUtil.ParameterNameValue("key", userApiKey), //                new PeptidShakerUI.ParameterNameValue("dataset_id", "42038d56a41ee4b9"), //                new PeptidShakerUI.ParameterNameValue("offset", "131085")
-        };
+            new GalaxyDatasetServingUtil.ParameterNameValue("key", userApiKey),};
 
     }
 
-    public MSnSpectrum getSpectrum(long start, String historyId, String dsId, String fileName) {
+    /**
+     * Get MSn spectrum object using HTML request to Galaxy server (byte serving
+     * support).
+     *
+     * @param startIndex the spectra index on the MGF file
+     * @param historyId the Galaxy Server History ID that contain the MGF file
+     * @param MGFGalaxyID The ID of the MGF file on Galaxy Server
+     * @param MGFFileName The MGF file name
+     * @return MSnSpectrum spectrum object
+     */
+    public MSnSpectrum getSpectrum(long startIndex, String historyId, String MGFGalaxyID, String MGFFileName) {
 
         try {
 
-            StringBuilder locationBuilder = new StringBuilder(galaxyURL + "/api/histories/" + historyId + "/contents/" + dsId + "/display?");
+            StringBuilder locationBuilder = new StringBuilder(galaxyURL + "/api/histories/" + historyId + "/contents/" + MGFGalaxyID + "/display?");
             for (int i = 0; i < params.length; i++) {
                 if (i > 0) {
                     locationBuilder.append('&');
@@ -68,7 +77,7 @@ public class GalaxyDatasetServingUtil {
             conn.addRequestProperty("Accept-Language", "ar,en-US;q=0.8,en;q=0.6,en-GB;q=0.4");
             conn.addRequestProperty("Cache-Control", "no-cache");
             conn.addRequestProperty("Connection", "keep-alive");
-            conn.addRequestProperty("Range", "bytes=" + start + "-" + (start + 10000));
+            conn.addRequestProperty("Range", "bytes=" + startIndex + "-" + (startIndex + 10000));
             conn.addRequestProperty("DNT", "1");
             conn.addRequestProperty("X-Requested-With", "XMLHttpRequest");
             conn.addRequestProperty("Pragma", "no-cache");
@@ -127,7 +136,7 @@ public class GalaxyDatasetServingUtil {
                                 rt1 = new Double(rtWindow[0]);
                                 rt2 = new Double(rtWindow[1]);
                             }
-                        } catch (Exception e) {
+                        } catch (NumberFormatException e) {
                             System.out.println("An exception was thrown when trying to decode the retention time: " + spectrumTitle);
                             e.printStackTrace();
                             // ignore exception, RT will not be parsed
@@ -153,14 +162,14 @@ public class GalaxyDatasetServingUtil {
                     } else if (line.startsWith("INSTRUMENT")) {
                         // ion series not implemented
                     } else if (line.startsWith("END IONS")) {
-                      
+
                         Precursor precursor;
                         if (rt1 != -1 && rt2 != -1) {
                             precursor = new Precursor(precursorMz, precursorIntensity, precursorCharges, rt1, rt2);
                         } else {
                             precursor = new Precursor(rt, precursorMz, precursorIntensity, precursorCharges);
                         }
-                        MSnSpectrum msnSpectrum = new MSnSpectrum(2, precursor, spectrumTitle, spectrum, fileName);
+                        MSnSpectrum msnSpectrum = new MSnSpectrum(2, precursor, spectrumTitle, spectrum, MGFFileName);
                         msnSpectrum.setScanNumber(scanNumber);
                         return msnSpectrum;
                     } else if (insideSpectrum && !line.equals("")) {
@@ -178,9 +187,9 @@ public class GalaxyDatasetServingUtil {
             }
 
         } catch (MalformedURLException ex) {
-          ex.printStackTrace();
+            ex.printStackTrace();
         } catch (IOException ex) {
-           ex.printStackTrace();
+            ex.printStackTrace();
         }
         return null;
     }
@@ -193,23 +202,19 @@ public class GalaxyDatasetServingUtil {
      * @throws IllegalArgumentException
      */
     private ArrayList<Charge> parseCharges(String chargeLine) throws IllegalArgumentException {
-
         ArrayList<Charge> result = new ArrayList<>(1);
         String tempLine = chargeLine.substring(chargeLine.indexOf("=") + 1);
         String[] chargesAnd = tempLine.split(" and ");
         ArrayList<String> chargesAsString = new ArrayList<>();
-
         for (String charge : chargesAnd) {
             for (String charge2 : charge.split(",")) {
                 chargesAsString.add(charge2.trim());
             }
         }
 
-        for (String chargeAsString : chargesAsString) {
-
+        chargesAsString.forEach((chargeAsString) -> {
             Integer value;
             chargeAsString = chargeAsString.trim();
-
             if (!chargeAsString.isEmpty()) {
                 try {
                     if (chargeAsString.endsWith("+")) {
@@ -226,18 +231,38 @@ public class GalaxyDatasetServingUtil {
                     throw new IllegalArgumentException("\'" + chargeAsString + "\' could not be processed as a valid precursor charge!");
                 }
             }
-        }
+        });
         if (result.isEmpty()) {
             result.add(new Charge(Charge.PLUS, 1));
         }
 
         return result;
     }
+
+    /**
+     * Private inner class represents encoded name and value of parameters that
+     * is used in HTML requests
+     *
+     * @author Yehia Farag
+     *
+     */
     private class ParameterNameValue {
 
+        /**
+         * Parameter name
+         */
         private String name;
+        /**
+         * Parameter value
+         */
         private String value;
 
+        /**
+         * Initialise the parameters objects
+         *
+         * @param name parameter name
+         * @param value parameter value
+         */
         public ParameterNameValue(String name, String value) {
             try {
                 this.name = URLEncoder.encode(name, "UTF-8");

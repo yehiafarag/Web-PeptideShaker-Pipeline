@@ -1,4 +1,4 @@
-package com.uib.web.peptideshaker;
+package com.uib.web.peptideshaker.presenter;
 
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.ui.AbsoluteLayout;
@@ -35,7 +35,7 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
      * Left layout container is the main layout container that contain the main
      * views.
      */
-    private final AbsoluteLayout bottomLayoutContainer;
+//    private final AbsoluteLayout bottomLayoutContainer;
     /**
      * Left layout container is the main layout container that contain the main
      * views.
@@ -63,7 +63,7 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
     private final Map<String, ViewableFrame> visualizationMap = new LinkedHashMap<>();
 
     /**
-     * Constructor to initialize the layout
+     * Constructor to initialise the layout
      */
     public PresenterManager() {
         PresenterManager.this.setSizeFull();
@@ -95,16 +95,9 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
 
         topMiddleLayoutContainer = new AbsoluteLayout();
         topMiddleLayoutContainer.setSizeFull();
-//        topMiddleLayoutContainer.setStyleName("middleviewcontainer");
         middleLayoutContainer.addComponent(topMiddleLayoutContainer);
         middleLayoutContainer.setExpandRatio(topMiddleLayoutContainer, 100);
         topLayoutContainer.addStyleName("hide");
-
-        bottomLayoutContainer = new AbsoluteLayout();
-        bottomLayoutContainer.setStyleName("bottomsidebtncontainer");
-        bottomLayoutContainer.addStyleName("hide");
-        middleLayoutContainer.addComponent(bottomLayoutContainer);
-        middleLayoutContainer.setExpandRatio(bottomLayoutContainer, 0);
 
         rightLayoutContainer = new AbsoluteLayout();
         rightLayoutContainer.setSizeFull();
@@ -113,13 +106,6 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
         PresenterManager.this.addComponent(rightLayoutContainer);
         PresenterManager.this.setExpandRatio(rightLayoutContainer, 0);
 
-//        
-//         
-//        VerticalLayout marker = new VerticalLayout();
-//        marker.setWidth(2, Unit.PIXELS);
-//        marker.setHeight(80, Unit.PERCENTAGE);
-//        marker.setStyleName("lightgraylayout");
-//        rightLayoutContainer.addComponent(marker, "left: 50%; top: 16px;");
         this.rightLayoutBtnsContainer = new VerticalLayout();
         rightLayoutBtnsContainer.setSizeFull();
         rightLayoutContainer.addComponent(this.rightLayoutBtnsContainer);
@@ -145,25 +131,23 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
     /**
      * Register view into the view management system.
      *
-     * @param view visualization layout.
+     * @param view visualisation layout.
      */
     public void registerView(ViewableFrame view) {
         if (visualizationMap.containsKey(view.getViewId())) {
             ViewableFrame tview = visualizationMap.get(view.getViewId());
             tview.getRightView().removeLayoutClickListener(PresenterManager.this);
             tview.getTopView().removeLayoutClickListener(PresenterManager.this);
-            
+
             topLayoutBtnsContainer.removeComponent(tview.getTopView());
             leftLayoutContainer.removeComponent(tview.getLeftView());
             leftLayoutContainer.removeComponent(tview.getLeftView());
             topMiddleLayoutContainer.removeComponent(tview.getMainView());
             rightLayoutBtnsContainer.removeComponent(tview.getRightView());
-            bottomLayoutContainer.removeComponent(tview.getBottomView());
 
         }
         view.getRightView().addLayoutClickListener(PresenterManager.this);
         view.getTopView().addLayoutClickListener(PresenterManager.this);
-
         topLayoutBtnsContainer.addComponent(view.getTopView());
         topLayoutBtnsContainer.setComponentAlignment(view.getTopView(), Alignment.TOP_CENTER);
         visualizationMap.put(view.getViewId(), view);
@@ -171,8 +155,6 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
         topMiddleLayoutContainer.addComponent(view.getMainView());
         rightLayoutBtnsContainer.addComponent(view.getRightView());
         rightLayoutBtnsContainer.setComponentAlignment(view.getRightView(), Alignment.MIDDLE_CENTER);
-        bottomLayoutContainer.addComponent(view.getBottomView());
-//        bottomLayoutContainer.setComponentAlignment(view.getRightView(), Alignment.MIDDLE_CENTER);
 
     }
 
@@ -182,13 +164,18 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
      * @param viewId selected view id
      */
     public void viewLayout(String viewId) {
-        for (ViewableFrame view : visualizationMap.values()) {
+        visualizationMap.values().forEach((view) -> {
             view.minimizeView();
-        }
+        });
         visualizationMap.get(viewId).maximizeView();
 
     }
 
+    /**
+     * On click on the side button view the selected layout
+     *
+     * @param event action on side buttons
+     */
     @Override
     public void layoutClick(LayoutEvents.LayoutClickEvent event) {
         this.viewLayout(((AbsoluteLayout) event.getComponent()).getData().toString());

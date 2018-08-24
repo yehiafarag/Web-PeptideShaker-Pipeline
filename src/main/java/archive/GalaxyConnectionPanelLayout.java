@@ -1,4 +1,4 @@
-package com.uib.web.peptideshaker.presenter.layouts;
+package archive;
 
 import com.github.jmchilton.blend4j.galaxy.GalaxyInstance;
 import com.github.jmchilton.blend4j.galaxy.GalaxyInstanceFactory;

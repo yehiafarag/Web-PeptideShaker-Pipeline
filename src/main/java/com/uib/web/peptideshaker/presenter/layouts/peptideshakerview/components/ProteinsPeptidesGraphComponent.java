@@ -1,8 +1,8 @@
 package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components;
 
-import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideObject;
-import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDataset;
-import com.uib.web.peptideshaker.galaxy.dataobjects.ProteinObject;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideObject;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.ProteinObject;
 import com.uib.web.peptideshaker.presenter.core.graph.GraphComponent;
 import com.vaadin.ui.VerticalLayout;
 import java.util.ArrayList;

@@ -2,9 +2,9 @@ package com.uib.web.peptideshaker.presenter;
 
 import com.uib.web.peptideshaker.presenter.core.ViewableFrame;
 import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
-import com.uib.web.peptideshaker.galaxy.dataobjects.SystemDataSet;
-import com.uib.web.peptideshaker.galaxy.dataobjects.GalaxyFile;
-import com.uib.web.peptideshaker.presenter.layouts.WorkFlowLayout;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyFileObject;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyTransferableFile;
+import com.uib.web.peptideshaker.presenter.layouts.SearchGUIPeptideShakerWorkFlowInputLayout;
 import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
 import com.uib.web.peptideshaker.presenter.core.SmallSideBtn;
 import com.vaadin.event.LayoutEvents;
@@ -25,47 +25,45 @@ import java.util.Set;
  *
  * @author Yehia Farag
  */
-public abstract class ToolPresenter extends VerticalLayout implements ViewableFrame, LayoutEvents.LayoutClickListener {
+public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLayout implements ViewableFrame, LayoutEvents.LayoutClickListener {
 
     /**
      * The tools layout side button.
      */
-    private final SmallSideBtn toolsBtn;
+    private final SmallSideBtn SearchGUI_PeptideShaker_Tool_side_Btn;
     /**
      * The tools layout top button.
      */
-    private final SmallSideBtn topToolsBtn;
+    private final SmallSideBtn SearchGUI_PeptideShaker_Tool_top_Btn;
     /**
-     * The Galaxy history handler.
+     * The work-flow input form layout container.
      */
+    private SearchGUIPeptideShakerWorkFlowInputLayout peptideshakerToolInputForm;
     /**
-     * The work-flow layout container.
+     * The work-flow side button container (left side button container).
      */
-    private WorkFlowLayout peptideshakerToolInputForm;
-
-    private final Map<BigSideBtn, Component> btnsLayoutMap;
-//    private VerticalLayout rightLayoutContainer;
     private VerticalLayout btnContainer;
+     /**
+     * The work-flow bottom button container (bottom buttons container for small screen support).
+     */
     private HorizontalLayout mobilebtnContainer;
 
     /**
-     * Initialize the web tool main attributes
+     * Initialise the web tool main attributes
      *
      */
-    public ToolPresenter() {
-        ToolPresenter.this.setSizeFull();
-        ToolPresenter.this.setStyleName("activelayout");
+    public SearchGUI_PeptideShaker_Tool_Presenter() {
+        SearchGUI_PeptideShaker_Tool_Presenter.this.setSizeFull();
+        SearchGUI_PeptideShaker_Tool_Presenter.this.setStyleName("activelayout");
+        SearchGUI_PeptideShaker_Tool_Presenter.this.addStyleName("integratedframe");
 
-        this.toolsBtn = new SmallSideBtn("img/spectra2.png");//spectra2.png
-        this.toolsBtn.setData(ToolPresenter.this.getViewId());
-        this.toolsBtn.addStyleName("middilesmallbtn");
+        this.SearchGUI_PeptideShaker_Tool_side_Btn = new SmallSideBtn("img/searchgui-medium-shadow-2.png");//spectra2.png
+        this.SearchGUI_PeptideShaker_Tool_side_Btn.setData(SearchGUI_PeptideShaker_Tool_Presenter.this.getViewId());
+        this.SearchGUI_PeptideShaker_Tool_top_Btn = new SmallSideBtn("img/searchgui-medium-shadow-2.png");//spectra2.png
+        this.SearchGUI_PeptideShaker_Tool_top_Btn.setData(SearchGUI_PeptideShaker_Tool_Presenter.this.getViewId());
 
-        this.topToolsBtn = new SmallSideBtn("img/spectra2.png");
-        this.topToolsBtn.setData(ToolPresenter.this.getViewId());
-
-        this.btnsLayoutMap = new HashMap<>();
         this.initLayout();
-        ToolPresenter.this.minimizeView();
+        SearchGUI_PeptideShaker_Tool_Presenter.this.minimizeView();
 
     }
 
@@ -77,50 +75,43 @@ public abstract class ToolPresenter extends VerticalLayout implements ViewableFr
      * @param fastaFilesMap The main FASTA File Map (ID to Name).
      * @param mgfFilesMap The main MGF File Map (ID to Name).
      */
-    public void updatePeptideShakerToolInputForm(Map<String, GalaxyFile> searchSettingsMap, Map<String, SystemDataSet> fastaFilesMap, Map<String, SystemDataSet> mgfFilesMap) {
+    public void updatePeptideShakerToolInputForm(Map<String, GalaxyTransferableFile> searchSettingsMap, Map<String, GalaxyFileObject> fastaFilesMap, Map<String, GalaxyFileObject> mgfFilesMap) {
         peptideshakerToolInputForm.updateForm(searchSettingsMap, fastaFilesMap, mgfFilesMap);
     }
 
+    /**
+     * Initialise the main forms for user data input that is required for
+     * performing search.
+     */
     private void initLayout() {
 
-        this.addStyleName("integratedframe");
         btnContainer = new VerticalLayout();
         btnContainer.setWidth(100, Unit.PERCENTAGE);
         btnContainer.setHeightUndefined();
         btnContainer.setSpacing(true);
         btnContainer.setMargin(new MarginInfo(false, false, true, false));
 
-        peptideshakerToolInputForm = new WorkFlowLayout() {
+        peptideshakerToolInputForm = new SearchGUIPeptideShakerWorkFlowInputLayout() {
             @Override
-            public void executeWorkFlow(String projectName,String fastaFileId, Set<String> mgfIdsList, Set<String> searchEnginesList,SearchParameters searchParam,Map<String,Boolean>searchEngines) {
-                ToolPresenter.this.executeWorkFlow(projectName,fastaFileId, mgfIdsList, searchEnginesList,searchParam,searchEngines);
+            public void executeWorkFlow(String projectName, String fastaFileId, Set<String> mgfIdsList, Set<String> searchEnginesList, SearchParameters searchParam) {
+                SearchGUI_PeptideShaker_Tool_Presenter.this.execute_SearchGUI_PeptideShaker_WorkFlow(projectName, fastaFileId, mgfIdsList, searchEnginesList, searchParam);
             }
 
             @Override
-            public Map<String, GalaxyFile>  saveSearchGUIParameters(SearchParameters searchParameters,boolean editMode) {
-                return ToolPresenter.this.saveSearchGUIParameters(searchParameters,editMode);
+            public Map<String, GalaxyTransferableFile> saveSearchGUIParameters(SearchParameters searchParameters, boolean editMode) {
+                return SearchGUI_PeptideShaker_Tool_Presenter.this.saveSearchGUIParameters(searchParameters, editMode);
             }
 
         };
-//        VerticalLayout nelsLayout = new VerticalLayout();
-//
-//        BigSideBtn nelsBtn = new BigSideBtn("Get Data",1);
-//        nelsBtn.updateIconResource(new ThemeResource("img/NeLS3.png"));
-//        nelsBtn.setData("nels");
-//        btnContainer.addComponent(nelsBtn);
-//        btnContainer.setComponentAlignment(nelsBtn, Alignment.TOP_CENTER);
-//        nelsBtn.addLayoutClickListener(ToolPresenter.this);
-//        btnsLayoutMap.put(nelsBtn, nelsLayout);
 
-        BigSideBtn workFlowBtn = new BigSideBtn("Work-Flow",2);
-         workFlowBtn.updateIconResource(new ThemeResource("img/workflow3.png"));
+        BigSideBtn workFlowBtn = new BigSideBtn("Work-Flow", 2);
+        workFlowBtn.updateIconResource(new ThemeResource("img/workflow3.png"));
         workFlowBtn.setData("workflow");
         workFlowBtn.addStyleName("zeropadding");
         btnContainer.addComponent(workFlowBtn);
         btnContainer.setComponentAlignment(workFlowBtn, Alignment.TOP_CENTER);
-        workFlowBtn.addLayoutClickListener(ToolPresenter.this);
+        workFlowBtn.addLayoutClickListener(SearchGUI_PeptideShaker_Tool_Presenter.this);
         workFlowBtn.setSelected(true);
-        btnsLayoutMap.put(workFlowBtn, peptideshakerToolInputForm);
 
         VerticalLayout toolViewFrame = new VerticalLayout();
         toolViewFrame.setSizeFull();
@@ -134,22 +125,16 @@ public abstract class ToolPresenter extends VerticalLayout implements ViewableFr
         toolViewFrameContent.setSizeFull();
         toolViewFrame.addComponent(toolViewFrameContent);
 
-//        toolViewFrameContent.addComponent(nelsLayout);
         toolViewFrameContent.addComponent(peptideshakerToolInputForm);
 
         mobilebtnContainer = new HorizontalLayout();
-        mobilebtnContainer.setHeight(100, Unit.PERCENTAGE);
+        mobilebtnContainer.setHeightUndefined();
         mobilebtnContainer.setWidthUndefined();
         mobilebtnContainer.setSpacing(true);
         mobilebtnContainer.setStyleName("bottomsidebtncontainer");
 
-       
-//        mobilebtnContainer.addComponent(nelsBtn.getMobileModeBtn());
-//        mobilebtnContainer.setComponentAlignment(nelsBtn.getMobileModeBtn(), Alignment.TOP_CENTER);
-
-        mobilebtnContainer.addComponent(workFlowBtn.getMobileModeBtn());
-        mobilebtnContainer.setComponentAlignment(workFlowBtn.getMobileModeBtn(), Alignment.TOP_CENTER);
-     
+//        mobilebtnContainer.addComponent(workFlowBtn.getMobileModeBtn());
+//        mobilebtnContainer.setComponentAlignment(workFlowBtn.getMobileModeBtn(), Alignment.TOP_CENTER);
 
     }
 
@@ -168,7 +153,7 @@ public abstract class ToolPresenter extends VerticalLayout implements ViewableFr
      */
     @Override
     public SmallSideBtn getRightView() {
-        return toolsBtn;
+        return SearchGUI_PeptideShaker_Tool_side_Btn;
     }
 
     /**
@@ -177,7 +162,7 @@ public abstract class ToolPresenter extends VerticalLayout implements ViewableFr
      */
     @Override
     public String getViewId() {
-        return ToolPresenter.class.getName();
+        return SearchGUI_PeptideShaker_Tool_Presenter.class.getName();
     }
 
     /**
@@ -185,8 +170,8 @@ public abstract class ToolPresenter extends VerticalLayout implements ViewableFr
      */
     @Override
     public void minimizeView() {
-        toolsBtn.setSelected(false);
-        topToolsBtn.setSelected(false);
+        SearchGUI_PeptideShaker_Tool_side_Btn.setSelected(false);
+        SearchGUI_PeptideShaker_Tool_top_Btn.setSelected(false);
         this.addStyleName("hidepanel");
         this.btnContainer.removeStyleName("visible");
         this.mobilebtnContainer.addStyleName("hidepanel");
@@ -198,8 +183,8 @@ public abstract class ToolPresenter extends VerticalLayout implements ViewableFr
      */
     @Override
     public void maximizeView() {
-        toolsBtn.setSelected(true);
-        topToolsBtn.setSelected(true);
+        SearchGUI_PeptideShaker_Tool_side_Btn.setSelected(true);
+        SearchGUI_PeptideShaker_Tool_top_Btn.setSelected(true);
         this.btnContainer.addStyleName("visible");
         this.mobilebtnContainer.removeStyleName("hidepanel");
         this.removeStyleName("hidepanel");
@@ -207,19 +192,19 @@ public abstract class ToolPresenter extends VerticalLayout implements ViewableFr
 
     @Override
     public void layoutClick(LayoutEvents.LayoutClickEvent event) {
-        BigSideBtn comp = (BigSideBtn) event.getComponent();
-        for (BigSideBtn bbt : btnsLayoutMap.keySet()) {
-            if (comp.getData().toString().equalsIgnoreCase(bbt.getData().toString())) {
-                bbt.setSelected(true);
-                btnsLayoutMap.get(bbt).removeStyleName("hidepanel");
-            } else {
-                bbt.setSelected(false);
-                btnsLayoutMap.get(bbt).addStyleName("hidepanel");
-            }
-        }
-
-        if (comp.getData().toString().equalsIgnoreCase("nels")) {
-        }
+//        BigSideBtn comp = (BigSideBtn) event.getComponent();
+//        for (BigSideBtn bbt : btnsLayoutMap.keySet()) {
+//            if (comp.getData().toString().equalsIgnoreCase(bbt.getData().toString())) {
+//                bbt.setSelected(true);
+//                btnsLayoutMap.get(bbt).removeStyleName("hidepanel");
+//            } else {
+//                bbt.setSelected(false);
+//                btnsLayoutMap.get(bbt).addStyleName("hidepanel");
+//            }
+//        }
+//
+//        if (comp.getData().toString().equalsIgnoreCase("nels")) {
+//        }
     }
 
     /**
@@ -246,7 +231,7 @@ public abstract class ToolPresenter extends VerticalLayout implements ViewableFr
      */
     @Override
     public SmallSideBtn getTopView() {
-        return topToolsBtn;
+        return SearchGUI_PeptideShaker_Tool_top_Btn;
     }
 
     /**
@@ -257,14 +242,14 @@ public abstract class ToolPresenter extends VerticalLayout implements ViewableFr
      * @param searchEnginesList List of selected search engine names
      * @param historyId galaxy history id that will store the results
      */
-    public abstract void executeWorkFlow(String projectName,String fastaFileId, Set<String> mgfIdsList, Set<String> searchEnginesList,SearchParameters searchParam,Map<String,Boolean>otherSearchParameters);
-    
-     /**
+    public abstract void execute_SearchGUI_PeptideShaker_WorkFlow(String projectName, String fastaFileId, Set<String> mgfIdsList, Set<String> searchEnginesList, SearchParameters searchParam);
+
+    /**
      * Save search settings file into galaxy
      *
      * @param fileName search parameters file name
      * @param searchParameters searchParameters .par file
      */
-    public abstract Map<String, GalaxyFile>  saveSearchGUIParameters(SearchParameters searchParameters,boolean editMode);
+    public abstract Map<String, GalaxyTransferableFile> saveSearchGUIParameters(SearchParameters searchParameters, boolean editMode);
 
 }

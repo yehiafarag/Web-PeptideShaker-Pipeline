@@ -1,7 +1,7 @@
 package com.uib.web.peptideshaker.presenter.layouts;
 
-import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDataset;
-import com.uib.web.peptideshaker.galaxy.dataobjects.SystemDataSet;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyFileObject;
 import com.uib.web.peptideshaker.presenter.core.DatasetOverviewLayout;
 import com.uib.web.peptideshaker.presenter.core.ActionLabel;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
@@ -103,7 +103,7 @@ public abstract class DataViewLayout extends Panel {
     private Component nameLabel;
     private boolean nelsSupported;
 
-    public void updateDatasetsTable(Map<String, SystemDataSet> historyFilesMap) {
+    public void updateDatasetsTable(Map<String, GalaxyFileObject> historyFilesMap) {
 
         nelsSupported = (boolean) VaadinSession.getCurrent().getAttribute("nelsgalaxy");
         topDataTable.removeAllComponents();
@@ -160,7 +160,7 @@ public abstract class DataViewLayout extends Panel {
         bottomDataTable.addComponent(headerRow2);
         topDataTable.addComponent(headerRow);
         int i = 1;
-        for (SystemDataSet ds : historyFilesMap.values()) {
+        for (GalaxyFileObject ds : historyFilesMap.values()) {
             if (ds.getName() == null || ds.getType().equalsIgnoreCase("FASTA File")) {
                 continue;
             }
@@ -330,11 +330,11 @@ public abstract class DataViewLayout extends Panel {
 
     public abstract boolean uploadToGalaxy(PluploadFile[] toUploadFiles);
 
-    public abstract void deleteDataset(SystemDataSet ds);
+    public abstract void deleteDataset(GalaxyFileObject ds);
 
-    public abstract boolean sendToNeLS(SystemDataSet ds);
+    public abstract boolean sendToNeLS(GalaxyFileObject ds);
 
-    public abstract boolean getFromNels(SystemDataSet ds);
+    public abstract boolean getFromNels(GalaxyFileObject ds);
 
     public abstract void viewDataset(PeptideShakerVisualizationDataset ds);
 }

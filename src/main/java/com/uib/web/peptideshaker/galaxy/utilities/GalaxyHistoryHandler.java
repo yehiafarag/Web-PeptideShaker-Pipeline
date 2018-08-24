@@ -1,8 +1,9 @@
-package com.uib.web.peptideshaker.galaxy;
+package com.uib.web.peptideshaker.galaxy.utilities;
 
-import com.uib.web.peptideshaker.galaxy.dataobjects.GalaxyFile;
-import com.uib.web.peptideshaker.galaxy.dataobjects.PeptideShakerVisualizationDataset;
-import com.uib.web.peptideshaker.galaxy.dataobjects.SystemDataSet;
+import com.uib.web.peptideshaker.galaxy.utilities.history.GalaxyDatasetServingUtil;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyTransferableFile;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyFileObject;
 import com.github.jmchilton.blend4j.galaxy.GalaxyInstance;
 import com.github.jmchilton.blend4j.galaxy.HistoriesClient;
 import com.github.jmchilton.blend4j.galaxy.beans.History;
@@ -41,24 +42,88 @@ import org.codehaus.jettison.json.JSONObject;
  *
  * @author Yehia Farag
  */
-public abstract class HistoryHandler {
+public abstract class GalaxyHistoryHandler {
 
     /**
      * The main Galaxy instance in the system.
      */
-    private final GalaxyInstance Galaxy_Instance;
-    private final File userFolder;
-    private final GalaxyDatasetServingUtil galaxyDatasetServingUtil;
-    private boolean busySystem = false;
+    private GalaxyInstance Galaxy_Instance;
+    /**
+     * User data files folder.
+     */
+    private File userFolder;
+    /**
+     * Helping class to initialise and update dataset information.
+     */
+    private GalaxyDatasetServingUtil galaxyDatasetServingUtil;
+    /**
+     * Is system in progress.
+     */
+    private boolean systemInProgress = false;
+    /**
+     * Inner class responsible for create Task to tracking and update the galaxy
+     * history.
+     */
     private UpdateDatasetructureTask updateDatasetructureTask;
+    /**
+     * Future results from executing tasks to tracking and update the galaxy
+     * history.
+     */
     private Future updateDatasetructureFuture;
     /**
      * Refresher to keep tracking history state in galaxy.
      */
     private final Refresher REFRESHER;
+    /**
+     * Refresher listener allow action on adding different actions for the
+     * application refresher.
+     */
     private Refresher.RefreshListener refreshlistener;
+    /**
+     * Date formatter to allow reading the creation date of the datasets from
+     * the dataset json file.
+     */
     private final DateFormat df6 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-    
+
+    /**
+     * Constructor to initialise the the galaxy history handler, and Connection
+     * refresher to keep tracking running jobs on Galaxy Server.
+     *
+     */
+    public GalaxyHistoryHandler() {
+        REFRESHER = new Refresher();
+        ((PeptidShakerUI) UI.getCurrent()).addExtension(REFRESHER);
+
+    }
+
+    /**
+     * System connected to Galaxy Server
+     *
+     * @param Galaxy_Instance the main Galaxy instance in the system
+     * @param userFolder user folder to store users file temporarily
+     */
+    public void connectToGalaxy(GalaxyInstance Galaxy_Instance, File userFolder) {
+        this.Galaxy_Instance = Galaxy_Instance;
+        this.galaxyDatasetServingUtil = new GalaxyDatasetServingUtil(Galaxy_Instance.getGalaxyUrl(), Galaxy_Instance.getApiKey());
+        this.userFolder = userFolder;
+        GalaxyHistoryHandler.this.updateHistory();
+    }
+
+    /**
+     * Update galaxy layer file system datasets from Galaxy server.
+     */
+    public void updateHistory() {
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+        updateDatasetructureTask = new UpdateDatasetructureTask();
+        updateDatasetructureFuture = executorService.submit(updateDatasetructureTask);
+        executorService.shutdown();
+    }
+
+    /**
+     * Get map of available PeptideShaker visualisation datasets.
+     *
+     * @return map of available PS datasets
+     */
     public Map<String, PeptideShakerVisualizationDataset> getPeptideShakerVisualizationMap() {
         while (!updateDatasetructureFuture.isDone()) {
             try {
@@ -71,28 +136,11 @@ public abstract class HistoryHandler {
     }
 
     /**
-     * Constructor to initialise the main data structure and other variables.
+     * Get the main Search settings .par files Map
      *
-     * @param Galaxy_Instance the main Galaxy instance in the system
-     * @param userFolder user folder to store users file temporarily
-     *
+     * @return Search parameters files .par map
      */
-    public HistoryHandler(GalaxyInstance Galaxy_Instance, File userFolder) {
-        this.Galaxy_Instance = Galaxy_Instance;
-        this.galaxyDatasetServingUtil = new GalaxyDatasetServingUtil(Galaxy_Instance.getGalaxyUrl(), Galaxy_Instance.getApiKey());
-        REFRESHER = new Refresher();
-        ((PeptidShakerUI) UI.getCurrent()).addExtension(REFRESHER);
-        this.userFolder = userFolder;
-        HistoryHandler.this.updateHistory();
-        
-    }
-
-    /**
-     * Get the main Search settings par files Map
-     *
-     * @return searchSetiingsFilesMap
-     */
-    public Map<String, GalaxyFile> getSearchSettingsFilesMap() {
+    public Map<String, GalaxyTransferableFile> getSearchSettingsFilesMap() {
         while (!updateDatasetructureFuture.isDone()) {
             try {
                 Thread.sleep(1000);
@@ -106,9 +154,9 @@ public abstract class HistoryHandler {
     /**
      * Get the main FASTA files Map
      *
-     * @return fastaFilesMap
+     * @return FASTA Files Map
      */
-    public Map<String, SystemDataSet> getFastaFilesMap() {
+    public Map<String, GalaxyFileObject> getFastaFilesMap() {
         while (!updateDatasetructureFuture.isDone()) {
             try {
                 Thread.sleep(1000);
@@ -122,9 +170,9 @@ public abstract class HistoryHandler {
     /**
      * Get the main MGF files Map
      *
-     * @return mgfFilesMap
+     * @return Map of available MGF files (file galaxy id mapped to datasets)
      */
-    public Map<String, SystemDataSet> getMgfFilesMap() {
+    public Map<String, GalaxyFileObject> getMgfFilesMap() {
         while (!updateDatasetructureFuture.isDone()) {
             try {
                 Thread.sleep(1000);
@@ -139,8 +187,13 @@ public abstract class HistoryHandler {
             return null;
         }
     }
-    
-    public Map<String, SystemDataSet> getHistoryFilesMap() {
+
+    /**
+     * Get map all available files (datasets)
+     *
+     * @return Map of all available files (file galaxy id mapped to datasets)
+     */
+    public Map<String, GalaxyFileObject> getHistoryFilesMap() {
         while (!updateDatasetructureFuture.isDone()) {
             try {
                 Thread.sleep(1000);
@@ -150,19 +203,13 @@ public abstract class HistoryHandler {
         }
         return updateDatasetructureTask.getHistoryFilesMap();
     }
-    
-    public void updateHistory() {
-        
-        this.updateHistoryDatastructure();
-//        systemIsBusy(true, historyFilesMap);
-//        int mSec = 20000;
-//        if (!isReadyHistory(mSec)) {
-//            return;
-//        }
-//        this.updateHistoryDatastructure();
 
-    }
-    
+    /**
+     * Get the main working history id on galaxy server where all new datasets
+     * will be stored
+     *
+     * @return Working history id in Galaxy server
+     */
     public String getWorkingHistoryId() {
         while (!updateDatasetructureFuture.isDone()) {
             try {
@@ -173,15 +220,22 @@ public abstract class HistoryHandler {
         }
         return updateDatasetructureTask.getWorkingHistoryId();
     }
-    
+
+    /**
+     * Convert JSON object to Java readable map
+     *
+     * @param object JSON object to be converted
+     * @return Java Hash map has all the data
+     * @throws JSONException in case of error in reading JSON file
+     */
     private Map<String, Object> jsonToMap(JSONObject object) throws JSONException {
         Map<String, Object> map = new HashMap<>();
-        
+
         Iterator<String> keysItr = object.keys();
         while (keysItr.hasNext()) {
             String key = keysItr.next();
             Object value = object.get(key);
-            
+
             if (value instanceof JSONArray) {
                 value = toList((JSONArray) value);
             } else if (value instanceof JSONObject) {
@@ -191,7 +245,14 @@ public abstract class HistoryHandler {
         }
         return map;
     }
-    
+
+    /**
+     * Convert JSON object to Java readable list
+     *
+     * @param object JSON object to be converted
+     * @return Java List has all the data
+     * @throws JSONException in case of error in reading JSON file
+     */
     private List<Object> toList(JSONArray array) throws JSONException {
         List<Object> list = new ArrayList<>();
         for (int i = 0; i < array.length(); i++) {
@@ -205,14 +266,25 @@ public abstract class HistoryHandler {
         }
         return list;
     }
-    
-    public abstract void systemIsBusy(boolean busy, Map<String, SystemDataSet> historyFilesMap);
-    
+
+    /**
+     * Abstract method allows performing actions based on the jobs states on
+     * Galaxy server
+     *
+     * @param busy the system currently in progress (jobs still running)
+     * @param historyFilesMap list of available files (datasets) on Galaxy
+     * server
+     */
+    public abstract void synchronizeDataWithGalaxyServer(boolean busy, Map<String, GalaxyFileObject> historyFilesMap);
+
+    /**
+     * Following jobs statues on Galaxy server until all jobs are done.
+     */
     private void invokeRecheckDataProcessing() {
         int mSecound = 20000;
         if (refreshlistener != null) {
             REFRESHER.removeListener(refreshlistener);
-            
+
         }
         REFRESHER.setRefreshInterval(mSecound);
         refreshlistener = (Refresher source) -> {
@@ -227,114 +299,123 @@ public abstract class HistoryHandler {
             }
             if (ready) {
                 REFRESHER.removeListener(refreshlistener);
-                updateHistoryDatastructure();
+                updateHistory();
                 System.out.println("at refresh done ");
             }
         };
         REFRESHER.addListener(refreshlistener);
-        
+
     }
-    
-    private void updateHistoryDatastructure() {
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-        updateDatasetructureTask = new UpdateDatasetructureTask();
-        updateDatasetructureFuture = executorService.submit(updateDatasetructureTask);
-        executorService.shutdown();
-        
-    }
-    
-    private class UpdateDatasetructureTask implements Callable<Map<String, SystemDataSet>> {
+
+    /**
+     * This class responsible for generating tasks that track the different jobs
+     * process on Galaxy server
+     *
+     */
+    private class UpdateDatasetructureTask implements Callable<Map<String, GalaxyFileObject>> {
 
         /**
          * The main MGF Files Map.
          */
-        private final Map<String, SystemDataSet> mgfFilesMap;
+        private final Map<String, GalaxyFileObject> mgfFilesMap;
         /**
          * The Full historyFiles Map.
          */
-        private final Map<String, SystemDataSet> historyFilesMap;
+        private final Map<String, GalaxyFileObject> historyFilesMap;
         /**
          * The main Search settings .par File Map.
          */
-        private final Map<String, GalaxyFile> searchSettingsFilesMap;
+        private final Map<String, GalaxyTransferableFile> searchSettingsFilesMap;
         /**
          * The main FASTA File Map.
          */
-        private final Map<String, SystemDataSet> fastaFilesMap;
+        private final Map<String, GalaxyFileObject> fastaFilesMap;
         /**
          * The main MGF and FASTA index Files Map.
          */
-        private final Map<String, GalaxyFile> indexFilesMap;
+        private final Map<String, GalaxyTransferableFile> indexFilesMap;
 
         /**
          * The main SearchGUI Files Map.
          */
-        private final Map<String, SystemDataSet> searchGUIFilesMap;
+        private final Map<String, GalaxyFileObject> searchGUIFilesMap;
         /**
          * The main PeptideShaker Visualisation Map.
          */
         private final Map<String, PeptideShakerVisualizationDataset> peptideShakerVisualizationMap;
+        /**
+         * List of available galaxy histories IDs.
+         */
         private final Set<String> historiesIds;
+        /**
+         * List of available files on NeLS account
+         *
+         * @todo:for suture use.
+         */
         private final LinkedHashMap<String, String> NeLSFilesMap;
-        private final Map<String, SystemDataSet> tabMgfFilesMap;
+        /**
+         * List of converted MGF files into TAB format to allow byte serving in
+         * the interaction with server.
+         */
+        private final Map<String, GalaxyFileObject> tabMgfFilesMap;
         /**
          * The Working galaxy history.
          */
         private History workingHistory;
-        
-        public Map<String, GalaxyFile> getSearchSettingsFilesMap() {
+
+        public Map<String, GalaxyTransferableFile> getSearchSettingsFilesMap() {
             return searchSettingsFilesMap;
         }
-        
-        public Map<String, SystemDataSet> getMgfFilesMap() {
+
+        public Map<String, GalaxyFileObject> getMgfFilesMap() {
             return mgfFilesMap;
         }
-        
-        public Map<String, SystemDataSet> getHistoryFilesMap() {
+
+        public Map<String, GalaxyFileObject> getHistoryFilesMap() {
             return historyFilesMap;
         }
-        
-        public Map<String, SystemDataSet> getFastaFilesMap() {
+
+        public Map<String, GalaxyFileObject> getFastaFilesMap() {
             return fastaFilesMap;
         }
-        
-        public Map<String, GalaxyFile> getIndexFilesMap() {
+
+        public Map<String, GalaxyTransferableFile> getIndexFilesMap() {
             return indexFilesMap;
         }
-        
-        public Map<String, SystemDataSet> getSearchGUIFilesMap() {
+
+        public Map<String, GalaxyFileObject> getSearchGUIFilesMap() {
             return searchGUIFilesMap;
         }
-        
+
         public Map<String, PeptideShakerVisualizationDataset> getPeptideShakerVisualizationMap() {
             return peptideShakerVisualizationMap;
         }
-        
+
         public Set<String> getHistoriesIds() {
             return historiesIds;
         }
-        
+
         public LinkedHashMap<String, String> getNeLSFilesMap() {
             return NeLSFilesMap;
         }
-        
+
         public String getWorkingHistoryId() {
             return workingHistory.getId();
         }
-        
+
         public UpdateDatasetructureTask() {
-            busySystem = false;
+            systemInProgress = false;
             this.mgfFilesMap = new LinkedHashMap<>();
             this.historyFilesMap = new LinkedHashMap<>();
             this.fastaFilesMap = new LinkedHashMap<>();
-            
+
             this.indexFilesMap = new LinkedHashMap<>();
             this.peptideShakerVisualizationMap = new LinkedHashMap<>();
             this.searchGUIFilesMap = new LinkedHashMap<>();
             this.historiesIds = new HashSet<>();
             this.NeLSFilesMap = new LinkedHashMap<>();
             this.tabMgfFilesMap = new HashMap<>();
-            
+
             this.searchSettingsFilesMap = new LinkedHashMap<>();
             try {
                 NeLSFilesMap.putAll((LinkedHashMap<String, String>) VaadinSession.getCurrent().getAttribute("nelsFilesMap"));
@@ -354,20 +435,20 @@ public abstract class HistoryHandler {
                     }
                 }
                 historiesList = galaxyHistoriesClient.getHistories();
-                
+
                 for (History history : historiesList) {
                     historiesIds.add(history.getId());
                 }
-                
+
                 final String query = "select * from hda ";//where history_id= '" + history.getId() + "'"; 
                 List<Map<String, Object>> results = Galaxy_Instance.getSearchClient().search(query).getResults();
-                
+
                 results.stream().filter((map) -> map != null && (!((map.get("purged") + "").equalsIgnoreCase("true") || (!historiesIds.contains(map.get("history_id") + "")) || (map.get("deleted") + "").equalsIgnoreCase("true")))).forEachOrdered((Map<String, Object> map) -> {
                     if ((map.get("data_type") + "").equalsIgnoreCase("galaxy.datatypes.binary.SearchGuiArchive")) {
-                        SystemDataSet ds = new SystemDataSet();
+                        GalaxyFileObject ds = new GalaxyFileObject();
                         ds.setStatus(map.get("state") + "");
                         if (ds.getStatus().equalsIgnoreCase("new") || ds.getStatus().equalsIgnoreCase("running") || ds.getStatus().equalsIgnoreCase("queued")) {
-                            busySystem = true;
+                            systemInProgress = true;
                         }
                         try {
                             ds.setCreate_time(df6.parse((map.get("create_time") + "")));
@@ -383,17 +464,16 @@ public abstract class HistoryHandler {
                         ds.setAvailableOnNels(NeLSFilesMap.containsKey(ds.getNelsKey()));
                         ds.setOverview(map.get("misc_info") + "");
                         searchGUIFilesMap.put(map.get("name").toString().replace("-SearchGUI Results", ""), ds);
-//
                     } else if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.text.Json") && map.get("name").toString().endsWith(".par")) {
-                        SystemDataSet ds = new SystemDataSet();
+                        GalaxyFileObject ds = new GalaxyFileObject();
                         ds.setName(map.get("name").toString());
                         ds.setType("Search Paramerters File (JSON)");
                         ds.setHistoryId(map.get("history_id") + "");
                         ds.setGalaxyId(map.get("id").toString());
                         ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + ds.getGalaxyId() + "/display?to_ext=" + map.get("file_ext").toString());
                         ds.setStatus(map.get("state") + "");
-                        
-                        GalaxyFile file = new GalaxyFile(userFolder, ds, false);
+
+                        GalaxyTransferableFile file = new GalaxyTransferableFile(userFolder, ds, false);
                         file.setDownloadUrl(ds.getDownloadUrl());
                         file.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
                         file.setAvailableOnNels(NeLSFilesMap.containsKey(file.getNelsKey()));
@@ -407,7 +487,7 @@ public abstract class HistoryHandler {
                         ds.setAvailableOnNels(NeLSFilesMap.containsKey(ds.getNelsKey()));
                         NeLSFilesMap.remove(ds.getNelsKey());
                     } else if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.proteomics.Mgf")) {
-                        SystemDataSet ds = new SystemDataSet();
+                        GalaxyFileObject ds = new GalaxyFileObject();
                         ds.setName(map.get("name").toString());
                         ds.setType("MGF");
                         ds.setDownloadUrl("to_ext=" + map.get("file_ext").toString());
@@ -419,7 +499,7 @@ public abstract class HistoryHandler {
                         this.mgfFilesMap.put(ds.getGalaxyId(), ds);
                         NeLSFilesMap.remove(ds.getNelsKey());
                     } else if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.sequence.Fasta")) {
-                        SystemDataSet ds = new SystemDataSet();
+                        GalaxyFileObject ds = new GalaxyFileObject();
                         ds.setName(map.get("name").toString());
                         ds.setType("Fasta");
                         ds.setDownloadUrl("to_ext=" + map.get("file_ext").toString());
@@ -441,17 +521,16 @@ public abstract class HistoryHandler {
                         vDs.setZipFileId(map.get("id").toString());
                         vDs.setStatus(map.get("state") + "");
                         if (map.get("state").toString().equalsIgnoreCase("new") || map.get("state").toString().equalsIgnoreCase("running") || map.get("state").toString().equalsIgnoreCase("queued")) {
-                            busySystem = true;
+                            systemInProgress = true;
                         }
                         try {
                             vDs.setJobDate(df6.parse((map.get("create_time") + "")));
-//
                         } catch (ParseException ex) {
                             ex.printStackTrace();
                         }
                     } else if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.tabular.Tabular") && map.get("name").toString().endsWith("-MGFFile")) {
-                        SystemDataSet ds = new SystemDataSet();
-                        ds.setName(map.get("name").toString());                        
+                        GalaxyFileObject ds = new GalaxyFileObject();
+                        ds.setName(map.get("name").toString());
                         ds.setType("MGF");
                         ds.setHistoryId(map.get("history_id") + "");
                         ds.setGalaxyId(map.get("id").toString());
@@ -460,23 +539,22 @@ public abstract class HistoryHandler {
                         ds.setAvailableOnNels(NeLSFilesMap.containsKey(ds.getNelsKey()));
                         ds.setStatus(map.get("state") + "");
                         if (ds.getStatus().equalsIgnoreCase("new") || ds.getStatus().equalsIgnoreCase("running") || ds.getStatus().equalsIgnoreCase("queued")) {
-                            busySystem = true;
+                            systemInProgress = true;
                         }
                         NeLSFilesMap.remove(ds.getNelsKey());
                         tabMgfFilesMap.put(ds.getName(), ds);
-//
                     }
                 });
-                
+
                 peptideShakerVisualizationMap.keySet().stream().map((key) -> peptideShakerVisualizationMap.get(key)).filter((vDs) -> !(!searchGUIFilesMap.containsKey(vDs.getProjectName()))).forEachOrdered((vDs) -> {
-                    SystemDataSet ds = searchGUIFilesMap.get(vDs.getProjectName());
+                    GalaxyFileObject ds = searchGUIFilesMap.get(vDs.getProjectName());
                     vDs.setJobDate(ds.getCreate_time());
                     vDs.setSearchGUIFile(ds);
                     tabMgfFilesMap.keySet().stream().filter((key) -> (key.contains(vDs.getProjectName()))).forEachOrdered((key) -> {
                         vDs.addMgfFiles(key, tabMgfFilesMap.get(key));
                     });
                 });
-                
+
                 List<PeptideShakerVisualizationDataset> collection = new ArrayList<>(peptideShakerVisualizationMap.values());
                 Collections.sort(collection);
                 Collections.reverse(collection);
@@ -489,10 +567,10 @@ public abstract class HistoryHandler {
                 historyFilesMap.putAll(fastaFilesMap);
                 historyFilesMap.putAll(searchSettingsFilesMap);
                 historyFilesMap.putAll(indexFilesMap);
-                if (busySystem) {
+                if (systemInProgress) {
                     invokeRecheckDataProcessing();
                 }
-                systemIsBusy(busySystem, historyFilesMap);
+                synchronizeDataWithGalaxyServer(systemInProgress, historyFilesMap);
             } catch (Exception e) {
                 if (e.toString().contains("Service Temporarily Unavailable")) {
                     Notification.show("Service Temporarily Unavailable", Notification.Type.ERROR_MESSAGE);
@@ -501,13 +579,13 @@ public abstract class HistoryHandler {
                     System.out.println("at history are not available");
                 }
             }
-            
+
         }
-        
+
         @Override
-        public Map<String, SystemDataSet> call() throws Exception {
+        public Map<String, GalaxyFileObject> call() throws Exception {
             return mgfFilesMap;
         }
-        
+
     }
 }
