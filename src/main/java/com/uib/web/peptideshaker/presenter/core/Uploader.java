@@ -64,8 +64,8 @@ public abstract class Uploader extends AbsoluteLayout {
             if (userUploadFolder == null) {
                 String userDataFolderUrl = VaadinSession.getCurrent().getAttribute("userDataFolderUrl") + "";
                 String APIKey = VaadinSession.getCurrent().getAttribute("ApiKey").toString();
-                File userFolder = new File(userDataFolderUrl, APIKey);
-                userUploadFolder = new File(userFolder, "uploadedFiles");
+                File user_folder = new File(userDataFolderUrl, APIKey);
+                userUploadFolder = new File(user_folder, "uploadedFiles");
                 userUploadFolder.mkdir();
                 uploaderComponent.setUploadPath(userUploadFolder.getAbsolutePath());
             }

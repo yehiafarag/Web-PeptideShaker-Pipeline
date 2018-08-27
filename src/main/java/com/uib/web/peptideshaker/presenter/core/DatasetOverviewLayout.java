@@ -134,8 +134,8 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
         upperPanel.addComponent(searchEnginesLabel);
 
         int index = 1;
-        for (String mgf : dataset.getMgfFiles().keySet()) {
-            Horizontal2Label mgfFile = new Horizontal2Label("MGF File " + index + " :", dataset.getMgfFiles().get(mgf).getName());
+        for (String mgf : dataset.getInputMGFFiles().keySet()) {
+            Horizontal2Label mgfFile = new Horizontal2Label("MGF File " + index + " :", dataset.getInputMGFFiles().get(mgf).getName());
             upperPanel.addComponent(mgfFile);
             index++;
         }

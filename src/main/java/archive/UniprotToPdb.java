@@ -1,4 +1,4 @@
-  package com.uib.web.peptideshaker.model.core.pdb;
+  package archive;
 
 import java.io.IOException;
 import java.io.InputStream;

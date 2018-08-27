@@ -2,10 +2,9 @@ package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components
 
 import com.compomics.util.experiment.biology.PTMFactory;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideObject;
-import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.ProteinObject;
 import com.uib.web.peptideshaker.model.core.pdb.PdbHandler;
 import com.uib.web.peptideshaker.model.core.pdb.ChainBlock;
-import com.uib.web.peptideshaker.model.core.pdb.PdbMatch;
+import com.uib.web.peptideshaker.model.core.pdb.PDBMatch;
 import com.vaadin.data.Property;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ExternalResource;
@@ -27,10 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 /**
  * This class represents 3D protein structure panel using JSMOL web service
@@ -74,7 +70,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
     private final Label uniprotLabel;
       private ExecutorService executor;
     private final PdbHandler pdbHandler = new PdbHandler();
-    private PdbMatch lastSelectedMatch;
+    private PDBMatch lastSelectedMatch;
 
     public ProteinStructurePanel() {
         ProteinStructurePanel.this.setSizeFull();
@@ -251,11 +247,11 @@ public class ProteinStructurePanel extends AbsoluteLayout {
         pdbBlockMap.clear();
         String accession = accessionObject.toString();
         proteinSequenceLength = proteinSequence.length();
-        Map<String, PdbMatch> pdbMachSet = pdbHandler.getData(accession);
+        Map<String, PDBMatch> pdbMachSet = pdbHandler.getData(accession);
         if (pdbMachSet != null && !pdbMachSet.isEmpty()) {
             pdbMachSet.keySet().forEach((str) -> {
                 pdbMatchesSelect.addItem(str);
-                pdbMatchesSelect.setItemCaption(str, str.toUpperCase() + " - " + pdbMachSet.get(str).getTitle());
+                pdbMatchesSelect.setItemCaption(str, str.toUpperCase() + " - " + pdbMachSet.get(str).getDescription());
             });
             if (pdbMatchesSelect.getItemIds() == null) {
                 Notification.show("No visulization available ", Notification.Type.TRAY_NOTIFICATION);

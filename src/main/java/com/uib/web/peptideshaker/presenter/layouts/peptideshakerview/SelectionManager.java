@@ -167,8 +167,8 @@ public class SelectionManager {
             registeredDatasetAppliedFiltersMap.get(filterId).clear();
         });
         filteredProteinsSet = new FilteredProteins();
-        filteredProteinsSet.setWithoutTopFilterList(new LinkedHashSet<>(fullProteinSet));
-        filteredProteinsSet.setWithTopFilterList(new LinkedHashSet<>(fullProteinSet));
+        filteredProteinsSet.setFullProteinList(new LinkedHashSet<>(fullProteinSet));
+        filteredProteinsSet.setFilteredProteinList(new LinkedHashSet<>(fullProteinSet));
         SelectionChanged("dataset_filter_selection", "reset");
 
     }
@@ -279,9 +279,9 @@ public class SelectionManager {
             proteinFilterUtility(filterId, onlyFilter, tempProtenSet, filteredProtenSet);
         });
         FilteredProteins filteredProteinList = new FilteredProteins();
-        filteredProteinList.setWithoutTopFilterList(new LinkedHashSet<>(filteredProtenSet));
+        filteredProteinList.setFullProteinList(new LinkedHashSet<>(filteredProtenSet));
         proteinFilterUtility(topFilterId, onlyFilter, tempProtenSet, filteredProtenSet);
-        filteredProteinList.setWithTopFilterList(new LinkedHashSet<>(filteredProtenSet));
+        filteredProteinList.setFilteredProteinList(new LinkedHashSet<>(filteredProtenSet));
 
         singleProteinsFilter = onlyFilter == 1;
         return filteredProteinList;
@@ -397,7 +397,7 @@ public class SelectionManager {
     }
 
     public boolean isDatasetFilterApplied() {
-        return (filteredProteinsSet.getWithTopFilterList().size() != fullProteinSet.size());
+        return (filteredProteinsSet.getFilteredProteinList().size() != fullProteinSet.size());
 
     }
 
@@ -413,9 +413,9 @@ public class SelectionManager {
             for (int index = 0; index < datasetFilterOrderList.size(); index++) {
                 String filterId = datasetFilterOrderList.get(index);
                 if (index == 0) {
-                    registeredDatasetFiltersMap.get(filterId).updateFilterSelection(filteredProteinsSet.getWithoutTopFilterList(), registeredDatasetAppliedFiltersMap.get(filterId), (index == 0), singleProteinsFilter, (filterId.equalsIgnoreCase(actionFilterId)));
+                    registeredDatasetFiltersMap.get(filterId).updateFilterSelection(filteredProteinsSet.getFullProteinList(), registeredDatasetAppliedFiltersMap.get(filterId), (index == 0), singleProteinsFilter, (filterId.equalsIgnoreCase(actionFilterId)));
                 } else {
-                    registeredDatasetFiltersMap.get(filterId).updateFilterSelection(filteredProteinsSet.getWithTopFilterList(), registeredDatasetAppliedFiltersMap.get(filterId), (index == 0), singleProteinsFilter, (filterId.equalsIgnoreCase(actionFilterId)));
+                    registeredDatasetFiltersMap.get(filterId).updateFilterSelection(filteredProteinsSet.getFilteredProteinList(), registeredDatasetAppliedFiltersMap.get(filterId), (index == 0), singleProteinsFilter, (filterId.equalsIgnoreCase(actionFilterId)));
                 }
 //                
             }

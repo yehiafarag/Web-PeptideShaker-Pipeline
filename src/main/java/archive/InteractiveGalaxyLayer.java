@@ -57,7 +57,7 @@ public abstract class InteractiveGalaxyLayer {
      */
     private GalaxyToolsHandler toolsHandler;
 
-    private File userFolder;
+    private File user_folder;
 
     private String galaxyURL;
 
@@ -80,17 +80,17 @@ public abstract class InteractiveGalaxyLayer {
 
                             if (!APIKey.equalsIgnoreCase(Galaxy_Instance.getApiKey())) {
                                 //clean history and create new folder
-                                userFolder = new File(userDataFolderUrl, APIKey);
-                                if (userFolder.exists()) {
-                                    for (File tFile : userFolder.listFiles()) {
+                                user_folder = new File(userDataFolderUrl, APIKey);
+                                if (user_folder.exists()) {
+                                    for (File tFile : user_folder.listFiles()) {
                                         tFile.delete();
                                     }
                                 }
-                                userFolder.delete();
+                                user_folder.delete();
                             }
                         }
-                        userFolder = new File(userDataFolderUrl, Galaxy_Instance.getApiKey() + "");
-                        userFolder.mkdir();
+                        user_folder = new File(userDataFolderUrl, Galaxy_Instance.getApiKey() + "");
+                        user_folder.mkdir();
                         VaadinSession.getCurrent().setAttribute("ApiKey", Galaxy_Instance.getApiKey() + "");
                         VaadinSession.getCurrent().setAttribute("galaxyUrl", Galaxy_Instance.getGalaxyUrl());
                         System.out.println("at galaxy 0");
@@ -120,7 +120,7 @@ public abstract class InteractiveGalaxyLayer {
                             }
 
                         };//  
-                        historyHandler.connectToGalaxy(Galaxy_Instance, userFolder);
+                        historyHandler.connectToGalaxy(Galaxy_Instance, user_folder);
                         System.out.println("at galaxy III");
 //                        connectionBtn.setCaption("Disconnect");
 //                        connectionBtn.addStyleName("disconnect");
@@ -309,7 +309,7 @@ public abstract class InteractiveGalaxyLayer {
     public Map<String, GalaxyTransferableFile> saveSearchGUIParameters(SearchParameters searchParameters, boolean editMode) {
 
         if (toolsHandler != null) {
-            return toolsHandler.saveSearchGUIParameters(galaxyURL, userFolder, historyHandler.getSearchSettingsFilesMap(), historyHandler.getWorkingHistoryId(), searchParameters, editMode);
+            return toolsHandler.saveSearchGUIParameters(galaxyURL, user_folder, historyHandler.getSearchSettingsFilesMap(), historyHandler.getWorkingHistoryId(), searchParameters, editMode);
         }
         return null;
 

@@ -83,8 +83,8 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
             public void itemSelected(Object itemId) {
                 selectedIds.clear();
                 selectedIds.add(itemId + "");
-                peptideShakerVisualizationDataset.setProteinInformation(selectedIds);
-                peptideShakerVisualizationDataset.initializePsmFile();
+                peptideShakerVisualizationDataset.selectUpdateProteins(selectedIds);
+                peptideShakerVisualizationDataset.processPSMFile();
                 Selection_Manager.setSelection("protein_selection", selectedIds, null, getFilterId());
 
             }
@@ -209,7 +209,7 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
                 ModificationColorMap.put(mod, Color.LIGHT_GRAY);
             }
         });
-        chartFiltersContainer.updateFiltersData(modificationMatrix, ModificationColorMap, peptideShakerVisualizationDataset.getChromosomeMap(), peptideShakerVisualizationDataset.getPiMap(), peptideShakerVisualizationDataset.getProteinValidationMap(), peptideShakerVisualizationDataset.getProteinPeptidesNumberMap(), peptideShakerVisualizationDataset.getProteinPSMNumberMap(), peptideShakerVisualizationDataset.getProteinCoverageMap());
+        chartFiltersContainer.updateFiltersData(modificationMatrix, ModificationColorMap, peptideShakerVisualizationDataset.getChromosomeMap(), peptideShakerVisualizationDataset.getProteinInferenceMap(), peptideShakerVisualizationDataset.getProteinValidationMap(), peptideShakerVisualizationDataset.getProteinPeptidesNumberMap(), peptideShakerVisualizationDataset.getProteinPSMNumberMap(), peptideShakerVisualizationDataset.getProteinCoverageMap());
 
         System.out.println("to test III : " + (System.currentTimeMillis() - start) + "ms");
     }

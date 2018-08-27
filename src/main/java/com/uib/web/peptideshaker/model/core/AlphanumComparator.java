@@ -1,4 +1,5 @@
 package com.uib.web.peptideshaker.model.core;
+
 /*
  * The Alphanum Algorithm is an improved sorting algorithm for strings
  * containing numbers.  Instead of sorting numbers in ASCII order like
@@ -32,9 +33,8 @@ package com.uib.web.peptideshaker.model.core;
  * compare(String s1, String s2) - Remove the type checking and casting in
  * compare().
  *
- * To use this class: Use the static sort method from the
- * java.util.Collections class: Collections.sort(your list, new
- * AlphanumComparator());
+ * To use this class: Use the static sort method from the java.util.Collections
+ * class: Collections.sort(your list, new AlphanumComparator());
  */
 public class AlphanumComparator implements Comparable<AlphanumComparator> {
 
@@ -44,7 +44,7 @@ public class AlphanumComparator implements Comparable<AlphanumComparator> {
     private final String value;
 
     /**
-     * Constructor to initialize main attributes.
+     * Constructor to initialise main attributes.
      *
      * @param value the value to be compared.
      */
@@ -90,13 +90,18 @@ public class AlphanumComparator implements Comparable<AlphanumComparator> {
         return chunk.toString();
     }
 
+    /**
+     *
+     * @param alphanumComparator2
+     * @return integer value of the comparisons
+     */
     @Override
-    public int compareTo(AlphanumComparator o2) {
-        if (!(value instanceof String) || !(o2.value instanceof String)) {
+    public int compareTo(AlphanumComparator alphanumComparator2) {
+        if (!(value instanceof String) || !(alphanumComparator2.value instanceof String)) {
             return 0;
         }
 
-        String s2 = (String) o2.value;
+        String s2 = (String) alphanumComparator2.value;
 
         int thisMarker = 0;
         int thatMarker = 0;
@@ -137,6 +142,10 @@ public class AlphanumComparator implements Comparable<AlphanumComparator> {
         return s1Length - s2Length;
     }
 
+    /**
+     *Convert to string value
+     * @return The value to be compared
+     */
     @Override
     public String toString() {
         return value;

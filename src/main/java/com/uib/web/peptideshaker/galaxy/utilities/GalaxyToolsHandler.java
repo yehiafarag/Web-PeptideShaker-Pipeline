@@ -228,7 +228,7 @@ public abstract class GalaxyToolsHandler {
      * Save search settings file into galaxy
      *
      * @param galaxyURL Galaxy Server web address
-     * @param userFolder Personal user folder where the user temporary files are
+     * @param user_folder Personal user folder where the user temporary files are
      * stored
      * @param searchParameters searchParameters .par file
      * @param workHistoryId The working History ID on Galaxy Server
@@ -236,7 +236,7 @@ public abstract class GalaxyToolsHandler {
      * @param isNew the .par file is new
      * @return updated Search Parameters files (.par) Map
      */
-    public Map<String, GalaxyTransferableFile> saveSearchGUIParameters(String galaxyURL, File userFolder, Map<String, GalaxyTransferableFile> searchParametersFilesMap, String workHistoryId, SearchParameters searchParameters, boolean isNew) {
+    public Map<String, GalaxyTransferableFile> saveSearchGUIParameters(String galaxyURL, File user_folder, Map<String, GalaxyTransferableFile> searchParametersFilesMap, String workHistoryId, SearchParameters searchParameters, boolean isNew) {
 
         String fileName = searchParameters.getFastaFile().getName().split("__")[1].replace(".", "_") + ".par";
         String fileId;
@@ -249,7 +249,7 @@ public abstract class GalaxyToolsHandler {
         } else {
             fileId = fileName;
         }
-        File file = new File(userFolder, fileId);
+        File file = new File(user_folder, fileId);
 
         if (file.exists()) {
             file.delete();
@@ -273,11 +273,11 @@ public abstract class GalaxyToolsHandler {
             ds.setHistoryId(workHistoryId);
             ds.setGalaxyId(oDs.getId());
             ds.setDownloadUrl(galaxyURL + "/datasets/" + ds.getGalaxyId() + "/display?to_ext=" + oDs.getDataTypeExt());
-            GalaxyTransferableFile userFolderfile = new GalaxyTransferableFile(userFolder, ds, false);
+            GalaxyTransferableFile userFolderfile = new GalaxyTransferableFile(user_folder, ds, false);
             searchParametersFilesMap.put(ds.getGalaxyId(), userFolderfile);
             String temFileName = ds.getGalaxyId().replace("/", "_") + ds.getName();
 
-            File updated = new File(userFolder, temFileName);
+            File updated = new File(user_folder, temFileName);
             try {
                 updated.createNewFile();
                 FileUtils.copyFile(file, updated);

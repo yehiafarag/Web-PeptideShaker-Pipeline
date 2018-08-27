@@ -83,7 +83,7 @@ public abstract class ProteinsPeptidesGraphComponent extends VerticalLayout {
         }
         ProteinObject protein = peptideShakerVisualizationDataset.getProtein(selectedProteinId);
 //        if (protein.getSequence() == null) {
-//            peptideShakerVisualizationDataset.setProteinInformation(protein);
+//            peptideShakerVisualizationDataset.selectUpdateProteins(protein);
 //        }
         protein.getProteinGroupSet().stream().map((acc) -> {
             proteinNodes.put(acc, peptideShakerVisualizationDataset.getProtein(acc));

@@ -22,19 +22,32 @@ import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
 /**
+ * This class represents EBI web service for PDB data
  *
- * Yehia Farag
+ * @author Yehia Farag
  */
-public class PdbEbiRestService {
+public class EBIRestService {
 
-    public Map<String, Map<String, PdbMatch>> getPdbIds(Set<String> uniprotAccessionSet) {
-
+    /**
+     * Match UniProt protein accession to PDB accession
+     *
+     * @param uniprotAccessionSet set of UniProt accessions
+     * @return set of PDB accessions
+     */
+    public Map<String, Map<String, PDBMatch>> getPdbIds(Set<String> uniprotAccessionSet) {
         String accessions = uniprotAccessionSet.toString().replace("[", "").replace("]", "");
         return this.getPdbIds(accessions, uniprotAccessionSet.size() == 1);
     }
 
-    public Map<String, Map<String, PdbMatch>> getPdbIds(String accessions, boolean isDoGet) {
-        Map<String, Map<String, PdbMatch>> pdbMap = new LinkedHashMap<>();
+    /**
+     * Get PDB matches set from UniProt accessions
+     *
+     * @param accessions set of UniProt accessions
+     * @param isDoGet the HTTP method to use is GET
+     * @return set of PDB matches accessions
+     */
+    public Map<String, Map<String, PDBMatch>> getPdbIds(String accessions, boolean isDoGet) {
+        Map<String, Map<String, PDBMatch>> pdbMap = new LinkedHashMap<>();
         if (accessions == null || accessions.trim().equalsIgnoreCase("")) {
             return pdbMap;
         }
@@ -56,15 +69,15 @@ public class PdbEbiRestService {
                 Map<String, Object> retMap = toMap(jsonObject);
                 String[] accArr = accessions.split(",");
                 for (String acc : accArr) {
-                    Map<String, PdbMatch> map = new LinkedHashMap<>();
+                    Map<String, PDBMatch> map = new LinkedHashMap<>();
                     List<Object> l = (List<Object>) retMap.get(acc.toUpperCase().trim());
                     if (l != null) {
                         l.stream().map((o) -> (Map<String, Object>) o).forEachOrdered((supMap) -> {
                             String pdbId = supMap.get("pdb_id") + "";
                             if (!map.containsKey(pdbId)) {
-                                map.put(pdbId, new PdbMatch(pdbId));
+                                map.put(pdbId, new PDBMatch(pdbId));
                             }
-                            PdbMatch tMatch = map.get(pdbId);
+                            PDBMatch tMatch = map.get(pdbId);
                             tMatch.addChainId(supMap.get("chain_id") + "");
                         });
                     } else {
@@ -74,63 +87,20 @@ public class PdbEbiRestService {
                 }
 
             }
-            
-            
-            
-            
+
         } catch (JSONException ex) {
             ex.printStackTrace();
         }
         return pdbMap;
     }
 
-    private Map<String, Map<String, PdbMatch>> getUniprotPdbId(String accessions, boolean isDoGet) {
-        Map<String, Map<String, PdbMatch>> pdbMap = new LinkedHashMap<>();
-        if (accessions == null || accessions.trim().equalsIgnoreCase("")) {
-            return pdbMap;
-        }
-        try {
-            String url = "https://www.uniprot.org/uniprot/?query=P0DMV9+AND+database:pdb&format=tab&columns=id,database(PDB)";
-            String urlParameters = accessions;
-            String respond;
-            if (isDoGet) {
-                respond = sendGet(url + urlParameters);
-            } else {
-                respond = sendPost(url, urlParameters);
-            }
-            if (respond.equalsIgnoreCase("")) {
-                return pdbMap;
-            }
-            JSONObject jsonObject = new JSONObject(respond);
-
-            if (jsonObject != JSONObject.NULL) {
-                Map<String, Object> retMap = toMap(jsonObject);
-                String[] accArr = accessions.split(",");
-
-                for (String acc : accArr) {
-                    Map<String, PdbMatch> map = new LinkedHashMap<>();
-                    List<Object> l = (List<Object>) retMap.get(acc.toUpperCase().trim());
-                    if (l != null) {
-                        l.stream().map((o) -> (Map<String, Object>) o).forEachOrdered((supMap) -> {
-                            String pdbId = supMap.get("pdb_id") + "";
-                            if (!map.containsKey(pdbId)) {
-                                map.put(pdbId, new PdbMatch(pdbId));
-                            }
-                            PdbMatch tMatch = map.get(pdbId);
-                            tMatch.addChainId(supMap.get("chain_id") + "");
-                        });
-                    }
-                    pdbMap.put(acc, map);
-                }
-
-            }
-        } catch (JSONException ex) {
-            ex.printStackTrace();
-        }
-        return pdbMap;
-    }
-
-    public Map<String, PdbMatch> getPdbSummary(Map<String, PdbMatch> pdbMatches) {
+    /**
+     * Update PDB matches information (summary)
+     *
+     * @param pdbMatches map of PDB matches
+     * @return update map of PDB matches
+     */
+    public Map<String, PDBMatch> getPdbSummary(Map<String, PDBMatch> pdbMatches) {
         try {
             String url = " https://www.ebi.ac.uk/pdbe/api/pdb/entry/summary/";
             String urlParameters = pdbMatches.keySet().toString().replace("[", "").replace("]", "");
@@ -149,8 +119,8 @@ public class PdbEbiRestService {
                 pdbMatches.keySet().forEach((pdbId) -> {
                     List<Object> l = (List<Object>) retMap.get(pdbId.toLowerCase());
                     Map<String, Object> subMap = (Map<String, Object>) l.get(0);
-                    PdbMatch match = pdbMatches.get(pdbId);
-                    match.setJsonData(subMap);
+                    PDBMatch match = pdbMatches.get(pdbId);
+                    match.setDescription((String) subMap.get("title"));
                 });
 
             }
@@ -160,7 +130,14 @@ public class PdbEbiRestService {
         return pdbMatches;
     }
 
-    public PdbMatch updatePdbInformation(PdbMatch pdbMatch, String proteinSequence) {
+    /**
+     * Update PDB matches information (full information)
+     *
+     * @param proteinSequence protein sequence
+     * @param pdbMatch PDB match
+     * @return update PDB match
+     */
+    public PDBMatch updatePdbInformation(PDBMatch pdbMatch, String proteinSequence) {
         try {
 
             String url = " https://www.ebi.ac.uk/pdbe/api/pdb/entry/molecules/";
@@ -264,7 +241,13 @@ public class PdbEbiRestService {
         return pdbMatch;
     }
 
-    // HTTP POST request
+    /**
+     * Send HTTP doPOST request.
+     *
+     * @param url link to server
+     * @param urlParameters request parameters
+     * @return response as string
+     */
     private String sendPost(String url, String urlParameters) {
 
         try {
@@ -306,7 +289,12 @@ public class PdbEbiRestService {
 
     }
 
-    // HTTP GET request
+    /**
+     * Send HTTP doGET request.
+     *
+     * @param url link to server
+     * @return response as string
+     */
     private String sendGet(String url) {
 
         try {
@@ -341,6 +329,13 @@ public class PdbEbiRestService {
         return "";
     }
 
+    /**
+     * Convert JSON object to Java readable map
+     *
+     * @param object JSON object to be converted
+     * @return Java Hash map has all the data
+     * @throws JSONException in case of error in reading JSON file
+     */
     public Map<String, Object> toMap(JSONObject object) throws JSONException {
         Map<String, Object> map = new HashMap<>();
 
@@ -359,6 +354,13 @@ public class PdbEbiRestService {
         return map;
     }
 
+    /**
+     * Convert JSON object to Java readable list
+     *
+     * @param array JSON array to be converted
+     * @return Java List has all the data
+     * @throws JSONException in case of error in reading JSON file
+     */
     public List<Object> toList(JSONArray array) throws JSONException {
         List<Object> list = new ArrayList<>();
         for (int i = 0; i < array.length(); i++) {

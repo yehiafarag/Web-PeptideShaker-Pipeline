@@ -263,7 +263,7 @@ public abstract class DataViewLayout extends Panel {
                 ((PeptideShakerVisualizationDataset) ds).setEnzyme(dsOverview.getEnzyme());
                 ((PopupWindow) nameLabel).setContent(dsOverview);
                 nameLabel.addStyleName("bluecolor");
-                if (statusLabel.getStatus() == 0 && !((PeptideShakerVisualizationDataset) ds).isValidFile()) {
+                if (statusLabel.getStatus() == 0) {
                     statusLabel.setStatus("Some files are missings or corrupted please re-run SearchGUI-PeptideShaker-WorkFlow");
                 }
 

@@ -51,7 +51,7 @@ public abstract class GalaxyHistoryHandler {
     /**
      * User data files folder.
      */
-    private File userFolder;
+    private File user_folder;
     /**
      * Helping class to initialise and update dataset information.
      */
@@ -100,12 +100,12 @@ public abstract class GalaxyHistoryHandler {
      * System connected to Galaxy Server
      *
      * @param Galaxy_Instance the main Galaxy instance in the system
-     * @param userFolder user folder to store users file temporarily
+     * @param user_folder user folder to store users file temporarily
      */
-    public void connectToGalaxy(GalaxyInstance Galaxy_Instance, File userFolder) {
+    public void connectToGalaxy(GalaxyInstance Galaxy_Instance, File user_folder) {
         this.Galaxy_Instance = Galaxy_Instance;
         this.galaxyDatasetServingUtil = new GalaxyDatasetServingUtil(Galaxy_Instance.getGalaxyUrl(), Galaxy_Instance.getApiKey());
-        this.userFolder = userFolder;
+        this.user_folder = user_folder;
         GalaxyHistoryHandler.this.updateHistory();
     }
 
@@ -473,7 +473,7 @@ public abstract class GalaxyHistoryHandler {
                         ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + ds.getGalaxyId() + "/display?to_ext=" + map.get("file_ext").toString());
                         ds.setStatus(map.get("state") + "");
 
-                        GalaxyTransferableFile file = new GalaxyTransferableFile(userFolder, ds, false);
+                        GalaxyTransferableFile file = new GalaxyTransferableFile(user_folder, ds, false);
                         file.setDownloadUrl(ds.getDownloadUrl());
                         file.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
                         file.setAvailableOnNels(NeLSFilesMap.containsKey(file.getNelsKey()));
@@ -512,19 +512,19 @@ public abstract class GalaxyHistoryHandler {
                         NeLSFilesMap.remove(ds.getNelsKey());
                     } else if ((map.get("name").toString().endsWith("-ZIP")) && (map.get("data_type").toString().equalsIgnoreCase("abc.CompressedArchive") || map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.binary.CompressedZipArchive"))) {
                         String projectId = map.get("name").toString().split("-")[0];
-                        PeptideShakerVisualizationDataset vDs = new PeptideShakerVisualizationDataset(projectId, userFolder, Galaxy_Instance.getGalaxyUrl(), Galaxy_Instance.getApiKey(), galaxyDatasetServingUtil);
+                        PeptideShakerVisualizationDataset vDs = new PeptideShakerVisualizationDataset(projectId, user_folder, Galaxy_Instance.getGalaxyUrl(), Galaxy_Instance.getApiKey(), galaxyDatasetServingUtil);
                         peptideShakerVisualizationMap.put(projectId, vDs);
                         vDs.setHistoryId(map.get("history_id") + "");
                         vDs.setType("Web Peptide Shaker Dataset");
                         vDs.setName(projectId);
                         vDs.setFile_ext(map.get("file_ext") + "");
-                        vDs.setZipFileId(map.get("id").toString());
+                        vDs.setPeptideShakerResultsFileId(map.get("id").toString());
                         vDs.setStatus(map.get("state") + "");
                         if (map.get("state").toString().equalsIgnoreCase("new") || map.get("state").toString().equalsIgnoreCase("running") || map.get("state").toString().equalsIgnoreCase("queued")) {
                             systemInProgress = true;
                         }
                         try {
-                            vDs.setJobDate(df6.parse((map.get("create_time") + "")));
+                            vDs.setCreateTime(df6.parse((map.get("create_time") + "")));
                         } catch (ParseException ex) {
                             ex.printStackTrace();
                         }
@@ -548,8 +548,8 @@ public abstract class GalaxyHistoryHandler {
 
                 peptideShakerVisualizationMap.keySet().stream().map((key) -> peptideShakerVisualizationMap.get(key)).filter((vDs) -> !(!searchGUIFilesMap.containsKey(vDs.getProjectName()))).forEachOrdered((vDs) -> {
                     GalaxyFileObject ds = searchGUIFilesMap.get(vDs.getProjectName());
-                    vDs.setJobDate(ds.getCreate_time());
-                    vDs.setSearchGUIFile(ds);
+                    vDs.setCreateTime(ds.getCreate_time());
+                    vDs.setSearchGUIResultFile(ds);
                     tabMgfFilesMap.keySet().stream().filter((key) -> (key.contains(vDs.getProjectName()))).forEachOrdered((key) -> {
                         vDs.addMgfFiles(key, tabMgfFilesMap.get(key));
                     });

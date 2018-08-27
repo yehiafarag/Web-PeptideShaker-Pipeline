@@ -7,7 +7,7 @@ import com.compomics.util.experiment.biology.Enzyme;
 import com.compomics.util.experiment.biology.EnzymeFactory;
 import com.compomics.util.preferences.SequenceMatchingPreferences;
 import com.google.common.collect.Sets;
-import com.uib.web.peptideshaker.galaxy.utilities.history.GalaxyFastaFileReader;
+import com.uib.web.peptideshaker.galaxy.utilities.history.FastaFileWebService;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideObject;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.ProteinObject;
 import com.uib.web.peptideshaker.model.core.ModificationMatrix;
@@ -82,7 +82,7 @@ public class PeptideShakerVisualizationDataset1 extends GalaxyFileObject {
     public void setZipFileId(String zipFileId) {
         this.zipFileId = zipFileId;
     }
-    private GalaxyFastaFileReader fastaFileReader;
+    private FastaFileWebService fastaFileReader;
     private int proteinsNumber;
     private int psmNumber;
     private final SequenceMatchingPreferences sequenceMatchingPreferences;
@@ -418,11 +418,11 @@ public class PeptideShakerVisualizationDataset1 extends GalaxyFileObject {
         return psmNumber;
     }
 
-    public GalaxyFastaFileReader getFastaFileReader() {
+    public FastaFileWebService getFastaFileReader() {
         return fastaFileReader;
     }
 
-    public void setFastaFileReader(GalaxyFastaFileReader fastaFileReader) {
+    public void setFastaFileReader(FastaFileWebService fastaFileReader) {
         this.fastaFileReader = fastaFileReader;
     }
 

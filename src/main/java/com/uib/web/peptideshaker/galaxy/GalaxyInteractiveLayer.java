@@ -36,7 +36,7 @@ public abstract class GalaxyInteractiveLayer {
     /**
      * User data files folder
      */
-    private File userFolder;
+    private File user_folder;
 
     /**
      *Constructor to initialise the main Galaxy history handler.
@@ -62,9 +62,9 @@ public abstract class GalaxyInteractiveLayer {
     public boolean connectToGalaxyServer(String galaxyServerUrl, String userAPI, String userDataFolderUrl) {
         try {
             Galaxy_Instance = GalaxyInstanceFactory.get(galaxyServerUrl, userAPI);
-            userFolder = new File(userFolder, Galaxy_Instance.getApiKey() + "");
-            userFolder.mkdir();
-            historyHandler.connectToGalaxy(Galaxy_Instance, userFolder);
+            user_folder = new File(user_folder, Galaxy_Instance.getApiKey() + "");
+            user_folder.mkdir();
+            historyHandler.connectToGalaxy(Galaxy_Instance, user_folder);
             toolsHandler = new GalaxyToolsHandler(Galaxy_Instance.getToolsClient(), Galaxy_Instance.getWorkflowsClient(), Galaxy_Instance.getHistoriesClient()) {
                 @Override
                 public void synchronizeDataWithGalaxyServer() {
@@ -105,7 +105,7 @@ public abstract class GalaxyInteractiveLayer {
      */
     public Map<String, GalaxyTransferableFile> saveSearchGUIParameters(SearchParameters searchParameters, boolean newFile) {
         if (toolsHandler != null) {
-            return toolsHandler.saveSearchGUIParameters(Galaxy_Instance.getGalaxyUrl(), userFolder, historyHandler.getSearchSettingsFilesMap(), historyHandler.getWorkingHistoryId(), searchParameters, newFile);
+            return toolsHandler.saveSearchGUIParameters(Galaxy_Instance.getGalaxyUrl(), user_folder, historyHandler.getSearchSettingsFilesMap(), historyHandler.getWorkingHistoryId(), searchParameters, newFile);
         }
         return null;
 

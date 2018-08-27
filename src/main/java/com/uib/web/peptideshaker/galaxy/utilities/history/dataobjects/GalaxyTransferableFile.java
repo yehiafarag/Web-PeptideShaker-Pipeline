@@ -30,7 +30,7 @@ public class GalaxyTransferableFile extends GalaxyFileObject {
     /**
      * User data files folder.
      */
-    private final File userFolder;
+    private final File user_folder;
     /**
      * The file on Galaxy server is compressed.
      */
@@ -43,13 +43,13 @@ public class GalaxyTransferableFile extends GalaxyFileObject {
     /**
      * Constructor to initialise the main variables
      *
-     * @param userFolder User data files folder
+     * @param user_folder User data files folder
      * @param galaxyFileObject Galaxy file object
      * @param zipped The file on Galaxy server is compressed
      */
-    public GalaxyTransferableFile(File userFolder, GalaxyFileObject galaxyFileObject, boolean zipped) {
+    public GalaxyTransferableFile(File user_folder, GalaxyFileObject galaxyFileObject, boolean zipped) {
         this.galaxyFileObject = galaxyFileObject;
-        this.userFolder = userFolder;
+        this.user_folder = user_folder;
         this.zipped = zipped;
         this.subFilesList = new LinkedHashSet<>();
         super.setName(galaxyFileObject.getName());
@@ -129,7 +129,7 @@ public class GalaxyTransferableFile extends GalaxyFileObject {
         if (galaxyFileObject.getType().equalsIgnoreCase("Search Paramerters File (JSON)") && !zipped) {
             fileName += galaxyFileObject.getName();
         }
-        File file = new File(userFolder, fileName);
+        File file = new File(user_folder, fileName);
         if (file.exists()) {
             return file;
         }

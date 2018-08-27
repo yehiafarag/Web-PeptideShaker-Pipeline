@@ -16,29 +16,57 @@ import java.util.TreeSet;
 /**
  * This class responsible for calculating matrix for DivaMatrixLayoutChartFilter
  *
- * @author YEhia Farag
+ * @author Yehia Farag
  */
 public class ModificationMatrix {
 
+    /**
+     * Rows data map.
+     */
     private final Map<String, Integer> rows;
+    /**
+     * The full calculated matrix.
+     */
     private final Map<String, Set<Comparable>> calculatedMatrix;
+    /**
+     * Set of keys to sort.
+     */
     private final Set<String> keySorter;
-    private boolean ready=false;
 
+    /**
+     * Constructor to initialise the main data structure and the matrix
+     *
+     * @param data map of data rows as keys and columns as set
+     */
     public ModificationMatrix(Map<String, Set<Comparable>> data) {
         rows = new LinkedHashMap<>();
         keySorter = new TreeSet<>();
         calculatedMatrix = calculateMatrix(data);
     }
 
+    /**
+     * Get the calculated matrix rows
+     *
+     * @return map of rows title to number
+     */
     public Map<String, Integer> getRows() {
         return rows;
     }
 
+    /**
+     * Get the calculated matrix columns
+     *
+     * @return map of columns
+     */
     public Map<String, Set<Comparable>> getCalculatedColumns() {
         return calculatedMatrix;
     }
 
+    /**
+     * calculate the matrix rows and columns
+     *
+     * @param data map of data rows as keys and columns as set
+     */
     private Map<String, Set<Comparable>> calculateMatrix(Map<String, Set<Comparable>> data) {
         //calculate matrix
         Map<String, Set<Comparable>> matrixData = new LinkedHashMap<>();
@@ -146,14 +174,7 @@ public class ModificationMatrix {
         sortingKeyColumnsMap.values().forEach((key) -> {
             tempMatrixData.put(key, matrixData.get(key));
         });
-        ready=true;
         return tempMatrixData;
     }
 
-    public boolean isReady() {
-        return ready;
-    }
-    
-    
-    
 }

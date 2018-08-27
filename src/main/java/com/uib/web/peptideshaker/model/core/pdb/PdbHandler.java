@@ -2,93 +2,78 @@ package com.uib.web.peptideshaker.model.core.pdb;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.Callable;
 
 /**
- * Maps UniProt protein accession numbers to PDB file IDs. updated to suit the
+ * Maps UniProt protein accession numbers to PDB file IDs updated to suit the
  * web environment.
  *
  * @author Yehia Farag
  */
 public class PdbHandler {
 
-    private boolean valid = false;
-    private boolean readyFile;
-    private final UniprotToPdb PdbAccMapper;
-    private final  Map<String,  Map<String, PdbMatch>> pdbMap;
-    private final PdbEbiRestService pdbEbiRestService;
-    private final Map<String, PdbMatch> pdbMachsMap;
+    /**
+     * Protein to PDB matches map.
+     */
+    private final Map<String, Map<String, PDBMatch>> proteinToPDBMap;
+    /**
+     * EBI web service for PDB data.
+     */
+    private final EBIRestService EBI_Rest_Service;
+    private final Map<String, PDBMatch> pdbMachesMap;
 
+    /**
+     *
+     */
     public PdbHandler() {
-        this.pdbMap = new LinkedHashMap<>();
-        this.PdbAccMapper = new UniprotToPdb();
-        this.pdbEbiRestService = new PdbEbiRestService();
-        this.pdbMachsMap = new LinkedHashMap<>();
+        this.proteinToPDBMap = new LinkedHashMap<>();
+        this.EBI_Rest_Service = new EBIRestService();
+        this.pdbMachesMap = new LinkedHashMap<>();
     }
 
-    public boolean isValid() {
-        return valid;
-    }
-
-    public final Callable<String> updatePdbMap(Set<String> uniprotAccessions) {      
-               
-        readyFile = false;
-        try {
-
-            Callable<String> task = () -> {
-                try {
-                    pdbMap.putAll(pdbEbiRestService.getPdbIds(uniprotAccessions));
-                    readyFile = true;
-                } catch (Exception e) {
-                    valid = false;
-                    e.printStackTrace();
-                }
-                return "";
-            };
-            return task;
-        } catch (Exception ex) {
-            valid = false;
-            ex.printStackTrace();
+    /**
+     * Get PDB matches for the selected protein accession
+     *
+     * @param uniProtAccssion UniProt accession
+     * @return Map of PDB matches
+     */
+    public Map<String, PDBMatch> getData(String uniProtAccssion) {
+        final Map<String, PDBMatch> subMap;
+        if (!proteinToPDBMap.containsKey(uniProtAccssion)) {
+            proteinToPDBMap.putAll(EBI_Rest_Service.getPdbIds(uniProtAccssion, true));
         }
-        return null;
-
-    }
-
-    public Map<String, PdbMatch> getData(String uniProtAccssion) {
-        final Map<String, PdbMatch> subMap;
-        if (!pdbMap.containsKey(uniProtAccssion)) {
-            pdbMap.putAll(pdbEbiRestService.getPdbIds(uniProtAccssion,true));
-        }
-        Map<String,PdbMatch> Pdbs = pdbMap.get(uniProtAccssion);
+        Map<String, PDBMatch> Pdbs = proteinToPDBMap.get(uniProtAccssion);
         if (Pdbs == null) {
             return null;
         }
-        Map<String,PdbMatch>  subIds = new LinkedHashMap<>();
+        Map<String, PDBMatch> subIds = new LinkedHashMap<>();
         subMap = new LinkedHashMap<>();
         Pdbs.keySet().forEach((id) -> {
-            if (!pdbMachsMap.containsKey(id)) {
-                subIds.put(id,Pdbs.get(id));
+            if (!pdbMachesMap.containsKey(id)) {
+                subIds.put(id, Pdbs.get(id));
             } else {
-                subMap.put(id, pdbMachsMap.get(id));
+                subMap.put(id, pdbMachesMap.get(id));
             }
         });
         if (!subIds.isEmpty()) {
-            subMap.putAll(pdbEbiRestService.getPdbSummary(subIds));
+            subMap.putAll(EBI_Rest_Service.getPdbSummary(subIds));
         }
-        pdbMachsMap.putAll(subMap);
+        pdbMachesMap.putAll(subMap);
         return subMap;
     }
 
-    public PdbMatch updatePdbInformation(String pdbMatch,String protSequence) {
-        if (pdbMachsMap.get(pdbMatch).getChains().isEmpty()) {
-            return pdbEbiRestService.updatePdbInformation(pdbMachsMap.get(pdbMatch),protSequence);
-        }else
-            return pdbMachsMap.get(pdbMatch);
-    }
-
-    public boolean isReadyFile() {
-        return readyFile;
+    /**
+     * Update PDB match information
+     *
+     * @param pdbMatch PDB match object
+     * @param protSequence protein sequence
+     * @return updated PDB match object
+     */
+    public PDBMatch updatePdbInformation(String pdbMatch, String protSequence) {
+        if (pdbMachesMap.get(pdbMatch).getChains().isEmpty()) {
+            return EBI_Rest_Service.updatePdbInformation(pdbMachesMap.get(pdbMatch), protSequence);
+        } else {
+            return pdbMachesMap.get(pdbMatch);
+        }
     }
 
 }

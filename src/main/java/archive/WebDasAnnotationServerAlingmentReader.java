@@ -1,5 +1,5 @@
 
-package com.uib.web.peptideshaker.model.core;
+package archive;
 
 import com.compomics.util.pdbfinder.das.readers.DasAlignment;
 import java.util.ArrayList;

@@ -45,14 +45,14 @@ public class VaadinSessionListener implements HttpSessionListener, ServletContex
     public void sessionDestroyed(HttpSessionEvent hse) {
         String ApiKey = hse.getSession().getAttribute("ApiKey") + "";
         String userDataFolderUrl = hse.getSession().getAttribute("userDataFolderUrl").toString();
-        File userFolder = new File(userDataFolderUrl, ApiKey);
-        if (userFolder.exists()) {
-            for (File tFile : userFolder.listFiles()) {
+        File user_folder = new File(userDataFolderUrl, ApiKey);
+        if (user_folder.exists()) {
+            for (File tFile : user_folder.listFiles()) {
                 tFile.delete();
             }
         }
-        boolean cleaned = userFolder.delete();
-        System.out.println("at session is ready to distroy ..Good bye...folder (" + userFolder.getName() + " are cleaned (" + cleaned + ") and folder exist (" + userFolder.exists() + ")");
+        boolean cleaned = user_folder.delete();
+        System.out.println("at session is ready to distroy ..Good bye...folder (" + user_folder.getName() + " are cleaned (" + cleaned + ") and folder exist (" + user_folder.exists() + ")");
         System.out.println("no more cookies exist");
     }
 

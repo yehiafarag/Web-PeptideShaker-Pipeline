@@ -9,13 +9,13 @@ import java.net.URL;
 import java.net.URLConnection;
 
 /**
- * This class represents FASTA utilities that allow using the uniprot
+ * This class represents FASTA utilities that allow using the UniProt
  * web-service to get protein information in case of some missing information in
  * proteins file
  *
  * @author Yehia Farag
  */
-public class GalaxyFastaFileReader {
+public class FastaFileWebService {
     /**
      * Protein evidence list.
      */

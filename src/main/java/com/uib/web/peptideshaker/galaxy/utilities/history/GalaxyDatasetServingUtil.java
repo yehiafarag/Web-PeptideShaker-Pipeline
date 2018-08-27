@@ -28,7 +28,7 @@ public class GalaxyDatasetServingUtil {
     /**
      * The Galaxy server address (URL).
      */
-    private final String galaxyURL;
+    private final String galaxyLink;
     /**
      * Requests parameters values.
      */
@@ -37,11 +37,11 @@ public class GalaxyDatasetServingUtil {
     /**
      * Update the file settings to be ready for reading the data.
      *
-     * @param galaxyURL In use Galaxy server URL
+     * @param galaxyLink In use Galaxy server URL
      * @param userApiKey the required API key to access galaxy API
      */
-    public GalaxyDatasetServingUtil(String galaxyURL, String userApiKey) {
-        this.galaxyURL = galaxyURL;
+    public GalaxyDatasetServingUtil(String galaxyLink, String userApiKey) {
+        this.galaxyLink = galaxyLink;
         params = new GalaxyDatasetServingUtil.ParameterNameValue[]{
             new GalaxyDatasetServingUtil.ParameterNameValue("key", userApiKey),};
 
@@ -61,7 +61,7 @@ public class GalaxyDatasetServingUtil {
 
         try {
 
-            StringBuilder locationBuilder = new StringBuilder(galaxyURL + "/api/histories/" + historyId + "/contents/" + MGFGalaxyID + "/display?");
+            StringBuilder locationBuilder = new StringBuilder(galaxyLink + "/api/histories/" + historyId + "/contents/" + MGFGalaxyID + "/display?");
             for (int i = 0; i < params.length; i++) {
                 if (i > 0) {
                     locationBuilder.append('&');
