@@ -19,7 +19,7 @@ import java.util.Set;
  *
  * @author Yehia Farag
  */
-public class PSMVisulizationLevelContainer extends HorizontalLayout implements RegistrableFilter {
+public class PeptideVisulizationLevelContainer extends HorizontalLayout implements RegistrableFilter {
     
     private final VerticalLayout container;
     private final Label headerLabel;
@@ -34,11 +34,11 @@ public class PSMVisulizationLevelContainer extends HorizontalLayout implements R
      * @param Selection_Manager
      * @param psmViewBtn
      */
-    public PSMVisulizationLevelContainer(SelectionManager Selection_Manager, BigSideBtn psmViewBtn) {
-        PSMVisulizationLevelContainer.this.setSizeFull();
-        PSMVisulizationLevelContainer.this.setSpacing(true);
-        PSMVisulizationLevelContainer.this.setMargin(false);
-        PSMVisulizationLevelContainer.this.setStyleName("psmView");
+    public PeptideVisulizationLevelContainer(SelectionManager Selection_Manager, BigSideBtn psmViewBtn) {
+        PeptideVisulizationLevelContainer.this.setSizeFull();
+        PeptideVisulizationLevelContainer.this.setSpacing(true);
+        PeptideVisulizationLevelContainer.this.setMargin(false);
+        PeptideVisulizationLevelContainer.this.setStyleName("psmView");
         
         this.Selection_Manager = Selection_Manager;
         this.psmViewBtn = psmViewBtn;
@@ -46,7 +46,7 @@ public class PSMVisulizationLevelContainer extends HorizontalLayout implements R
         container = new VerticalLayout();
         container.setSizeFull();
         container.setSpacing(false);
-        PSMVisulizationLevelContainer.this.addComponent(container);
+        PeptideVisulizationLevelContainer.this.addComponent(container);
         
         HorizontalLayout topLabelContainer = new HorizontalLayout();
         topLabelContainer.setSizeFull();
@@ -79,7 +79,7 @@ public class PSMVisulizationLevelContainer extends HorizontalLayout implements R
         };
         psmViewComponent.setThumbImage(this.psmViewBtn.getBtnThumbIconImage());
         middleContainer.addComponent(psmViewComponent);
-        Selection_Manager.RegistrProteinInformationComponent(PSMVisulizationLevelContainer.this);
+        Selection_Manager.RegistrProteinInformationComponent(PeptideVisulizationLevelContainer.this);
     }
     
     public void selectDataset(PeptideShakerVisualizationDataset peptideShakerVisualizationDataset) {

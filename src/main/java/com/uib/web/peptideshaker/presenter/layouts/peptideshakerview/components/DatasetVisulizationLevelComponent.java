@@ -34,7 +34,7 @@ import java.util.Set;
 public class DatasetVisulizationLevelComponent extends VerticalLayout implements RegistrableFilter {
 
     private final SearchableTable proteinTableContainer;
-    private final FiltersContainer chartFiltersContainer;
+    private final FiltersContainer datasetFiltersContainer;
     private final Map<String, Integer> inferenceMap;
     private final LayoutEvents.LayoutClickListener selectionListener;
     private PeptideShakerVisualizationDataset peptideShakerVisualizationDataset;
@@ -51,9 +51,9 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
         DatasetVisulizationLevelComponent.this.setSpacing(false);
         DatasetVisulizationLevelComponent.this.addStyleName("scrollinsideframe");
 
-        this.chartFiltersContainer = new FiltersContainer(Selection_Manager);
-        DatasetVisulizationLevelComponent.this.addComponent(chartFiltersContainer);
-        DatasetVisulizationLevelComponent.this.setExpandRatio(chartFiltersContainer, 100f);
+        this.datasetFiltersContainer = new FiltersContainer(Selection_Manager);
+        DatasetVisulizationLevelComponent.this.addComponent(datasetFiltersContainer);
+        DatasetVisulizationLevelComponent.this.setExpandRatio(datasetFiltersContainer, 100f);
 
         this.inferenceMap = new HashMap<>();
         this.inferenceMap.put("Single Protein", 1);
@@ -209,7 +209,7 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
                 ModificationColorMap.put(mod, Color.LIGHT_GRAY);
             }
         });
-        chartFiltersContainer.updateFiltersData(modificationMatrix, ModificationColorMap, peptideShakerVisualizationDataset.getChromosomeMap(), peptideShakerVisualizationDataset.getProteinInferenceMap(), peptideShakerVisualizationDataset.getProteinValidationMap(), peptideShakerVisualizationDataset.getProteinPeptidesNumberMap(), peptideShakerVisualizationDataset.getProteinPSMNumberMap(), peptideShakerVisualizationDataset.getProteinCoverageMap());
+        datasetFiltersContainer.updateFiltersData(modificationMatrix, ModificationColorMap, peptideShakerVisualizationDataset.getChromosomeMap(), peptideShakerVisualizationDataset.getProteinInferenceMap(), peptideShakerVisualizationDataset.getProteinValidationMap(), peptideShakerVisualizationDataset.getProteinPeptidesNumberMap(), peptideShakerVisualizationDataset.getProteinPSMNumberMap(), peptideShakerVisualizationDataset.getProteinCoverageMap());
 
         System.out.println("to test III : " + (System.currentTimeMillis() - start) + "ms");
     }

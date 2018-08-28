@@ -43,23 +43,23 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
      */
     private final MultiSelectOptionGroup mgfFileList;
     /**
-     * layout contain project name field and execute button
+     * layout contain project name field and execute button.
      */
     private final HorizontalLabelTextField projectNameField;
     /**
-     * Pop-up layout content that has search input available options
+     * Pop-up layout content that has search input available options.
      */
     private final SearchSettingsLayout searchSettingsLayout;
     /**
-     * Pop-up layout container for edit user search input
+     * Pop-up layout container for edit user search input.
      */
     private final PopupWindow editSearchOption;
     /**
-     * Available pre-saved search parameters files .par from previous searching
+     * Available pre-saved search parameters files .par from previous searching.
      */
     private Map<String, GalaxyTransferableFile> searchSettingsMap;
     /**
-     * selected search parameters to perform the search at galaxy server
+     * selected search parameters to perform the search at galaxy server.
      */
     private SearchParameters searchParameters;
 
@@ -68,6 +68,7 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
      */
     @SuppressWarnings("Convert2Lambda")
     public SearchGUIPeptideShakerWorkFlowInputLayout() {
+        
         SearchGUIPeptideShakerWorkFlowInputLayout.this.setWidth(100, Unit.PERCENTAGE);
         SearchGUIPeptideShakerWorkFlowInputLayout.this.setHeight(100, Unit.PERCENTAGE);
 
@@ -283,8 +284,8 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
      * @param fastaFileId FASTA file dataset id
      * @param mgfIdsList list of MGF file dataset ids
      * @param searchEnginesList List of selected search engine names
-     * @param searchParameters searching parameters
-//     * @param searchEngines search engines
+     * @param searchParameters searching parameters // * @param searchEngines
+     * search engines
      */
     public abstract void executeWorkFlow(String projectName, String fastaFileId, Set<String> mgfIdsList, Set<String> searchEnginesList, SearchParameters searchParameters);
 

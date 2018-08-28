@@ -58,6 +58,7 @@ public class FiltersContainer extends HorizontalLayout {
     public FiltersContainer(SelectionManager Selection_Manager) {
         FiltersContainer.this.setSizeFull();
         FiltersContainer.this.setSpacing(true);
+        FiltersContainer.this.setStyleName("datasetfilterstyle");
 
         this.Selection_Manager = Selection_Manager;
         colorList = new ArrayList<>(Arrays.asList(defaultColors));
@@ -69,10 +70,10 @@ public class FiltersContainer extends HorizontalLayout {
             colorList.add(c);
         }
 
-        HorizontalLayout filtersContainer = new HorizontalLayout();
-        filtersContainer.setSizeFull();
-        filtersContainer.setSpacing(true);
-        FiltersContainer.this.addComponent(filtersContainer);
+        HorizontalLayout filterContainer = new HorizontalLayout();
+        filterContainer.setSizeFull();
+        filterContainer.setSpacing(true);
+        FiltersContainer.this.addComponent(filterContainer);
 
         PIFilter = new DivaPieChartFilter("Protein Inference", "pi_filter", Selection_Manager) {
             @Override
@@ -85,14 +86,14 @@ public class FiltersContainer extends HorizontalLayout {
 
         };
 
-        VerticalLayout leftThumbContainer = new VerticalLayout();
-        leftThumbContainer.setSizeFull();
-        leftThumbContainer.setSpacing(true);
-        filtersContainer.addComponent(leftThumbContainer);
-        filtersContainer.setExpandRatio(leftThumbContainer, 1);
-
-        leftThumbContainer.addComponent(PIFilter);
-        leftThumbContainer.setComponentAlignment(PIFilter, Alignment.TOP_CENTER);
+        VerticalLayout filterLeftPanelContainer = new VerticalLayout();
+        filterLeftPanelContainer.setSizeFull();
+        filterLeftPanelContainer.setSpacing(true);
+        filterContainer.addComponent(filterLeftPanelContainer);
+        filterContainer.setExpandRatio(filterLeftPanelContainer, 1);
+        filterLeftPanelContainer.addComponent(PIFilter);
+        filterLeftPanelContainer.setComponentAlignment(PIFilter, Alignment.TOP_CENTER);
+        filterLeftPanelContainer.setStyleName("filtercontainerstyle");
 
         validationFilter = new DivaPieChartFilter("Protein Validation", "validation_filter", Selection_Manager) {
 
@@ -105,12 +106,9 @@ public class FiltersContainer extends HorizontalLayout {
             }
 
         };
-
-        leftThumbContainer.addComponent(validationFilter);
-        leftThumbContainer.setComponentAlignment(validationFilter, Alignment.TOP_CENTER);
-
+        filterLeftPanelContainer.addComponent(validationFilter);
+        filterLeftPanelContainer.setComponentAlignment(validationFilter, Alignment.TOP_CENTER);
         chromosomeFilter = new ChromosomesFilter("Chromosome", "chromosome_filter", Selection_Manager) {
-
             @Override
             public void selectionChange(String type) {
                 if (type.equalsIgnoreCase("dataset_filter_selection")) {
@@ -127,8 +125,8 @@ public class FiltersContainer extends HorizontalLayout {
         };
 
 //        chromosome_filterContainer = new PopUpFilterContainer("Chromosome", chromosomeFilter, "med");
-        leftThumbContainer.addComponent(chromosomeFilter);
-        leftThumbContainer.setComponentAlignment(chromosomeFilter, Alignment.TOP_CENTER);
+        filterLeftPanelContainer.addComponent(chromosomeFilter);
+        filterLeftPanelContainer.setComponentAlignment(chromosomeFilter, Alignment.TOP_CENTER);
 
         modificationFilter = new DivaMatrixLayoutChartFilter("Modifications", "modifications_filter", Selection_Manager) {
 
@@ -140,17 +138,19 @@ public class FiltersContainer extends HorizontalLayout {
             }
 
         };
-        filtersContainer.addComponent(modificationFilter);
-        filtersContainer.setComponentAlignment(modificationFilter, Alignment.TOP_CENTER);
-        filtersContainer.setExpandRatio(modificationFilter, 2);
+        modificationFilter.addStyleName("filtercontainerstyle");
+        filterContainer.addComponent(modificationFilter);
+        filterContainer.setComponentAlignment(modificationFilter, Alignment.TOP_CENTER);
+        filterContainer.setExpandRatio(modificationFilter, 2);
         modificationFilter.setSizeFull();
 
-        VerticalLayout rightThumbContainer = new VerticalLayout();
-        rightThumbContainer.setSizeFull();
-        rightThumbContainer.setSpacing(true);
-        filtersContainer.addComponent(rightThumbContainer);
-        filtersContainer.setComponentAlignment(rightThumbContainer, Alignment.TOP_CENTER);
-        filtersContainer.setExpandRatio(rightThumbContainer, 1);
+        VerticalLayout filterRightPanelContainer = new VerticalLayout();
+        filterRightPanelContainer.setSizeFull();
+        filterRightPanelContainer.setSpacing(true);
+        filterRightPanelContainer.addStyleName("filtercontainerstyle");
+        filterContainer.addComponent(filterRightPanelContainer);
+        filterContainer.setComponentAlignment(filterRightPanelContainer, Alignment.TOP_CENTER);
+        filterContainer.setExpandRatio(filterRightPanelContainer, 1);
 
 //add range filter
         prptidesNumberFilter = new DivaRangeFilter("#Peptides", "peptidesNum_filter", this.Selection_Manager) {
@@ -162,7 +162,7 @@ public class FiltersContainer extends HorizontalLayout {
         };
 //        prptidesNumberFilter.initializeFilterData(initRangeData(null));
 //        prptidesNumberFilter.updateFilter();
-        rightThumbContainer.addComponent(prptidesNumberFilter);
+        filterRightPanelContainer.addComponent(prptidesNumberFilter);
 
         psmNumberFilter = new DivaRangeFilter("#PSM", "psmNum_filter", this.Selection_Manager) {
             @Override
@@ -182,9 +182,9 @@ public class FiltersContainer extends HorizontalLayout {
 
 //        test2.updateData(initRangeData(null));
 //        test2.updateFilter();
-        rightThumbContainer.addComponent(psmNumberFilter);
+        filterRightPanelContainer.addComponent(psmNumberFilter);
 
-        rightThumbContainer.addComponent(possibleCoverageFilter);
+        filterRightPanelContainer.addComponent(possibleCoverageFilter);
     }
     private final Color[] colorsArr = new Color[]{Color.DARK_GRAY, new Color(4, 180, 95), Color.YELLOW, new Color(213, 8, 8), Color.ORANGE};
     private final Color[] colorsArrII = new Color[]{Color.DARK_GRAY, new Color(4, 180, 95), new Color(213, 8, 8)};

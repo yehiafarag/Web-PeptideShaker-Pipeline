@@ -16107,6 +16107,11 @@ div.v-layout.v-horizontal.v-widget {
 	animation: 10s WelcomeAnimation linear infinite, 3s Always ease alternate infinite;
 }
 
+.webpeptideshakertheme .smallscreenstyle .hidelowerpanel .v-slot-integratedframe {
+	width: 99% !important;
+	height: 100% !important;
+}
+
 .webpeptideshakertheme .smallscreenstyle .largetitle .v-label {
 	margin-left: 10px;
 }

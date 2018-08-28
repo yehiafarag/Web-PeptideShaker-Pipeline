@@ -59,7 +59,7 @@ public abstract class GalaxyHistoryHandler {
     /**
      * Is system in progress.
      */
-    private boolean systemInProgress = false;
+    private boolean jobsInProgress = false;
     /**
      * Inner class responsible for create Task to tracking and update the galaxy
      * history.
@@ -271,11 +271,12 @@ public abstract class GalaxyHistoryHandler {
      * Abstract method allows performing actions based on the jobs states on
      * Galaxy server
      *
-     * @param busy the system currently in progress (jobs still running)
      * @param historyFilesMap list of available files (datasets) on Galaxy
      * server
+     * @param jobsInProgress the system currently in progress (jobs still
+     * running)
      */
-    public abstract void synchronizeDataWithGalaxyServer(boolean busy, Map<String, GalaxyFileObject> historyFilesMap);
+    public abstract void synchronizeDataWithGalaxyServer(Map<String, GalaxyFileObject> historyFilesMap, boolean jobsInProgress);
 
     /**
      * Following jobs statues on Galaxy server until all jobs are done.
@@ -300,7 +301,6 @@ public abstract class GalaxyHistoryHandler {
             if (ready) {
                 REFRESHER.removeListener(refreshlistener);
                 updateHistory();
-                System.out.println("at refresh done ");
             }
         };
         REFRESHER.addListener(refreshlistener);
@@ -404,7 +404,7 @@ public abstract class GalaxyHistoryHandler {
         }
 
         public UpdateDatasetructureTask() {
-            systemInProgress = false;
+            jobsInProgress = false;
             this.mgfFilesMap = new LinkedHashMap<>();
             this.historyFilesMap = new LinkedHashMap<>();
             this.fastaFilesMap = new LinkedHashMap<>();
@@ -444,11 +444,12 @@ public abstract class GalaxyHistoryHandler {
                 List<Map<String, Object>> results = Galaxy_Instance.getSearchClient().search(query).getResults();
 
                 results.stream().filter((map) -> map != null && (!((map.get("purged") + "").equalsIgnoreCase("true") || (!historiesIds.contains(map.get("history_id") + "")) || (map.get("deleted") + "").equalsIgnoreCase("true")))).forEachOrdered((Map<String, Object> map) -> {
+
                     if ((map.get("data_type") + "").equalsIgnoreCase("galaxy.datatypes.binary.SearchGuiArchive")) {
                         GalaxyFileObject ds = new GalaxyFileObject();
                         ds.setStatus(map.get("state") + "");
                         if (ds.getStatus().equalsIgnoreCase("new") || ds.getStatus().equalsIgnoreCase("running") || ds.getStatus().equalsIgnoreCase("queued")) {
-                            systemInProgress = true;
+                            jobsInProgress = true;
                         }
                         try {
                             ds.setCreate_time(df6.parse((map.get("create_time") + "")));
@@ -510,7 +511,37 @@ public abstract class GalaxyHistoryHandler {
                         this.fastaFilesMap.put(ds.getGalaxyId(), ds);
                         ds.setStatus(map.get("state") + "");
                         NeLSFilesMap.remove(ds.getNelsKey());
-                    } else if ((map.get("name").toString().endsWith("-ZIP")) && (map.get("data_type").toString().equalsIgnoreCase("abc.CompressedArchive") || map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.binary.CompressedZipArchive"))) {
+                    } else if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.data.Data") && map.get("name").toString().endsWith(".fasta")) {
+                        GalaxyFileObject ds = new GalaxyFileObject();
+                        ds.setName(map.get("name").toString());
+                        ds.setType("Fasta");
+                        ds.setDownloadUrl("to_ext=" + map.get("file_ext").toString());
+                        ds.setHistoryId(map.get("history_id") + "");
+                        ds.setGalaxyId(map.get("id").toString());
+                        ds.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
+                        ds.setAvailableOnNels(NeLSFilesMap.containsKey(ds.getNelsKey()));
+                        this.fastaFilesMap.put(ds.getGalaxyId(), ds);
+                        ds.setStatus(map.get("state") + "");
+                        NeLSFilesMap.remove(ds.getNelsKey());
+                        if (map.get("state").toString().equalsIgnoreCase("new") || map.get("state").toString().equalsIgnoreCase("running") || map.get("state").toString().equalsIgnoreCase("queued")) {
+                            jobsInProgress = true;
+                        }
+                    }else if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.data.Data") && map.get("name").toString().endsWith(".mgf")) {
+                        GalaxyFileObject ds = new GalaxyFileObject();
+                        ds.setName(map.get("name").toString());
+                        ds.setType("MGF");
+                        ds.setDownloadUrl("to_ext=" + map.get("file_ext").toString());
+                        ds.setHistoryId(map.get("history_id") + "");
+                        ds.setGalaxyId(map.get("id").toString());
+                        ds.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
+                        ds.setAvailableOnNels(NeLSFilesMap.containsKey(ds.getNelsKey()));
+                        ds.setStatus(map.get("state") + "");
+                        this.mgfFilesMap.put(ds.getGalaxyId(), ds);
+                        NeLSFilesMap.remove(ds.getNelsKey());
+                        if (map.get("state").toString().equalsIgnoreCase("new") || map.get("state").toString().equalsIgnoreCase("running") || map.get("state").toString().equalsIgnoreCase("queued")) {
+                            jobsInProgress = true;
+                        }
+                    }  else if ((map.get("name").toString().endsWith("-ZIP")) && (map.get("data_type").toString().equalsIgnoreCase("abc.CompressedArchive") || map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.binary.CompressedZipArchive"))) {
                         String projectId = map.get("name").toString().split("-")[0];
                         PeptideShakerVisualizationDataset vDs = new PeptideShakerVisualizationDataset(projectId, user_folder, Galaxy_Instance.getGalaxyUrl(), Galaxy_Instance.getApiKey(), galaxyDatasetServingUtil);
                         peptideShakerVisualizationMap.put(projectId, vDs);
@@ -521,7 +552,7 @@ public abstract class GalaxyHistoryHandler {
                         vDs.setPeptideShakerResultsFileId(map.get("id").toString());
                         vDs.setStatus(map.get("state") + "");
                         if (map.get("state").toString().equalsIgnoreCase("new") || map.get("state").toString().equalsIgnoreCase("running") || map.get("state").toString().equalsIgnoreCase("queued")) {
-                            systemInProgress = true;
+                            jobsInProgress = true;
                         }
                         try {
                             vDs.setCreateTime(df6.parse((map.get("create_time") + "")));
@@ -539,7 +570,7 @@ public abstract class GalaxyHistoryHandler {
                         ds.setAvailableOnNels(NeLSFilesMap.containsKey(ds.getNelsKey()));
                         ds.setStatus(map.get("state") + "");
                         if (ds.getStatus().equalsIgnoreCase("new") || ds.getStatus().equalsIgnoreCase("running") || ds.getStatus().equalsIgnoreCase("queued")) {
-                            systemInProgress = true;
+                            jobsInProgress = true;
                         }
                         NeLSFilesMap.remove(ds.getNelsKey());
                         tabMgfFilesMap.put(ds.getName(), ds);
@@ -567,10 +598,10 @@ public abstract class GalaxyHistoryHandler {
                 historyFilesMap.putAll(fastaFilesMap);
                 historyFilesMap.putAll(searchSettingsFilesMap);
                 historyFilesMap.putAll(indexFilesMap);
-                if (systemInProgress) {
+                if (jobsInProgress) {
                     invokeRecheckDataProcessing();
                 }
-                synchronizeDataWithGalaxyServer(systemInProgress, historyFilesMap);
+                synchronizeDataWithGalaxyServer(historyFilesMap, jobsInProgress);
             } catch (Exception e) {
                 if (e.toString().contains("Service Temporarily Unavailable")) {
                     Notification.show("Service Temporarily Unavailable", Notification.Type.ERROR_MESSAGE);

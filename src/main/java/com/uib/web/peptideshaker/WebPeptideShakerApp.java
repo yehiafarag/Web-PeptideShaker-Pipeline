@@ -48,10 +48,7 @@ public class WebPeptideShakerApp extends VerticalLayout {
      * or in other databases.
      */
     private final FileSystemPresenter fileSystemPresenter;
-    /**
-     * There is jobs run in progress
-     */
-    private boolean inProgress;
+  
 
     /**
      * Constructor to initialise the application.
@@ -62,8 +59,8 @@ public class WebPeptideShakerApp extends VerticalLayout {
         WebPeptideShakerApp.this.addStyleName("frame");
         this.Galaxy_Interactive_Layer = new GalaxyInteractiveLayer() {
             @Override
-            public void synchronizeDataWithGalaxyServer(Map<String, GalaxyFileObject> historyFilesMap, boolean jobsInProgress) {
-                fileSystemPresenter.setBusy(jobsInProgress, historyFilesMap);
+            public void synchronizeDataWithGalaxyServer(Map<String, GalaxyFileObject> historyFilesMap, boolean jobsInProgress) {               
+                fileSystemPresenter.updateSystemData(historyFilesMap,jobsInProgress);
                 presentationManager.viewLayout(fileSystemPresenter.getViewId());
             }
         };
@@ -81,14 +78,8 @@ public class WebPeptideShakerApp extends VerticalLayout {
                 if (userAPI.equalsIgnoreCase("test_User_Login")) {
                     userAPI = VaadinSession.getCurrent().getAttribute("testUserAPIKey").toString();
                 }
-                System.out.println(".connectToGalaxy()");
                 boolean connected = Galaxy_Interactive_Layer.connectToGalaxyServer(galaxyServerUrl, userAPI, userDataFolderUrl);
-                presentationManager.setSideButtonsVisible(connected);
-                inProgress = false;
-                if (connected) {
-
-                }
-
+                presentationManager.setSideButtonsVisible(connected);               
                 return connected;
             }
 
@@ -118,7 +109,7 @@ public class WebPeptideShakerApp extends VerticalLayout {
         fileSystemPresenter = new FileSystemPresenter() {
             @Override
             public void deleteDataset(GalaxyFileObject ds) {
-                // Interactive_Galaxy_Layer.deleteDataset(ds);
+                 Galaxy_Interactive_Layer.deleteDataset(ds);
             }
 
             @Override
@@ -166,35 +157,15 @@ public class WebPeptideShakerApp extends VerticalLayout {
 
             @Override
             public boolean uploadToGalaxy(PluploadFile[] toUploadFiles) {
-                return false;//Interactive_Galaxy_Layer.uploadToGalaxy(toUploadFiles);
+                boolean check = Galaxy_Interactive_Layer.uploadToGalaxy(toUploadFiles);
+                fileSystemPresenter.updateSystemData(null, check);
+                return check;
             }
 
         };
-
         presentationManager.registerView(fileSystemPresenter);
         interactivePSPRojectResultsPresenter = new InteractivePSPRojectResultsPresenter();
         presentationManager.registerView(interactivePSPRojectResultsPresenter);
-
-//        Interactive_Galaxy_Layer = new InteractiveGalaxyLayer() {
-//            @Override
-//            public void systemConnected() {
-//                presentationManager.setSideButtonsVisible(true);
-//                connectGalaxyServer();
-//            }
-//
-//            @Override
-//            public void systemDisconnected() {
-//                presentationManager.setSideButtonsVisible(false);
-//            }
-//
-//            @Override
-//            public void synchronizeDataWithGalaxyServer(boolean inprogress, Map<String, GalaxyFileObject> historyFilesMap) {
-//                fileSystemView.setBusy(inprogress, historyFilesMap);
-//                presentationManager.viewLayout(fileSystemView.getViewId());
-//                toolsView.updatePeptideShakerToolInputForm(Interactive_Galaxy_Layer.getSearchSettingsFilesMap(), Interactive_Galaxy_Layer.getFastaFilesMap(), Interactive_Galaxy_Layer.getMgfFilesMap());
-//
-//            }
-//        };
     }
 
 

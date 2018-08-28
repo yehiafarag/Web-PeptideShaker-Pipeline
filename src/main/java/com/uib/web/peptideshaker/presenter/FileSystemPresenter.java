@@ -21,79 +21,71 @@ import pl.exsio.plupload.PluploadFile;
 
 /**
  * This class represent PeptideShaker view presenter which is responsible for
- * viewing the peptide shaker results on web
+ * viewing the PeptideShaker results on web
  *
  * @author Yehia Farag
  */
 public abstract class FileSystemPresenter extends VerticalLayout implements ViewableFrame, LayoutEvents.LayoutClickListener {
 
     /**
-     * The small side button.
+     * The small side button (normal size screen).
      */
-    private final SmallSideBtn toolsBtn;
+    private final SmallSideBtn rightViewControlButton;
     /**
-     * The small top button.
+     * The small top button (small screen support).
      */
-    private final SmallSideBtn topToolsBtn;
-    private VerticalLayout btnContainer;
-    private HorizontalLayout mobilebtnContainer;
+    private final SmallSideBtn topViewControlButton;
+    /**
+     * The main left side buttons container in big screen mode.
+     */
+    private VerticalLayout leftSideButtonsContainer;
+    /**
+     * Map of layouts to coordinate left side buttons actions.
+     */
     private final Map<BigSideBtn, Component> btnsLayoutMap;
+    /**
+     * Main layout that contains the files and datasets table.
+     */
     private DataViewLayout dataLayout;
+    /**
+     * The main left side button (only support in a big screen).
+     */
     private BigSideBtn viewDataBtn;
 
     /**
-     * Initialise the web tool main attributes.
-     *
+     * Constructor to initialise the web tool main attributes.
      */
     public FileSystemPresenter() {
         FileSystemPresenter.this.setSizeFull();
         FileSystemPresenter.this.setStyleName("activelayout");
-//        this.toolsBtn = new SmallSideBtn("img/jobs2.png");
-        this.toolsBtn = new SmallSideBtn(VaadinIcons.GLOBE);
-        this.toolsBtn.setData(FileSystemPresenter.this.getViewId());
-//  this.topToolsBtn = new SmallSideBtn("img/jobs2.png");
-        this.topToolsBtn = new SmallSideBtn(VaadinIcons.GLOBE);
-        this.topToolsBtn.setData(FileSystemPresenter.this.getViewId());
-
+        FileSystemPresenter.this.addStyleName("hidelowerpanel");
+        this.rightViewControlButton = new SmallSideBtn(VaadinIcons.GLOBE);
+        this.rightViewControlButton.setData(FileSystemPresenter.this.getViewId());
+        this.topViewControlButton = new SmallSideBtn(VaadinIcons.GLOBE);
+        this.topViewControlButton.setData(FileSystemPresenter.this.getViewId());
         this.btnsLayoutMap = new LinkedHashMap<>();
         this.initLayout();
         FileSystemPresenter.this.minimizeView();
-
     }
 
-    public void setBusy(boolean busy, Map<String, GalaxyFileObject> historyFilesMap) {
-        if (busy) {
-            toolsBtn.updateIconURL("img/globe-earth-animation-26.gif");//loading.gif
-            topToolsBtn.updateIconURL("img/globe-earth-animation-26.gif");//loading.gif
-            viewDataBtn.updateIconResource(new ThemeResource("img/globe-earth-animation-26.gif"));
-//            return;
-        } else {
-//            toolsBtn.updateIconURL("img/jobs2.png");
-//            topToolsBtn.updateIconURL("img/jobs2.png");
-            toolsBtn.updateIconURL(VaadinIcons.GLOBE);
-            topToolsBtn.updateIconURL(VaadinIcons.GLOBE);
-            viewDataBtn.updateIcon(VaadinIcons.GLOBE.getHtml());
-        }
-        this.dataLayout.updateDatasetsTable(historyFilesMap);
-    }
-
+    /**
+     * Initialise the container layout.
+     */
     private void initLayout() {
         this.addStyleName("integratedframe");
-        btnContainer = new VerticalLayout();
-        btnContainer.setWidth(100, Unit.PERCENTAGE);
-        btnContainer.setHeightUndefined();
-        btnContainer.setSpacing(true);
-        btnContainer.setMargin(new MarginInfo(false, false, true, false));
-//
+        leftSideButtonsContainer = new VerticalLayout();
+        leftSideButtonsContainer.setWidth(100, Unit.PERCENTAGE);
+        leftSideButtonsContainer.setHeightUndefined();
+        leftSideButtonsContainer.setSpacing(true);
+        leftSideButtonsContainer.setMargin(new MarginInfo(false, false, true, false));
         viewDataBtn = new BigSideBtn("Show Data", 1);
-//        viewDataBtn.updateIcon(new ThemeResource("img/jobs2.png"));
         viewDataBtn.updateIcon(VaadinIcons.GLOBE.getHtml());
         viewDataBtn.setData("datasetoverview");
-        btnContainer.addComponent(viewDataBtn);
-        btnContainer.setComponentAlignment(viewDataBtn, Alignment.TOP_CENTER);
+        leftSideButtonsContainer.addComponent(viewDataBtn);
+        leftSideButtonsContainer.setComponentAlignment(viewDataBtn, Alignment.TOP_CENTER);
         viewDataBtn.addLayoutClickListener(FileSystemPresenter.this);
 
-        VerticalLayout dataContainerLayout = initDataViewLayout();
+        VerticalLayout dataContainerLayout = initDataViewTableLayout();
         btnsLayoutMap.put(viewDataBtn, dataContainerLayout);
 
         VerticalLayout dataViewFrame = new VerticalLayout();
@@ -106,103 +98,21 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
         dataViewFrameContent.addStyleName("viewframecontent");
         dataViewFrameContent.setSizeFull();
         dataViewFrame.addComponent(dataViewFrameContent);
-//
         dataViewFrameContent.addComponent(dataContainerLayout);
-
-        mobilebtnContainer = new HorizontalLayout();
-        mobilebtnContainer.setHeight(100, Unit.PERCENTAGE);
-        mobilebtnContainer.setWidthUndefined();
-        mobilebtnContainer.setSpacing(true);
-        mobilebtnContainer.setStyleName("bottomsidebtncontainer");
-
-        mobilebtnContainer.addComponent(viewDataBtn.getMobileModeBtn());
-        mobilebtnContainer.setComponentAlignment(viewDataBtn.getMobileModeBtn(), Alignment.TOP_CENTER);
-
         viewDataBtn.setSelected(true);
 
     }
 
-    @Override
-    public VerticalLayout getMainView() {
-        return this;
-    }
-
-    @Override
-    public SmallSideBtn getRightView() {
-        return toolsBtn;
-    }
-
-    @Override
-    public String getViewId() {
-        return FileSystemPresenter.class.getName();
-    }
-
     /**
-     *
+     * Initialise the data view table layout.
      */
-    @Override
-    public void minimizeView() {
-        toolsBtn.setSelected(false);
-        topToolsBtn.setSelected(false);
-        this.addStyleName("hidepanel");
-        this.btnContainer.removeStyleName("visible");
-        this.mobilebtnContainer.addStyleName("hidepanel");
-
-    }
-
-    /**
-     *
-     */
-    @Override
-    public void maximizeView() {
-        toolsBtn.setSelected(true);
-        topToolsBtn.setSelected(true);
-        this.btnContainer.addStyleName("visible");
-        this.mobilebtnContainer.removeStyleName("hidepanel");
-        this.removeStyleName("hidepanel");
-
-    }
-
-    @Override
-    public void layoutClick(LayoutEvents.LayoutClickEvent event) {
-        BigSideBtn comp = (BigSideBtn) event.getComponent();
-        btnsLayoutMap.keySet().forEach((bbt) -> {
-            if (comp.getData().toString().equalsIgnoreCase(bbt.getData().toString())) {
-                bbt.setSelected(true);
-                btnsLayoutMap.get(bbt).removeStyleName("hidepanel");
-            } else {
-                bbt.setSelected(false);
-                btnsLayoutMap.get(bbt).addStyleName("hidepanel");
-            }
-        });
-        if (comp.getData().toString().equalsIgnoreCase("datasetoverview")) {
-
-        }
-    }
-
-    @Override
-    public VerticalLayout getLeftView() {
-        return btnContainer;
-    }
-
-    @Override
-    public HorizontalLayout getBottomView() {
-        return mobilebtnContainer;
-    }
-
-    @Override
-    public SmallSideBtn getTopView() {
-        return topToolsBtn;
-    }
-
-    private VerticalLayout initDataViewLayout() {
+    private VerticalLayout initDataViewTableLayout() {
         VerticalLayout container = new VerticalLayout();
         container.setWidth(100, Unit.PERCENTAGE);
         container.setHeight(100, Unit.PERCENTAGE);
         container.setSpacing(true);
         container.setStyleName("subframe");
         container.addStyleName("padding25");
-//        container.setMargin(new MarginInfo(true, true, true, true));
         dataLayout = new DataViewLayout() {
             @Override
             public void deleteDataset(GalaxyFileObject ds) {
@@ -226,9 +136,9 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
 
             @Override
             public boolean uploadToGalaxy(PluploadFile[] toUploadFiles) {
-                return FileSystemPresenter.this.uploadToGalaxy(toUploadFiles);
+                boolean check = FileSystemPresenter.this.uploadToGalaxy(toUploadFiles);
+                return check;
             }
-            
 
         };
         container.addComponent(dataLayout);
@@ -237,14 +147,179 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
         return container;
     }
 
-    public abstract void deleteDataset(GalaxyFileObject ds);
+    /**
+     * Update Online PeptideShaker files from Galaxy Server
+     *
+     * @param historyFilesMap List of available files on Galaxy Server
+     * @param jobInProgress Jobs are running
+     */
+    public void updateSystemData(Map<String, GalaxyFileObject> historyFilesMap, boolean jobInProgress) {
+        if (jobInProgress) {
+            rightViewControlButton.updateIconURL("img/globe-earth-animation-26.gif");
+            topViewControlButton.updateIconURL("img/globe-earth-animation-26.gif");
+            viewDataBtn.updateIconResource(new ThemeResource("img/globe-earth-animation-26.gif"));
+        } else {
+            rightViewControlButton.updateIconURL(VaadinIcons.GLOBE);
+            topViewControlButton.updateIconURL(VaadinIcons.GLOBE);
+            viewDataBtn.updateIcon(VaadinIcons.GLOBE.getHtml());
+        }
+        if (historyFilesMap != null) {
+            this.dataLayout.updateDatasetsTable(historyFilesMap);
+        }
+    }
 
-    public abstract void viewDataset(PeptideShakerVisualizationDataset ds);
+    /**
+     * Get the main frame layout
+     *
+     * @return File system presenter layout
+     */
+    @Override
+    public VerticalLayout getMainView() {
+        return this;
+    }
 
-    public abstract boolean sendToNeLS(GalaxyFileObject ds);
+    /**
+     * Get the small right side button component (represent view control button
+     * in large screen mode)
+     *
+     * @return right view control button
+     */
+    @Override
+    public SmallSideBtn getRightView() {
+        return rightViewControlButton;
+    }
 
-    public abstract boolean getFromNels(GalaxyFileObject ds);
-    
-     public abstract boolean uploadToGalaxy(PluploadFile[] toUploadFiles);
+    /**
+     * Get the current view ID
+     *
+     * @return view id
+     */
+    @Override
+    public String getViewId() {
+        return FileSystemPresenter.class.getName();
+    }
+
+    /**
+     * Hide the main view for the current component.
+     */
+    @Override
+    public void minimizeView() {
+        rightViewControlButton.setSelected(false);
+        topViewControlButton.setSelected(false);
+        this.addStyleName("hidepanel");
+        this.leftSideButtonsContainer.removeStyleName("visible");
+
+    }
+
+    /**
+     * Show the main view for the current component.
+     */
+    @Override
+    public void maximizeView() {
+        rightViewControlButton.setSelected(true);
+        topViewControlButton.setSelected(true);
+        this.leftSideButtonsContainer.addStyleName("visible");
+        this.removeStyleName("hidepanel");
+
+    }
+
+    /**
+     * Layout click method that is used to coordinate view inside the layout (in
+     * case of multiple view under the same presenter).
+     *
+     * @param event left side button clicked action
+     */
+    @Override
+    public void layoutClick(LayoutEvents.LayoutClickEvent event) {
+        BigSideBtn comp = (BigSideBtn) event.getComponent();
+        btnsLayoutMap.keySet().forEach((bbt) -> {
+            if (comp.getData().toString().equalsIgnoreCase(bbt.getData().toString())) {
+                bbt.setSelected(true);
+                btnsLayoutMap.get(bbt).removeStyleName("hidepanel");
+            } else {
+                bbt.setSelected(false);
+                btnsLayoutMap.get(bbt).addStyleName("hidepanel");
+            }
+        });
+        if (comp.getData().toString().equalsIgnoreCase("datasetoverview")) {
+
+        }
+    }
+
+    /**
+     * Get the left side container for left side big buttons (to be used in case
+     * of large screen mode)
+     *
+     * @return left side buttons container
+     */
+    @Override
+    public VerticalLayout getLeftView() {
+        return leftSideButtonsContainer;
+    }
+
+    /**
+     * Get the bottom side container for bottom buttons (to be used in case of
+     * small screen mode with multiple sub view in same presenter)
+     *
+     * @return bottom layout buttons container
+     */
+    @Override
+    public HorizontalLayout getBottomView() {
+        return new HorizontalLayout();
+    }
+
+    /**
+     * Get the small top side button component (represent view control button in
+     * small/mobile screen mode)
+     *
+     * @return top view control button
+     */
+    @Override
+    public SmallSideBtn getTopView() {
+        return topViewControlButton;
+    }
+
+    /**
+     * Abstract method to allow customised delete action for files from Galaxy
+     * Server
+     *
+     * @param fileObject the file to be removed from Galaxy Server
+     */
+    public abstract void deleteDataset(GalaxyFileObject fileObject);
+
+    /**
+     * Abstract method to allow customised view action for PeptideShaker dataset
+     *
+     * @param PeptideShakerDataset selected Peptide Shaker dataset to view
+     */
+    public abstract void viewDataset(PeptideShakerVisualizationDataset PeptideShakerDataset);
+
+    /**
+     *
+     * Abstract method to allow customised saving/moving action for files from
+     * Galaxy Server to NeLS storage system
+     *
+     * @param fileObject the file to be saved on NeLS storage system
+     * @return file successfully saved on NeLS storage system
+     */
+    public abstract boolean sendToNeLS(GalaxyFileObject fileObject);
+
+    /**
+     * Abstract method to allow customised retrieve/moving action for files from
+     * NeLS storage system to Galaxy Server
+     *
+     * @param fileObject the file to be saved on NeLS storage system
+     * @return file successfully moved to Galaxy Server
+     */
+    public abstract boolean getFromNels(GalaxyFileObject fileObject);
+
+    /**
+     * Abstract method to allow customised uploading action for files from user
+     * local computer to Galaxy Server
+     *
+     * @param toUploadFiles array of files to be uploaded
+     * @return successfully uploaded files
+     */
+    public abstract boolean uploadToGalaxy(PluploadFile[] toUploadFiles);
 
 }

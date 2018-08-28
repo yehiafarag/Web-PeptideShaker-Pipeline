@@ -44,7 +44,6 @@ public abstract class InteractiveGalaxyLayer {
 
 //    private final HorizontalLayout galaxyConnectionPanel;
 //    private final PopupView connectionSettingsPanel;
-
     /**
      * Galaxy server history management system
      *
@@ -64,7 +63,6 @@ public abstract class InteractiveGalaxyLayer {
     private final GalaxyConnectionPanelLayout galaxyConnectionSettingsPanel;
 
 //    private final Button connectionBtn;
-
     /**
      * Constructor to initialise Galaxy layer.
      */
@@ -110,11 +108,11 @@ public abstract class InteractiveGalaxyLayer {
                             }
 
                         };
-                        
+
                         System.out.println("at galaxy II ");
                         historyHandler = new GalaxyHistoryHandler() {
                             @Override
-                            public void synchronizeDataWithGalaxyServer(boolean busy, Map<String, GalaxyFileObject> historyFilesMap) {
+                            public void synchronizeDataWithGalaxyServer( Map<String, GalaxyFileObject> historyFilesMap,boolean busy) {
                                 //update history in the system 
                                 jobsInProgress(busy, historyFilesMap);
                             }
@@ -176,8 +174,8 @@ public abstract class InteractiveGalaxyLayer {
 //                Page.getCurrent().reload();
 //
 //            } else {
-                //connect to galaxy
-                galaxyConnectionSettingsPanel.validateAndConnect();
+        //connect to galaxy
+        galaxyConnectionSettingsPanel.validateAndConnect();
 //            }
 //
 //        });
@@ -188,7 +186,6 @@ public abstract class InteractiveGalaxyLayer {
 //        return galaxyConnectionPanel;
 //
 //    }
-
 //    /**
 //     * Connect to Galaxy server
 //     * @param username username. 
@@ -330,7 +327,7 @@ public abstract class InteractiveGalaxyLayer {
         mgfIdsList.forEach((mgfId) -> {
             mgfMap.put(mgfId, historyHandler.getMgfFilesMap().get(mgfId).getName());
         });
-        PeptideShakerVisualizationDataset tempWorkflowOutput = toolsHandler.executeWorkFlow(projectName, fastaFileId, mgfMap, searchEnginesList, historyHandler.getWorkingHistoryId(), searchParameters);
+        PeptideShakerVisualizationDataset tempWorkflowOutput = toolsHandler.execute_SearchGUI_PeptideShaker_WorkFlow(projectName, fastaFileId, mgfMap, searchEnginesList, historyHandler.getWorkingHistoryId(), searchParameters);
         toolsHandler.synchronizeDataWithGalaxyServer();
     }
 
@@ -362,10 +359,17 @@ public abstract class InteractiveGalaxyLayer {
 
     }
 
+    /**
+     * Upload Files (FASTA and MGF files to Galaxy Server)
+     *
+     * @param toUploadFiles list of the files to be uploaded to Galaxy Server
+     * @return files are successfully uploaded to Galaxy Server
+     */
     public boolean uploadToGalaxy(PluploadFile[] toUploadFiles) {
         return toolsHandler.uploadToGalaxy(historyHandler.getWorkingHistoryId(), toUploadFiles);
 
     }
+
     public abstract void jobsInProgress(boolean inprogress, Map<String, GalaxyFileObject> historyFilesMap);
 
     public void reConnectToGalaxy(String APIKEy, String galaxyUrl) {

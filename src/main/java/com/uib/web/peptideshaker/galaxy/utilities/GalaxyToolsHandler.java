@@ -20,7 +20,6 @@ import com.github.jmchilton.blend4j.galaxy.beans.WorkflowOutputs;
 import com.github.jmchilton.blend4j.galaxy.beans.collection.request.CollectionDescription;
 import com.github.jmchilton.blend4j.galaxy.beans.collection.request.HistoryDatasetElement;
 import com.github.jmchilton.blend4j.galaxy.beans.collection.response.CollectionResponse;
-import com.sun.jersey.api.client.ClientResponse;
 import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Notification;
@@ -228,8 +227,8 @@ public abstract class GalaxyToolsHandler {
      * Save search settings file into galaxy
      *
      * @param galaxyURL Galaxy Server web address
-     * @param user_folder Personal user folder where the user temporary files are
-     * stored
+     * @param user_folder Personal user folder where the user temporary files
+     * are stored
      * @param searchParameters searchParameters .par file
      * @param workHistoryId The working History ID on Galaxy Server
      * @param searchParametersFilesMap The Search Parameters files (.par) Map
@@ -364,7 +363,7 @@ public abstract class GalaxyToolsHandler {
                 }
             }
             conn.disconnect();
-
+            synchronizeDataWithGalaxyServer();
         } catch (MalformedURLException ex) {
             ex.printStackTrace();
         } catch (IOException ex) {
@@ -374,7 +373,7 @@ public abstract class GalaxyToolsHandler {
     }
 
     /**
-     * Run Online Peptide-Shaker (Search-GUI -> Peptide Shaker)work-flow
+     * Run Online Peptide-Shaker (Search-GUI -> Peptide Shaker) work-flow
      *
      * @param projectName The project name
      * @param fastaFileId FASTA file dataset id
@@ -384,7 +383,7 @@ public abstract class GalaxyToolsHandler {
      * @param searchParameters Search Parameter object
      * @return Generated PeptideShaker visualisation dataset (Temporary dataset)
      */
-    public PeptideShakerVisualizationDataset executeWorkFlow(String projectName, String fastaFileId, Map<String, String> mgfIdsList, Set<String> searchEnginesList, String historyId, SearchParameters searchParameters) {
+    public PeptideShakerVisualizationDataset execute_SearchGUI_PeptideShaker_WorkFlow(String projectName, String fastaFileId, Map<String, String> mgfIdsList, Set<String> searchEnginesList, String historyId, SearchParameters searchParameters) {
         Workflow selectedWf = null;
         try {
             String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
@@ -746,8 +745,8 @@ public abstract class GalaxyToolsHandler {
                 File tFile = (File) file.getUploadedFile();
                 final ToolsClient.FileUploadRequest request = new ToolsClient.FileUploadRequest(workHistoryId, tFile);
                 request.setDatasetName(file.getName());
-                galaxyToolClient.upload(request).getOutputs();
-                tFile.delete();
+                List<OutputDataset> results = galaxyToolClient.upload(request).getOutputs();
+                tFile.delete();                
             }
             try {
                 Thread.sleep(1000);

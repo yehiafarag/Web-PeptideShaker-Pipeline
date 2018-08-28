@@ -2936,10 +2936,10 @@
         margin-top: calc(50vh - 10vw);
         text-align: left;
         background: linear-gradient(50deg,#2c3143 30%,hsl(59, 81%, 30%) 40%,hsl(28, 99%, 57%) 30% );
-	background: -webkit-linear-gradient(50deg,#2c3143 30%,hsl(59, 81%, 30%) 40%,hsl(28, 99%, 57%) 30% );
-	background: -o-linear-gradient(50deg,#2c3143 30%,hsl(59, 81%, 30%) 40%,hsl(28, 99%, 57%) 30% );
-	background: -moz-linear-gradient(50deg,#2c3143 30%,hsl(59, 81%, 30%) 40%,hsl(28, 99%, 57%) 30% );
-        
+        background: -webkit-linear-gradient(50deg,#2c3143 30%,hsl(59, 81%, 30%) 40%,hsl(28, 99%, 57%) 30% );
+        background: -o-linear-gradient(50deg,#2c3143 30%,hsl(59, 81%, 30%) 40%,hsl(28, 99%, 57%) 30% );
+        background: -moz-linear-gradient(50deg,#2c3143 30%,hsl(59, 81%, 30%) 40%,hsl(28, 99%, 57%) 30% );
+
         color: #f7f7f7;
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -2947,6 +2947,10 @@
             3s Always ease alternate infinite;
     }
     /****small screen css**/
+    .smallscreenstyle .hidelowerpanel .v-slot-integratedframe {
+        width: 99% !important;
+        height:100% !important;
+    }
     .smallscreenstyle  .largetitle .v-label{
         margin-left:10px;
     }
@@ -3297,4 +3301,20 @@
     .hidewindow{
         display:none;
     }
+    .v-slot-datasetfilterstyle{
+	overflow-x:auto !important;
+	  display: inline-flex;
+}
+.datasetfilterstyle{	
+	min-width:2500px;
+}
+.v-slot-filtercontainerstyle{
+	max-width:500px;
+	overflow:hidden !important;
+}
+.v-slot-thumbfilterframe{
+	min-height:100% !important;
+	overflow:hidden !important;
+
+}
 }

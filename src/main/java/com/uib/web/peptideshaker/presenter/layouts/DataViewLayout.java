@@ -20,7 +20,6 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-import java.io.File;
 import java.util.Map;
 import pl.exsio.plupload.PluploadFile;
 
@@ -57,10 +56,7 @@ public abstract class DataViewLayout extends Panel {
 
         Uploader uploader = new Uploader() {
             @Override
-            public void filesUploaded(PluploadFile[] uploadedFiles) {
-                for (PluploadFile file : uploadedFiles) {
-                    System.out.println("at uploaded file " + file.getName());
-                }
+            public void filesUploaded(PluploadFile[] uploadedFiles) {               
                 uploadToGalaxy(uploadedFiles);
             }
 
@@ -263,7 +259,7 @@ public abstract class DataViewLayout extends Panel {
                 ((PeptideShakerVisualizationDataset) ds).setEnzyme(dsOverview.getEnzyme());
                 ((PopupWindow) nameLabel).setContent(dsOverview);
                 nameLabel.addStyleName("bluecolor");
-                if (statusLabel.getStatus() == 0) {
+                if (statusLabel.getStatus() == 2) {
                     statusLabel.setStatus("Some files are missings or corrupted please re-run SearchGUI-PeptideShaker-WorkFlow");
                 }
 

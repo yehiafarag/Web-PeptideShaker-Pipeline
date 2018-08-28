@@ -2,6 +2,7 @@ package com.uib.web.peptideshaker.presenter.core;
 
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -17,8 +18,9 @@ import pl.exsio.plupload.PluploadFile;
 import pl.exsio.plupload.helper.filter.PluploadFilter;
 
 /**
+ * This class represents Uploading class with progress bar
  *
- * @author Yehia Farag This class represents uploader class with progress bar
+ * @author Yehia Farag
  */
 public abstract class Uploader extends AbsoluteLayout {
 
@@ -47,6 +49,7 @@ public abstract class Uploader extends AbsoluteLayout {
         bar.setWidth(300, Unit.PIXELS);
 
         info = new Label();
+        info.setContentMode(ContentMode.HTML);
         info.setStyleName(ValoTheme.LABEL_TINY);
         info.addStyleName(ValoTheme.LABEL_NO_MARGIN);
         uploaderLayout.addComponent(info);
@@ -65,12 +68,14 @@ public abstract class Uploader extends AbsoluteLayout {
                 String userDataFolderUrl = VaadinSession.getCurrent().getAttribute("userDataFolderUrl") + "";
                 String APIKey = VaadinSession.getCurrent().getAttribute("ApiKey").toString();
                 File user_folder = new File(userDataFolderUrl, APIKey);
+                if (!user_folder.exists()) {
+                    user_folder.mkdir();
+                }
                 userUploadFolder = new File(user_folder, "uploadedFiles");
                 userUploadFolder.mkdir();
                 uploaderComponent.setUploadPath(userUploadFolder.getAbsolutePath());
             }
             if (uploaderBtn.getCaption().equals("Upload")) {
-
                 uploaderLayout.removeStyleName("hidebywidth");
                 uploaderComponent.removeStyleName("hidebywidth");
                 uploaderBtn.setCaption("");
@@ -88,7 +93,6 @@ public abstract class Uploader extends AbsoluteLayout {
             }
         });
     }
-    
 
     private void initUploaderComponent() {
         if (uploaderComponent != null) {
@@ -97,7 +101,7 @@ public abstract class Uploader extends AbsoluteLayout {
         uploaderComponent = new Plupload("Browse", FontAwesome.FILES_O);
         uploaderComponent.setMaxFileSize("1gb");
         uploaderComponent.addStyleName(ValoTheme.BUTTON_TINY);
-        uploaderComponent.addStyleName("smooth");     
+        uploaderComponent.addStyleName("smooth");
         Uploader.this.addComponent(uploaderComponent, "right:35px;top:2px");
         //show notification after file is uploaded
         uploaderComponent.addFileUploadedListener((PluploadFile file) -> {
@@ -125,7 +129,7 @@ public abstract class Uploader extends AbsoluteLayout {
 //notify, when the upload process is completed
         uploaderComponent.addUploadCompleteListener(() -> {
             bar.setValue(0.0f);
-            info.setValue("upload is to be process ! (" + uploaderComponent.getUploadedFiles().length + ")  :-) ");
+            info.setValue("upload is done " + FontAwesome.SMILE_O.getHtml());
             filesUploaded(uploaderComponent.getUploadedFiles());
             initUploaderComponent();
             uploaderComponent.removeStyleName("hidebywidth");
@@ -135,7 +139,7 @@ public abstract class Uploader extends AbsoluteLayout {
 //handle errors
         uploaderComponent.addErrorListener((PluploadError error) -> {
             Notification.show("Error in uploading file, only MGF and Fasta file format allowed", Notification.Type.ERROR_MESSAGE);
-            info.setValue("Only MGF and Fasta file format allowed");
+            info.setValue("Only MGF and Fasta file format allowed " + FontAwesome.FROWN_O.getHtml());
         });
         uploaderComponent.addFilter(new PluploadFilter("mgf", "mgf"));
         uploaderComponent.addFilter(new PluploadFilter("fasta", "fasta"));

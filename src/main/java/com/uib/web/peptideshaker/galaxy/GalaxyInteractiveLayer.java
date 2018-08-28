@@ -7,11 +7,14 @@ import com.github.jmchilton.blend4j.galaxy.GalaxyInstance;
 import com.github.jmchilton.blend4j.galaxy.GalaxyInstanceFactory;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyTransferableFile;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyFileObject;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
+import com.vaadin.server.VaadinSession;
 import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import pl.exsio.plupload.PluploadFile;
 
 /**
  * This class represents main galaxy interactive layer that interact with both
@@ -39,13 +42,13 @@ public abstract class GalaxyInteractiveLayer {
     private File user_folder;
 
     /**
-     *Constructor to initialise the main Galaxy history handler.
+     * Constructor to initialise the main Galaxy history handler.
      */
     public GalaxyInteractiveLayer() {
         this.historyHandler = new GalaxyHistoryHandler() {
             @Override
-            public void synchronizeDataWithGalaxyServer(boolean jobsInProgress, Map<String, GalaxyFileObject> historyFilesMap) {
-                //update history in the system 
+            public void synchronizeDataWithGalaxyServer(Map<String, GalaxyFileObject> historyFilesMap,boolean jobsInProgress) {
+                //update history in the system                 
                 GalaxyInteractiveLayer.this.synchronizeDataWithGalaxyServer(historyFilesMap, jobsInProgress);
             }
         };
@@ -67,10 +70,11 @@ public abstract class GalaxyInteractiveLayer {
             historyHandler.connectToGalaxy(Galaxy_Instance, user_folder);
             toolsHandler = new GalaxyToolsHandler(Galaxy_Instance.getToolsClient(), Galaxy_Instance.getWorkflowsClient(), Galaxy_Instance.getHistoriesClient()) {
                 @Override
-                public void synchronizeDataWithGalaxyServer() {
+                public void synchronizeDataWithGalaxyServer() {                   
                     historyHandler.updateHistory();
                 }
             };
+            VaadinSession.getCurrent().setAttribute("ApiKey", Galaxy_Instance.getApiKey());
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -92,7 +96,7 @@ public abstract class GalaxyInteractiveLayer {
         mgfIdsList.forEach((mgfId) -> {
             mgfMap.put(mgfId, historyHandler.getMgfFilesMap().get(mgfId).getName());
         });
-        toolsHandler.executeWorkFlow(projectName, fastaFileId, mgfMap, searchEnginesList, historyHandler.getWorkingHistoryId(), searchParameters);
+        toolsHandler.execute_SearchGUI_PeptideShaker_WorkFlow(projectName, fastaFileId, mgfMap, searchEnginesList, historyHandler.getWorkingHistoryId(), searchParameters);
         toolsHandler.synchronizeDataWithGalaxyServer();
     }
 
@@ -130,7 +134,6 @@ public abstract class GalaxyInteractiveLayer {
      * @return FASTA Files Map (Galaxy dataset id to galaxy file)
      */
     public Map<String, GalaxyFileObject> getFastaFilesMap() {
-        System.out.println("at history handller is not ready bombon " + (historyHandler != null));
         if (historyHandler != null) {
             return historyHandler.getFastaFilesMap();
         } else {
@@ -149,6 +152,33 @@ public abstract class GalaxyInteractiveLayer {
             return historyHandler.getMgfFilesMap();
         } else {
             return new HashMap<>();
+        }
+    }
+
+    /**
+     * Upload Files (FASTA and MGF files to Galaxy Server)
+     *
+     * @param toUploadFiles list of the files to be uploaded to Galaxy Server
+     * @return files are successfully uploaded to Galaxy Server
+     */
+    public boolean uploadToGalaxy(PluploadFile[] toUploadFiles) {
+       return  toolsHandler.uploadToGalaxy(historyHandler.getWorkingHistoryId(), toUploadFiles);        
+
+    }
+
+    /**
+     * Delete action for files from Galaxy Server
+     *
+     * @param fileObject the file to be removed from Galaxy Server
+     */
+    public void deleteDataset(GalaxyFileObject fileObject) {
+        if (fileObject.getType().equalsIgnoreCase("Web Peptide Shaker Dataset")) {
+            PeptideShakerVisualizationDataset vDs = (PeptideShakerVisualizationDataset) fileObject;
+            toolsHandler.deleteDataset(Galaxy_Instance.getGalaxyUrl(), vDs.getHistoryId(), vDs.getGalaxyId());
+            toolsHandler.deleteDataset(Galaxy_Instance.getGalaxyUrl(), vDs.getHistoryId(), vDs.getSearchGUIFile().getGalaxyId());
+
+        } else {
+            toolsHandler.deleteDataset(Galaxy_Instance.getGalaxyUrl(), fileObject.getHistoryId(), fileObject.getGalaxyId());
         }
     }
 

@@ -95,6 +95,13 @@ public class PeptidShakerUI extends UI {
             webPeptideShakerApp.removeStyleName("mobilestyle");
             VaadinSession.getCurrent().setAttribute("smallscreenstyle", false);
         }
+        if ((Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight()) || (Page.getCurrent().getBrowserWindowWidth() < 650) || (Page.getCurrent().getBrowserWindowHeight() < 600)) {
+            webPeptideShakerApp.addStyleName("smallscreenstyle");
+            VaadinSession.getCurrent().setAttribute("smallscreenstyle", true);
+        } else {
+            webPeptideShakerApp.removeStyleName("smallscreenstyle");
+            VaadinSession.getCurrent().setAttribute("smallscreenstyle", false);
+        }
 
         /**
          * On resize the browser re-arrange all the created pop-up windows to
