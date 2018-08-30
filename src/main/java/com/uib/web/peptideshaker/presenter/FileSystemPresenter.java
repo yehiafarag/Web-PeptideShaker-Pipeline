@@ -185,7 +185,7 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
      * @return right view control button
      */
     @Override
-    public SmallSideBtn getRightView() {
+    public SmallSideBtn getPresenterControlButton() {
         return rightViewControlButton;
     }
 
@@ -274,10 +274,10 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
      *
      * @return top view control button
      */
-    @Override
-    public SmallSideBtn getTopView() {
-        return topViewControlButton;
-    }
+//    @Override
+//    public SmallSideBtn getTopView() {
+//        return topViewControlButton;
+//    }
 
     /**
      * Abstract method to allow customised delete action for files from Galaxy

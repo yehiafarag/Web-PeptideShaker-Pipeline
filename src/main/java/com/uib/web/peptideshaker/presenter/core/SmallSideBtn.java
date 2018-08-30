@@ -28,7 +28,7 @@ public class SmallSideBtn extends AbsoluteLayout {
         iconLabel.setSizeFull();
         iconLabel.setVisible(false);
         SmallSideBtn.this.addComponent(iconLabel);
-        SmallSideBtn.this.setStyleName("smallmenubtn");
+        SmallSideBtn.this.setStyleName("presenterbtn");
     }
     public SmallSideBtn(VaadinIcons vicon) {
         iconImage = new Image();
@@ -39,7 +39,7 @@ public class SmallSideBtn extends AbsoluteLayout {
         iconLabel.setContentMode(ContentMode.HTML);
         iconLabel.setSizeFull();
         SmallSideBtn.this.addComponent(iconLabel);        
-        SmallSideBtn.this.setStyleName("smallmenubtn");
+        SmallSideBtn.this.setStyleName("presenterbtn");
     }
 
     public void updateIconURL(String iconUrl) {
@@ -55,9 +55,9 @@ public class SmallSideBtn extends AbsoluteLayout {
 
     public void setSelected(boolean selected) {
         if (selected) {
-            SmallSideBtn.this.addStyleName("selectedsmallbtn");
+            SmallSideBtn.this.addStyleName("selectedpresenterbtn");
         } else {
-            SmallSideBtn.this.removeStyleName("selectedsmallbtn");
+            SmallSideBtn.this.removeStyleName("selectedpresenterbtn");
         }
     }
 

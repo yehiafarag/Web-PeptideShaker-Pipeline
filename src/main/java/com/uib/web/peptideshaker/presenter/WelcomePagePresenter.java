@@ -370,7 +370,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
     }
 
     @Override
-    public SmallSideBtn getRightView() {
+    public SmallSideBtn getPresenterControlButton() {
         return homeBtn;
     }
 
@@ -389,10 +389,10 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         return new HorizontalLayout();
     }
 
-    @Override
-    public SmallSideBtn getTopView() {
-        return topHomeBtn;
-    }
+//    @Override
+//    public SmallSideBtn getTopView() {
+//        return topHomeBtn;
+//    }
 
     /**
      * Start the Online PeptideShaker - Galaxy server connection.

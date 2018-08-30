@@ -9,6 +9,7 @@ import com.uib.web.peptideshaker.presenter.core.filtercharts.updatedfilters.Diva
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -86,14 +87,16 @@ public class FiltersContainer extends HorizontalLayout {
 
         };
 
-        VerticalLayout filterLeftPanelContainer = new VerticalLayout();
+        HorizontalLayout filterLeftPanelContainer = new HorizontalLayout();
         filterLeftPanelContainer.setSizeFull();
-        filterLeftPanelContainer.setSpacing(true);
+        filterLeftPanelContainer.setSpacing(false);
+        filterLeftPanelContainer.addStyleName(ValoTheme.LAYOUT_HORIZONTAL_WRAPPING);
+        filterLeftPanelContainer.addStyleName("cornerfiltercontainerstyle");
         filterContainer.addComponent(filterLeftPanelContainer);
         filterContainer.setExpandRatio(filterLeftPanelContainer, 1);
         filterLeftPanelContainer.addComponent(PIFilter);
-        filterLeftPanelContainer.setComponentAlignment(PIFilter, Alignment.TOP_CENTER);
-        filterLeftPanelContainer.setStyleName("filtercontainerstyle");
+        filterLeftPanelContainer.setComponentAlignment(PIFilter, Alignment.TOP_LEFT);
+        
 
         validationFilter = new DivaPieChartFilter("Protein Validation", "validation_filter", Selection_Manager) {
 
@@ -107,7 +110,7 @@ public class FiltersContainer extends HorizontalLayout {
 
         };
         filterLeftPanelContainer.addComponent(validationFilter);
-        filterLeftPanelContainer.setComponentAlignment(validationFilter, Alignment.TOP_CENTER);
+        filterLeftPanelContainer.setComponentAlignment(validationFilter, Alignment.TOP_LEFT);
         chromosomeFilter = new ChromosomesFilter("Chromosome", "chromosome_filter", Selection_Manager) {
             @Override
             public void selectionChange(String type) {
@@ -126,7 +129,7 @@ public class FiltersContainer extends HorizontalLayout {
 
 //        chromosome_filterContainer = new PopUpFilterContainer("Chromosome", chromosomeFilter, "med");
         filterLeftPanelContainer.addComponent(chromosomeFilter);
-        filterLeftPanelContainer.setComponentAlignment(chromosomeFilter, Alignment.TOP_CENTER);
+        filterLeftPanelContainer.setComponentAlignment(chromosomeFilter, Alignment.TOP_LEFT);
 
         modificationFilter = new DivaMatrixLayoutChartFilter("Modifications", "modifications_filter", Selection_Manager) {
 
@@ -138,16 +141,17 @@ public class FiltersContainer extends HorizontalLayout {
             }
 
         };
-        modificationFilter.addStyleName("filtercontainerstyle");
+        modificationFilter.addStyleName("middlefiltercontainerstyle");
         filterContainer.addComponent(modificationFilter);
         filterContainer.setComponentAlignment(modificationFilter, Alignment.TOP_CENTER);
         filterContainer.setExpandRatio(modificationFilter, 2);
         modificationFilter.setSizeFull();
 
-        VerticalLayout filterRightPanelContainer = new VerticalLayout();
+        HorizontalLayout filterRightPanelContainer = new HorizontalLayout();
         filterRightPanelContainer.setSizeFull();
-        filterRightPanelContainer.setSpacing(true);
-        filterRightPanelContainer.addStyleName("filtercontainerstyle");
+        filterRightPanelContainer.setSpacing(false);
+        filterRightPanelContainer.addStyleName("cornerfiltercontainerstyle");
+        filterRightPanelContainer.addStyleName(ValoTheme.LAYOUT_HORIZONTAL_WRAPPING);
         filterContainer.addComponent(filterRightPanelContainer);
         filterContainer.setComponentAlignment(filterRightPanelContainer, Alignment.TOP_CENTER);
         filterContainer.setExpandRatio(filterRightPanelContainer, 1);

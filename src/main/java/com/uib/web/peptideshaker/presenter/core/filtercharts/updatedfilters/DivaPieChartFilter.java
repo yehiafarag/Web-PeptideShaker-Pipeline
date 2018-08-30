@@ -130,6 +130,7 @@ public abstract class DivaPieChartFilter extends HorizontalLayout implements Reg
     private void initlayout() {
         DivaPieChartFilter.this.setSizeFull();
         DivaPieChartFilter.this.setStyleName("thumbfilterframe");
+        DivaPieChartFilter.this.addStyleName("reorderlayout");
         DivaPieChartFilter.this.setSpacing(true);
 
         VerticalLayout topLeftContainer = new VerticalLayout();
@@ -153,6 +154,7 @@ public abstract class DivaPieChartFilter extends HorizontalLayout implements Reg
 
         mainChartContainer.setWidth(100, Unit.PERCENTAGE);
         mainChartContainer.setHeight(90, Unit.PERCENTAGE);
+        mainChartContainer.addStyleName("divapiechartcontainerstyle");
         DivaPieChartFilter.this.addComponent(mainChartContainer);
         DivaPieChartFilter.this.setComponentAlignment(mainChartContainer, Alignment.MIDDLE_LEFT);
         DivaPieChartFilter.this.setExpandRatio(mainChartContainer, 50);
@@ -166,6 +168,7 @@ public abstract class DivaPieChartFilter extends HorizontalLayout implements Reg
         selectAllLabel.addStyleName("middledountchart");
         selectAllLabel.addStyleName(ValoTheme.LABEL_TINY);
         selectAllLabel.addStyleName(ValoTheme.LABEL_SMALL);
+        selectAllLabel.setReadOnly(true);
 
         middleDountLayout.addComponent(selectAllLabel);
         middleDountLayout.setComponentAlignment(selectAllLabel, Alignment.MIDDLE_CENTER);

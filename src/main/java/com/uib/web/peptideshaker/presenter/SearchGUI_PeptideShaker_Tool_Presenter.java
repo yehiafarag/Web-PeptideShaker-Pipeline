@@ -152,7 +152,7 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
      * @return
      */
     @Override
-    public SmallSideBtn getRightView() {
+    public SmallSideBtn getPresenterControlButton() {
         return SearchGUI_PeptideShaker_Tool_side_Btn;
     }
 
@@ -229,10 +229,10 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
      *
      * @return
      */
-    @Override
-    public SmallSideBtn getTopView() {
-        return SearchGUI_PeptideShaker_Tool_top_Btn;
-    }
+//    @Override
+//    public SmallSideBtn getTopView() {
+//        return SearchGUI_PeptideShaker_Tool_top_Btn;
+//    }
 
     /**
      * Run Online Peptide-Shaker work-flow

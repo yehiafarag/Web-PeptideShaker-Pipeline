@@ -70,6 +70,7 @@ public abstract class ChromosomesFilter extends VerticalLayout implements Regist
         selectedData = new LinkedHashSet<>();
         this.appliedFilters = new LinkedHashSet<>();
         ChromosomesFilter.this.setStyleName("thumbfilterframe");
+        ChromosomesFilter.this.addStyleName("reorderlayout");
         ChromosomesFilter.this.setSizeFull();
         ChromosomesFilter.this.setSpacing(true);
         ChromosomesFilter.this.setMargin(new MarginInfo(false, false, false, false));
@@ -116,7 +117,7 @@ public abstract class ChromosomesFilter extends VerticalLayout implements Regist
         mainFilterPanel.setStyleName(ValoTheme.PANEL_BORDERLESS);
         ChromosomesFilter.this.addComponent(mainFilterPanel);
         ChromosomesFilter.this.setComponentAlignment(mainFilterPanel, Alignment.BOTTOM_LEFT);
-        ChromosomesFilter.this.setExpandRatio(mainFilterPanel, 90);
+        ChromosomesFilter.this.setExpandRatio(mainFilterPanel, 89);
 
         chromosomessLabelMap = new LinkedHashMap<>();
         this.filteredData = new LinkedHashMap<>();;
@@ -158,7 +159,7 @@ public abstract class ChromosomesFilter extends VerticalLayout implements Regist
 //        topLeftContainer.setComponentAlignment(removeFilterIcon, Alignment.TOP_CENTER);
         ChromosomesFilter.this.addComponent(removeFilterIcon);
         ChromosomesFilter.this.setComponentAlignment(removeFilterIcon, Alignment.TOP_RIGHT);
-        ChromosomesFilter.this.setExpandRatio(removeFilterIcon, 0.1f);
+        ChromosomesFilter.this.setExpandRatio(removeFilterIcon,1f);
 
     }
 
@@ -180,6 +181,7 @@ public abstract class ChromosomesFilter extends VerticalLayout implements Regist
 
         }
         AbsoluteLayout filterContainer = new AbsoluteLayout();
+        filterContainer.addStyleName("chromosomefiltercontainerstyle");
         filterContainer.setSizeFull();
         filterContainer.addComponent(filter);
         return filterContainer;

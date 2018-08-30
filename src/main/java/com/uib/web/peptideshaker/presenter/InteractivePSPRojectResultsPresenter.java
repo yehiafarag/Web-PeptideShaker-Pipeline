@@ -168,7 +168,7 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
      * @return right view control button
      */
     @Override
-    public SmallSideBtn getRightView() {
+    public SmallSideBtn getPresenterControlButton() {
         return rightViewControlButton;
     }
 
@@ -267,10 +267,10 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
      *
      * @return top view control button
      */
-    @Override
-    public SmallSideBtn getTopView() {
-        return topViewControlButton;
-    }
+//    @Override
+//    public SmallSideBtn getTopView() {
+//        return topViewControlButton;
+//    }
 
     /**
      * Activate PeptideShaker dataset visualisation upon user selection

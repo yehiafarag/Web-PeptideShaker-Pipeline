@@ -71,6 +71,7 @@ public abstract class DivaRangeFilter extends VerticalLayout implements Property
         this.activeData = new TreeMap<>();
         DivaRangeFilter.this.setSizeFull();
         DivaRangeFilter.this.setStyleName("thumbfilterframe");
+        DivaRangeFilter.this.addStyleName("reorderlayout");
         DivaRangeFilter.this.setSpacing(true);
         DivaRangeFilter.this.setMargin(new MarginInfo(false, false, false, false));
 
@@ -233,9 +234,9 @@ public abstract class DivaRangeFilter extends VerticalLayout implements Property
         renderer.setSeriesPaint(0, new Color(211, 211, 211), true);
         if (lowerRangeSlider.getMin() > 0) {
             ((NumberAxis) plot.getDomainAxis()).setAutoRangeMinimumSize(lowerRangeSlider.getMin());
-            
+
         }
-         ((NumberAxis) plot.getDomainAxis()).setFixedAutoRange(lowerRangeSlider.getMax()-lowerRangeSlider.getMin());
+        ((NumberAxis) plot.getDomainAxis()).setFixedAutoRange(lowerRangeSlider.getMax() - lowerRangeSlider.getMin());
 
     }
 
@@ -244,7 +245,7 @@ public abstract class DivaRangeFilter extends VerticalLayout implements Property
         XYSeriesCollection dataset = new XYSeriesCollection();
         final NumberAxis domainAxis = new NumberAxis();
         domainAxis.setVisible(false);
-        domainAxis.setAutoRange(true);        
+        domainAxis.setAutoRange(true);
         domainAxis.setAutoRangeIncludesZero(false);
 
         final NumberAxis rangeAxis = new NumberAxis() {

@@ -1,5 +1,6 @@
 package com.uib.web.peptideshaker.presenter;
 
+import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
@@ -8,6 +9,7 @@ import com.vaadin.ui.VerticalLayout;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import com.uib.web.peptideshaker.presenter.core.ViewableFrame;
+import com.vaadin.ui.GridLayout;
 
 /**
  * This class represents the main layout of the application and main view
@@ -43,27 +45,35 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
     private final VerticalLayout middleLayoutContainer;
 
     /**
-     * Right layout container is the right side buttons layout container that
-     * contain the small control buttons.
+     * Presenter buttons container layout container is layout container that
+     * contain the small presenter control buttons.
      */
-    private final VerticalLayout rightLayoutBtnsContainer;
+    private final GridLayout presenterButtonsContainerLayout;
     /**
      * Top layout container is the right side buttons layout container that
      * contain the small control buttons.
      */
     private final HorizontalLayout topLayoutBtnsContainer;
     /**
-     * Right layout container is the right side buttons layout container that
-     * contain the small control buttons.
+     * Presenter buttons layout container contains the presenter control buttons
+     * layout.
      */
-    private final AbsoluteLayout rightLayoutContainer;
+    private final AbsoluteLayout presenterButtonsContainer;
     /**
      * Map of current registered views.
      */
     private final Map<String, ViewableFrame> visualizationMap = new LinkedHashMap<>();
+    /**
+     * The column index number for the presenter buttons container
+     */
+    private int column = 0;
+    /**
+     * The rows index number for the presenter buttons container
+     */
+    private int rows = 0;
 
     /**
-     * Constructor to initialise the layout
+     * Constructor to initialise the layout.
      */
     public PresenterManager() {
         PresenterManager.this.setSizeFull();
@@ -99,16 +109,22 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
         middleLayoutContainer.setExpandRatio(topMiddleLayoutContainer, 100);
         topLayoutContainer.addStyleName("hide");
 
-        rightLayoutContainer = new AbsoluteLayout();
-        rightLayoutContainer.setSizeFull();
-        rightLayoutContainer.setStyleName("rightsidebtncontainer");
-        rightLayoutContainer.addStyleName("hide");
-        PresenterManager.this.addComponent(rightLayoutContainer);
-        PresenterManager.this.setExpandRatio(rightLayoutContainer, 0);
+        presenterButtonsContainer = new AbsoluteLayout();
+        presenterButtonsContainer.setSizeFull();
+        presenterButtonsContainer.setData("controlBtnsAction");
+        presenterButtonsContainer.setStyleName("presentercontainer");
+        presenterButtonsContainer.addStyleName("bigmenubtn");
+        presenterButtonsContainer.addStyleName("selectedbiglbtn");
+        presenterButtonsContainer.addStyleName("hide");
+         presenterButtonsContainer.addStyleName("welcomepagstyle");
+        PresenterManager.this.addComponent(presenterButtonsContainer);
+        PresenterManager.this.setExpandRatio(presenterButtonsContainer, 0);
 
-        this.rightLayoutBtnsContainer = new VerticalLayout();
-        rightLayoutBtnsContainer.setSizeFull();
-        rightLayoutContainer.addComponent(this.rightLayoutBtnsContainer);
+        this.presenterButtonsContainerLayout = new GridLayout(2, 2);
+        presenterButtonsContainerLayout.setSizeFull();
+        presenterButtonsContainer.addComponent(this.presenterButtonsContainerLayout);
+
+//        leftLayoutContainer.addComponent(presenterButtonsContainerLayout);
 
     }
 
@@ -119,10 +135,10 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
      */
     public void setSideButtonsVisible(boolean showSideButtons) {
         if (showSideButtons) {
-            rightLayoutContainer.removeStyleName("hide");
+            presenterButtonsContainer.removeStyleName("hide");
             topLayoutContainer.removeStyleName("hide");
         } else {
-            rightLayoutContainer.addStyleName("hide");
+            presenterButtonsContainer.addStyleName("hide");
             topLayoutContainer.addStyleName("hide");
         }
 
@@ -136,25 +152,36 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
     public void registerView(ViewableFrame view) {
         if (visualizationMap.containsKey(view.getViewId())) {
             ViewableFrame tview = visualizationMap.get(view.getViewId());
-            tview.getRightView().removeLayoutClickListener(PresenterManager.this);
-            tview.getTopView().removeLayoutClickListener(PresenterManager.this);
-
-            topLayoutBtnsContainer.removeComponent(tview.getTopView());
+            tview.getPresenterControlButton().removeLayoutClickListener(PresenterManager.this);
+//            tview.getTopView().removeLayoutClickListener(PresenterManager.this);
+//            topLayoutBtnsContainer.removeComponent(tview.getTopView());
             leftLayoutContainer.removeComponent(tview.getLeftView());
             leftLayoutContainer.removeComponent(tview.getLeftView());
+           
             topMiddleLayoutContainer.removeComponent(tview.getMainView());
-            rightLayoutBtnsContainer.removeComponent(tview.getRightView());
+             GridLayout.Area postion = presenterButtonsContainerLayout.getComponentArea(tview.getPresenterControlButton());
+             column=postion.getColumn1();
+             rows=postion.getRow1();
+             presenterButtonsContainerLayout.removeComponent(tview.getPresenterControlButton());
 
         }
-        view.getRightView().addLayoutClickListener(PresenterManager.this);
-        view.getTopView().addLayoutClickListener(PresenterManager.this);
-        topLayoutBtnsContainer.addComponent(view.getTopView());
-        topLayoutBtnsContainer.setComponentAlignment(view.getTopView(), Alignment.TOP_CENTER);
+        view.getPresenterControlButton().addLayoutClickListener(PresenterManager.this);
+//        view.getTopView().addLayoutClickListener(PresenterManager.this);
+//        topLayoutBtnsContainer.addComponent(view.getTopView());
+//        topLayoutBtnsContainer.setComponentAlignment(view.getTopView(), Alignment.TOP_CENTER);
         visualizationMap.put(view.getViewId(), view);
         leftLayoutContainer.addComponent(view.getLeftView());
         topMiddleLayoutContainer.addComponent(view.getMainView());
-        rightLayoutBtnsContainer.addComponent(view.getRightView());
-        rightLayoutBtnsContainer.setComponentAlignment(view.getRightView(), Alignment.MIDDLE_CENTER);
+        presenterButtonsContainerLayout.addComponent(view.getPresenterControlButton(), column++, rows);
+        presenterButtonsContainerLayout.setComponentAlignment(view.getPresenterControlButton(), Alignment.MIDDLE_CENTER);
+        if (column == 2) {
+            column = 0;
+            rows++;
+        }
+        if(rows==2){
+            column=0;
+            rows=0;
+        }
 
     }
 
@@ -168,6 +195,11 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
             view.minimizeView();
         });
         visualizationMap.get(viewId).maximizeView();
+        if(viewId.equalsIgnoreCase("com.uib.web.peptideshaker.presenter.WelcomePagePresenter")){
+            presenterButtonsContainer.addStyleName("welcomepagstyle");
+        }else{
+        presenterButtonsContainer.removeStyleName("welcomepagstyle");
+        }
 
     }
 
@@ -178,7 +210,12 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
      */
     @Override
     public void layoutClick(LayoutEvents.LayoutClickEvent event) {
-        this.viewLayout(((AbsoluteLayout) event.getComponent()).getData().toString());
+        String selectedBtnData = ((AbsoluteLayout) event.getComponent()).getData().toString();
+        System.out.println("at selected layout " + selectedBtnData);
+        if (selectedBtnData.equalsIgnoreCase("controlBtnsAction")) {
+            return;
+        }
+        this.viewLayout(selectedBtnData);
     }
 
 }
