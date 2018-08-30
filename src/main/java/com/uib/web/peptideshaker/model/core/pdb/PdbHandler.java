@@ -1,5 +1,6 @@
 package com.uib.web.peptideshaker.model.core.pdb;
 
+import com.uib.web.peptideshaker.model.core.PDBMatch;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
