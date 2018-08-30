@@ -2,7 +2,7 @@ package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components
 
 import com.compomics.util.experiment.biology.PTMFactory;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideObject;
-import com.uib.web.peptideshaker.model.core.PDBMatch;
+import com.uib.web.peptideshaker.model.core.pdb.PDBMatch;
 import com.uib.web.peptideshaker.model.core.pdb.PdbHandler;
 import com.uib.web.peptideshaker.model.core.pdb.ChainBlock;
 import com.vaadin.data.Property;

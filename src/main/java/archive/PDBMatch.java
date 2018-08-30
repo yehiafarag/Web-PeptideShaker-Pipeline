@@ -1,5 +1,6 @@
-package com.uib.web.peptideshaker.model.core;
+package archive;
 
+import com.uib.web.peptideshaker.model.core.pdb.*;
 import com.uib.web.peptideshaker.model.core.pdb.*;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;

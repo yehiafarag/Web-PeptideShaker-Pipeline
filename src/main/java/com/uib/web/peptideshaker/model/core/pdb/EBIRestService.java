@@ -1,6 +1,5 @@
 package com.uib.web.peptideshaker.model.core.pdb;
 
-import com.uib.web.peptideshaker.model.core.PDBMatch;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
