@@ -158,16 +158,21 @@
             <artifactId>jsoup</artifactId>
             <version>1.8.3</version>
         </dependency>
+       
         <dependency>
-            <groupId>de.akquinet.engineering.vaadin.vaangular</groupId>
-            <artifactId>vaangular-demo</artifactId>
-            <!-- at least temporarily move properties / build instructions to sub-projects to make them independent -->
-            <version>0.1.local</version>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-core-asl</artifactId>
+            <version>1.9.12</version>
         </dependency>
         <dependency>
-            <groupId>de.akquinet.engineering.vaadin.vaangular</groupId>
-            <artifactId>vaangular</artifactId>
-            <version>0.1.2</version>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+            <version>1.9.12</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-jaxrs</artifactId>
+            <version>1.9.12</version>
         </dependency>
 
 
