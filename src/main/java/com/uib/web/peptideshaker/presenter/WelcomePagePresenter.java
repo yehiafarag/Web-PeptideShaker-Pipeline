@@ -380,7 +380,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
     }
 
     @Override
-    public VerticalLayout getLeftView() {
+    public VerticalLayout getSubViewButtonsActionContainerLayout() {
         return new VerticalLayout();
     }
 

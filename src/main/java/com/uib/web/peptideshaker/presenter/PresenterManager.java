@@ -1,7 +1,5 @@
 package com.uib.web.peptideshaker.presenter;
 
-import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
-import com.vaadin.event.LayoutEvents;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
@@ -9,7 +7,11 @@ import com.vaadin.ui.VerticalLayout;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import com.uib.web.peptideshaker.presenter.core.ViewableFrame;
+import com.vaadin.event.LayoutEvents;
+import com.vaadin.shared.MouseEventDetails;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
+import org.vaadin.hezamu.canvas.Canvas;
 
 /**
  * This class represents the main layout of the application and main view
@@ -27,7 +29,7 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
      * Left layout container is the main layout container that contain the main
      * views.
      */
-    private final AbsoluteLayout leftLayoutContainer;
+    private final AbsoluteLayout subViewButtonsActionContainer;
     /**
      * Left layout container is the main layout container that contain the main
      * views.
@@ -71,6 +73,9 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
      * The rows index number for the presenter buttons container
      */
     private int rows = 0;
+    private boolean startDrag = false;
+    private long startX = 0;
+    private long endX = 0;
 
     /**
      * Constructor to initialise the layout.
@@ -79,11 +84,11 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
         PresenterManager.this.setSizeFull();
         PresenterManager.this.setStyleName("mainlayout");
 
-        leftLayoutContainer = new AbsoluteLayout();
-        leftLayoutContainer.setSizeFull();
-        leftLayoutContainer.setStyleName("leftsideviewcontainer");
-        PresenterManager.this.addComponent(leftLayoutContainer);
-        PresenterManager.this.setExpandRatio(leftLayoutContainer, 0);
+        subViewButtonsActionContainer = new AbsoluteLayout();
+        subViewButtonsActionContainer.setSizeFull();
+        subViewButtonsActionContainer.setStyleName("subviewbuttonsactioncontainer");
+        PresenterManager.this.addComponent(subViewButtonsActionContainer);
+        PresenterManager.this.setExpandRatio(subViewButtonsActionContainer, 0);
 
         middleLayoutContainer = new VerticalLayout();
         middleLayoutContainer.setSizeFull();
@@ -116,16 +121,47 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
         presenterButtonsContainer.addStyleName("bigmenubtn");
         presenterButtonsContainer.addStyleName("selectedbiglbtn");
         presenterButtonsContainer.addStyleName("hide");
-         presenterButtonsContainer.addStyleName("welcomepagstyle");
+        presenterButtonsContainer.addStyleName("welcomepagstyle");
         PresenterManager.this.addComponent(presenterButtonsContainer);
         PresenterManager.this.setExpandRatio(presenterButtonsContainer, 0);
 
         this.presenterButtonsContainerLayout = new GridLayout(2, 2);
         presenterButtonsContainerLayout.setSizeFull();
         presenterButtonsContainer.addComponent(this.presenterButtonsContainerLayout);
+        presenterButtonsContainerLayout.addStyleName("actionButtonContainer");
+//        presenterButtonsContainerLayout.addStyleName("hideactionbutton");
 
+//        Canvas canvas = new Canvas();
+//        presenterButtonsContainer.addComponent(canvas);
+//        canvas.setSizeFull();
+//        canvas.setStyleName("sweepeventcanvas");
+//        canvas.addMouseMoveListener((MouseEventDetails mouseDetails) -> {
+//            if (startDrag) {
+//                if (startX == 1000000000) {
+//                    startX = mouseDetails.getClientX();
+//                }
+//                endX = mouseDetails.getClientX();
+//            }
+//        });
+//        canvas.addMouseDownListener(() -> {
+//            startX = 1000000000;
+//            startDrag = true;
+//        });
+//        middleLayoutContainer.addLayoutClickListener((LayoutEvents.LayoutClickEvent event) -> {
+//            if (event.getClickedComponent().getStyleName().contains("home")) {
+//                presenterButtonsContainerLayout.addStyleName("hideactionbutton");
+//            }
+//        });
+//
+//        canvas.addMouseUpListener(() -> {
+//            startDrag = false;
+//            if (endX < startX && presenterButtonsContainerLayout.getStyleName().contains("hideactionbutton")) {
+//                presenterButtonsContainerLayout.removeStyleName("hideactionbutton");
+//            } else {
+//                presenterButtonsContainerLayout.addStyleName("hideactionbutton");
+//            }
+//        });
 //        leftLayoutContainer.addComponent(presenterButtonsContainerLayout);
-
     }
 
     /**
@@ -155,22 +191,19 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
             tview.getPresenterControlButton().removeLayoutClickListener(PresenterManager.this);
 //            tview.getTopView().removeLayoutClickListener(PresenterManager.this);
 //            topLayoutBtnsContainer.removeComponent(tview.getTopView());
-            leftLayoutContainer.removeComponent(tview.getLeftView());
-            leftLayoutContainer.removeComponent(tview.getLeftView());
-           
+            subViewButtonsActionContainer.removeComponent(tview.getSubViewButtonsActionContainerLayout());
+            subViewButtonsActionContainer.removeComponent(tview.getSubViewButtonsActionContainerLayout());
+
             topMiddleLayoutContainer.removeComponent(tview.getMainView());
-             GridLayout.Area postion = presenterButtonsContainerLayout.getComponentArea(tview.getPresenterControlButton());
-             column=postion.getColumn1();
-             rows=postion.getRow1();
-             presenterButtonsContainerLayout.removeComponent(tview.getPresenterControlButton());
+            GridLayout.Area postion = presenterButtonsContainerLayout.getComponentArea(tview.getPresenterControlButton());
+            column = postion.getColumn1();
+            rows = postion.getRow1();
+            presenterButtonsContainerLayout.removeComponent(tview.getPresenterControlButton());
 
         }
         view.getPresenterControlButton().addLayoutClickListener(PresenterManager.this);
-//        view.getTopView().addLayoutClickListener(PresenterManager.this);
-//        topLayoutBtnsContainer.addComponent(view.getTopView());
-//        topLayoutBtnsContainer.setComponentAlignment(view.getTopView(), Alignment.TOP_CENTER);
         visualizationMap.put(view.getViewId(), view);
-        leftLayoutContainer.addComponent(view.getLeftView());
+        subViewButtonsActionContainer.addComponent(view.getSubViewButtonsActionContainerLayout());
         topMiddleLayoutContainer.addComponent(view.getMainView());
         presenterButtonsContainerLayout.addComponent(view.getPresenterControlButton(), column++, rows);
         presenterButtonsContainerLayout.setComponentAlignment(view.getPresenterControlButton(), Alignment.MIDDLE_CENTER);
@@ -178,9 +211,9 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
             column = 0;
             rows++;
         }
-        if(rows==2){
-            column=0;
-            rows=0;
+        if (rows == 2) {
+            column = 0;
+            rows = 0;
         }
 
     }
@@ -195,10 +228,10 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
             view.minimizeView();
         });
         visualizationMap.get(viewId).maximizeView();
-        if(viewId.equalsIgnoreCase("com.uib.web.peptideshaker.presenter.WelcomePagePresenter")){
+        if (viewId.equalsIgnoreCase("com.uib.web.peptideshaker.presenter.WelcomePagePresenter")) {
             presenterButtonsContainer.addStyleName("welcomepagstyle");
-        }else{
-        presenterButtonsContainer.removeStyleName("welcomepagstyle");
+        } else {
+            presenterButtonsContainer.removeStyleName("welcomepagstyle");
         }
 
     }
@@ -211,7 +244,6 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
     @Override
     public void layoutClick(LayoutEvents.LayoutClickEvent event) {
         String selectedBtnData = ((AbsoluteLayout) event.getComponent()).getData().toString();
-        System.out.println("at selected layout " + selectedBtnData);
         if (selectedBtnData.equalsIgnoreCase("controlBtnsAction")) {
             return;
         }

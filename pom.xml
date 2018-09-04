@@ -200,7 +200,7 @@
             <artifactId>plupload-vaadin</artifactId>
             <version>2.1.0</version>
         </dependency>
-        <!-- other biojava jars as needed -->
+       
     </dependencies>
 
    

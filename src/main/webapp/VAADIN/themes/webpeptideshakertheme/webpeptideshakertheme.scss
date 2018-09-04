@@ -526,12 +526,12 @@
         min-width: 650px;
         background-color: white;
     }
-    .leftsideviewcontainer {
-        padding-top: 20px;
+    .subviewbuttonsactioncontainer {
+        top: 150px !important;
         width: 100px !important;
-        z-index: 2 !important;
-        position: absolute !important;
-        overflow:visible;
+        z-index: 3 !important;
+        position: fixed !important;
+        overflow: visible;
     }
     .v-slot-rightsidebtncontainer {
         width: 50px !important;
@@ -3062,7 +3062,7 @@
         font-weight: bold;
         font-family: "Open Sans", sans-serif;
     }
-    .smallscreenstyle .leftsideviewcontainer .v-slot-bigmenubtn {
+    .smallscreenstyle .subviewbuttonsactioncontainer .v-slot-bigmenubtn {
         visibility: hidden !important;
     }
     .smallscreenstyle.frame {	
@@ -3487,88 +3487,6 @@
 
 
 
-
-    /*
-    
-    
-    
-     .smallscreenstyle .v-slot-presenterbtn {
-            min-width: 50px;
-    }
-    
-     .smallscreenstyle .v-slot-presenterbtn {
-            max-height: 40px !important;
-            border: 2px solid lightgray;
-            border-top: 2px solid rgba(211, 211, 211, 0);
-            background: whitesmoke;
-            border-radius: 5px;
-            border-top-right-radius: 0px;
-            border-top-left-radius: 0px;
-            overflow: visible !important;
-            z-index: 3 !important;
-            position: relative !important;
-            margin-top: -2px;
-            padding-top: 2px;
-            margin-left: -2px;
-            float: bottom;
-    }
-    
-     .smallscreenstyle .v-slot-presenterbtn.v-slot-selectedpresenterbtn {
-            border-bottom-color: white !important;
-            background: white !important;
-            border-top-color: lightgray;
-            border-top-right-radius: 5px;
-            border-top-left-radius: 5px;
-            border-bottom-right-radius: 0px;
-            border-bottom-left-radius: 0px;
-            overflow: hidden;
-            z-index: 2 !important;
-    }
-    
-    
-    
-     .smallscreenstyle .v-slot-presenterbtn {
-            max-height: 40px !important;
-            border: 2px solid lightgray;
-            border-top: 2px solid rgba(211, 211, 211, 0);
-            background: whitesmoke;
-            border-radius: 5px;
-            border-top-right-radius: 0px;
-            border-top-left-radius: 0px;
-            overflow: visible !important;
-            z-index: 3 !important;
-            position: relative !important;
-            margin-top: -2px;
-            padding-top: 2px;
-            margin-left: -2px;
-            float: bottom;
-    }
-    
-     .smallscreenstyle .v-slot-presenterbtn.v-slot-selectedpresenterbtn {
-            border-bottom-color: white !important;
-            background: white !important;
-            border-top-color: lightgray;
-            border-top-right-radius: 5px;
-            border-top-left-radius: 5px;
-            border-bottom-right-radius: 0px;
-            border-bottom-left-radius: 0px;
-            overflow: hidden;
-            z-index: 2 !important;
-    }
-    
-    .webpeptideshakertheme .smallscreenstyle .v-slot-presenterbtn.v-slot-selectedpresenterbtn {
-            border-bottom-color: white !important;
-            background: white !important;
-            border-top-color: lightgray;
-            border-top-right-radius: 5px;
-            border-top-left-radius: 5px;
-            border-bottom-right-radius: 0px;
-            border-bottom-left-radius: 0px;
-            overflow: hidden;
-            z-index: 2 !important;
-    }*/
-
-
     .welcomepagstyle {
         border: none !important;
         background-color: white !important;
@@ -3581,7 +3499,7 @@
     }
 
     .welcomepagstyle.bigmenubtn :hover {
-        background-color: white !important;
+        background-color: rgba(255, 255, 255, 0) !important;
     }
 
     .v-slot-presentercontainer.v-slot-bigmenubtn.v-slot-selectedbiglbtn.v-slot-welcomepagstyle {
@@ -3602,29 +3520,59 @@
 
 
     .smallscreenstyle .v-absolutelayout-presentercontainer.v-absolutelayout-bigmenubtn.v-absolutelayout-selectedbiglbtn{
-        background-color:white !important;
+        background-color:rgba(255, 255, 255, 0) !important;
         min-height:100% !important;
+    }
+    .smallscreenstyle .v-absolutelayout-presentercontainer.v-absolutelayout-bigmenubtn.v-absolutelayout-selectedbiglbtn{
+        background:  rgba(255, 255, 255, 0) !important; 
+        min-height: 100% !important;
+    }
+    .smallscreenstyle .v-absolutelayout-presentercontainer.v-absolutelayout-bigmenubtn.v-absolutelayout-selectedbiglbtn div:hover {
+        background:  rgba(255, 255, 255, 0); 
     }
 
     .smallscreenstyle .v-slot-presentercontainer.v-slot-bigmenubtn.v-slot-selectedbiglbtn {
         right: 0px !important;
         left: auto !important;
-        top: 50% !important;
         bottom: auto !important;
+        height:100% !important;
+        background-color:rgba(255, 255, 255, 0) !important;
         margin: 0px !important;
-        margin-top:-100px !important;
         padding: 0px !important;
-        position: absolute !important;
-        min-height:200px;
-        max-width:40px;
+        position: absolute !important;	
+        max-width: 40px;
 
     }
+    .smallscreenstyle .v-slot-presentercontainer.v-slot-bigmenubtn.v-slot-selectedbiglbtn .actionButtonContainer{
+        top:50%!important;
+        margin-top:-100px;
+        background-color:rgb(255, 255, 255) !important;
+        border-top: 2px solid lightgray !important;
+        border-bottom: 2px solid lightgray !important;
+        min-height: 200px;
+        max-height:210px;
+        border-radius:5px;
+        padding-top:5px;
+        -webkit-transition: all 0.5s ease-in-out;
+        -moz-transition: all 0.5s ease-in-out;
+        -o-transition: all 0.5s ease-in-out;
+        transition: all 0.5s ease-in-out;
+    }
+    .smallscreenstyle .v-slot-presentercontainer.v-slot-bigmenubtn.v-slot-selectedbiglbtn.v-slot-welcomepagstyle  .actionButtonContainer{
+        top:0%!important;
+        margin-top:0px;
+        background-color:rgba(255, 255, 255, 0);
+        min-height: 0px;
+        border: none !important;
+
+        padding-top:0px;
+
+    }
+
 
     .smallscreenstyle .bigmenubtn {
         max-width: 50px;
         border:none !important;
-        border-top:2px solid lightgray !important;
-        border-bottom:2px solid lightgray !important;
 
     }
 
@@ -3654,6 +3602,7 @@
         bottom: 10px !important;
         top: auto !important;
         min-height:100px;
+        max-height:100px;
     }
 
     .smallscreenstyle .welcomepagstyle.bigmenubtn {
@@ -3671,5 +3620,24 @@
         padding-left: 35px !important;
         min-width: 30px !important;
     }
+    .sweepeventcanvas ,.smallscreenstyle .welcomepagstyle .sweepeventcanvas  {
+       	min-width: 0px !important;
+        max-width:0px !important;
+        z-index:0 !important;
+        position:absolute !important;
+    }
+    .smallscreenstyle .sweepeventcanvas {
+        min-width:200px !important;
+        background-color:rgba(255, 255, 255, 0) !important;
+        outline:none !important;
+    }
+    .smallscreenstyle .v-gridlayout-hideactionbutton {
+        width:0px !important;
+        overflow:hidden;
+    }
 
+
+    .v-absolutelayout-wrapper-sweepeventcanvas:hover{
+        display:none !important;
+    }
 }

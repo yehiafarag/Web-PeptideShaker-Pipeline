@@ -65,7 +65,7 @@ public abstract class GalaxyInteractiveLayer {
     public boolean connectToGalaxyServer(String galaxyServerUrl, String userAPI, String userDataFolderUrl) {
         try {
             Galaxy_Instance = GalaxyInstanceFactory.get(galaxyServerUrl, userAPI);
-            user_folder = new File(user_folder, Galaxy_Instance.getApiKey() + "");
+            user_folder = new File(userDataFolderUrl, Galaxy_Instance.getApiKey() + "");
             user_folder.mkdir();
             historyHandler.connectToGalaxy(Galaxy_Instance, user_folder);
             toolsHandler = new GalaxyToolsHandler(Galaxy_Instance.getToolsClient(), Galaxy_Instance.getWorkflowsClient(), Galaxy_Instance.getHistoriesClient()) {

@@ -253,7 +253,7 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
      * @return left side buttons container
      */
     @Override
-    public VerticalLayout getLeftView() {
+    public VerticalLayout getSubViewButtonsActionContainerLayout() {
         return leftSideButtonsContainer;
     }
 

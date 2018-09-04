@@ -212,7 +212,7 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
      * @return
      */
     @Override
-    public VerticalLayout getLeftView() {
+    public VerticalLayout getSubViewButtonsActionContainerLayout() {
         return btnContainer;
     }
 

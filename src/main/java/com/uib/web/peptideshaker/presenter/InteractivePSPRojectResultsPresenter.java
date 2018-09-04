@@ -246,7 +246,7 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
      * @return left side buttons container
      */
     @Override
-    public VerticalLayout getLeftView() {
+    public VerticalLayout getSubViewButtonsActionContainerLayout() {
         return leftSideButtonsContainer;
     }
 

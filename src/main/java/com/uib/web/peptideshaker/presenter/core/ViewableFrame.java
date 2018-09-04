@@ -11,7 +11,7 @@ import com.vaadin.ui.VerticalLayout;
  */
 public interface ViewableFrame {
 
-    VerticalLayout getLeftView();
+    VerticalLayout getSubViewButtonsActionContainerLayout();
 
     VerticalLayout getMainView();
 
