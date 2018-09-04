@@ -15,9 +15,9 @@
         <param-value>ab84003e53c247bd7e2ca7ec949ab2cb</param-value>
     </context-param>
     <context-param>
-        <description>exported files folder url  /home/generic_admin/web-peptideshaker</description>
+        <description>exported files folder url D:\users_temp_files /home/generic_admin/webpeptideshaker</description>
         <param-name>filesURL</param-name>
-        <param-value>D:\users_temp_files </param-value>
+        <param-value>D:\users_temp_files</param-value>
     </context-param>
     <!-- Session Configuration -->
     <session-config>

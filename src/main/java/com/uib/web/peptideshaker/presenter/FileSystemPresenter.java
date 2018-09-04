@@ -155,9 +155,9 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
      */
     public void updateSystemData(Map<String, GalaxyFileObject> historyFilesMap, boolean jobInProgress) {
         if (jobInProgress) {
-            rightViewControlButton.updateIconURL("img/globe-earth-animation-26.gif");
-            topViewControlButton.updateIconURL("img/globe-earth-animation-26.gif");
-            viewDataBtn.updateIconResource(new ThemeResource("img/globe-earth-animation-26.gif"));
+            rightViewControlButton.updateIconURL("img/globeearthanimation.gif");
+            topViewControlButton.updateIconURL("img/globeearthanimation.gif");
+            viewDataBtn.updateIconResource(new ThemeResource("img/globeearthanimation.gif"));
         } else {
             rightViewControlButton.updateIconURL(VaadinIcons.GLOBE);
             topViewControlButton.updateIconURL(VaadinIcons.GLOBE);

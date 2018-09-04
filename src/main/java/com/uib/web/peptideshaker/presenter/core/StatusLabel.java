@@ -19,7 +19,7 @@ public class StatusLabel extends Image {
 
     private final Resource ok = new ThemeResource("img/check-circle.png");
     private final Resource notValid = new ThemeResource("img/close-circle.png");
-    private final Resource processing = new ThemeResource("img/indeterminate-progress.gif");
+    private final Resource processing = new ThemeResource("img/indeterminateprogress.gif");
     private int status;
 
     public StatusLabel() {
