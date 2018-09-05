@@ -78,6 +78,7 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
         leftSideButtonsContainer.setHeightUndefined();
         leftSideButtonsContainer.setSpacing(true);
         leftSideButtonsContainer.setMargin(new MarginInfo(false, false, true, false));
+        leftSideButtonsContainer.addStyleName("singlebtn");
         viewDataBtn = new BigSideBtn("Show Data", 1);
         viewDataBtn.updateIcon(VaadinIcons.GLOBE.getHtml());
         viewDataBtn.setData("datasetoverview");

@@ -86,13 +86,13 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
         leftSideButtonsContainer = new VerticalLayout();
         leftSideButtonsContainer.setWidth(100, Unit.PERCENTAGE);
         leftSideButtonsContainer.setHeightUndefined();
-        leftSideButtonsContainer.setSpacing(true);
+        leftSideButtonsContainer.setSpacing(false);
         leftSideButtonsContainer.setMargin(new MarginInfo(false, false, true, false));
 
         BigSideBtn datasetsOverviewBtn = new BigSideBtn("Dataset overview", 1);
         datasetsOverviewBtn.setData("datasetoverview");
         leftSideButtonsContainer.addComponent(datasetsOverviewBtn);
-        leftSideButtonsContainer.setComponentAlignment(datasetsOverviewBtn, Alignment.TOP_CENTER);
+        leftSideButtonsContainer.setComponentAlignment(datasetsOverviewBtn, Alignment.MIDDLE_CENTER);
         datasetsOverviewBtn.addLayoutClickListener(InteractivePSPRojectResultsPresenter.this);
         Selection_Manager.addBtnLayout(datasetsOverviewBtn, datasetVisulizationLevelContainer);
         datasetVisulizationLevelContainer = new DatasetVisulizationLevelContainer(Selection_Manager, datasetsOverviewBtn);
@@ -103,7 +103,7 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
         proteinoverviewBtn.updateIconResource(null);
         proteinoverviewBtn.setData("proteinoverview");
         leftSideButtonsContainer.addComponent(proteinoverviewBtn);
-        leftSideButtonsContainer.setComponentAlignment(proteinoverviewBtn, Alignment.TOP_CENTER);
+        leftSideButtonsContainer.setComponentAlignment(proteinoverviewBtn, Alignment.MIDDLE_CENTER);
         proteinoverviewBtn.addLayoutClickListener(InteractivePSPRojectResultsPresenter.this);
 
         proteinsVisulizationLevelContainer = new ProteinVisulizationLevelContainer(Selection_Manager, proteinoverviewBtn);
@@ -113,7 +113,7 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
         psmoverviewBtn.updateIconResource(null);
         psmoverviewBtn.setData("psmoverview");
         leftSideButtonsContainer.addComponent(psmoverviewBtn);
-        leftSideButtonsContainer.setComponentAlignment(psmoverviewBtn, Alignment.TOP_CENTER);
+        leftSideButtonsContainer.setComponentAlignment(psmoverviewBtn, Alignment.MIDDLE_CENTER);
         psmoverviewBtn.addLayoutClickListener(InteractivePSPRojectResultsPresenter.this);
 
         peptideVisulizationLevelContainer = new PeptideVisulizationLevelContainer(Selection_Manager, psmoverviewBtn);

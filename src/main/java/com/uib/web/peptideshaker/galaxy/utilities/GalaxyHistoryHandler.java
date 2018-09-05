@@ -458,7 +458,7 @@ public abstract class GalaxyHistoryHandler {
                         }
                         ds.setName(map.get("name").toString());
                         ds.setType("SearchGUI Output File");
-                        ds.setDownloadUrl("to_ext=" + map.get("file_ext").toString());
+                        ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + map.get("id").toString()  + "/display?to_ext=" + map.get("file_ext").toString());
                         ds.setHistoryId(map.get("history_id") + "");
                         ds.setGalaxyId(map.get("id").toString());
                         ds.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
@@ -471,7 +471,7 @@ public abstract class GalaxyHistoryHandler {
                         ds.setType("Search Paramerters File (JSON)");
                         ds.setHistoryId(map.get("history_id") + "");
                         ds.setGalaxyId(map.get("id").toString());
-                        ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + ds.getGalaxyId() + "/display?to_ext=" + map.get("file_ext").toString());
+                        ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + map.get("id").toString()  + "/display?to_ext=" + map.get("file_ext").toString());
                         ds.setStatus(map.get("state") + "");
 
                         GalaxyTransferableFile file = new GalaxyTransferableFile(user_folder, ds, false);
@@ -491,7 +491,7 @@ public abstract class GalaxyHistoryHandler {
                         GalaxyFileObject ds = new GalaxyFileObject();
                         ds.setName(map.get("name").toString());
                         ds.setType("MGF");
-                        ds.setDownloadUrl("to_ext=" + map.get("file_ext").toString());
+                        ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + map.get("id").toString()  + "/display?to_ext=" + map.get("file_ext").toString());
                         ds.setHistoryId(map.get("history_id") + "");
                         ds.setGalaxyId(map.get("id").toString());
                         ds.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
@@ -503,7 +503,7 @@ public abstract class GalaxyHistoryHandler {
                         GalaxyFileObject ds = new GalaxyFileObject();
                         ds.setName(map.get("name").toString());
                         ds.setType("Fasta");
-                        ds.setDownloadUrl("to_ext=" + map.get("file_ext").toString());
+                        ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + map.get("id").toString()  + "/display?to_ext=" + map.get("file_ext").toString());
                         ds.setHistoryId(map.get("history_id") + "");
                         ds.setGalaxyId(map.get("id").toString());
                         ds.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
@@ -515,7 +515,7 @@ public abstract class GalaxyHistoryHandler {
                         GalaxyFileObject ds = new GalaxyFileObject();
                         ds.setName(map.get("name").toString());
                         ds.setType("Fasta");
-                        ds.setDownloadUrl("to_ext=" + map.get("file_ext").toString());
+                        ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + map.get("id").toString()  + "/display?to_ext=" + map.get("file_ext").toString());
                         ds.setHistoryId(map.get("history_id") + "");
                         ds.setGalaxyId(map.get("id").toString());
                         ds.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
@@ -530,7 +530,7 @@ public abstract class GalaxyHistoryHandler {
                         GalaxyFileObject ds = new GalaxyFileObject();
                         ds.setName(map.get("name").toString());
                         ds.setType("MGF");
-                        ds.setDownloadUrl("to_ext=" + map.get("file_ext").toString());
+                        ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + map.get("id").toString() + "/display?to_ext=" + map.get("file_ext").toString());
                         ds.setHistoryId(map.get("history_id") + "");
                         ds.setGalaxyId(map.get("id").toString());
                         ds.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
@@ -551,6 +551,8 @@ public abstract class GalaxyHistoryHandler {
                         vDs.setFile_ext(map.get("file_ext") + "");
                         vDs.setPeptideShakerResultsFileId(map.get("id").toString());
                         vDs.setStatus(map.get("state") + "");
+                         vDs.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" +map.get("id").toString() + "/display?to_ext=" + map.get("file_ext").toString());
+                        
                         if (map.get("state").toString().equalsIgnoreCase("new") || map.get("state").toString().equalsIgnoreCase("running") || map.get("state").toString().equalsIgnoreCase("queued")) {
                             jobsInProgress = true;
                         }
@@ -565,7 +567,7 @@ public abstract class GalaxyHistoryHandler {
                         ds.setType("MGF");
                         ds.setHistoryId(map.get("history_id") + "");
                         ds.setGalaxyId(map.get("id").toString());
-                        ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + ds.getGalaxyId() + "/display");
+                        ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + map.get("id").toString()  + "/display");
                         ds.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
                         ds.setAvailableOnNels(NeLSFilesMap.containsKey(ds.getNelsKey()));
                         ds.setStatus(map.get("state") + "");

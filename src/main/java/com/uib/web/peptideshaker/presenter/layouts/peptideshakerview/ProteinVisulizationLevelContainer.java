@@ -80,6 +80,7 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
         topLabelContainer.setComponentAlignment(commentLabel, Alignment.TOP_RIGHT);
 
         HorizontalLayout middleContainer = new HorizontalLayout();
+        middleContainer.addStyleName("extendwidthstyle");
         middleContainer.setSizeFull();
         middleContainer.setSpacing(true);
         container.addComponent(middleContainer);

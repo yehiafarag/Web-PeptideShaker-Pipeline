@@ -13521,21 +13521,29 @@ div.v-layout.v-horizontal.v-widget {
 	max-height: 225px;
 	height: auto !important;
 	padding: 10%;
-	border: 2px solid rgba(0, 0, 255, 0);
-	cursor: pointer;
-	-webkit-transition: all 0.5s ease-in-out;
-	-moz-transition: all 0.5s ease-in-out;
-	-o-transition: all 0.5s ease-in-out;
-	transition: all 0.5s ease-in-out;
-	z-index: 10 !important;
+	border: 1px solid transparent;
+	border-right-color: #88bfff;
 	position: relative !important;
+	border-radius: 5px;
+	border-top-right-radius: 0px;
+	border-bottom-right-radius: 0px;
+	border-top: none;
+	border-bottom: none;
+	background-color: #ffffff;
+	position: relative;
+	z-index: 5 !important;
+	width: 105px !important;
+	margin-left: 4px;
+	border-top: 1px solid lightgray;
+	border-bottom: 1px solid lightgray;
+	border-left: 1px solid lightgray;
 }
 
 .webpeptideshakertheme .bigmenubtn img {
-	max-width: 100px !important;
+	mmax-width: 100px !important;
 	width: 100% !important;
 	height: auto !important;
-	border: 2px solid lightgray;
+	border: 1px solid transparent;
 	border-radius: 5px;
 	cursor: pointer;
 	padding: 10%;
@@ -13561,26 +13569,21 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .selectedbiglbtn {
-	background-color: whitesmoke;
-	border: 2px solid lightgray;
-	border-right-color: whitesmoke;
+	border: 1px solid #88bfff;
+	border-right-color: white;
 	border-radius: 5px;
-	border-top-right-radius: 0px;
-	border-bottom-right-radius: 0px;
-	position: relative;
+	border-top-right-radius: 0px !important;
+	border-bottom-right-radius: 0px !important;
 	z-index: 5 !important;
-	padding: 0.5vh;
+	height: auto !important;
 }
 
 .webpeptideshakertheme .selectedbiglbtn img {
-	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
-	-webkit-box-shadow: 0 0px 20px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
-	-moz-box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
-	border-color: rgba(131, 188, 255, 0.96) !important;
-	animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
-	transform: translate3d(0, 0, 0);
+	border: 2px solid rgba(131, 188, 255, 0.96) !important;
 	backface-visibility: hidden;
 	perspective: 1000px;
+	border-radius: 5px;
+	cursor: pointer;
 }
 
 .webpeptideshakertheme .shake {
@@ -13616,6 +13619,11 @@ div.v-layout.v-horizontal.v-widget {
 	background-color: whitesmoke;
 	border: 2px solid lightgray;
 	border-radius: 5px;
+	border-top-left-radius: 0px;
+}
+
+.webpeptideshakertheme .v-panel-integratedframe {
+	border-top-left-radius: 5px !important;
 }
 
 .webpeptideshakertheme .integratedframe .v-captiontext {
@@ -13623,6 +13631,7 @@ div.v-layout.v-horizontal.v-widget {
 	font-weight: bold;
 	font-family: "Open Sans", sans-serif;
 	color: #464646;
+	border-top-left-radius: 0px !important;
 }
 
 .webpeptideshakertheme .viewframe {
@@ -13635,7 +13644,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .viewframecontent {
 	background-color: white;
-	border: 2px solid lightgray;
+	border: 1px solid #88bfff;
 	border-radius: 5px;
 }
 
@@ -13733,7 +13742,6 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .frame {
-	border: 1px solid lightgray;
 	border-radius: 5px;
 	padding: 10px !important;
 	min-height: 600px;
@@ -13743,7 +13751,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .subviewbuttonsactioncontainer {
 	top: 150px !important;
-	width: 100px !important;
+	width: 112px !important;
 	z-index: 3 !important;
 	position: fixed !important;
 	overflow: visible;
@@ -14196,8 +14204,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .subframe {
-	border: 1px solid lightgray;
-	border-radius: 5px;
+	border: none !important;
 }
 
 .webpeptideshakertheme .smallertext {
@@ -16018,7 +16025,7 @@ div.v-layout.v-horizontal.v-widget {
 	color: #7d7d7d;
 	border-radius: 5px;
 	background-color: white;
-	width: 100% !important;
+	width: 94% !important;
 	height: auto !important;
 	border: 2px solid lightgray;
 	border-radius: 5px;
@@ -16116,6 +16123,20 @@ div.v-layout.v-horizontal.v-widget {
 	animation: 10s WelcomeAnimation linear infinite, 3s Always ease alternate infinite;
 }
 
+.webpeptideshakertheme .v-absolutelayout-subviewbuttonsactioncontainer .v-spacing {
+	background: white !important;
+	min-width: 20px;
+	min-height: 0px;
+	border-top: 0px solid gray;
+	border-right: 2px solid lightgray;
+	border-bottom: none;
+	right: 0px !important;
+	top: 0px !important;
+	margin: 0px !important;
+	float: right;
+	position: relative !important;
+}
+
 .webpeptideshakertheme .smallscreenstyle .hidelowerpanel .v-slot-integratedframe {
 	width: 99% !important;
 	height: 100% !important;
@@ -16196,10 +16217,6 @@ div.v-layout.v-horizontal.v-widget {
 	font-size: 14px;
 	font-weight: bold;
 	font-family: "Open Sans", sans-serif;
-}
-
-.webpeptideshakertheme .smallscreenstyle .subviewbuttonsactioncontainer .v-slot-bigmenubtn {
-	visibility: hidden !important;
 }
 
 .webpeptideshakertheme .smallscreenstyle.frame {
@@ -16438,7 +16455,7 @@ div.v-layout.v-horizontal.v-widget {
 	max-height: 32.15%;
 	margin-right: 0px !important;
 	padding: 0px !important;
-	margin-bottom: 2%;
+	margin-bottom: 1.9%;
 }
 
 .webpeptideshakertheme .cornerfiltercontainerstyle {
@@ -16526,7 +16543,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .v-slot-presentercontainer {
-	margin-top: 20px;
+	margin-top: 0px;
 	height: 100px !important;
 	overflow: hidden;
 	position: absolute !important;
@@ -16539,18 +16556,33 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .presentercontainer {
 	width: 100% !important;
-	-webkit-transition: all 1.5s ease-in-out;
-	-moz-transition: all 1.5s ease-in-out;
-	-o-transition: all 1.5s ease-in-out;
-	transition: all 1.5s ease-in-out;
+	-webkit-transition: all 0.1s ease-in-out;
+	-moz-transition: all 0.1s ease-in-out;
+	-o-transition: all 0.1s ease-in-out;
+	transition: all 0.1s ease-in-out;
 }
 
 .webpeptideshakertheme .v-absolutelayout-presentercontainer.v-absolutelayout-bigmenubtn {
-	height: 100px !important;
+	height: 105px !important;
+	width: 100px !important;
+	background-color: whitesmoke !important;
+	overflow: visible !important;
+	padding-left: 10% !important;
+	padding-top: 10% !important;
+	padding-right: 0px !important;
+	border-width: 2px !important;
+	border-color: #bcbcbc;
+	border-right: none;
+	border-top-right-radius: 0px !important;
+	margin-left: 0px;
+}
+
+.webpeptideshakertheme .middleviewcontainer .v-verticallayout-integratedframe {
+	border-color: #bcbcbc !important;
 }
 
 .webpeptideshakertheme .bigmenubtn .presenterbtn {
-	background-color: whitesmoke !important;
+	background-color: white !important;
 	border: 2px solid lightgray !important;
 	box-shadow: none !important;
 	-webkit-box-shadow: none !important;
@@ -16559,23 +16591,17 @@ div.v-layout.v-horizontal.v-widget {
 	width: 35px !important;
 	height: 35px !important;
 	cursor: pointer;
-	-webkit-transition: all 0.5s ease-in-out;
-	-moz-transition: all 0.5s ease-in-out;
-	-o-transition: all 0.5s ease-in-out;
-	transition: all 0.5s ease-in-out;
+	-webkit-transition: all 0.1s ease-in-out;
+	-moz-transition: all 0.1s ease-in-out;
+	-o-transition: all 0.1s ease-in-out;
+	transition: all 0.1s ease-in-out;
+	z-index: 6 !important;
+	position: relative !important;
 }
 
 .webpeptideshakertheme .presenterbtn:hover {
-	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
-	-webkit-box-shadow: 0 0px 20px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
-	-moz-box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
 	border-color: gray !important;
 	padding: 0px !important;
-	border-width: 2px !important;
-}
-
-.webpeptideshakertheme .presenterbtn img {
-	padding: 10%;
 }
 
 .webpeptideshakertheme .selectedbiglbtn .presenterbtn .v-icon, .webpeptideshakertheme .selectedpresenterbtn .v-icon {
@@ -16628,8 +16654,15 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .v-slot-presentercontainer.v-slot-bigmenubtn.v-slot-selectedbiglbtn.v-slot-welcomepagstyle {
-	margin-left: 50% !important;
-	margin-top: 18% !important;
+	left: 50% !important;
+	top: 400px !important;
+	position: fixed !important;
+	margin-left: -50px;
+	background-color: white !important;
+}
+
+.webpeptideshakertheme .v-slot-welcomepagstyle .v-absolutelayout-presentercontainer.v-absolutelayout-bigmenubtn {
+	background-color: white !important;
 }
 
 .webpeptideshakertheme .v-slot-welcomepagstyle .v-gridlayout-slot {
@@ -16659,23 +16692,27 @@ div.v-layout.v-horizontal.v-widget {
 	margin: 0px !important;
 	padding: 0px !important;
 	position: absolute !important;
-	max-width: 40px;
+	max-width: 50px;
 }
 
 .webpeptideshakertheme .smallscreenstyle .v-slot-presentercontainer.v-slot-bigmenubtn.v-slot-selectedbiglbtn .actionButtonContainer {
-	top: 50% !important;
-	margin-top: -100px;
+	top: 30% !important;
 	background-color: white !important;
-	border-top: 2px solid lightgray !important;
-	border-bottom: 2px solid lightgray !important;
+	border-top: 2px solid #bcbcbc !important;
+	border: 2px solid #bcbcbc !important;
+	border-right: none !important;
+	border-top-right-radius: 0px !important;
+	border-bottom-right-radius: 0px !important;
 	min-height: 200px;
 	max-height: 210px;
 	border-radius: 5px;
 	padding-top: 5px;
-	-webkit-transition: all 0.5s ease-in-out;
-	-moz-transition: all 0.5s ease-in-out;
-	-o-transition: all 0.5s ease-in-out;
-	transition: all 0.5s ease-in-out;
+	background-color: whitesmoke !important;
+	padding-left: 5px !important;
+	-webkit-transition: all 0.1s ease-in-out;
+	-moz-transition: all 0.1s ease-in-out;
+	-o-transition: all 0.1s ease-in-out;
+	transition: all 0.1s ease-in-out;
 }
 
 .webpeptideshakertheme .smallscreenstyle .v-slot-presentercontainer.v-slot-bigmenubtn.v-slot-selectedbiglbtn.v-slot-welcomepagstyle .actionButtonContainer {
@@ -16720,8 +16757,9 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .smallscreenstyle .welcomepagstyle.bigmenubtn {
-	min-width: 200px !important;
+	min-width: 400px !important;
 	border: none !important;
+	margin-left: -175px !important;
 }
 
 .webpeptideshakertheme .smallscreenstyle .welcomepagstyle.bigmenubtn .v-gridlayout-slot {
@@ -16753,4 +16791,99 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .v-absolutelayout-wrapper-sweepeventcanvas:hover {
 	display: none !important;
+}
+
+.webpeptideshakertheme .smallscreenstyle .integratedframe {
+	border-top-left-radius: 5px;
+}
+
+.webpeptideshakertheme .smallscreenstyle .subviewbuttonsactioncontainer {
+	margin-top: 11px;
+	top: 30% !important;
+	width: 70px !important;
+	z-index: 3 !important;
+	position: fixed !important;
+	overflow: visible;
+	background-color: whitesmoke !important;
+	border: 1px solid #88bfff !important;
+	left: 0px;
+}
+
+.webpeptideshakertheme .smallscreenstyle .subviewbuttonsactioncontainer .v-verticallayout {
+	background-color: whitesmoke;
+	border: 1px solid #88bfff;
+	border-radius: 5px;
+	margin-left: -2px;
+	position: absolute !important;
+	z-index: 2 !important;
+	border-top-left-radius: 0px;
+	border-bottom-left-radius: 0px;
+	padding-left: 0px !important;
+	padding-top: 0px;
+	padding-bottom: 10px;
+	padding-right: 5px !important;
+	font-size: 12px !important;
+}
+
+.webpeptideshakertheme .smallscreenstyle .subviewbuttonsactioncontainer .bigmenubtn {
+	max-height: 225px;
+	height: auto !important;
+	padding: 0%;
+	border: 1px solid lightgray;
+	position: relative !important;
+	border-radius: 5px;
+	border-top-right-radius: 0px;
+	border-bottom-right-radius: 0px;
+	border-top: none;
+	border-bottom: none;
+	background-color: #ffffff;
+	position: relative;
+	z-index: 5 !important;
+	width: 50px !important;
+	margin-top: 10px;
+}
+
+.webpeptideshakertheme .smallscreenstyle .bigmenubtn img {
+	max-width: 100px !important;
+	width: 100% !important;
+	height: auto !important;
+	border: 1px solid lightgray;
+	border-radius: 5px !important;
+	cursor: pointer;
+	padding: 10%;
+	position: relative;
+	z-index: 10 !important;
+}
+
+.webpeptideshakertheme .smallscreenstyle .v-verticallayout-singlebtn {
+	display: none !important;
+}
+
+.webpeptideshakertheme .v-slot-hide {
+	height: 0px;
+}
+
+.webpeptideshakertheme .smallscreenstyle .extendwidthstyle {
+	min-width: 1500px !important;
+}
+
+.webpeptideshakertheme .smallscreenstyle .v-slot-extendwidthstyle {
+	overflow-x: auto;
+	padding-bottom: 40px;
+}
+
+.webpeptideshakertheme .smallscreenstyle .peptidenode {
+	position: relative !important;
+}
+
+.webpeptideshakertheme .smallscreenstyle .selectednode.peptidenode, .webpeptideshakertheme .smallscreenstyle .peptidenode:hover {
+	position: relative !important;
+}
+
+.webpeptideshakertheme .smallscreenstyle .selectednode.proteinnode, .webpeptideshakertheme .smallscreenstyle .proteinnode:hover {
+	position: relative !important;
+}
+
+.webpeptideshakertheme .smallscreenstyle .proteinnode {
+	position: absolute !important;
 }

@@ -90,6 +90,7 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
         btnContainer.setHeightUndefined();
         btnContainer.setSpacing(true);
         btnContainer.setMargin(new MarginInfo(false, false, true, false));
+        btnContainer.addStyleName("singlebtn");
 
         peptideshakerToolInputForm = new SearchGUIPeptideShakerWorkFlowInputLayout() {
             @Override
