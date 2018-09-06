@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * This class represents the layout that contains PeptideShaker datasets
+ * This class represents the layout that contains selected proteins 
  * overview
  *
  * @author Yehia Farag

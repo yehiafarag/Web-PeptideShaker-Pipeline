@@ -328,6 +328,8 @@ public abstract class GalaxyToolsHandler {
             if (dsId == null || historyId == null || galaxyURL == null) {
                 return;
             }
+            
+            
             String userAPIKey = VaadinSession.getCurrent().getAttribute("ApiKey") + "";
             String cookiesRequestProperty = VaadinSession.getCurrent().getAttribute("cookies") + "";
             URL url = new URL(galaxyURL + "/api/histories/" + historyId + "/contents/datasets/" + dsId + "?key=" + userAPIKey);

@@ -171,7 +171,7 @@ public abstract class SearchableTable extends VerticalLayout implements Property
         };
         table.setCaption("<b>" + tableMainTitle + "</b>");
         table.setCaptionAsHtml(true);
-        table.setStyleName("framedpanel");
+        table.addStyleName("framedpanel");
         table.addStyleName(ValoTheme.TABLE_BORDERLESS);
         table.addStyleName(ValoTheme.TABLE_SMALL);
         table.addStyleName(ValoTheme.TABLE_COMPACT);

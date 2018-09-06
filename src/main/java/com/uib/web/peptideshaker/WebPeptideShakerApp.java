@@ -78,9 +78,10 @@ public class WebPeptideShakerApp extends VerticalLayout {
                 if (userAPI.equalsIgnoreCase("test_User_Login")) {
                     userAPI = VaadinSession.getCurrent().getAttribute("testUserAPIKey").toString();
                 }
-                boolean connected = Galaxy_Interactive_Layer.connectToGalaxyServer(galaxyServerUrl, userAPI, userDataFolderUrl);
-                presentationManager.setSideButtonsVisible(connected);               
+                boolean connected = Galaxy_Interactive_Layer.connectToGalaxyServer(galaxyServerUrl, userAPI, userDataFolderUrl);               
+                presentationManager.setSideButtonsVisible(connected);                   
                 return connected;
+              
             }
 
         };

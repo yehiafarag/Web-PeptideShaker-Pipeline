@@ -47,7 +47,7 @@ public abstract class GalaxyInteractiveLayer {
     public GalaxyInteractiveLayer() {
         this.historyHandler = new GalaxyHistoryHandler() {
             @Override
-            public void synchronizeDataWithGalaxyServer(Map<String, GalaxyFileObject> historyFilesMap,boolean jobsInProgress) {
+            public void synchronizeDataWithGalaxyServer(Map<String, GalaxyFileObject> historyFilesMap, boolean jobsInProgress) {
                 //update history in the system                 
                 GalaxyInteractiveLayer.this.synchronizeDataWithGalaxyServer(historyFilesMap, jobsInProgress);
             }
@@ -65,18 +65,20 @@ public abstract class GalaxyInteractiveLayer {
     public boolean connectToGalaxyServer(String galaxyServerUrl, String userAPI, String userDataFolderUrl) {
         try {
             Galaxy_Instance = GalaxyInstanceFactory.get(galaxyServerUrl, userAPI);
+            Galaxy_Instance.getHistoriesClient().getHistories();
             user_folder = new File(userDataFolderUrl, Galaxy_Instance.getApiKey() + "");
             user_folder.mkdir();
             historyHandler.connectToGalaxy(Galaxy_Instance, user_folder);
             toolsHandler = new GalaxyToolsHandler(Galaxy_Instance.getToolsClient(), Galaxy_Instance.getWorkflowsClient(), Galaxy_Instance.getHistoriesClient()) {
                 @Override
-                public void synchronizeDataWithGalaxyServer() {                   
+                public void synchronizeDataWithGalaxyServer() {
                     historyHandler.updateHistory();
                 }
             };
             VaadinSession.getCurrent().setAttribute("ApiKey", Galaxy_Instance.getApiKey());
+
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("exception in galaxy connection cought");
             return false;
         }
         return true;
@@ -162,7 +164,7 @@ public abstract class GalaxyInteractiveLayer {
      * @return files are successfully uploaded to Galaxy Server
      */
     public boolean uploadToGalaxy(PluploadFile[] toUploadFiles) {
-       return  toolsHandler.uploadToGalaxy(historyHandler.getWorkingHistoryId(), toUploadFiles);        
+        return toolsHandler.uploadToGalaxy(historyHandler.getWorkingHistoryId(), toUploadFiles);
 
     }
 
@@ -174,6 +176,9 @@ public abstract class GalaxyInteractiveLayer {
     public void deleteDataset(GalaxyFileObject fileObject) {
         if (fileObject.getType().equalsIgnoreCase("Web Peptide Shaker Dataset")) {
             PeptideShakerVisualizationDataset vDs = (PeptideShakerVisualizationDataset) fileObject;
+            vDs.getInputMGFFiles().values().forEach((galaxyFile) -> {
+                toolsHandler.deleteDataset(Galaxy_Instance.getGalaxyUrl(), vDs.getHistoryId(), galaxyFile.getGalaxyId());
+            });
             toolsHandler.deleteDataset(Galaxy_Instance.getGalaxyUrl(), vDs.getHistoryId(), vDs.getGalaxyId());
             toolsHandler.deleteDataset(Galaxy_Instance.getGalaxyUrl(), vDs.getHistoryId(), vDs.getSearchGUIFile().getGalaxyId());
 

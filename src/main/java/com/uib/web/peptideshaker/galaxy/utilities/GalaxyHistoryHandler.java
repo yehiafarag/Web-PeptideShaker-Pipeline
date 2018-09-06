@@ -551,6 +551,7 @@ public abstract class GalaxyHistoryHandler {
                         vDs.setFile_ext(map.get("file_ext") + "");
                         vDs.setPeptideShakerResultsFileId(map.get("id").toString());
                         vDs.setStatus(map.get("state") + "");
+                        vDs.setGalaxyId(map.get("id").toString());
                          vDs.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" +map.get("id").toString() + "/display?to_ext=" + map.get("file_ext").toString());
                         
                         if (map.get("state").toString().equalsIgnoreCase("new") || map.get("state").toString().equalsIgnoreCase("running") || map.get("state").toString().equalsIgnoreCase("queued")) {

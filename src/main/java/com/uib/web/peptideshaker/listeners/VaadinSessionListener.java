@@ -29,21 +29,23 @@ public class VaadinSessionListener implements HttpSessionListener, ServletContex
                         subtFile.delete();
                     }
                 }
-                System.out.println("at folder here  " + tFile.getName() + "  deleted " + tFile.delete());
             }
         }
-        System.out.println("at context now cleaned is ready to distroy ..Good bye...folder (" + usersFolder.getName() + ") now it is  cleaned "+usersFolder.listFiles().length);
-       
+        System.out.println("at context now cleaned is ready to distroy ..Good bye...folder (" + usersFolder.getName() + ") now it is  cleaned " + usersFolder.listFiles().length);
+
     }
 
     @Override
     public void sessionCreated(HttpSessionEvent hse) {
-        System.out.println("at welcome to new session");
+        System.out.println("welcome user");
     }
 
     @Override
     public void sessionDestroyed(HttpSessionEvent hse) {
         String ApiKey = hse.getSession().getAttribute("ApiKey") + "";
+        if (ApiKey.equalsIgnoreCase(hse.getSession().getAttribute("testUserAPIKey").toString())) {
+            return;
+        }
         String userDataFolderUrl = hse.getSession().getAttribute("userDataFolderUrl").toString();
         File user_folder = new File(userDataFolderUrl, ApiKey);
         if (user_folder.exists()) {

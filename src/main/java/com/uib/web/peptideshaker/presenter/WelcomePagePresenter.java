@@ -22,16 +22,11 @@ import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.TextField;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javafx.concurrent.Task;
 //import sun.security.provider.certpath.Vertex;
 
 /**
@@ -106,6 +101,10 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
      * Busy connecting window
      */
     private final Window busyConnectinWindow;
+     /**
+     * Executor service to execute connection task to galaxy server.
+     */
+    private  ExecutorService executorService = Executors.newFixedThreadPool(2);;
 
     /**
      * Constructor to initialise the layout.
@@ -117,7 +116,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         VerticalLayout windowContent = new VerticalLayout();
         windowContent.setSizeFull();
 
-        ExecutorService executorService = Executors.newFixedThreadPool(2);
+       
 
         this.busyConnectinWindow = new Window(null, windowContent);
         this.busyConnectinWindow.setSizeFull();
@@ -148,6 +147,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         VerticalLayout bodyContent = new VerticalLayout();
         bodyContent.setSizeFull();
         bodyContent.addStyleName("mainbodystyle");
+        bodyContent.addStyleName("connectionpanelstyle");
         bodyContent.setSpacing(true);
         bodyContent.setWidth(405, Unit.PIXELS);
         bodyContent.setHeight(400, Unit.PIXELS);
@@ -192,8 +192,15 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
          *
          */
         nelsGalaxyConnectionBtn.setVisible(false);
+        final VerticalLayout spacerLayout = new VerticalLayout();
+        galaxyLoginLayout = new VerticalLayout() {
+            @Override
+            public void setVisible(boolean visible) {
+                super.setVisible(visible);
+                spacerLayout.setVisible(!visible);
+            }
 
-        galaxyLoginLayout = new VerticalLayout();
+        };
         galaxyLoginLayout.setSizeFull();
         galaxyLoginLayout.setSpacing(true);
         galaxyLoginLayout.setVisible(false);
@@ -253,7 +260,6 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         connectionCommentLayout.addComponent(connectionStatuesLabel);
         connectionCommentLayout.setComponentAlignment(connectionStatuesLabel, Alignment.TOP_CENTER);
 
-        final VerticalLayout spacerLayout = new VerticalLayout();
         spacerLayout.setSizeFull();
         spacerLayout.setSpacing(true);
         spacerLayout.setVisible(true);
@@ -270,31 +276,37 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
             } else {
                 galaxyLoginLayout.setVisible(true);
             }
-            spacerLayout.setVisible(!galaxyLoginLayout.isVisible());
 
         });
         loginButton.addClickListener((Button.ClickEvent event) -> {
             userAPIFeald.commit();
-            connectionStatuesLabel.setValue("Connecting to galaxy....");
+            connectionStatuesLabel.setValue("<h1 class='animation'>Connecting to galaxy....</h1>");
             if (userAPIFeald.isValid() && !userAPIFeald.getValue().equalsIgnoreCase(testUserLogin)) {
-                Runnable t2 = () -> {
+                galaxyLoginLayout.setVisible(false);
+                Runnable task = () -> {
                     boolean connected = connectToGalaxy(userAPIFeald.getValue());
                     connectedToGalaxy(connected);
                 };
+                if (executorService.isShutdown()) {
+                    executorService = Executors.newFixedThreadPool(2);
+                }
 
-                executorService.submit(t2);
+                executorService.submit(task);
                 executorService.shutdown();
 
             }
         });
         loadExampleUserAccount.addClickListener((Button.ClickEvent event) -> {
-
-            Runnable t2 = () -> {
+            galaxyLoginLayout.setVisible(false);
+            Runnable task = () -> {
                 boolean connected = connectToGalaxy(testUserLogin);
                 connectedToGalaxy(connected);
             };
             connectionStatuesLabel.setValue("<h1 class='animation'>Connecting to galaxy....</h1>");
-            executorService.submit(t2);
+            if (executorService.isShutdown()) {
+                    executorService = Executors.newFixedThreadPool(2);
+                }
+            executorService.submit(task);
             executorService.shutdown();
 
         });
@@ -324,6 +336,10 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         } else {
             userAPIFeald.setValue(apiErrorMessage);
             userAPIFeald.addStyleName("redfont");
+            connectionStatuesLabel.setValue("Galaxy is<font color='red'>  not connected </font><font size='3' color='red'> " + FontAwesome.FROWN_O.getHtml() + "</font>");
+            galaxyLoginLayout.setEnabled(true);
+            loadExampleUserAccount.setEnabled(true);
+            galaxyLoginLayout.setVisible(true);
         }
 
     }
@@ -388,11 +404,6 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
     public HorizontalLayout getBottomView() {
         return new HorizontalLayout();
     }
-
-//    @Override
-//    public SmallSideBtn getTopView() {
-//        return topHomeBtn;
-//    }
 
     /**
      * Start the Online PeptideShaker - Galaxy server connection.

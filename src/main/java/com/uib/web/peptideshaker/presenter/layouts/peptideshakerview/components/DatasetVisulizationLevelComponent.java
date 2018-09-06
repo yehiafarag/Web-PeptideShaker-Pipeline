@@ -14,6 +14,7 @@ import com.uib.web.peptideshaker.presenter.core.filtercharts.FiltersContainer;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.charts.RegistrableFilter;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.server.ExternalResource;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.Table;
@@ -90,6 +91,7 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
             }
 
         };
+        this.proteinTableContainer.setStyleName("datasetproteinstablestyle");
         DatasetVisulizationLevelComponent.this.addComponent(proteinTableContainer);
         DatasetVisulizationLevelComponent.this.setExpandRatio(proteinTableContainer, 100f);
 
@@ -108,23 +110,46 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
         final Table mainTable = proteinTableContainer.getMainTable();
 
         mainTable.sort(new Object[]{"peptides_number", "psm_number"}, new boolean[]{false, false});
-        mainTable.setColumnWidth("index", 50);
-        mainTable.setColumnWidth("proteinInference", 37);
-        mainTable.setColumnWidth("Accession", 100);
 
-        mainTable.setColumnWidth("possibleCoverage", 150);
-        mainTable.setColumnWidth("peptides_number", 150);
-        mainTable.setColumnWidth("psm_number", 150);
-        mainTable.setColumnWidth("ms2Quant", 150);
-        mainTable.setColumnWidth("mwkDa", 150);
-        mainTable.setColumnWidth("chromosom", 50);
-
-        mainTable.setColumnWidth("validation", 32);
-        mainTable.setColumnWidth("confidence", 150);
         mainTable.setColumnCollapsible("protein_group", true);
         mainTable.setColumnCollapsed("protein_group", true);
         mainTable.setColumnCollapsible("geneName", true);
         mainTable.setColumnCollapsed("geneName", true);
+        boolean smallScreen = (boolean) VaadinSession.getCurrent().getAttribute("smallscreenstyle");
+
+        mainTable.setColumnCollapsible("mwkDa", smallScreen);
+        mainTable.setColumnCollapsible("ms2Quant", smallScreen);
+        mainTable.setColumnCollapsible("chromosom", smallScreen);
+        mainTable.setColumnCollapsed("mwkDa", smallScreen);
+        mainTable.setColumnCollapsed("ms2Quant", smallScreen);
+        mainTable.setColumnCollapsed("chromosom", smallScreen);
+
+        if (smallScreen) {
+//            mainTable.setColumnWidth("index", 30);
+//            mainTable.setColumnWidth("proteinInference", 20);
+//            mainTable.setColumnWidth("Accession", 50);
+//            mainTable.setColumnWidth("possibleCoverage", 70);
+//            mainTable.setColumnWidth("peptides_number", 50);
+//            mainTable.setColumnWidth("psm_number", 50);
+//            mainTable.setColumnWidth("validation", 30);
+//            mainTable.setColumnWidth("confidence", 50);
+
+        } else {
+
+            mainTable.setColumnWidth("index", 50);
+            mainTable.setColumnWidth("proteinInference", 37);
+            mainTable.setColumnWidth("Accession", 100);
+            mainTable.setColumnWidth("possibleCoverage", 150);
+            mainTable.setColumnWidth("peptides_number", 150);
+            mainTable.setColumnWidth("psm_number", 150);
+            mainTable.setColumnWidth("ms2Quant", 150);
+            mainTable.setColumnWidth("mwkDa", 150);
+            mainTable.setColumnWidth("chromosom", 50);
+            mainTable.setColumnWidth("validation", 32);
+            mainTable.setColumnWidth("confidence", 150);
+        }
+
+        
         proteinTableContainer.resetTable();
         proteinTableMap.values().forEach((protein) -> {
 
