@@ -16718,7 +16718,7 @@ div.v-layout.v-horizontal.v-widget {
 .webpeptideshakertheme .smallscreenstyle .v-slot-presentercontainer.v-slot-bigmenubtn.v-slot-selectedbiglbtn.v-slot-welcomepagstyle .actionButtonContainer {
 	top: 0% !important;
 	margin-top: 0px;
-	background-color: rgba(255, 255, 255, 0);
+	background-color: rgba(255, 255, 255, 0) !important;
 	min-height: 0px;
 	border: none !important;
 	padding-top: 0px;
@@ -16886,4 +16886,26 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .smallscreenstyle .proteinnode {
 	position: absolute !important;
+}
+
+.webpeptideshakertheme ::-webkit-scrollbar {
+	width: 10px;
+	height: 10px;
+}
+
+.webpeptideshakertheme ::-webkit-scrollbar-track {
+	-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+}
+
+.webpeptideshakertheme ::-webkit-scrollbar-thumb {
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	background: gray;
+	-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+}
+
+.webpeptideshakertheme ::-webkit-scrollbar-thumb:window-inactive {
+	background: #bcbcbc;
 }
