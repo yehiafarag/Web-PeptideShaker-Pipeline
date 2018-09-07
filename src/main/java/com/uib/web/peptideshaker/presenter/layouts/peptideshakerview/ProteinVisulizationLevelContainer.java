@@ -21,8 +21,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * This class represents the layout that contains selected proteins 
- * overview
+ * This class represents the layout that contains selected proteins overview
  *
  * @author Yehia Farag
  */
@@ -101,12 +100,13 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
                     proteinStructurePanel.reset();
                 }
 
-                if (selectedChildsItems.size() == 1) {
+                if (selectedChildsItems.size() == 1 && selectedItems.size() == 1) {
                     Object peptideId = selectedChildsItems.iterator().next();
-                    peptideSelection(peptideId);
+                    Object proteinId = selectedItems.iterator().next();
+                    peptideSelection(peptideId, proteinId);
                     proteinStructurePanel.selectPeptide(peptideId + "");
                 } else {
-                    peptideSelection(null);
+                    peptideSelection(null, null);
                 }
 
             }
@@ -139,8 +139,9 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
         proteinCoverageContainer = new ProteinCoverageContainer(proteinStructurePanel.getChainCoverageLayout()) {
             @Override
             public void selectPeptide(Object proteinId, Object peptideId) {
+                System.out.println("selection is from prot coverage");
                 selectedProteinGraph.selectPeptide(proteinId, peptideId);
-                peptideSelection(peptideId);
+                peptideSelection(peptideId, proteinId);
                 proteinStructurePanel.selectPeptide(peptideId + "");
             }
 
@@ -190,11 +191,18 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    private void peptideSelection(Object peptideId) {
+    private void peptideSelection(Object peptideId, Object proteinId) {
         if (peptideId == null) {
             Selection_Manager.setSelectedPeptide(null);
             Selection_Manager.setSelection("peptide_selection", new HashSet<>(Arrays.asList(new Comparable[]{null})), null, getFilterId());
         } else {
+            if (proteinPeptides == null) {
+                proteinPeptides = new LinkedHashMap<>();
+                ProteinObject protein = selectedProteinGraph.getProteinNodes().get((String) proteinId);
+                selectedProteinGraph.getPeptidesNodes().values().stream().filter((peptide) -> (peptide.getProteinsSet().contains(protein.getAccession()))).forEachOrdered((peptide) -> {
+                    proteinPeptides.put(peptide.getModifiedSequence(), peptide);
+                });
+            }
             System.out.println("it is a selected peptide with id " + peptideId + "   " + proteinPeptides);
             Selection_Manager.setSelectedPeptide(proteinPeptides.get(peptideId.toString()));
             Selection_Manager.setSelection("peptide_selection", new HashSet<>(Arrays.asList(new Comparable[]{peptideId + ""})), null, getFilterId());

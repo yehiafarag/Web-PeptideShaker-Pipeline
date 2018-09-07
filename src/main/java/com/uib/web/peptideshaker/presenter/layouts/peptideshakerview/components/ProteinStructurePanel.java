@@ -155,6 +155,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
             pdbChainsSelect.removeValueChangeListener(pdbChainsSelectlistener);
             pdbChainsSelect.removeAllItems();
             LiteMolPanel.setVisible(pdbMatchesSelect.getValue() != null);
+            System.out.println("last selected protein sequence "+lastSelectedProteinSequence);
             lastSelectedMatch = pdbHandler.updatePdbInformation(pdbMatchesSelect.getValue().toString(), lastSelectedProteinSequence);   
             pdbBlockMap.clear();           
             lastSelectedChainCoverage = reCalculateChainRange(lastSelectedMatch.getChains(), proteinSequenceLength);
@@ -262,7 +263,8 @@ public class ProteinStructurePanel extends AbsoluteLayout {
             pdbChainsSelect.setVisible(pdbMatchesSelect.isVisible());
             chainCoverageLayout.setVisible(pdbMatchesSelect.isVisible());
             pdbMatchesSelect.addValueChangeListener(pdbMatchSelectlistener);
-            pdbMatchesSelect.setValue(pdbMatchesSelect.getItemIds().toArray()[0]);
+          String pdbMachSelectValue = pdbMatchesSelect.getItemIds().toArray()[0]+"";
+            pdbMatchesSelect.setValue(pdbMachSelectValue);
             playBtn.addStyleName("poweron");
 
         } else {

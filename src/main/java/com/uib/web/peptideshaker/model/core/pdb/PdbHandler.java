@@ -69,7 +69,7 @@ public class PdbHandler {
      * @return updated PDB match object
      */
     public PDBMatch updatePdbInformation(String pdbMatch, String protSequence) {
-        if (pdbMachesMap.get(pdbMatch).getChains().isEmpty()) {
+         if (pdbMachesMap.get(pdbMatch).getChains().isEmpty()) {
             return EBI_Rest_Service.updatePdbInformation(pdbMachesMap.get(pdbMatch), protSequence);
         } else {
             return pdbMachesMap.get(pdbMatch);

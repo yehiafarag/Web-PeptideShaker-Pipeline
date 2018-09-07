@@ -140,7 +140,7 @@ public class EBIRestService {
     public PDBMatch updatePdbInformation(PDBMatch pdbMatch, String proteinSequence) {
         try {
 
-            String url = " https://www.ebi.ac.uk/pdbe/api/pdb/entry/molecules/";
+            String url = "https://www.ebi.ac.uk/pdbe/api/pdb/entry/molecules/";
             String urlParameters = pdbMatch.getPdbId().toLowerCase();
             String respond;
             respond = sendGet(url + urlParameters);
@@ -151,15 +151,23 @@ public class EBIRestService {
                 Map<String, Object> subMap = null;
                 for (Object o : l) {
 
-                    if (o.toString().contains("pdb_sequence") && o.toString().contains("in_chains=" + pdbMatch.getChainsIds())) {
-                        subMap = (Map<String, Object>) o;
-                        pdbMatch.setEntity_id(subMap.get("entity_id"));
-                        break;
+                    if (o.toString().contains("pdb_sequence")) {
+                        for (String chainId : pdbMatch.getChainsIds()) {                         
+                            if (o.toString().contains("in_chains=[" + chainId)) {
+                                subMap = (Map<String, Object>) o;
+                                pdbMatch.setEntity_id(subMap.get("entity_id"));
+                                break;
+                            }
+
+                        }
+                        
                     }
                 }
 
                 if (subMap != null && subMap.get("pdb_sequence") != null) {
                     pdbMatch.setSequence(subMap.get("pdb_sequence") + "");
+                } else {
+                    return pdbMatch;
                 }
                 url = " https://www.ebi.ac.uk/pdbe/api/pdb/entry/polymer_coverage/";
                 respond = sendGet(url + urlParameters);
@@ -185,47 +193,31 @@ public class EBIRestService {
                             int end_residue_number = (Integer) subChainData.get("residue_number");
 
                             String chainSequence = pdbMatch.getSequence().substring(start_residue_number - 1, end_residue_number - 1);
+
                             int tstart_author_residue_number = -5;
                             int tend_author_residue_number = -5;
-
+//
                             int uniprotLength = end_author_residue_number - start_author_residue_number;
                             int diffrent = (end_residue_number - start_residue_number) - uniprotLength;
                             String uProtSeq = proteinSequence.replace("L", "I");
                             String uChainSeq = chainSequence.replace("L", "I");
 
+                           
                             if (uProtSeq.contains(uChainSeq)) {
                                 tstart_author_residue_number = uProtSeq.indexOf(uChainSeq);
                                 tend_author_residue_number = tstart_author_residue_number + chainSequence.length();
                             }
-//                            else if (uChainSeq.length()>25 && uProtSeq.contains(uChainSeq.substring(20))) {
-////                                 System.out.println("case II");
-////                                tstart_author_residue_number = uProtSeq.indexOf(uChainSeq);
-////                                tend_author_residue_number = tstart_author_residue_number + chainSequence.length();
-//                            } else {
-//                                 System.out.println("case III");
-////                                 System.out.println("at u seq "+uChainSeq+"   " );
-////                                for (int i = 1; i < uChainSeq.length(); i++) {
-////                                    String t = uChainSeq.substring(i);
-////                                    if (uProtSeq.contains(t)) {
-////                                        tstart_author_residue_number = uProtSeq.indexOf(t);
-////                                        tend_author_residue_number = tstart_author_residue_number + chainSequence.length() - i + 1;
-////                                        break;
-////                                    }
-////                                }
-////
-//                            }
+
                             if (tstart_author_residue_number < 0) {
                                 tstart_author_residue_number = start_author_residue_number;
                             }
                             if (tend_author_residue_number < 0) {
                                 tend_author_residue_number = end_author_residue_number;
                             }
-
-//                              System.out.println("chain_id  "+chain_id+"   start_author_residue_number "+start_author_residue_number+"  to  "+tstart_author_residue_number+"   end_author_residue_number  "+end_author_residue_number+"  to  "+tend_author_residue_number);
-//                            
+//
                             ChainBlock chainParam = new ChainBlock(struct_asym_id, chain_id, tstart_author_residue_number, start_residue_number, tend_author_residue_number, end_residue_number, uChainSeq);
                             return chainParam;
-                        }).forEachOrdered((chainParam) -> {
+                        }).forEach((chainParam) -> {
                             pdbMatch.addChain(chainParam);
                         });
 

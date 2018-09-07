@@ -601,8 +601,9 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
      */
     public void completeProteinInformation(ProteinObject protein) {
         ProteinSequence entry = processFastaFileTask.getFastaProteinSequenceMap().get(protein.getAccession());
+        String protDesc = entry.getDescription().split("OS")[0];
         String[] descArr = entry.getDescription().split("\\s");
-        protein.setDescription(descArr[0].replace("OS", "").trim());
+        protein.setDescription(protDesc.replace(descArr[0],"").trim());
         protein.setSequence(entry.getSequenceAsString());
         protein.setProteinEvidence(proteinEvidence[Integer.parseInt(descArr[descArr.length - 2].replace("PE=", "").trim())]);
         processFastaFileTask.getFastaProteinMap().put(protein.getAccession(), protein);

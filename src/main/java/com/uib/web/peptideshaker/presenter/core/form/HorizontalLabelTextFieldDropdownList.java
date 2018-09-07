@@ -8,6 +8,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.themes.ValoTheme;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 /**
@@ -57,6 +58,7 @@ public class HorizontalLabelTextFieldDropdownList extends HorizontalLayout {
         textField = new TextField();
         textField.setValidationVisible(true);
         textField.setConverter(Double.class);
+        textField.setLocale(Locale.UK);
 
         textField.addValidator(validator);
         textField.addStyleName(ValoTheme.TEXTFIELD_ALIGN_CENTER);
