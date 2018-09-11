@@ -263,7 +263,7 @@ public abstract class DataViewLayout extends Panel {
                     statusLabel.setStatus("Some files are missings or corrupted please re-run SearchGUI-PeptideShaker-WorkFlow");
                 }
 
-                viewLabel = new ActionLabel(VaadinIcons.CLUSTER, "View PeptideShaker results ") {
+                viewLabel = new ActionLabel(VaadinIcons.COG, "View PeptideShaker results ") {
                     @Override
                     public void layoutClick(LayoutEvents.LayoutClickEvent event) {
                         viewDataset((PeptideShakerVisualizationDataset) ds);

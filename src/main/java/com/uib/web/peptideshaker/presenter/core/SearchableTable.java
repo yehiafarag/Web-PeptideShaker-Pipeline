@@ -1,6 +1,7 @@
 package com.uib.web.peptideshaker.presenter.core;
 
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelTextField;
+import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.event.ShortcutAction;
@@ -13,6 +14,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import java.text.DecimalFormat;
@@ -52,8 +54,8 @@ public abstract class SearchableTable extends VerticalLayout implements Property
         this.mainTable = initTable(tableHeaders);
         SearchableTable.this.addComponent(mainTable);
         SearchableTable.this.setExpandRatio(mainTable, 100);
-        
-        this.tableData=new LinkedHashMap<>();
+
+        this.tableData = new LinkedHashMap<>();
 
     }
 
@@ -117,7 +119,10 @@ public abstract class SearchableTable extends VerticalLayout implements Property
                     searchResultsLabel.setValue(key + " of " + tableSearchingResults.size());
                     Object itemId = tableSearchingMap.get(tableSearchingResults.get(key));
                     mainTable.setValue(itemId);
-                    mainTable.setCurrentPageFirstItemId(itemId);
+                    mainTable.setCurrentPageFirstItemIndex(((int)mainTable.getItem(itemId).getItemProperty("index").getValue())-1);
+                    mainTable.commit();
+                    
+
                 }
             }
         });
@@ -149,7 +154,7 @@ public abstract class SearchableTable extends VerticalLayout implements Property
             }
         }
         if (tableSearchingResults.isEmpty()) {
-            Notification.show("<i>No results</i>", Notification.Type.TRAY_NOTIFICATION);
+            Notification.show("No results available", Notification.Type.TRAY_NOTIFICATION);
         }
 
     }
@@ -234,7 +239,7 @@ public abstract class SearchableTable extends VerticalLayout implements Property
     }
 
     public void addTableItem(Comparable dataKey, Object[] value, String searchingKeyword) {
-        this.mainTable.addItem(value, dataKey);       
+        this.mainTable.addItem(value, dataKey);
         this.tableSearchingMap.put(searchingKeyword.toLowerCase().replace(",", "_"), dataKey.toString());
         this.tableData.put(dataKey, value);
     }
@@ -286,7 +291,6 @@ public abstract class SearchableTable extends VerticalLayout implements Property
 //    public void setTableData(Map<Comparable, Object[]> tableData) {
 //        this.tableData = tableData;
 //    }
-
     @Override
     public void valueChange(Property.ValueChangeEvent event) {
         Object objcetId = event.getProperty().getValue();//"P01889";

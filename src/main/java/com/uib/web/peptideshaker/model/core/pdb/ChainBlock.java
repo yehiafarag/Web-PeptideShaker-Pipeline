@@ -36,6 +36,7 @@ public class ChainBlock {
      * Index of last residue.
      */
     private final int end_residue_number;
+    private int entityId;
 
     /**
      * Constructor
@@ -119,6 +120,14 @@ public class ChainBlock {
      */
     public String getChain_id() {
         return chain_id;
+    }
+
+    public int getEntityId() {
+        return entityId;
+    }
+
+    public void setEntityId(int entityId) {
+        this.entityId = entityId;
     }
 
 }

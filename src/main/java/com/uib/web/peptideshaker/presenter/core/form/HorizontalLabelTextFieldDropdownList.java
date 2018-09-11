@@ -1,7 +1,6 @@
 package com.uib.web.peptideshaker.presenter.core.form;
 
 import com.vaadin.data.Validator;
-import com.vaadin.data.validator.IntegerRangeValidator;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;

@@ -132,7 +132,7 @@
 
     <button title="Show/Hide water, balls & sticks" class="lm-btn lm-btn-link lm-btn-link-toggle-off" style="
             right: 110px !important;
-            top:12px !important;
+            top:13px !important;
             background:rgba(0,0,0,0) !important;                                                                     
             position: absolute;
             z-index: 900000000;
@@ -190,7 +190,7 @@
                     if (newId) {
                         reset();
                         controlBtns[14].click();
-                        setTimeout(update, 3000);
+                        setTimeout(update, 5000);
                     } else {
                         update();
                     }
@@ -199,8 +199,6 @@
                 function update() {
                     controlBtns[24].click();
                     controlBtns[19].click();
-             //        progress.setAttribute("style", " display:none !important; visibility:hidden;");
-                    // controlBtns[21].click();
                     document.getElementById("progress").style.display = "none";
                    
                 }
@@ -213,9 +211,9 @@
                 var colorCode2 = {r: 200, g: 0, b: 000};
                 var colorCode = {r: 255, g: 255, b: 255};
                 var selectioncolorCode = {r: 0, g: 0, b: 200};
-                var selection = function (chain, start, end) {
+                var selection = function (entity,chain, start, end) {
                     var selectionDetails = {
-                        entity_id: '1',
+                        entity_id: entity,
                         struct_asym_id: chain,
                         start_residue_number: start,
                         end_residue_number: end

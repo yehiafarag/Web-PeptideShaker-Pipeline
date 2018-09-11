@@ -603,7 +603,7 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
         ProteinSequence entry = processFastaFileTask.getFastaProteinSequenceMap().get(protein.getAccession());
         String protDesc = entry.getDescription().split("OS")[0];
         String[] descArr = entry.getDescription().split("\\s");
-        protein.setDescription(protDesc.replace(descArr[0],"").trim());
+        protein.setDescription(protDesc.replace(descArr[0], "").trim());
         protein.setSequence(entry.getSequenceAsString());
         protein.setProteinEvidence(proteinEvidence[Integer.parseInt(descArr[descArr.length - 2].replace("PE=", "").trim())]);
         processFastaFileTask.getFastaProteinMap().put(protein.getAccession(), protein);
@@ -778,7 +778,12 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
                 psm.setRT(arr[12]);
                 psm.setMZ(arr[13]);
                 psm.setMeasuredCharge((arr[14]));
+
                 psm.setIdentificationCharge((arr[15]));
+                if (psm.getMeasuredCharge().trim().equalsIgnoreCase("")) {
+//                    psm.setMeasuredCharge(psm.getIdentificationCharge());
+//                    System.out.println("measuredcharge was empty " + psm.getIndex() + "  " + psm.getIdentificationCharge());
+                }
                 if (!arr[16].equalsIgnoreCase("")) {
                     psm.setTheoreticalMass(Double.parseDouble(arr[16]));
                 }
@@ -1139,7 +1144,11 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
                 }
             }
             MSnSpectrum spectrum = galaxyDatasetServingUtil.getSpectrum(mgfIndex.getIndex(selectedPsm.getSpectrumTitle()), galaxyHistoryId, galaxyFileId, selectedPsm.getSpectrumFile());
-            int tCharge = Integer.parseInt(selectedPsm.getMeasuredCharge().replace("+", ""));
+            int tCharge = 0;
+            if (!selectedPsm.getMeasuredCharge().trim().equalsIgnoreCase("")) {
+                tCharge = Integer.parseInt(selectedPsm.getMeasuredCharge().replace("+", ""));
+            }
+
             if (tCharge > maxCharge) {
                 maxCharge = tCharge;
             }

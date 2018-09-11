@@ -35,8 +35,8 @@ public class LiteMOL3DComponent extends VerticalLayout {
     private Future update3dFuture;
     private final List<Runnable> tasks;
 
-    public void excuteQuery(String pdbId, String chainId, HashMap<String, Integer> proteinColor, HashSet<HashMap> entriesSet) {
-        tasks.add(initExcution(pdbId, chainId, proteinColor, entriesSet));
+    public void excuteQuery(String pdbId, int entity, String chainId, HashMap<String, Integer> proteinColor, HashSet<HashMap> entriesSet) {
+        tasks.add(initExcution(pdbId, entity, chainId, proteinColor, entriesSet));
         if (update3dFuture != null) {
             while (!update3dFuture.isDone()) {
                 try {
@@ -57,18 +57,20 @@ public class LiteMOL3DComponent extends VerticalLayout {
 
     }
 
-    private Runnable initExcution(String pdbId, String chainId, HashMap<String, Integer> proteinColor, HashSet<HashMap> entriesSet) {
+    private Runnable initExcution(String pdbId, int entity, String chainId, HashMap<String, Integer> proteinColor, HashSet<HashMap> entriesSet) {
         return () -> {
             ObjectMapper mapper = new ObjectMapper();
             Map<String, Object> jsonQuery = new HashMap();
             HashMap<String, Object> coloring = new HashMap<>();
             coloring.put("base", proteinColor);
             coloring.put("entries", entriesSet);
+            jsonQuery.put("entity", entity);
             jsonQuery.put("pdbId", pdbId);
             jsonQuery.put("chainId", chainId);
             jsonQuery.put("coloring", coloring);
             try {
                 String json = mapper.writeValueAsString(jsonQuery);
+                System.out.println("ecute is going");
                 JavaScript.getCurrent().execute("document.getElementById('litemolframe').contentWindow.excutequery('" + json + "'," + (!pdbId.equalsIgnoreCase(LiteMOL3DComponent.this.pdbId)) + ");");
                 LiteMOL3DComponent.this.pdbId = pdbId;
             } catch (IOException ex) {

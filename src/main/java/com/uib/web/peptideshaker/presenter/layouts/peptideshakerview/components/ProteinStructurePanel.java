@@ -154,8 +154,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
         this.pdbMatchSelectlistener = ((Property.ValueChangeEvent event) -> {
             pdbChainsSelect.removeValueChangeListener(pdbChainsSelectlistener);
             pdbChainsSelect.removeAllItems();
-            LiteMolPanel.setVisible(pdbMatchesSelect.getValue() != null);
-            System.out.println("last selected protein sequence "+lastSelectedProteinSequence);
+            LiteMolPanel.setVisible(pdbMatchesSelect.getValue() != null);//            
             lastSelectedMatch = pdbHandler.updatePdbInformation(pdbMatchesSelect.getValue().toString(), lastSelectedProteinSequence);   
             pdbBlockMap.clear();           
             lastSelectedChainCoverage = reCalculateChainRange(lastSelectedMatch.getChains(), proteinSequenceLength);
@@ -274,7 +273,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
 
     }
 
-    private ChainCoverageComponent reCalculateChainRange(List<ChainBlock> chainBlocks, int proteinSequenceLength) {
+    private ChainCoverageComponent reCalculateChainRange(Collection<ChainBlock> chainBlocks, int proteinSequenceLength) {
         ChainCoverageComponent chainCoverage = new ChainCoverageComponent(proteinSequenceLength);        
         chainBlocks.forEach((chain) -> {
             chainCoverage.addChainRange(chain.getChain_id(), chain.getStart_author_residue_number(), chain.getEnd_author_residue_number());
@@ -301,7 +300,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
             chains.stream().map((selectedBlock) -> {
                 int start = selectedBlock.getStart_residue_number();
                 int end = selectedBlock.getEnd_residue_number();//we need color               
-                HashMap chainSeq = initSequenceMap(selectedBlock.getChain_id(), lastSelectedMatch.getEntity_id(), start, end, "valid", false, null, selectedBlock.getChain_sequence());
+                HashMap chainSeq = initSequenceMap(selectedBlock.getChain_id(), lastSelectedMatch.getEntity_id(selectedBlock.getChain_id()), start, end, "valid", false, null, selectedBlock.getChain_sequence());
                 return chainSeq;
             }).map((chainSeq) -> {
                 chainSeq.put("color", initColorMap(Color.WHITE));//selectedChainColor
@@ -471,7 +470,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
             }
         }
         String pdbAccession = (pdbMatchesSelect.getValue() + "").toLowerCase();
-        liteMOL3DComponent.excuteQuery(pdbAccession, chainId.toUpperCase(), initColorMap(basicColor), entriesSet);
+        liteMOL3DComponent.excuteQuery(pdbAccession, lastSelectedMatch.getEntity_id(chainId), chainId.toUpperCase(), initColorMap(basicColor), entriesSet);
 
     }
 
@@ -493,14 +492,18 @@ public class ProteinStructurePanel extends AbsoluteLayout {
             chainCalMap.put(selectedBlock.getChain_id(), Math.min(chainCalMap.get(selectedBlock.getChain_id()), selectedBlock.getStart_residue_number()));
         });
         this.proteinPeptidesMap.clear();
+        
         this.proteinPeptides.forEach((peptide) -> {
             this.proteinPeptidesMap.put(peptide.getModifiedSequence(), peptide);
             this.peptidesQueryMap.put(peptide.getModifiedSequence(), new ArrayList<>());
-
-            if (lastSelectedMatch.getSequence().contains(peptide.getSequence())) {
+            
+            
+            System.out.println("proteinPeptides  "+proteinPeptides);
+            
+            if (lastSelectedMatch.getSequence(pdbChainsSelect.getValue().toString()).contains(peptide.getSequence())) {
                 int current = 0;
                 while (true) {
-                    int start = lastSelectedMatch.getSequence().indexOf(peptide.getSequence(), current) + 1;
+                    int start = lastSelectedMatch.getSequence(pdbChainsSelect.getValue().toString()).indexOf(peptide.getSequence(), current) + 1;
                     int end = start + peptide.getSequence().length() - 1;
                     current = end;
                     if (start == 0) {
@@ -512,11 +515,11 @@ public class ProteinStructurePanel extends AbsoluteLayout {
                         if (!peptide.getVariableModifications().trim().equalsIgnoreCase("")) {
                             varMod = peptide.getVariableModifications();
                         }
-                        peptidesQueryMap.get(peptide.getModifiedSequence()).add(initSequenceMap(selectedBlock.getChain_id(), lastSelectedMatch.getEntity_id(), start, end, peptide.getValidation(), peptide.getModifiedSequence().contains("<"), varMod, peptide.getSequence()));
+                        peptidesQueryMap.get(peptide.getModifiedSequence()).add(initSequenceMap(selectedBlock.getChain_id(), lastSelectedMatch.getEntity_id(selectedBlock.getChain_id()), start, end, peptide.getValidation(), peptide.getModifiedSequence().contains("<"), varMod, peptide.getSequence()));
                     });
                 }
-            } else if (lastSelectedMatch.getSequence().toLowerCase().replaceAll("i", "l").contains(peptide.getSequence().toLowerCase().replaceAll("i", "l"))) {
-                String tempProtSeq = lastSelectedMatch.getSequence().toLowerCase().replaceAll("i", "l");
+            } else if (lastSelectedMatch.getSequence(pdbChainsSelect.getValue().toString()).toLowerCase().replaceAll("i", "l").contains(peptide.getSequence().toLowerCase().replaceAll("i", "l"))) {
+                String tempProtSeq = lastSelectedMatch.getSequence(pdbChainsSelect.getValue().toString()).toLowerCase().replaceAll("i", "l");
                 String tempPeptSeq = peptide.getSequence().toLowerCase().replaceAll("i", "l");
                 int current = 0;
                 while (true) {
@@ -531,7 +534,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
                         if (!peptide.getVariableModifications().trim().equalsIgnoreCase("")) {
                             varMod = peptide.getVariableModifications();
                         }
-                        peptidesQueryMap.get(peptide.getModifiedSequence()).add(initSequenceMap(selectedBlock.getChain_id(), lastSelectedMatch.getEntity_id(), start, end, peptide.getValidation(), peptide.getModifiedSequence().contains("<"), varMod, tempPeptSeq));
+                        peptidesQueryMap.get(peptide.getModifiedSequence()).add(initSequenceMap(selectedBlock.getChain_id(), lastSelectedMatch.getEntity_id(selectedBlock.getChain_id()), start, end, peptide.getValidation(), peptide.getModifiedSequence().contains("<"), varMod, tempPeptSeq));
                     });
                 }
             }

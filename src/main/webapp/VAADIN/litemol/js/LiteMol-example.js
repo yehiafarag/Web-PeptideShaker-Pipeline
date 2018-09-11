@@ -1091,8 +1091,8 @@ var LiteMolPluginInstance;
         // var id = ((document.getElementById('pdbid').value) || '').trim().toLowerCase();
         var json = ((document.getElementById('pdbid').value) || '');
         var jsonObj = JSON.parse(json);
-        var id = jsonObj.pdbId;
-          var shwoWater = (document.getElementById('showWB').value=== 'true');
+        var id = jsonObj.pdbId;         
+        var shwoWater = (document.getElementById('showWB').value === 'true');
         // this builds the transforms needed to create a molecule
         var action = Transform.build()
                 .add(plugin.context.tree.root, Transformer.Data.Download, {url: "https://www.ebi.ac.uk/pdbe/static/entry/" + id + "_updated.cif", type: 'String', id: id})
@@ -1101,7 +1101,7 @@ var LiteMolPluginInstance;
                 .then(Transformer.Molecule.CreateModel, {modelIndex: 0}, {isBinding: false, ref: 'model'})
                 .then(Transformer.Molecule.CreateMacromoleculeVisual, {polymer: true, polymerRef: 'polymer-visual', het: shwoWater, water: shwoWater});
         // can also add hetRef and waterRef; the refs allow us to reference the model and visual later.
-        taction=action;
+        taction = action;
         applyTransforms(action);
 
         //.then(() => nextAction())
@@ -1109,8 +1109,8 @@ var LiteMolPluginInstance;
 
     });
     addButton('Load Ligand', function () {
-     
-        
+
+
         // in the ligand instance, you will want to NOT include Bootstrap.Behaviour.ShowInteractionOnSelect(5) 
         var ligandStyle = {
             type: 'BallsAndSticks',
@@ -1181,7 +1181,7 @@ var LiteMolPluginInstance;
     });
     addButton('Color Sequences', function () {
 
-        var json = ((document.getElementById('pdbid').value) || '');      
+        var json = ((document.getElementById('pdbid').value) || '');
         var jsonObj = JSON.parse(json);
         var model = plugin.selectEntities('model')[0];
         var coloringJson = jsonObj.coloring;

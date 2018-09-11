@@ -39,6 +39,7 @@ html,body,.litemolbody,center{
     line-height:100%;
     font-weight: 400 !important;
     text-align: center;
+    font-size: 16px;
     border:none !important;
 }
 .lm-btn.lm-btn-link.lm-btn-link-toggle-off:hover,.lm-btn.lm-btn-link:hover{    
@@ -87,12 +88,10 @@ html,body,.litemolbody,center{
     cursor: default; 
 }
 .lm-layout-region.lm-layout-right{
-    background:red !important;
     visiblity:hidden !important;
     width:0px !important
 }
 .lm-layout-region.lm-layout-main,.lm-viewport-host3d canvas{
-    background:red !important;
     width: 100% !important;
 }
 .progress{
