@@ -233,6 +233,8 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
                 proteinsVisulizationLevelContainer.activate3DProteinView();
             } else if (lastSelectedBtn == 1) {
                 proteinsVisulizationLevelContainer.reset3DProteinView();
+            } else {
+                proteinsVisulizationLevelContainer.reset3DProteinView();
             }
         }
         lastSelectedBtn = comp.getBtnId();
@@ -271,7 +273,6 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
 //    public SmallSideBtn getTopView() {
 //        return topViewControlButton;
 //    }
-
     /**
      * Activate PeptideShaker dataset visualisation upon user selection
      *
