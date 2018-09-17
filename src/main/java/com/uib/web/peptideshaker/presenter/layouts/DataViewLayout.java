@@ -56,7 +56,7 @@ public abstract class DataViewLayout extends Panel {
 
         Uploader uploader = new Uploader() {
             @Override
-            public void filesUploaded(PluploadFile[] uploadedFiles) {               
+            public void filesUploaded(PluploadFile[] uploadedFiles) {
                 uploadToGalaxy(uploadedFiles);
             }
 
@@ -68,8 +68,7 @@ public abstract class DataViewLayout extends Panel {
         topPanelLayout.setSpacing(true);
         topPanelLayout.setCaption("PeptideShaker Projects");
         panelsContainers.addComponent(topPanelLayout);
-        topPanelLayout.addComponent(uploader);
-        
+
         topDataTable = new VerticalLayout();
         topDataTable.setWidth(100, Unit.PERCENTAGE);
         topDataTable.setHeightUndefined();
@@ -89,12 +88,13 @@ public abstract class DataViewLayout extends Panel {
         bottomPanelLayout.setCaption("Input Files");
         bottomPanelLayout.setMargin(new MarginInfo(false, false, true, false));
         panelsContainers.addComponent(bottomPanelLayout);
-
+        bottomPanelLayout.addComponent(uploader);
         bottomDataTable = new VerticalLayout();
         bottomDataTable.setWidth(100, Unit.PERCENTAGE);
         bottomDataTable.setHeightUndefined();
         bottomDataTable.setSpacing(true);
         bottomPanelLayout.addComponent(bottomDataTable);
+
     }
     private Component nameLabel;
     private boolean nelsSupported;
@@ -109,7 +109,7 @@ public abstract class DataViewLayout extends Panel {
         Label headerStatus = new Label("Valid");
         headerStatus.addStyleName("textalignmiddle");
 
-        Label headerView = new Label("View");
+        Label headerView = new Label("Information");
         headerView.addStyleName("textalignmiddle");
 
         Label headerNeLS = new Label("Backup");
@@ -133,7 +133,7 @@ public abstract class DataViewLayout extends Panel {
         headerType = new Label("Type");
         headerStatus = new Label("Valid");
         headerStatus.addStyleName("textalignmiddle");
-        headerView = new Label("View");
+        headerView = new Label("Information");
         headerView.addStyleName("textalignmiddle");
         headerNeLS = new Label("Backup");
         headerNeLS.addStyleName("textalignmiddle");
@@ -246,9 +246,21 @@ public abstract class DataViewLayout extends Panel {
             HorizontalLayout rowLayout;
 
             if (ds.getType().equalsIgnoreCase("Web Peptide Shaker Dataset")) {
-                nameLabel = new PopupWindow(ds.getName());
+
+                nameLabel = new ActionLabel(VaadinIcons.CLUSTER, ds.getName().split("___")[0], "View PeptideShaker results ") {
+                    @Override
+                    public void layoutClick(LayoutEvents.LayoutClickEvent event) {
+                        viewDataset((PeptideShakerVisualizationDataset) ds);
+                    }
+
+                };
+                nameLabel.addStyleName("bluecolor");
+                nameLabel.addStyleName("orangecolor");
+
+                viewLabel = new PopupWindow("   ");
+                viewLabel.setIcon(VaadinIcons.INFO_CIRCLE_O);
                 DatasetOverviewLayout dsOverview = new DatasetOverviewLayout((PeptideShakerVisualizationDataset) ds) {
-                    private final PopupWindow tDsOverview = (PopupWindow) nameLabel;
+                    private final PopupWindow tDsOverview = (PopupWindow) viewLabel;
 
                     @Override
                     public void close() {
@@ -257,20 +269,21 @@ public abstract class DataViewLayout extends Panel {
 
                 };
                 ((PeptideShakerVisualizationDataset) ds).setEnzyme(dsOverview.getEnzyme());
-                ((PopupWindow) nameLabel).setContent(dsOverview);
-                nameLabel.addStyleName("bluecolor");
+                ((PopupWindow) viewLabel).setContent(dsOverview);
+                ((PopupWindow) viewLabel).setDescription("View searching settings ");
+
                 if (statusLabel.getStatus() == 2) {
                     statusLabel.setStatus("Some files are missings or corrupted please re-run SearchGUI-PeptideShaker-WorkFlow");
                 }
 
-                viewLabel = new ActionLabel(VaadinIcons.COG, "View PeptideShaker results ") {
-                    @Override
-                    public void layoutClick(LayoutEvents.LayoutClickEvent event) {
-                        viewDataset((PeptideShakerVisualizationDataset) ds);
-                    }
-
-                };
-                viewLabel.addStyleName("orangecolor");
+//                viewLabel = new ActionLabel(VaadinIcons.COG, "View PeptideShaker results ") {
+//                    @Override
+//                    public void layoutClick(LayoutEvents.LayoutClickEvent event) {
+//                        viewDataset((PeptideShakerVisualizationDataset) ds);
+//                    }
+//
+//                };
+                viewLabel.addStyleName("centeredicon");
                 rowLayout = initializeRowData(new Component[]{new Label(i + ""), nameLabel, new Label(ds.getType()), viewLabel, getToGalaxyLabel, nelsLabel, downloadLabel, deleteLabel, statusLabel}, false);
                 topDataTable.addComponent(rowLayout);
             } else {

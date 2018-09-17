@@ -103,8 +103,8 @@ public abstract class InteractiveGalaxyLayer {
                         System.out.println("at galaxy I ");
                         toolsHandler = new GalaxyToolsHandler(Galaxy_Instance.getToolsClient(), Galaxy_Instance.getWorkflowsClient(), Galaxy_Instance.getHistoriesClient()) {
                             @Override
-                            public void synchronizeDataWithGalaxyServer() {
-                                historyHandler.updateHistory();
+                            public void synchronizeDataWithGalaxyServer(boolean update) {
+                                historyHandler.updateHistory(update);
                             }
 
                         };
@@ -112,7 +112,7 @@ public abstract class InteractiveGalaxyLayer {
                         System.out.println("at galaxy II ");
                         historyHandler = new GalaxyHistoryHandler() {
                             @Override
-                            public void synchronizeDataWithGalaxyServer( Map<String, GalaxyFileObject> historyFilesMap,boolean busy) {
+                            public void synchronizeDataWithGalaxyServer( Map<String, GalaxyFileObject> historyFilesMap,boolean busy,boolean update) {
                                 //update history in the system 
                                 jobsInProgress(busy, historyFilesMap);
                             }
@@ -328,28 +328,28 @@ public abstract class InteractiveGalaxyLayer {
             mgfMap.put(mgfId, historyHandler.getMgfFilesMap().get(mgfId).getName());
         });
         PeptideShakerVisualizationDataset tempWorkflowOutput = toolsHandler.execute_SearchGUI_PeptideShaker_WorkFlow(projectName, fastaFileId, mgfMap, searchEnginesList, historyHandler.getWorkingHistoryId(), searchParameters);
-        toolsHandler.synchronizeDataWithGalaxyServer();
+        toolsHandler.synchronizeDataWithGalaxyServer(true);
     }
 
-    public void deleteDataset(GalaxyFileObject ds) {
+    public void deleteDataset(GalaxyFileObject ds,boolean updatePresenterView) {
         if (ds.getType().equalsIgnoreCase("Web Peptide Shaker Dataset")) {
             PeptideShakerVisualizationDataset vDs = (PeptideShakerVisualizationDataset) ds;
 //            toolsHandler.deleteDataset(galaxyURL, vDs.getHistoryId(), vDs.getCpsId());
 //            toolsHandler.deleteDataset(galaxyURL, vDs.getHistoryId(), vDs.getProteinFileId());
 //            toolsHandler.deleteDataset(galaxyURL, vDs.getHistoryId(), vDs.getPeptideFileId());
 //            toolsHandler.deleteDataset(galaxyURL, vDs.getHistoryId(), vDs.getPsmFileId());
-            toolsHandler.deleteDataset(galaxyURL, vDs.getHistoryId(), vDs.getSearchGUIFile().getGalaxyId());
+            toolsHandler.deleteDataset(galaxyURL, vDs.getHistoryId(), vDs.getSearchGUIFile().getGalaxyId(),true);
 
         } else {
-            toolsHandler.deleteDataset(galaxyURL, ds.getHistoryId(), ds.getGalaxyId());
+            toolsHandler.deleteDataset(galaxyURL, ds.getHistoryId(), ds.getGalaxyId(),true);
         }
 
-        historyHandler.updateHistory();
+        historyHandler.updateHistory(updatePresenterView);
     }
 
     public boolean sendDataToNels(String historyId, String datasetGalaxyId) {
         boolean check = toolsHandler.sendToNels(historyId, datasetGalaxyId, galaxyURL);
-        toolsHandler.synchronizeDataWithGalaxyServer();
+        toolsHandler.synchronizeDataWithGalaxyServer(true);
         return check;
 
     }

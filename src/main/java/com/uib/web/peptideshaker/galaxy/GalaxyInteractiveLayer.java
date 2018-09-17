@@ -47,9 +47,9 @@ public abstract class GalaxyInteractiveLayer {
     public GalaxyInteractiveLayer() {
         this.historyHandler = new GalaxyHistoryHandler() {
             @Override
-            public void synchronizeDataWithGalaxyServer(Map<String, GalaxyFileObject> historyFilesMap, boolean jobsInProgress) {
+            public void synchronizeDataWithGalaxyServer(Map<String, GalaxyFileObject> historyFilesMap, boolean jobsInProgress,boolean updatePresenterView) {
                 //update history in the system                 
-                GalaxyInteractiveLayer.this.synchronizeDataWithGalaxyServer(historyFilesMap, jobsInProgress);
+                GalaxyInteractiveLayer.this.synchronizeDataWithGalaxyServer(historyFilesMap, jobsInProgress,updatePresenterView);
             }
         };
     }
@@ -71,8 +71,8 @@ public abstract class GalaxyInteractiveLayer {
             historyHandler.connectToGalaxy(Galaxy_Instance, user_folder);
             toolsHandler = new GalaxyToolsHandler(Galaxy_Instance.getToolsClient(), Galaxy_Instance.getWorkflowsClient(), Galaxy_Instance.getHistoriesClient()) {
                 @Override
-                public void synchronizeDataWithGalaxyServer() {
-                    historyHandler.updateHistory();
+                public void synchronizeDataWithGalaxyServer(boolean updatePresenterView) {
+                    historyHandler.updateHistory(updatePresenterView);
                 }
             };
             VaadinSession.getCurrent().setAttribute("ApiKey", Galaxy_Instance.getApiKey());
@@ -99,7 +99,7 @@ public abstract class GalaxyInteractiveLayer {
             mgfMap.put(mgfId, historyHandler.getMgfFilesMap().get(mgfId).getName());
         });
         toolsHandler.execute_SearchGUI_PeptideShaker_WorkFlow(projectName, fastaFileId, mgfMap, searchEnginesList, historyHandler.getWorkingHistoryId(), searchParameters);
-        toolsHandler.synchronizeDataWithGalaxyServer();
+        toolsHandler.synchronizeDataWithGalaxyServer(true);
     }
 
     /**
@@ -177,13 +177,13 @@ public abstract class GalaxyInteractiveLayer {
         if (fileObject.getType().equalsIgnoreCase("Web Peptide Shaker Dataset")) {
             PeptideShakerVisualizationDataset vDs = (PeptideShakerVisualizationDataset) fileObject;
             vDs.getInputMGFFiles().values().forEach((galaxyFile) -> {
-                toolsHandler.deleteDataset(Galaxy_Instance.getGalaxyUrl(), vDs.getHistoryId(), galaxyFile.getGalaxyId());
+                toolsHandler.deleteDataset(Galaxy_Instance.getGalaxyUrl(), vDs.getHistoryId(), galaxyFile.getGalaxyId(),true);
             });
-            toolsHandler.deleteDataset(Galaxy_Instance.getGalaxyUrl(), vDs.getHistoryId(), vDs.getGalaxyId());
-            toolsHandler.deleteDataset(Galaxy_Instance.getGalaxyUrl(), vDs.getHistoryId(), vDs.getSearchGUIFile().getGalaxyId());
+            toolsHandler.deleteDataset(Galaxy_Instance.getGalaxyUrl(), vDs.getHistoryId(), vDs.getGalaxyId(),true);
+            toolsHandler.deleteDataset(Galaxy_Instance.getGalaxyUrl(), vDs.getHistoryId(), vDs.getSearchGUIFile().getGalaxyId(),true);
 
         } else {
-            toolsHandler.deleteDataset(Galaxy_Instance.getGalaxyUrl(), fileObject.getHistoryId(), fileObject.getGalaxyId());
+            toolsHandler.deleteDataset(Galaxy_Instance.getGalaxyUrl(), fileObject.getHistoryId(), fileObject.getGalaxyId(),true);
         }
     }
 
@@ -194,7 +194,8 @@ public abstract class GalaxyInteractiveLayer {
      * @param historyFilesMap List of available files(datasets) available on
      * galaxy
      * @param jobsInProgress there is currently jobs running on Galaxy Server
+     * @param updatePresenterView open file system view after updating the file system
      */
-    public abstract void synchronizeDataWithGalaxyServer(Map<String, GalaxyFileObject> historyFilesMap, boolean jobsInProgress);
+    public abstract void synchronizeDataWithGalaxyServer(Map<String, GalaxyFileObject> historyFilesMap, boolean jobsInProgress,boolean updatePresenterView);
 
 }

@@ -132,28 +132,21 @@ public abstract class ActionLabel extends HorizontalLayout implements LayoutEven
 
     public ActionLabel(Resource icon, String name, String description) {
         ActionLabel.this.setSizeFull();
-
         ActionLabel.this.setDescription(description);
-
         HorizontalLayout wrapper = new HorizontalLayout();
         wrapper.setWidthUndefined();
         wrapper.setHeight(100, Unit.PERCENTAGE);
         wrapper.setStyleName("actionlabel");
         wrapper.setSpacing(true);
         ActionLabel.this.addComponent(wrapper);
-
-        label = new Label(name);
-        label.setSizeFull();
-
-//        label.addStyleName(ValoTheme.LABEL_NO_MARGIN);
-        wrapper.addComponent(label);
-
         Label iconLabel = new Label();
         iconLabel.setSizeFull();
         iconLabel.setIcon(icon);
-//        iconLabel.addStyleName(ValoTheme.LABEL_NO_MARGIN);
         wrapper.addComponent(iconLabel);
         wrapper.setComponentAlignment(iconLabel, Alignment.MIDDLE_LEFT);
+        label = new Label(name);
+        label.setSizeFull();
+        wrapper.addComponent(label);       
         ActionLabel.this.addLayoutClickListener(ActionLabel.this);
 
     }

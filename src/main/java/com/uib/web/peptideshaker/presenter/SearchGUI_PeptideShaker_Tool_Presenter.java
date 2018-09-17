@@ -99,8 +99,8 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
             }
 
             @Override
-            public Map<String, GalaxyTransferableFile> saveSearchGUIParameters(SearchParameters searchParameters, boolean editMode) {
-                return SearchGUI_PeptideShaker_Tool_Presenter.this.saveSearchGUIParameters(searchParameters, editMode);
+            public Map<String, GalaxyTransferableFile> saveSearchGUIParameters(SearchParameters searchParameters, boolean isNEw) {
+                return SearchGUI_PeptideShaker_Tool_Presenter.this.saveSearchGUIParameters(searchParameters, isNEw);
             }
 
         };
@@ -248,9 +248,11 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
     /**
      * Save search settings file into galaxy
      *
-     * @param fileName search parameters file name
+     * 
      * @param searchParameters searchParameters .par file
+     * @param isNew  is new search parameter file 
+     * @return updated search parameters file list
      */
-    public abstract Map<String, GalaxyTransferableFile> saveSearchGUIParameters(SearchParameters searchParameters, boolean editMode);
+    public abstract Map<String, GalaxyTransferableFile> saveSearchGUIParameters(SearchParameters searchParameters, boolean isNew);
 
 }

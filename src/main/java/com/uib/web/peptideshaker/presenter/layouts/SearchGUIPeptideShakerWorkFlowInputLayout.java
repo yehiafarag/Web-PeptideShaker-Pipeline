@@ -21,6 +21,8 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import java.io.File;
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -210,7 +212,7 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
             String fastFileId = searchSettingsLayout.getFastaFileId();
             Set<String> spectrumIds = mgfFileList.getSelectedValue();
             Set<String> searchEnginesIds = searchEngines.getSelectedValue();
-            String projectName = projectNameField.getSelectedValue().replace(" ", "_").replace("-", "_");
+            String projectName = projectNameField.getSelectedValue().replace(" ", "_").replace("-", "_")+"___"+(new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Timestamp(System.currentTimeMillis())));
             if (!projectNameField.isValid() || fastFileId == null || spectrumIds == null || searchEnginesIds == null) {
                 return;
             }

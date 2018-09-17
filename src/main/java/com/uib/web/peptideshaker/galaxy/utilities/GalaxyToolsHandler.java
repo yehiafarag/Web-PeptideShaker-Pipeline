@@ -243,7 +243,7 @@ public abstract class GalaxyToolsHandler {
             fileId = searchParameters.getFastaFile().getName().split("__")[3];
             searchParametersFilesMap.remove(fileId);
             //delete the file and make new one 
-            this.deleteDataset(galaxyURL, workHistoryId, fileId);
+            this.deleteDataset(galaxyURL, workHistoryId, fileId, false);
 
         } else {
             fileId = fileName;
@@ -323,13 +323,12 @@ public abstract class GalaxyToolsHandler {
      * @param historyId The Galaxy Server History ID where the file belong
      * @param dsId The file (galaxy dataset) ID on Galaxy Server
      */
-    public void deleteDataset(String galaxyURL, String historyId, String dsId) {
+    public void deleteDataset(String galaxyURL, String historyId, String dsId, boolean updatePresenter) {
         try {
             if (dsId == null || historyId == null || galaxyURL == null) {
                 return;
             }
-            
-            
+
             String userAPIKey = VaadinSession.getCurrent().getAttribute("ApiKey") + "";
             String cookiesRequestProperty = VaadinSession.getCurrent().getAttribute("cookies") + "";
             URL url = new URL(galaxyURL + "/api/histories/" + historyId + "/contents/datasets/" + dsId + "?key=" + userAPIKey);
@@ -365,7 +364,8 @@ public abstract class GalaxyToolsHandler {
                 }
             }
             conn.disconnect();
-            synchronizeDataWithGalaxyServer();
+            synchronizeDataWithGalaxyServer(updatePresenter);
+
         } catch (MalformedURLException ex) {
             ex.printStackTrace();
         } catch (IOException ex) {
@@ -630,13 +630,13 @@ public abstract class GalaxyToolsHandler {
                 Thread.sleep(1000);
             }
 
-            deleteDataset(galaxyURL, galaxyWorkingHistory.getId(), ds.getId());
+            deleteDataset(galaxyURL, galaxyWorkingHistory.getId(), ds.getId(), true);
         } catch (GalaxyResponseException | InterruptedException e) {
             e.printStackTrace();
             Notification.show("Could not send it to NeLS :-( ", Notification.Type.ERROR_MESSAGE);
             return false;
         }
-        synchronizeDataWithGalaxyServer();
+        synchronizeDataWithGalaxyServer(true);
         return true;
 
     }
@@ -668,7 +668,7 @@ public abstract class GalaxyToolsHandler {
             Notification.show("Could not send it to NeLS :-( ", Notification.Type.ERROR_MESSAGE);
             return false;
         }
-        synchronizeDataWithGalaxyServer();
+        synchronizeDataWithGalaxyServer(true);
         return true;
 
     }
@@ -748,14 +748,14 @@ public abstract class GalaxyToolsHandler {
                 final ToolsClient.FileUploadRequest request = new ToolsClient.FileUploadRequest(workHistoryId, tFile);
                 request.setDatasetName(file.getName());
                 List<OutputDataset> results = galaxyToolClient.upload(request).getOutputs();
-                tFile.delete();                
+                tFile.delete();
             }
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
-            synchronizeDataWithGalaxyServer();
+            synchronizeDataWithGalaxyServer(true);
         });
         t.start();
         return true;
@@ -774,6 +774,6 @@ public abstract class GalaxyToolsHandler {
      * Synchronise and update Online PEptideShaker file system with Galaxy
      * Server.
      */
-    public abstract void synchronizeDataWithGalaxyServer();
+    public abstract void synchronizeDataWithGalaxyServer(boolean updatePresenterview);
 
 }

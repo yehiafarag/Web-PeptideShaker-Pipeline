@@ -48,7 +48,6 @@ public class WebPeptideShakerApp extends VerticalLayout {
      * or in other databases.
      */
     private final FileSystemPresenter fileSystemPresenter;
-  
 
     /**
      * Constructor to initialise the application.
@@ -59,9 +58,12 @@ public class WebPeptideShakerApp extends VerticalLayout {
         WebPeptideShakerApp.this.addStyleName("frame");
         this.Galaxy_Interactive_Layer = new GalaxyInteractiveLayer() {
             @Override
-            public void synchronizeDataWithGalaxyServer(Map<String, GalaxyFileObject> historyFilesMap, boolean jobsInProgress) {               
-                fileSystemPresenter.updateSystemData(historyFilesMap,jobsInProgress);
-                presentationManager.viewLayout(fileSystemPresenter.getViewId());
+            public void synchronizeDataWithGalaxyServer(Map<String, GalaxyFileObject> historyFilesMap, boolean jobsInProgress, boolean updatePresenterView) {
+                fileSystemPresenter.updateSystemData(historyFilesMap, jobsInProgress);
+                if (updatePresenterView) {
+                    System.out.println("view will be updated now");
+                    presentationManager.viewLayout(fileSystemPresenter.getViewId());
+                }
             }
         };
         presentationManager = new PresenterManager();
@@ -78,10 +80,10 @@ public class WebPeptideShakerApp extends VerticalLayout {
                 if (userAPI.equalsIgnoreCase("test_User_Login")) {
                     userAPI = VaadinSession.getCurrent().getAttribute("testUserAPIKey").toString();
                 }
-                boolean connected = Galaxy_Interactive_Layer.connectToGalaxyServer(galaxyServerUrl, userAPI, userDataFolderUrl);               
-                presentationManager.setSideButtonsVisible(connected);                   
+                boolean connected = Galaxy_Interactive_Layer.connectToGalaxyServer(galaxyServerUrl, userAPI, userDataFolderUrl);
+                presentationManager.setSideButtonsVisible(connected);
                 return connected;
-              
+
             }
 
         };
@@ -94,8 +96,8 @@ public class WebPeptideShakerApp extends VerticalLayout {
             }
 
             @Override
-            public Map<String, GalaxyTransferableFile> saveSearchGUIParameters(SearchParameters searchParameters, boolean editMode) {
-                return Galaxy_Interactive_Layer.saveSearchGUIParameters(searchParameters, editMode);
+            public Map<String, GalaxyTransferableFile> saveSearchGUIParameters(SearchParameters searchParameters, boolean isNew) {
+                return Galaxy_Interactive_Layer.saveSearchGUIParameters(searchParameters, isNew);
             }
 
             @Override
@@ -110,7 +112,7 @@ public class WebPeptideShakerApp extends VerticalLayout {
         fileSystemPresenter = new FileSystemPresenter() {
             @Override
             public void deleteDataset(GalaxyFileObject ds) {
-                 Galaxy_Interactive_Layer.deleteDataset(ds);
+                Galaxy_Interactive_Layer.deleteDataset(ds);
             }
 
             @Override
@@ -168,7 +170,6 @@ public class WebPeptideShakerApp extends VerticalLayout {
         interactivePSPRojectResultsPresenter = new InteractivePSPRojectResultsPresenter();
         presentationManager.registerView(interactivePSPRojectResultsPresenter);
     }
-
 
     /**
      * Reconnect to Galaxy Server incase of reload

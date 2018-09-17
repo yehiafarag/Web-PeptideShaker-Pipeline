@@ -106,15 +106,16 @@ public abstract class GalaxyHistoryHandler {
         this.Galaxy_Instance = Galaxy_Instance;
         this.galaxyDatasetServingUtil = new GalaxyDatasetServingUtil(Galaxy_Instance.getGalaxyUrl(), Galaxy_Instance.getApiKey());
         this.user_folder = user_folder;
-        GalaxyHistoryHandler.this.updateHistory();
+        GalaxyHistoryHandler.this.updateHistory(true);
     }
 
     /**
      * Update galaxy layer file system datasets from Galaxy server.
+     * @param updatePresenterView open file system view after updating the file system
      */
-    public void updateHistory() {
+    public void updateHistory(boolean updatePresenterView) {
         ExecutorService executorService = Executors.newSingleThreadExecutor();
-        updateDatasetructureTask = new UpdateDatasetructureTask();
+        updateDatasetructureTask = new UpdateDatasetructureTask(updatePresenterView);
         updateDatasetructureFuture = executorService.submit(updateDatasetructureTask);
         executorService.shutdown();
     }
@@ -275,13 +276,16 @@ public abstract class GalaxyHistoryHandler {
      * server
      * @param jobsInProgress the system currently in progress (jobs still
      * running)
+     * @param updatePresenterView open file system view after updating the file system
      */
-    public abstract void synchronizeDataWithGalaxyServer(Map<String, GalaxyFileObject> historyFilesMap, boolean jobsInProgress);
+    public abstract void synchronizeDataWithGalaxyServer(Map<String, GalaxyFileObject> historyFilesMap, boolean jobsInProgress,boolean updatePresenterView);
 
     /**
      * Following jobs statues on Galaxy server until all jobs are done.
+     * 
+     * @param updatePresenterView open file system view after updating the file system
      */
-    private void invokeRecheckDataProcessing() {
+    private void invokeRecheckDataProcessing(boolean updatePresenterView) {
         int mSecound = 20000;
         if (refreshlistener != null) {
             REFRESHER.removeListener(refreshlistener);
@@ -300,7 +304,7 @@ public abstract class GalaxyHistoryHandler {
             }
             if (ready) {
                 REFRESHER.removeListener(refreshlistener);
-                updateHistory();
+                updateHistory(updatePresenterView);
             }
         };
         REFRESHER.addListener(refreshlistener);
@@ -403,7 +407,7 @@ public abstract class GalaxyHistoryHandler {
             return workingHistory.getId();
         }
 
-        public UpdateDatasetructureTask() {
+        public UpdateDatasetructureTask(boolean updatePresenterView) {
             jobsInProgress = false;
             this.mgfFilesMap = new LinkedHashMap<>();
             this.historyFilesMap = new LinkedHashMap<>();
@@ -602,9 +606,9 @@ public abstract class GalaxyHistoryHandler {
                 historyFilesMap.putAll(searchSettingsFilesMap);
                 historyFilesMap.putAll(indexFilesMap);
                 if (jobsInProgress) {
-                    invokeRecheckDataProcessing();
+                    invokeRecheckDataProcessing(updatePresenterView);
                 }
-                synchronizeDataWithGalaxyServer(historyFilesMap, jobsInProgress);
+                synchronizeDataWithGalaxyServer(historyFilesMap, jobsInProgress,updatePresenterView);
             } catch (Exception e) {
                 if (e.toString().contains("Service Temporarily Unavailable")) {
                     Notification.show("Service Temporarily Unavailable", Notification.Type.ERROR_MESSAGE);
