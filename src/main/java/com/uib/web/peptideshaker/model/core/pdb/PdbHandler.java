@@ -66,11 +66,12 @@ public class PdbHandler {
      *
      * @param pdbMatch PDB match object
      * @param protSequence protein sequence
+     * @param proteinAccession selected protein accession
      * @return updated PDB match object
      */
-    public PDBMatch updatePdbInformation(String pdbMatch, String protSequence) {
+    public PDBMatch updatePdbInformation(String pdbMatch, String protSequence,Object proteinAccession) {
          if (pdbMachesMap.get(pdbMatch).getChains().isEmpty()) {
-            return EBI_Rest_Service.updatePdbInformation(pdbMachesMap.get(pdbMatch), protSequence);
+            return EBI_Rest_Service.updatePdbInformation(pdbMachesMap.get(pdbMatch), protSequence,proteinAccession);
         } else {
             return pdbMachesMap.get(pdbMatch);
         }

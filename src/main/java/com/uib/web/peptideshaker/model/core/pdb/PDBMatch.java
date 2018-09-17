@@ -1,5 +1,6 @@
 package com.uib.web.peptideshaker.model.core.pdb;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -31,7 +32,12 @@ public class PDBMatch {
     /**
      * List of included chain blocks.
      */
-    private final Map<String, ChainBlock> chains;
+    private final Map<String, List<ChainBlock>> chains;
+
+    /**
+     * List of included chain blocks.
+     */
+    private final List<ChainBlock> fullChainBlocks;
     /**
      * List of chain block IDs.
      */
@@ -42,13 +48,13 @@ public class PDBMatch {
      * Entity ID 'default value is 1'
      */
     private int entity_id = -1;
-    private List<EntityData> entities;
+    private Map<Object,EntityData>  entities;
 
-    public List<EntityData> getEntities() {
+    public Map<Object,EntityData>  getEntities() {
         return entities;
     }
 
-    public void setEntities(List<EntityData> entities) {
+    public void setEntities(Map<Object,EntityData>  entities) {
         this.entities = entities;
     }
 
@@ -60,6 +66,7 @@ public class PDBMatch {
     public PDBMatch(String pdbId) {
         this.pdbId = pdbId;
         this.chains = new LinkedHashMap<>();
+        this.fullChainBlocks = new ArrayList<>();
 //        this.chainsIds = new LinkedHashSet<>();
     }
 
@@ -76,8 +83,11 @@ public class PDBMatch {
      *
      * @return list of chain blocks.
      */
-    public Collection<ChainBlock> getChains() {
-        return chains.values();
+    public List<ChainBlock> getChains() {
+        return fullChainBlocks;
+    }
+     public List<ChainBlock> getChainBlocks(String chainId) {
+        return chains.get(chainId);
     }
 
     /**
@@ -104,8 +114,11 @@ public class PDBMatch {
      * @param chain chain block
      */
     public void addChain(ChainBlock chain) {
-
-        this.chains.put(chain.getChain_id(), chain);
+        fullChainBlocks.add(chain);
+        if (!chains.containsKey(chain.getChain_id())) {
+            chains.put(chain.getChain_id(), new ArrayList<>());
+        }
+        this.chains.get(chain.getChain_id()).add(chain);
         if (chain.getStart_author_residue_number() < minStartAuth) {
             minStartAuth = chain.getStart_author_residue_number();
         }
@@ -128,14 +141,22 @@ public class PDBMatch {
      * @param chainId selected chain id
      * @return PDB match sequence
      */
-    public String getSequence(String chainId) {
-        System.out.println("at chain id " + chainId);
+    public List<String> getSequence(String chainId) {
+        List<String> sequences = new ArrayList<>();
         switch (chainId) {
             case "All":
-                return sequence.substring(minStartAuth, maxEndAuth);
+                chains.values().forEach((chainBlocks) -> {
+                    chainBlocks.forEach((block) -> {
+                        sequences.add(block.getChain_sequence());
+                    });
+                });
+                break;
             default:
-                return chains.get(chainId).getChain_sequence();
+                chains.get(chainId).forEach((block) -> {
+                    sequences.add(block.getChain_sequence());
+                });
         }
+        return sequences;
     }
 //
 //    /**
@@ -172,12 +193,11 @@ public class PDBMatch {
      * @return Entity ID 'default value is 1'
      */
     public int getEntity_id(String chainId) {
-        System.out.println("at chain id " + chainId);
         switch (chainId) {
             case "All":
                 return entity_id;
             default:
-                return chains.get(chainId).getEntityId();
+                return chains.get(chainId).get(0).getEntityId();
         }
     }
 }

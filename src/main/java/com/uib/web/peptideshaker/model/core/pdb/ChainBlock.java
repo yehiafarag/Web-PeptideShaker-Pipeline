@@ -17,6 +17,10 @@ public class ChainBlock {
      */
     private final String chain_id;
     /**
+     * UniProt Chain sequence.
+     */
+    private final String uniprot_chain_sequence;
+    /**
      * Chain sequence.
      */
     private final String chain_sequence;
@@ -37,6 +41,7 @@ public class ChainBlock {
      */
     private final int end_residue_number;
     private int entityId;
+    private int different;
 
     /**
      * Constructor
@@ -47,16 +52,25 @@ public class ChainBlock {
      * @param start_residue_number Index of start residue.
      * @param end_author_residue_number Author index of last residue.
      * @param end_residue_number Index of last residue.
-     * @param chain_sequence Chain sequence.
+     * @param uniprot_chain_sequence Chain sequence.
+     * @param chain_sequence actual chain sequence
      */
-    public ChainBlock(String struct_asym_id, String chain_id, int start_author_residue_number, int start_residue_number, int end_author_residue_number, int end_residue_number, String chain_sequence) {
+    public ChainBlock(String struct_asym_id, String chain_id, int start_author_residue_number, int start_residue_number, int end_author_residue_number, int end_residue_number, String uniprot_chain_sequence, String chain_sequence) {
         this.struct_asym_id = struct_asym_id;
         this.chain_id = chain_id;
         this.start_author_residue_number = start_author_residue_number;
         this.start_residue_number = start_residue_number;
         this.end_author_residue_number = end_author_residue_number;
         this.end_residue_number = end_residue_number;
+        this.uniprot_chain_sequence = uniprot_chain_sequence;
         this.chain_sequence = chain_sequence;
+        System.out.println("at uniprot   "+uniprot_chain_sequence);
+        System.out.println("at chain seq "+chain_sequence);
+        System.out.println("----------------------------------------------------------------------------------");
+    }
+
+    public String getChain_sequence() {
+        return chain_sequence;
     }
 
     /**
@@ -64,8 +78,8 @@ public class ChainBlock {
      *
      * @return chain sequence.
      */
-    public String getChain_sequence() {
-        return chain_sequence;
+    public String getUniprot_chain_sequence() {
+        return uniprot_chain_sequence;
     }
 
     /**
@@ -128,6 +142,14 @@ public class ChainBlock {
 
     public void setEntityId(int entityId) {
         this.entityId = entityId;
+    }
+
+    public int getDifferent() {
+        return different;
+    }
+
+    public void setDifferent(int different) {
+        this.different = different;
     }
 
 }

@@ -13,6 +13,7 @@ public class EntityData {
     private List chainIds;
     private int start;
     private int end;
+    private int length;
 
     public int getEntityId() {
         return entityId;
@@ -52,6 +53,14 @@ public class EntityData {
 
     public void setEnd(int end) {
         this.end = end;
+    }
+
+    public int getLength() {
+        return length;
+    }
+
+    public void setLength(int length) {
+        this.length = length;
     }
     
 }

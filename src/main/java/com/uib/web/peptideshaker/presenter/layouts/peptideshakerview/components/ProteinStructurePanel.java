@@ -47,7 +47,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
     private final Property.ValueChangeListener pdbMatchSelectlistener;
     private final Property.ValueChangeListener pdbChainsSelectlistener;
     private final Button playBtn;
-    private ChainCoverageComponent lastSelectedChainCoverage; 
+    private ChainCoverageComponent lastSelectedChainCoverage;
     private Object lastSelectedAccession;
     private String lastSelectedProteinSequence;
 
@@ -68,7 +68,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
     private final Map<String, List<ChainBlock>> pdbBlockMap;
     private int proteinSequenceLength;
     private final Label uniprotLabel;
-      private ExecutorService executor;
+    private ExecutorService executor;
     private final PdbHandler pdbHandler = new PdbHandler();
     private PDBMatch lastSelectedMatch;
 
@@ -127,7 +127,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
         dropdownMenuesContainer.setHeight(25, Unit.PIXELS);
         dropdownMenuesContainer.setStyleName("select3dMenue");
 
-        ProteinStructurePanel.this.addComponent(dropdownMenuesContainer, "left: 10px; bottom:-12.5px");      
+        ProteinStructurePanel.this.addComponent(dropdownMenuesContainer, "left: 10px; bottom:-12.5px");
         this.pdbChainsSelectlistener = ((Property.ValueChangeEvent event) -> {
             LiteMolPanel.setVisible(pdbChainsSelect.getValue() != null);
             if (LiteMolPanel.isVisible()) {
@@ -139,7 +139,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
 
             }
         });
-        pdbChainsSelect.addValueChangeListener(pdbChainsSelectlistener);       
+        pdbChainsSelect.addValueChangeListener(pdbChainsSelectlistener);
         pdbMatchesSelect = new ComboBox("PDB:");
         pdbMatchesSelect.addStyleName("select3dMenue");
         pdbMatchesSelect.setNullSelectionAllowed(false);
@@ -155,8 +155,8 @@ public class ProteinStructurePanel extends AbsoluteLayout {
             pdbChainsSelect.removeValueChangeListener(pdbChainsSelectlistener);
             pdbChainsSelect.removeAllItems();
             LiteMolPanel.setVisible(pdbMatchesSelect.getValue() != null);//            
-            lastSelectedMatch = pdbHandler.updatePdbInformation(pdbMatchesSelect.getValue().toString(), lastSelectedProteinSequence);   
-            pdbBlockMap.clear();           
+            lastSelectedMatch = pdbHandler.updatePdbInformation(pdbMatchesSelect.getValue().toString(), lastSelectedProteinSequence,lastSelectedAccession);
+            pdbBlockMap.clear();
             lastSelectedChainCoverage = reCalculateChainRange(lastSelectedMatch.getChains(), proteinSequenceLength);
             pdbChainsSelect.addItem("All");
             pdbChainsSelect.setItemCaption("All", "All");
@@ -223,7 +223,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
         }
         loadData(lastSelectedAccession, lastSelectedProteinSequence);
 
-    } 
+    }
 
     public void updatePdbMap(Set<String> accessionList) {
 //        List<Callable<String>> tasks = new ArrayList<>();
@@ -262,7 +262,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
             pdbChainsSelect.setVisible(pdbMatchesSelect.isVisible());
             chainCoverageLayout.setVisible(pdbMatchesSelect.isVisible());
             pdbMatchesSelect.addValueChangeListener(pdbMatchSelectlistener);
-          String pdbMachSelectValue = pdbMatchesSelect.getItemIds().toArray()[0]+"";
+            String pdbMachSelectValue = pdbMatchesSelect.getItemIds().toArray()[0] + "";
             pdbMatchesSelect.setValue(pdbMachSelectValue);
             playBtn.addStyleName("poweron");
 
@@ -274,8 +274,9 @@ public class ProteinStructurePanel extends AbsoluteLayout {
     }
 
     private ChainCoverageComponent reCalculateChainRange(Collection<ChainBlock> chainBlocks, int proteinSequenceLength) {
-        ChainCoverageComponent chainCoverage = new ChainCoverageComponent(proteinSequenceLength);        
+        ChainCoverageComponent chainCoverage = new ChainCoverageComponent(proteinSequenceLength);
         chainBlocks.forEach((chain) -> {
+            System.out.println("at chain start auth " + chain.getStart_author_residue_number() + "," + chain.getEnd_author_residue_number());
             chainCoverage.addChainRange(chain.getChain_id(), chain.getStart_author_residue_number(), chain.getEnd_author_residue_number());
         });
         return chainCoverage;
@@ -300,7 +301,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
             chains.stream().map((selectedBlock) -> {
                 int start = selectedBlock.getStart_residue_number();
                 int end = selectedBlock.getEnd_residue_number();//we need color               
-                HashMap chainSeq = initSequenceMap(selectedBlock.getChain_id(), lastSelectedMatch.getEntity_id(selectedBlock.getChain_id()), start, end, "valid", false, null, selectedBlock.getChain_sequence());
+                HashMap chainSeq = initSequenceMap(selectedBlock.getChain_id(), lastSelectedMatch.getEntity_id(selectedBlock.getChain_id()), start, end, "valid", false, null, selectedBlock.getUniprot_chain_sequence());
                 return chainSeq;
             }).map((chainSeq) -> {
                 chainSeq.put("color", initColorMap(Color.WHITE));//selectedChainColor
@@ -408,7 +409,8 @@ public class ProteinStructurePanel extends AbsoluteLayout {
                                 if (peptideKey == null) { //select all
                                     peptide.put("color", initColorMap(new int[]{211, 211, 211}));
                                     peptide.put("color", initColorMap(Color.GRAY.darker()));
-                                } else {                                   peptide.put("color", initColorMap(new int[]{245, 245, 245}));
+                                } else {
+                                    peptide.put("color", initColorMap(new int[]{245, 245, 245}));
                                     peptide.put("color", initColorMap(Color.LIGHT_GRAY));
                                 }
                             } else {
@@ -449,7 +451,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
                 });
                 entriesSet.stream().filter((pep) -> (peptideOverlappingMap.containsKey(pep.get("sequence_key").toString()))).forEachOrdered((pep) -> {
                     pep.put("color", initColorMap(peptideOverlappingMap.get(pep.get("sequence_key").toString())));
-            });
+                });
                 if (peptideKey != null && peptidesQueryMap.containsKey(peptideKey)) {
                     peptidesQueryMap.get(peptideKey).stream().filter((peptide) -> (chainId.contains("All") || chainId.equalsIgnoreCase(peptide.get("struct_asym_id").toString()))).map((peptide) -> {
                         if (!(boolean) peptide.get("modified")) {
@@ -482,63 +484,105 @@ public class ProteinStructurePanel extends AbsoluteLayout {
 
     private void contsructQueries(List<ChainBlock> selectedBlocks) {
         peptidesQueryMap.clear();
-        TreeMap<String, Integer> chainCalMap = new TreeMap<>();
-        selectedBlocks.stream().map((selectedBlock) -> {
-            if (!chainCalMap.containsKey(selectedBlock.getChain_id())) {
-                chainCalMap.put(selectedBlock.getChain_id(), Integer.MAX_VALUE);
-            }
-            return selectedBlock;
-        }).forEachOrdered((selectedBlock) -> {
-            chainCalMap.put(selectedBlock.getChain_id(), Math.min(chainCalMap.get(selectedBlock.getChain_id()), selectedBlock.getStart_residue_number()));
-        });
+//        TreeMap<String, Integer> chainCalMap = new TreeMap<>();
+//        selectedBlocks.stream().map((selectedBlock) -> {
+//            if (!chainCalMap.containsKey(selectedBlock.getChain_id())) {
+//                chainCalMap.put(selectedBlock.getChain_id(), Integer.MAX_VALUE);
+//            }
+//            return selectedBlock;
+//        }).forEachOrdered((selectedBlock) -> {
+//            chainCalMap.put(selectedBlock.getChain_id(), Math.min(chainCalMap.get(selectedBlock.getChain_id()), selectedBlock.getStart_residue_number()));
+//        });
+
         this.proteinPeptidesMap.clear();
-        
         this.proteinPeptides.forEach((peptide) -> {
             this.proteinPeptidesMap.put(peptide.getModifiedSequence(), peptide);
             this.peptidesQueryMap.put(peptide.getModifiedSequence(), new ArrayList<>());
-            
-            
-            System.out.println("proteinPeptides  "+proteinPeptides);
-            
-            if (lastSelectedMatch.getSequence(pdbChainsSelect.getValue().toString()).contains(peptide.getSequence())) {
+            int start;
+            Set<String> selectedChains = new LinkedHashSet<>();
+            selectedBlocks.forEach((chain) -> {
+                selectedChains.add(chain.getChain_id());
+            });
+            for (String chainId : selectedChains) {
                 int current = 0;
-                while (true) {
-                    int start = lastSelectedMatch.getSequence(pdbChainsSelect.getValue().toString()).indexOf(peptide.getSequence(), current) + 1;
-                    int end = start + peptide.getSequence().length() - 1;
-                    current = end;
-                    if (start == 0) {
-                        break;
-                    }
-                    selectedBlocks.forEach((selectedBlock) -> {
-                        //add modifications here
-                        String varMod = null;
-                        if (!peptide.getVariableModifications().trim().equalsIgnoreCase("")) {
-                            varMod = peptide.getVariableModifications();
+                for (String seq : lastSelectedMatch.getSequence(chainId)) {
+                    if (seq.toLowerCase().replace("i", "l").contains(peptide.getSequence().toLowerCase().replaceAll("i", "l"))) {
+                        for (ChainBlock c : lastSelectedMatch.getChainBlocks(chainId)) {
+//                            int def = c.getUniprot_chain_sequence().length() - (c.getEnd_residue_number() - c.getStart_residue_number() + 1);
+//                            if (def == 0) {
+//                                start = seq.toLowerCase().replaceAll("i", "l").indexOf(peptide.getSequence().toLowerCase().replaceAll("i", "l"), current) + c.getStart_residue_number();
+//                            } else {
+                                start = seq.toLowerCase().replaceAll("i", "l").indexOf(peptide.getSequence().toLowerCase().replaceAll("i", "l"), current)+c.getStart_residue_number();
+//                            }
+
+                            if (start == 0) {
+                                continue;
+                            }
+                            int end = start + peptide.getSequence().length() - 1;
+//                            System.out.println("at start " + start + "  end " + end + "   " + c.getUniprot_chain_sequence().length() + "  " + (c.getEnd_residue_number() - c.getStart_residue_number() + 1) + " " + c.getStart_residue_number());
+                            current = end;
+                            String varMod = null;
+                            if (!peptide.getVariableModifications().trim().equalsIgnoreCase("")) {
+                                varMod = peptide.getVariableModifications();
+                            }
+                            peptidesQueryMap.get(peptide.getModifiedSequence()).add(initSequenceMap(chainId, lastSelectedMatch.getEntity_id(chainId), start, end, peptide.getValidation(), peptide.getModifiedSequence().contains("<"), varMod, peptide.getSequence()));
+                            break;
                         }
-                        peptidesQueryMap.get(peptide.getModifiedSequence()).add(initSequenceMap(selectedBlock.getChain_id(), lastSelectedMatch.getEntity_id(selectedBlock.getChain_id()), start, end, peptide.getValidation(), peptide.getModifiedSequence().contains("<"), varMod, peptide.getSequence()));
-                    });
-                }
-            } else if (lastSelectedMatch.getSequence(pdbChainsSelect.getValue().toString()).toLowerCase().replaceAll("i", "l").contains(peptide.getSequence().toLowerCase().replaceAll("i", "l"))) {
-                String tempProtSeq = lastSelectedMatch.getSequence(pdbChainsSelect.getValue().toString()).toLowerCase().replaceAll("i", "l");
-                String tempPeptSeq = peptide.getSequence().toLowerCase().replaceAll("i", "l");
-                int current = 0;
-                while (true) {
-                    int start = tempProtSeq.indexOf(tempPeptSeq, current) + 1;
-                    int end = start + tempPeptSeq.length() - 1;
-                    current = end;
-                    if (start == 0) {
-                        break;
+
                     }
-                    selectedBlocks.forEach((selectedBlock) -> {
-                        String varMod = null;
-                        if (!peptide.getVariableModifications().trim().equalsIgnoreCase("")) {
-                            varMod = peptide.getVariableModifications();
-                        }
-                        peptidesQueryMap.get(peptide.getModifiedSequence()).add(initSequenceMap(selectedBlock.getChain_id(), lastSelectedMatch.getEntity_id(selectedBlock.getChain_id()), start, end, peptide.getValidation(), peptide.getModifiedSequence().contains("<"), varMod, tempPeptSeq));
-                    });
                 }
             }
+//            }
+//                    int start = lastSelectedMatch.getSequence(chain.getChain_id()).toLowerCase().replaceAll("i", "l").indexOf(peptide.getSequence().toLowerCase().replaceAll("i", "l"), current) + 1;
 
+//                        selectedBlocks.forEach((selectedBlock) -> {
+            //add modifications here
+//                    String varMod = null;
+//                    if (!peptide.getVariableModifications().trim().equalsIgnoreCase("")) {
+//                        varMod = peptide.getVariableModifications();
+//                    }
+//                    peptidesQueryMap.get(peptide.getModifiedSequence()).add(initSequenceMap(chain.getChain_id(), lastSelectedMatch.getEntity_id(chain.getChain_id()), start, end, peptide.getValidation(), peptide.getModifiedSequence().contains("<"), varMod, peptide.getSequence()));
+//                        });
+//                    }
+//                    if(pdbChainsSelect.getValue().toString().equalsIgnoreCase("All")){
+//                    
+//                    
+//                    }
+//                    int start = lastSelectedMatch.getSequence(pdbChainsSelect.getValue().toString()).indexOf(peptide.getSequence(), current) + 1;
+//                    int end = start + peptide.getSequence().length() - 1;                    
+//                    current = end;
+//                    System.out.println("at---->> "+pdbChainsSelect.getValue().toString()+" start "+start+"  "+end+"  "+peptide.getSequence()+"   "+lastSelectedMatch.getSequence(pdbChainsSelect.getValue().toString()));
+//                    if (start == 0) {
+//                        break;
+//                    }
+//                    selectedBlocks.forEach((selectedBlock) -> {
+//                        //add modifications here
+//                        String varMod = null;
+//                        if (!peptide.getVariableModifications().trim().equalsIgnoreCase("")) {
+//                            varMod = peptide.getVariableModifications();
+//                        }
+//                        peptidesQueryMap.get(peptide.getModifiedSequence()).add(initSequenceMap(selectedBlock.getChain_id(), lastSelectedMatch.getEntity_id(selectedBlock.getChain_id()), start, end, peptide.getValidation(), peptide.getModifiedSequence().contains("<"), varMod, peptide.getSequence()));
+//                    });
+//              else if (lastSelectedMatch.getSequence(pdbChainsSelect.getValue().toString()).toLowerCase().replaceAll("i", "l").contains(peptide.getSequence().toLowerCase().replaceAll("i", "l"))) {
+//                String tempProtSeq = lastSelectedMatch.getSequence(pdbChainsSelect.getValue().toString()).toLowerCase().replaceAll("i", "l");
+//                String tempPeptSeq = peptide.getSequence().toLowerCase().replaceAll("i", "l");
+//                int current = 0;
+//                while (true) {
+//                    int start = tempProtSeq.indexOf(tempPeptSeq, current) + 1;
+//                    int end = start + tempPeptSeq.length() - 1;
+//                    current = end;
+//                    if (start == 0) {
+//                        break;
+//                    }
+//                    selectedBlocks.forEach((selectedBlock) -> {
+//                        String varMod = null;
+//                        if (!peptide.getVariableModifications().trim().equalsIgnoreCase("")) {
+//                            varMod = peptide.getVariableModifications();
+//                        }
+//                        peptidesQueryMap.get(peptide.getModifiedSequence()).add(initSequenceMap(selectedBlock.getChain_id(), lastSelectedMatch.getEntity_id(selectedBlock.getChain_id()), start, end, peptide.getValidation(), peptide.getModifiedSequence().contains("<"), varMod, tempPeptSeq));
+//                    });
+//                }
+//            }
         });
 
     }
@@ -582,6 +626,5 @@ public class ProteinStructurePanel extends AbsoluteLayout {
     public AbsoluteLayout getChainCoverageLayout() {
         return chainCoverageLayout;
     }
-    
 
 }
