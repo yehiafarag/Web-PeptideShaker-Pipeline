@@ -72,11 +72,15 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
         HorizontalLayout titleLayout = new HorizontalLayout();
         titleLayout.setSizeFull();
         titleLayout.addStyleName("subpanelframe");
-        if (dataset ==null || dataset.getSearchingParameters() == null) {
+        if (dataset == null || dataset.getSearchingParameters() == null) {
             return;
         }
         DatasetOverviewLayout.this.addComponent(titleLayout);
-        Label projectNameLabel = new Label(dataset.getName());
+        Label projectNameLabel = new Label(dataset.getName().split("___")[0]);
+//        String timeStamp = "";
+//        if (dataset.getName().split("___").length > 1) {
+//            timeStamp = "___"+dataset.getName().split("___")[1];
+//        }
         projectNameLabel.addStyleName(ValoTheme.LABEL_BOLD);
         titleLayout.addComponent(projectNameLabel);
         titleLayout.setComponentAlignment(projectNameLabel, Alignment.TOP_CENTER);
@@ -135,7 +139,7 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
 
         int index = 1;
         for (String mgf : dataset.getInputMGFFiles().keySet()) {
-            Horizontal2Label mgfFile = new Horizontal2Label("MGF File " + index + " :", dataset.getInputMGFFiles().get(mgf).getName());
+            Horizontal2Label mgfFile = new Horizontal2Label("MGF File " + index + " :", dataset.getInputMGFFiles().get(mgf).getName().replace("-"+dataset.getName(), "").replace("-"+index+"-MGFFile",""));
             upperPanel.addComponent(mgfFile);
             index++;
         }

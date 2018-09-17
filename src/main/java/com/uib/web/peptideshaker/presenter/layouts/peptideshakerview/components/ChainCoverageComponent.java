@@ -43,7 +43,6 @@ public class ChainCoverageComponent {
     private final DecimalFormat df = new DecimalFormat("#.#");
 
     public ChainCoverageComponent(int proteinSequenceLength) {
-        System.out.println("at chain coverage seq length "+proteinSequenceLength);
         this.proteinSequenceLength = proteinSequenceLength;
         this.iconCorrectFactor = (double) (200) / (double) this.proteinSequenceLength;
         this.correctFactor = iconCorrectFactor;

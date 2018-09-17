@@ -64,9 +64,7 @@ public class ChainBlock {
         this.end_residue_number = end_residue_number;
         this.uniprot_chain_sequence = uniprot_chain_sequence;
         this.chain_sequence = chain_sequence;
-        System.out.println("at uniprot   "+uniprot_chain_sequence);
-        System.out.println("at chain seq "+chain_sequence);
-        System.out.println("----------------------------------------------------------------------------------");
+      
     }
 
     public String getChain_sequence() {

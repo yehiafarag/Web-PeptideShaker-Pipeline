@@ -70,7 +70,6 @@ public class LiteMOL3DComponent extends VerticalLayout {
             jsonQuery.put("coloring", coloring);
             try {
                 String json = mapper.writeValueAsString(jsonQuery);
-                System.out.println("ecute is going");
                 JavaScript.getCurrent().execute("document.getElementById('litemolframe').contentWindow.excutequery('" + json + "'," + (!pdbId.equalsIgnoreCase(LiteMOL3DComponent.this.pdbId)) + ");");
                 LiteMOL3DComponent.this.pdbId = pdbId;
             } catch (IOException ex) {
