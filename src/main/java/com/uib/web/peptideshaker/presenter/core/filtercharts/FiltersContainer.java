@@ -31,12 +31,12 @@ public class FiltersContainer extends HorizontalLayout {
 
     private final DivaPieChartFilter validationFilter;
 
-    private final DivaPieChartFilter PIFilter;
+    private final DivaPieChartFilter ProteinInferenceFilter;
 
     private final ChromosomesFilter chromosomeFilter;
 
     private final DivaRangeFilter prptidesNumberFilter;
-    private final DivaRangeFilter possibleCoverageFilter;
+    private final DivaRangeFilter coverageFilter;
     private final DivaRangeFilter psmNumberFilter;
 
     private final List<Color> colorList;
@@ -76,7 +76,7 @@ public class FiltersContainer extends HorizontalLayout {
         filterContainer.setSpacing(true);
         FiltersContainer.this.addComponent(filterContainer);
 
-        PIFilter = new DivaPieChartFilter("Protein Inference", "pi_filter", Selection_Manager) {
+        ProteinInferenceFilter = new DivaPieChartFilter("Protein Inference", "pi_filter", Selection_Manager) {
             @Override
             public void selectionChange(String type) {
                 if (type.equalsIgnoreCase("dataset_filter_selection")) {
@@ -94,8 +94,8 @@ public class FiltersContainer extends HorizontalLayout {
         filterLeftPanelContainer.addStyleName("cornerfiltercontainerstyle");
         filterContainer.addComponent(filterLeftPanelContainer);
         filterContainer.setExpandRatio(filterLeftPanelContainer, 1);
-        filterLeftPanelContainer.addComponent(PIFilter);
-        filterLeftPanelContainer.setComponentAlignment(PIFilter, Alignment.TOP_LEFT);
+        filterLeftPanelContainer.addComponent(ProteinInferenceFilter);
+        filterLeftPanelContainer.setComponentAlignment(ProteinInferenceFilter, Alignment.TOP_LEFT);
         
 
         validationFilter = new DivaPieChartFilter("Protein Validation", "validation_filter", Selection_Manager) {
@@ -176,22 +176,19 @@ public class FiltersContainer extends HorizontalLayout {
 
         };
 
-        possibleCoverageFilter = new DivaRangeFilter("Possible Coverage (%)", "possibleCoverage_filter", this.Selection_Manager) {
+        coverageFilter = new DivaRangeFilter("Coverage (%)", "possibleCoverage_filter", this.Selection_Manager) {
             @Override
             public void selectionChange(String type) {
 //                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
 
         };
-
-//        test2.updateData(initRangeData(null));
-//        test2.updateFilter();
         filterRightPanelContainer.addComponent(psmNumberFilter);
 
-        filterRightPanelContainer.addComponent(possibleCoverageFilter);
+        filterRightPanelContainer.addComponent(coverageFilter);
     }
     private final Color[] colorsArr = new Color[]{Color.DARK_GRAY, new Color(4, 180, 95), Color.YELLOW, new Color(213, 8, 8), Color.ORANGE};
-    private final Color[] colorsArrII = new Color[]{Color.DARK_GRAY, new Color(4, 180, 95), new Color(213, 8, 8)};
+    private final Color[] colorsArrII = new Color[]{Color.DARK_GRAY, new Color(4, 180, 95),Color.ORANGE, new Color(213, 8, 8)};
 
     public void updateFiltersData(ModificationMatrix modificationMatrix, Map<String, Color> modificationsColorMap, Map<Integer, Set<Comparable>> chromosomeMap, Map<String, Set<Comparable>> piMap, Map<String, Set<Comparable>> proteinValidationMap, TreeMap<Comparable, Set<Comparable>> proteinPeptidesNumberMap, TreeMap<Comparable, Set<Comparable>> proteinPSMNumberMap, TreeMap<Comparable, Set<Comparable>> proteinCoverageMap) {
         Selection_Manager.reset();
@@ -201,7 +198,7 @@ public class FiltersContainer extends HorizontalLayout {
         chromosomeFilter.initializeFilterData(chromosomeMap);
         Selection_Manager.setChromosomeMap(chromosomeMap);
 
-        PIFilter.initializeFilterData(piMap, new ArrayList<>(Arrays.asList(colorsArr)));//colorList.subList(0, piMap.size()).toArray(new Color[piMap.size()])
+        ProteinInferenceFilter.initializeFilterData(piMap, new ArrayList<>(Arrays.asList(colorsArr)));//colorList.subList(0, piMap.size()).toArray(new Color[piMap.size()])
         Selection_Manager.setPiMap(piMap);
         Selection_Manager.setProteinValidationMap(proteinValidationMap);
 
@@ -211,48 +208,7 @@ public class FiltersContainer extends HorizontalLayout {
         Selection_Manager.setProteinPeptidesNumberMap(proteinPeptidesNumberMap);
         prptidesNumberFilter.initializeFilterData(proteinPeptidesNumberMap);
         psmNumberFilter.initializeFilterData(proteinPSMNumberMap);
-        possibleCoverageFilter.initializeFilterData(proteinCoverageMap);
-    }
-
-    private Integer[] initRangeData(Set<String> filteredData) {
-
-        Integer[] data = new Integer[10];
-        data[0] = 30;
-        data[1] = 50;
-        data[2] = 30;
-        data[3] = 10;
-        data[4] = 5;
-        data[5] = 30;
-        data[6] = 100;
-        data[7] = 11;
-        data[8] = 1;
-        data[9] = 70;
-
-//        for (int x = 0; x < data.length; x++) {
-//            int value = (int) (Math.random() * 1000);            
-//            data[value] = data[value] + 1;
-//
-//        }
-//        for (int x = 0; x < 100; x++) {
-//            double value = Math.random() * 100;
-//            if (!dataMap.containsKey(value)) {
-//                dataMap.put(value, 0);
-//            }
-//            dataMap.put(value, (dataMap.get(value) + 1));
-//            if (dataMap.get(value) >= max) {
-//                max = dataMap.get(value);
-//            }
-//            if (dataMap.get(value) <= min) {
-//                min = dataMap.get(value);
-//            }
-//        }
-//        double[][] data = new double[dataMap.size()][2];
-//        int i = 0;
-//        for (double key : dataMap.keySet()) {
-//            data[i] = new double[]{key, scaleValues((double) dataMap.get(key), max, min)};
-//            i++;
-//        }
-        return data;
+        coverageFilter.initializeFilterData(proteinCoverageMap);
     }
 
     /**

@@ -16931,3 +16931,21 @@ div.v-layout.v-horizontal.v-widget {
 	position: relative !important;
 	max-height: 20px !important;
 }
+
+.webpeptideshakertheme .v-disabled .Vaadin-Icons {
+	color: lightgray !important;
+}
+
+.webpeptideshakertheme .v-progressbar-indicator {
+	border-radius: 4px;
+	height: inherit;
+	background-color: #197de1;
+	background-image: -webkit-linear-gradient(top, #1b87e3 2%, #166ed5 98%);
+	background-image: linear, to bottom, #1b87e3 2%, #166ed5 98%;
+	max-width: 100%;
+	border: none !important;
+	min-width: 0px !important;
+	-webkit-transition: width 160ms;
+	-moz-transition: width 160ms;
+	transition: width 160ms;
+}

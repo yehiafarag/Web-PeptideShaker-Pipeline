@@ -1,7 +1,6 @@
 package com.uib.web.peptideshaker.presenter.core;
 
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelTextField;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.event.ShortcutAction;
@@ -14,7 +13,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import java.text.DecimalFormat;
@@ -168,7 +166,7 @@ public abstract class SearchableTable extends VerticalLayout implements Property
             protected String formatPropertyValue(Object rowId, Object colId, Property property) {
                 Object v = property.getValue();
                 if (v instanceof Double) {
-                    DecimalFormat df = new DecimalFormat("#.##");
+                    DecimalFormat df =  new DecimalFormat("0.00E00");//new DecimalFormat("#.##");
                     return df.format(v);
                 }
                 return super.formatPropertyValue(rowId, colId, property);
@@ -261,36 +259,35 @@ public abstract class SearchableTable extends VerticalLayout implements Property
             itemSelected(null);
         }
     }
-
-    public void upateTableData(Map<Comparable, Object[]> tableData, int[] searchingIndexes, int keyIndex) {
-//        this.tableData = tableData;
-        this.tableSearchingMap.clear();
-        mainTable.removeValueChangeListener(SearchableTable.this);
-        mainTable.removeAllItems();
-        tableData.keySet().stream().map((dataKey) -> {
-            this.mainTable.addItem(tableData.get(dataKey), dataKey);
-            return dataKey;
-        }).forEachOrdered((dataKey) -> {
-            String searchKey = dataKey.toString();
-            for (int i : searchingIndexes) {
-                searchKey += tableData.get(dataKey)[i] + "_";
-            }
-            this.tableSearchingMap.put(searchKey.toLowerCase().replace(",", "_"), dataKey.toString());
-        });
-        mainTable.setCaption("<b>" + tableMainTitle + " ( " + mainTable.getItemIds().size() + " / " + tableData.size() + " )</b>");
-
-        mainTable.addValueChangeListener(SearchableTable.this);
-        if (mainTable.getItemIds().size() == 1) {
-            mainTable.select(mainTable.getCurrentPageFirstItemId());
-        } else {
-            mainTable.select(null);
-            itemSelected(null);
-        }
-    }
-
-//    public void setTableData(Map<Comparable, Object[]> tableData) {
-//        this.tableData = tableData;
+//
+//    private void upateTableData(Map<Comparable, Object[]> tableData, int[] searchingIndexes, int keyIndex) {
+////        this.tableData = tableData;
+//        this.tableSearchingMap.clear();
+//        mainTable.removeValueChangeListener(SearchableTable.this);
+//        mainTable.removeAllItems();
+//        tableData.keySet().stream().map((dataKey) -> {
+//            this.mainTable.addItem(tableData.get(dataKey), dataKey);
+//            return dataKey;
+//        }).forEachOrdered((dataKey) -> {
+//            String searchKey = dataKey.toString();
+//            for (int i : searchingIndexes) {
+//                searchKey += tableData.get(dataKey)[i] + "_";
+//            }
+//            this.tableSearchingMap.put(searchKey.toLowerCase().replace(",", "_"), dataKey.toString());
+//        });
+//        mainTable.setCaption("<b>" + tableMainTitle + " ( " + mainTable.getItemIds().size() + " / " + tableData.size() + " )</b>");
+//        mainTable.addValueChangeListener(SearchableTable.this);
+//        if (mainTable.getItemIds().size() == 1) {
+//            mainTable.select(mainTable.getCurrentPageFirstItemId());
+//        } else {
+//            mainTable.select(null);
+//            itemSelected(null);
+//        }
 //    }
+//
+////    public void setTableData(Map<Comparable, Object[]> tableData) {
+////        this.tableData = tableData;
+////    }
     @Override
     public void valueChange(Property.ValueChangeEvent event) {
         Object objcetId = event.getProperty().getValue();//"P01889";

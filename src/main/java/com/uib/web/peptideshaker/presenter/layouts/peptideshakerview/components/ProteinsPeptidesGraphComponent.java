@@ -2,7 +2,7 @@ package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components
 
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideObject;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
-import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.ProteinObject;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.ProteinGroupObject;
 import com.uib.web.peptideshaker.presenter.core.graph.GraphComponent;
 import com.vaadin.ui.VerticalLayout;
 import java.util.ArrayList;
@@ -20,10 +20,10 @@ import java.util.Set;
 public abstract class ProteinsPeptidesGraphComponent extends VerticalLayout {
 
     private final GraphComponent graphComponent;
-    private final Map<String, ProteinObject> proteinNodes;
+    private final Map<String, ProteinGroupObject> proteinNodes;
     private final Map<String, PeptideObject> peptidesNodes;
     private final Set<PeptideObject> peptides;
-    private final Map<String, ProteinObject> unrelatedProt = new LinkedHashMap<>();
+    private final Map<String, ProteinGroupObject> unrelatedProt = new LinkedHashMap<>();
     private final Map<String, PeptideObject> unrelatedPeptides = new LinkedHashMap<>();
     private final HashMap<String, ArrayList<String>> edges;
     private PeptideShakerVisualizationDataset peptideShakerVisualizationDataset;
@@ -56,7 +56,7 @@ public abstract class ProteinsPeptidesGraphComponent extends VerticalLayout {
         this.peptideShakerVisualizationDataset = peptideShakerVisualizationDataset;
     }
 
-    public Map<String, ProteinObject> getProteinNodes() {
+    public Map<String, ProteinGroupObject> getProteinNodes() {
         return proteinNodes;
     }
 
@@ -81,7 +81,7 @@ public abstract class ProteinsPeptidesGraphComponent extends VerticalLayout {
             thumbURL = null;
             return thumbURL;
         }
-        ProteinObject protein = peptideShakerVisualizationDataset.getProtein(selectedProteinId);
+        ProteinGroupObject protein = peptideShakerVisualizationDataset.getProtein(selectedProteinId);
 //        if (protein.getSequence() == null) {
 //            peptideShakerVisualizationDataset.selectUpdateProteins(protein);
 //        }
@@ -112,7 +112,7 @@ public abstract class ProteinsPeptidesGraphComponent extends VerticalLayout {
         proteinNodes.putAll(unrelatedProt);
         peptidesNodes.putAll(unrelatedPeptides);
 
-        Map<String, ProteinObject> tempProteinNodes = new LinkedHashMap<>(proteinNodes);
+        Map<String, ProteinGroupObject> tempProteinNodes = new LinkedHashMap<>(proteinNodes);
         tempProteinNodes.keySet().forEach((accession) -> {
             proteinNodes.replace(accession, peptideShakerVisualizationDataset.updateProteinInformation(tempProteinNodes.get(accession), accession));
         });
@@ -123,7 +123,7 @@ public abstract class ProteinsPeptidesGraphComponent extends VerticalLayout {
 
     }
 
-    private void fillUnrelatedProteinsAndPeptides(String proteinAccession, ProteinObject protein) {
+    private void fillUnrelatedProteinsAndPeptides(String proteinAccession, ProteinGroupObject protein) {
         if (unrelatedProt.containsKey(proteinAccession)) {
             return;
         }

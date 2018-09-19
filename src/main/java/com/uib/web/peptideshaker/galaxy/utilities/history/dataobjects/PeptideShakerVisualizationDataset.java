@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -493,7 +494,7 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
      * @param proteinkey protein accession used as a key
      */
     private void initialiseFromFastaFile(String proteinkey) {
-        ProteinObject protein = new ProteinObject();
+        ProteinGroupObject protein = new ProteinGroupObject();
         protein.setAccession(proteinkey);
         ProteinSequence entry = processFastaFileTask.getFastaProteinSequenceMap().get(protein.getAccession());
         String[] descArr = entry.getDescription().split("\\s");
@@ -565,6 +566,7 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
      * @param selectedIds selected protein IDs (accessions)
      */
     public void selectUpdateProteins(Set<Comparable> selectedIds) {
+        System.out.println("selecte ids ");
         if (selectedIds == null || selectedIds.isEmpty() || selectedIds.contains(null + "") || processFastaFileTask.getFastaProteinSequenceMap() == null) {
             return;
         }
@@ -599,7 +601,7 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
      *
      * @param protein object to be updated
      */
-    public void completeProteinInformation(ProteinObject protein) {
+    public void completeProteinInformation(ProteinGroupObject protein) {
         ProteinSequence entry = processFastaFileTask.getFastaProteinSequenceMap().get(protein.getAccession());
         String protDesc = entry.getDescription().split("OS")[0];
         String[] descArr = entry.getDescription().split("\\s");
@@ -637,7 +639,7 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
         }
 
         try {
-            processPeptidesTask = new ProcessPeptidesTask(peptides_file, (Map<String, ProteinObject>) processProteinsTask.call(), modificationMap);
+            processPeptidesTask = new ProcessPeptidesTask(peptides_file, processProteinsTask.call(), modificationMap);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -670,12 +672,12 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
      *
      * @return map of protein objects (accessions to protein objects)
      */
-    public Map<String, ProteinObject> getProteinsMap() {
+    public Map<String, ProteinGroupObject> getProteinsMap() {
         try {
             while (!proteinProcessFuture.isDone()) {
                 Thread.sleep(1000);
             }
-            return processProteinsTask.call();
+            return processProteinsTask.getProteinsMap();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -902,14 +904,14 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
      * @param proteinKey (accession)
      * @return protein object
      */
-    public ProteinObject getProtein(String proteinKey) {
+    public ProteinGroupObject getProtein(String proteinKey) {
         checkAndUpdateProtein(proteinKey);
         if (processProteinsTask.getProteinsMap().containsKey(proteinKey)) {
             return processProteinsTask.getProteinsMap().get(proteinKey);
         } else if (processFastaFileTask.getFastaProteinMap().containsKey(proteinKey)) {
             return processFastaFileTask.getFastaProteinMap().get(proteinKey);
         } else {
-            ProteinObject newRelatedProt = updateProteinInformation(null, proteinKey);
+            ProteinGroupObject newRelatedProt = updateProteinInformation(null, proteinKey);
             return newRelatedProt;
         }
 
@@ -922,7 +924,7 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
      * @param proteinKey protein key (accession)
      * @return updated protein object
      */
-    public ProteinObject updateProteinInformation(ProteinObject proteinObject, String proteinKey) {
+    public ProteinGroupObject updateProteinInformation(ProteinGroupObject proteinObject, String proteinKey) {
         if (proteinObject == null) {
             if (processFastaFileTask.getFastaProteinMap().containsKey(proteinKey)) {
                 proteinObject = processFastaFileTask.getFastaProteinMap().get(proteinKey);
@@ -1251,7 +1253,7 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
          * @param proteinsMap Protein map.
          * @param modificationMap map of modifications used in search inputs.
          */
-        public ProcessPeptidesTask(GalaxyTransferableFile peptides_file, Map<String, ProteinObject> proteinsMap, ConcurrentHashMap<String, Set<Comparable>> modificationMap) {
+        public ProcessPeptidesTask(GalaxyTransferableFile peptides_file, Map<String, ProteinGroupObject> proteinsGroupMap, ConcurrentHashMap<String, Set<Comparable>> modificationMap) {
 
             this.modificationMap = new ConcurrentHashMap<>();
             this.modificationMap.put("No Modification", new LinkedHashSet<>());
@@ -1270,7 +1272,6 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
                 bufferedReader.readLine();
                 while ((line = bufferedReader.readLine()) != null) {
                     String[] arr = line.split("\\t");
-                    //	Position	AAs Before	AAs After	Variable Modifications	Fixed Modifications	Localization Confidence	#Validated PSMs	#PSMs	Confidence [%]	Validation
                     PeptideObject peptide = new PeptideObject();
                     peptide.setIndex(Integer.parseInt(arr[0]));
                     peptide.setProteins(arr[1]);
@@ -1291,53 +1292,51 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
                     peptide.setConfidence(Double.parseDouble(arr[15]));
                     peptide.setValidation(arr[16]);
                     PSMsMap.put(peptide.getModifiedSequence(), new ArrayList<>());
-
-                    peptide.getProteinsSet().stream().map((prot) -> {
-                        if (!protein_peptide_Map.containsKey(prot)) {
-                            protein_peptide_Map.put(prot, new LinkedHashSet<>());
-                        }
-                        return prot;
-                    }).map((prot) -> {
-                        protein_peptide_Map.get(prot).add(peptide);
-                        return prot;
-                        //should we keep or remove it
-                    }).filter((prot) -> (processFastaFileTask.getFastaProteinSequenceMap().containsKey(prot))).forEachOrdered((prot) -> {
-                        ProteinObject pObj = getProtein(prot);
-                        pObj.addPeptideSequence(peptide.getModifiedSequence());
-                    });
-
-                    modificationMap.keySet().stream().filter((modification) -> (peptide.getVariableModifications().contains(modification) || peptide.getFixedModifications().contains(modification))).forEachOrdered((modification) -> {
-                        Set<String> intersectSet = new LinkedHashSet<>();
-                        intersectSet.addAll(Sets.intersection(peptide.getProteinsSet(), proteinsMap.keySet()));
-                        modificationMap.get(modification).addAll(intersectSet);
-                    });
-
                     peptidesMap.put(peptide.getModifiedSequence(), peptide);
 
                 }
-                for (Object protAcc : proteinsMap.keySet()) {
-                    String proteinAcc = protAcc + "";
-                    boolean addModification = false;
-                    for (Set<Comparable> accSet : modificationMap.values()) {
-                        if (accSet.contains(proteinAcc)) {
-                            addModification = true;
-                            break;
+
+                peptidesMap.values().forEach((peptide) -> {
+                    for (String groupKey : peptide.getProteinGroupKey().split(";")) {
+                        if (!proteinsGroupMap.containsKey(groupKey)) {
+//                            System.out.println("not exist in that group " + groupKey + "  ---  " + peptide.getProteinGroupKey());
+                        } else {
+                            if (!protein_peptide_Map.containsKey(groupKey)) {
+                                protein_peptide_Map.put(groupKey, new LinkedHashSet<>());
+                            }
+                            protein_peptide_Map.get(groupKey).add(peptide);
+                            ProteinGroupObject pObj = proteinsGroupMap.get(groupKey);
+                            pObj.addPeptideSequence(peptide.getModifiedSequence());
+                            modificationMap.keySet().stream().filter((modification) -> (peptide.getVariableModifications().contains(modification) || peptide.getFixedModifications().contains(modification))).forEachOrdered((modification) -> {
+                                modificationMap.get(modification).add(groupKey);
+                            });
+
                         }
 
                     }
-                    if (!addModification) {
-                        modificationMap.get("No Modification").add(proteinAcc);
+                });
+                for (String proteinGroupKey : proteinsGroupMap.keySet()) {
+                    boolean added = false;
+                    for (String modification : modificationMap.keySet()) {
+                        if (modificationMap.get(modification).contains(proteinGroupKey)) {
+                            added = true;
+                            break;
+                        }
                     }
+                    if (!added) {
+                        modificationMap.get("No Modification").add(proteinGroupKey);
+                    }
+
                 }
+
                 modificationMatrix = new ModificationMatrix(new LinkedMap<>(modificationMap));
             } catch (IOException | NumberFormatException ex) {
-                System.out.println("khalas fe errorrrrrrrrrrrrrrrrrr");
                 ex.printStackTrace();
                 if (bufferedReader != null) {
                     try {
                         bufferedReader.close();
                     } catch (IOException ex1) {
-                        System.out.println("khalas fe 2 errorrrrrrrrrrrrrrrrrr");
+                        ex1.printStackTrace();
                     }
                 }
             }
@@ -1407,16 +1406,16 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
      * This class is used to create task that is used to process output protein
      * file.
      */
-    private class ProcessProteinsTask implements Callable<Map<String, ProteinObject>> {
+    private class ProcessProteinsTask implements Callable<Map<String, ProteinGroupObject>> {
 
         /**
          * Protein to related protein map.
          */
-        private Map<String, Set<ProteinObject>> protein_relatedProteins_Map;
+        private Map<String, Set<ProteinGroupObject>> protein_relatedProteins_Map;
         /**
          * Proteins map (accession to proteins object).
          */
-        private Map<String, ProteinObject> proteinsMap;
+        private Map<String, ProteinGroupObject> proteinsMap;
         /**
          * Protein inference map.
          */
@@ -1429,6 +1428,10 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
          * Map of proteins to the chromosome index.
          */
         private final Map<Integer, Set<Comparable>> chromosomeMap;
+//        /**
+//         * Map of proteins accession to groups keys.
+//         */
+//        private final Map<String, Set<Comparable>> accessionToGroupKeyMap;
         /**
          * Protein to coverage value map.
          */
@@ -1461,6 +1464,7 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
          */
         public ProcessProteinsTask(GalaxyTransferableFile proteins_file) {
             this.protein_relatedProteins_Map = new HashMap<>();
+//            this.accessionToGroupKeyMap = new HashMap<>();
             proteinsMap = new LinkedHashMap<>();
             this.proteinInferenceMap = new LinkedHashMap<>();
             this.proteinInferenceMap.put("No Information", new LinkedHashSet<>());
@@ -1483,118 +1487,127 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
                 bufferedReader.readLine();
                 while ((line = bufferedReader.readLine()) != null) {
                     String[] arr = line.split("\\t");
-                    ProteinObject protein;
-                    protein = new ProteinObject();
-                    protein.setAccession(arr[1]);
-                    protein.setIndex(Integer.valueOf(arr[0]));
-                    protein.setDescription(arr[2]);
-                    protein.setGeneName(arr[3]);
-                    protein.setChromosome(arr[4]);
+                    ProteinGroupObject proteinGroup;
+                    proteinGroup = new ProteinGroupObject();
+                    proteinGroup.setAccession(arr[1]);
+                    proteinGroup.setProteinGroup(arr[15]);
+                    proteinGroup.setProteinGroupKey(proteinGroup.getProteinGroup().replace(" ", "").replace(",", "-_-"));
+                    proteinGroup.setIndex(Integer.valueOf(arr[0]));
+                    proteinGroup.setDescription(arr[2]);
+                    proteinGroup.setGeneName(arr[3]);
+                    proteinGroup.setChromosome(arr[4]);
                     int chrIndex = -1;
                     try {
-                        chrIndex = Integer.parseInt(protein.getChromosome());
+                        chrIndex = Integer.parseInt(proteinGroup.getChromosome());
                     } catch (NumberFormatException ex) {
-                        if (protein.getChromosome().contains("HSCHR")) {
-                            chrIndex = Integer.parseInt(protein.getChromosome().split("HSCHR")[1].split("_")[0].replaceAll("[\\D]", ""));
-                        } else if (protein.getChromosome().equalsIgnoreCase("X")) {
+                        if (proteinGroup.getChromosome().contains("HSCHR")) {
+                            chrIndex = Integer.parseInt(proteinGroup.getChromosome().split("HSCHR")[1].split("_")[0].replaceAll("[\\D]", ""));
+                        } else if (proteinGroup.getChromosome().equalsIgnoreCase("X")) {
                             chrIndex = 23;
-                        } else if (protein.getChromosome().equalsIgnoreCase("Y")) {
+                        } else if (proteinGroup.getChromosome().equalsIgnoreCase("Y")) {
                             chrIndex = 24;
                         }
 
                     }
-                    protein.setChromosomeIndex(chrIndex);
-                    if (protein.getChromosome().trim().isEmpty()) {
-                        protein.setChromosome("No Information");
-                        protein.setChromosomeIndex(-2);
-                        chromosomeMap.get(protein.getChromosomeIndex()).add(protein.getAccession());
+                    proteinGroup.setChromosomeIndex(chrIndex);
+                    if (proteinGroup.getChromosome().trim().isEmpty()) {
+                        proteinGroup.setChromosome("No Information");
+                        proteinGroup.setChromosomeIndex(-2);
+                        chromosomeMap.get(proteinGroup.getChromosomeIndex()).add(proteinGroup.getProteinGroupKey());
                     } else {
-                        if (!chromosomeMap.containsKey(protein.getChromosomeIndex())) {
-                            chromosomeMap.put(protein.getChromosomeIndex(), new LinkedHashSet<>());
+                        if (!chromosomeMap.containsKey(proteinGroup.getChromosomeIndex())) {
+                            chromosomeMap.put(proteinGroup.getChromosomeIndex(), new LinkedHashSet<>());
                         }
-                        chromosomeMap.get(protein.getChromosomeIndex()).add(protein.getAccession());
+                        chromosomeMap.get(proteinGroup.getChromosomeIndex()).add(proteinGroup.getProteinGroupKey());
                     }
-                    protein.setMW(Double.valueOf(arr[5]));
-                    if (protein.getMW() > maxMW) {
-                        maxMW = protein.getMW();
+                    proteinGroup.setMW(Double.valueOf(arr[5]));
+                    if (proteinGroup.getMW() > maxMW) {
+                        maxMW = proteinGroup.getMW();
                     }
-                    protein.setPossibleCoverage(Double.valueOf(arr[6]));
-                    protein.setCoverage(Double.valueOf(arr[7]));
-                    int pc = (int) Math.round(protein.getPossibleCoverage());
+                    proteinGroup.setPossibleCoverage(Double.valueOf(arr[6]));
+                    proteinGroup.setCoverage(Double.valueOf(arr[7]));
+                    int pc = (int) Math.round(proteinGroup.getCoverage());
                     if (!proteinCoverageMap.containsKey(pc)) {
                         proteinCoverageMap.put(pc, new LinkedHashSet<>());
                     }
-                    proteinCoverageMap.get(pc).add(protein.getAccession());
-                    protein.setSpectrumCounting(Double.valueOf(arr[8]));
-                    if (protein.getSpectrumCounting() > maxMS2Quant) {
-                        maxMS2Quant = protein.getSpectrumCounting();
+                    proteinCoverageMap.get(pc).add(proteinGroup.getProteinGroupKey());
+                    proteinGroup.setSpectrumCounting(Double.valueOf(arr[8]));
+                    if (proteinGroup.getSpectrumCounting() > maxMS2Quant) {
+                        maxMS2Quant = proteinGroup.getSpectrumCounting();
                     }
                     if ((arr[9] + "").trim().equalsIgnoreCase("")) {
-                        protein.setConfidentlyLocalizedModificationSites("No Modification");
+                        proteinGroup.setConfidentlyLocalizedModificationSites("No Modification");
                     } else {
-                        protein.setConfidentlyLocalizedModificationSites(arr[9]);//.split("\\(")[0]);                  
+                        proteinGroup.setConfidentlyLocalizedModificationSites(arr[9]);//.split("\\(")[0]);                  
                     }
-                    protein.setConfidentlyLocalizedModificationSitesNumber(arr[10]);
+                    proteinGroup.setConfidentlyLocalizedModificationSitesNumber(arr[10]);
 
-                    protein.setAmbiguouslyLocalizedModificationSites(arr[11]);
-                    protein.setAmbiguouslyLocalizedModificationSitesNumber(arr[12]);
-                    protein.setProteinInference(arr[13].replace("Proteins", "").replace("and", "&"));
+                    proteinGroup.setAmbiguouslyLocalizedModificationSites(arr[11]);
+                    proteinGroup.setAmbiguouslyLocalizedModificationSitesNumber(arr[12]);
+                    proteinGroup.setProteinInference(arr[13].replace("Proteins", "").replace("and", "&"));
 
-                    if (protein.getProteinInference().trim().isEmpty()) {
-                        protein.setProteinInference("No Information");
-                        proteinInferenceMap.get(protein.getProteinInference()).add(protein.getAccession());
+                    if (proteinGroup.getProteinInference().trim().isEmpty()) {
+                        proteinGroup.setProteinInference("No Information");
+                        proteinInferenceMap.get(proteinGroup.getProteinInference()).add(proteinGroup.getProteinGroupKey());
                     } else {
-                        if (!proteinInferenceMap.containsKey(protein.getProteinInference())) {
-                            proteinInferenceMap.put(protein.getProteinInference(), new LinkedHashSet<>());
+                        if (!proteinInferenceMap.containsKey(proteinGroup.getProteinInference())) {
+                            proteinInferenceMap.put(proteinGroup.getProteinInference(), new LinkedHashSet<>());
                         }
-                        proteinInferenceMap.get(protein.getProteinInference()).add(protein.getAccession());
+                        proteinInferenceMap.get(proteinGroup.getProteinInference()).add(proteinGroup.getProteinGroupKey());
                     }
 
-                    protein.setSecondaryAccessions(arr[14]);
+                    proteinGroup.setSecondaryAccessions(arr[14]);
 
-                    protein.setProteinGroup(arr[15]);
-                    protein.setValidatedPeptidesNumber(Integer.parseInt(arr[16]));
-                    if (protein.getValidatedPeptidesNumber() > maxPeptideNumber) {
-                        maxPeptideNumber = protein.getValidatedPeptidesNumber();
+                    proteinGroup.setValidatedPeptidesNumber(Integer.parseInt(arr[16]));
+                    if (proteinGroup.getValidatedPeptidesNumber() > maxPeptideNumber) {
+                        maxPeptideNumber = proteinGroup.getValidatedPeptidesNumber();
                     }
-                    protein.setPeptidesNumber(Integer.parseInt(arr[17]));
-                    if (!proteinPeptidesNumberMap.containsKey(protein.getValidatedPeptidesNumber())) {
-                        proteinPeptidesNumberMap.put(protein.getValidatedPeptidesNumber(), new LinkedHashSet<>());
+                    proteinGroup.setPeptidesNumber(Integer.parseInt(arr[17]));
+                    if (!proteinPeptidesNumberMap.containsKey(proteinGroup.getValidatedPeptidesNumber())) {
+                        proteinPeptidesNumberMap.put(proteinGroup.getValidatedPeptidesNumber(), new LinkedHashSet<>());
                     }
-                    proteinPeptidesNumberMap.get(protein.getValidatedPeptidesNumber()).add(protein.getAccession());
-                    protein.setUniqueNumber(Integer.parseInt(arr[18]));
-                    protein.setValidatedUniqueNumber(Integer.parseInt(arr[19]));
-                    protein.setUniqueToGroupNumber(Integer.parseInt(arr[20]));
-                    protein.setValidatedUniqueToGroupNumber(Integer.valueOf(arr[21]));
-                    protein.setValidatedPSMsNumber(Integer.valueOf(arr[22]));
-                    if (protein.getValidatedPSMsNumber() > maxPsmNumber) {
-                        maxPsmNumber = protein.getValidatedPSMsNumber();
+                    proteinPeptidesNumberMap.get(proteinGroup.getValidatedPeptidesNumber()).add(proteinGroup.getProteinGroupKey());
+                    proteinGroup.setUniqueNumber(Integer.parseInt(arr[18]));
+                    proteinGroup.setValidatedUniqueNumber(Integer.parseInt(arr[19]));
+                    proteinGroup.setUniqueToGroupNumber(Integer.parseInt(arr[20]));
+                    proteinGroup.setValidatedUniqueToGroupNumber(Integer.valueOf(arr[21]));
+                    proteinGroup.setValidatedPSMsNumber(Integer.valueOf(arr[22]));
+                    if (proteinGroup.getValidatedPSMsNumber() > maxPsmNumber) {
+                        maxPsmNumber = proteinGroup.getValidatedPSMsNumber();
                     }
-                    protein.setPSMsNumber(Integer.valueOf(arr[23]));
-                    if (!proteinPSMNumberMap.containsKey(protein.getValidatedPSMsNumber())) {
-                        proteinPSMNumberMap.put(protein.getValidatedPSMsNumber(), new LinkedHashSet<>());
+                    proteinGroup.setPSMsNumber(Integer.valueOf(arr[23]));
+                    if (!proteinPSMNumberMap.containsKey(proteinGroup.getValidatedPSMsNumber())) {
+                        proteinPSMNumberMap.put(proteinGroup.getValidatedPSMsNumber(), new LinkedHashSet<>());
                     }
-                    proteinPSMNumberMap.get(protein.getValidatedPSMsNumber()).add(protein.getAccession());
-                    protein.setConfidence(Double.valueOf(arr[24]));
-                    protein.setValidation(arr[25]);
-                    if (protein.getValidation().trim().isEmpty()) {
-                        protein.setValidation("No Information");
-                        proteinValidationMap.get(protein.getValidation()).add(protein.getAccession());
+                    proteinPSMNumberMap.get(proteinGroup.getValidatedPSMsNumber()).add(proteinGroup.getProteinGroupKey());
+                    proteinGroup.setConfidence(Double.valueOf(arr[24]));
+                    proteinGroup.setValidation(arr[25]);
+                    if (proteinGroup.getValidation().trim().isEmpty()) {
+                        proteinGroup.setValidation("No Information");
+                        proteinValidationMap.get(proteinGroup.getValidation()).add(proteinGroup.getProteinGroupKey());
                     } else {
-                        if (!proteinValidationMap.containsKey(protein.getValidation())) {
-                            proteinValidationMap.put(protein.getValidation(), new LinkedHashSet<>());
+                        if (!proteinValidationMap.containsKey(proteinGroup.getValidation())) {
+                            proteinValidationMap.put(proteinGroup.getValidation(), new LinkedHashSet<>());
                         }
-                        proteinValidationMap.get(protein.getValidation()).add(protein.getAccession());
+                        proteinValidationMap.get(proteinGroup.getValidation()).add(proteinGroup.getProteinGroupKey());
                     }
-                    proteinsMap.put(protein.getAccession(), protein);
-                    protein.getProteinGroupSet().stream().map((acc) -> {
+                    proteinsMap.put(proteinGroup.getProteinGroupKey(), proteinGroup);
+//                    if (!accessionToGroupKeyMap.containsKey(proteinGroup.getAccession())) {
+//                        accessionToGroupKeyMap.put(proteinGroup.getAccession(), new HashSet<>());
+//                    }
+//                    accessionToGroupKeyMap.get(proteinGroup.getAccession()).add(proteinGroupKey);
+                    proteinGroup.getProteinGroupSet().stream().map((acc) -> {
                         if (!protein_relatedProteins_Map.containsKey(acc)) {
-                            Set<ProteinObject> protenHashSet = new LinkedHashSet<>();
+                            Set<ProteinGroupObject> protenHashSet = new LinkedHashSet<>();
                             protein_relatedProteins_Map.put(acc, protenHashSet);
                         }
+//                        if (!accessionToGroupKeyMap.containsKey(acc)) {
+//                            accessionToGroupKeyMap.put(acc, new HashSet<>());
+//                        }
+//                        accessionToGroupKeyMap.get(acc).add(proteinGroupKey);
                         return acc;
                     }).forEachOrdered((acc) -> {
-                        protein_relatedProteins_Map.get(acc).add(protein);
+                        protein_relatedProteins_Map.get(acc).add(proteinGroup);
                     });
                 }
             } catch (IOException | NumberFormatException ex) {
@@ -1607,6 +1620,14 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
             }
         }
 
+//         /**
+//         * Get Protein group to accession map
+//         *
+//         * @return accession to protein group key objects map
+//         */
+//        public Map<String, Set<Comparable>> getAccessionToGroupKeyMap() {
+//            return accessionToGroupKeyMap;
+//        }
         /**
          * Get proteins map when the files are ready
          *
@@ -1614,7 +1635,7 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
          * @throws Exception
          */
         @Override
-        public Map<String, ProteinObject> call() throws Exception {
+        public Map<String, ProteinGroupObject> call() throws Exception {
             return this.proteinsMap;
         }
 
@@ -1623,7 +1644,7 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
          *
          * @return accession to protein objects map
          */
-        public Map<String, Set<ProteinObject>> getProtein_relatedProteins_Map() {
+        public Map<String, Set<ProteinGroupObject>> getProtein_relatedProteins_Map() {
             return protein_relatedProteins_Map;
         }
 
@@ -1632,7 +1653,7 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
          *
          * @return Proteins map (accession to proteins object)
          */
-        public Map<String, ProteinObject> getProteinsMap() {
+        public Map<String, ProteinGroupObject> getProteinsMap() {
             return proteinsMap;
         }
 
@@ -1729,7 +1750,7 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
          * Map of protein accession mapped to protein object imported from FASTA
          * file.
          */
-        private final Map<Object, ProteinObject> fastaProteinMap;
+        private final Map<Object, ProteinGroupObject> fastaProteinMap;
         /**
          * Map of protein accession mapped to The representation of a
          * ProteinSequence.
@@ -1764,7 +1785,7 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
          *
          * @return protein objects map
          */
-        public Map<Object, ProteinObject> getFastaProteinMap() {
+        public Map<Object, ProteinGroupObject> getFastaProteinMap() {
             return fastaProteinMap;
         }
 

@@ -18,7 +18,7 @@ import org.jfree.chart.ChartColor;
  */
 public class SparkLine extends HorizontalLayout {
 
-    private final DecimalFormat df = new DecimalFormat("#.##");
+    private final DecimalFormat df = new DecimalFormat("0.00E00");// new DecimalFormat("#.##");
     private ColorLabel spark;
     private Label textLabel;
 

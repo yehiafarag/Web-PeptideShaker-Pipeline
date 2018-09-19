@@ -2,7 +2,7 @@ package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview;
 
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideObject;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
-import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.ProteinObject;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.ProteinGroupObject;
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components.ProteinCoverageContainer;
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components.ProteinStructurePanel;
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components.ProteinsPeptidesGraphComponent;
@@ -90,7 +90,7 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
             public void selectedItem(Set<Object> selectedItems, Set<Object> selectedChildsItems) {
                 proteinCoverageContainer.setSelectedItems(selectedItems, selectedChildsItems);
                 if (selectedItems.size() == 1) {
-                    ProteinObject protein = this.getProteinNodes().get((String) selectedItems.iterator().next());
+                    ProteinGroupObject protein = this.getProteinNodes().get((String) selectedItems.iterator().next());
                     proteinPeptides = new LinkedHashMap<>();
                     this.getPeptidesNodes().values().stream().filter((peptide) -> (peptide.getProteinsSet().contains(protein.getAccession()))).forEachOrdered((peptide) -> {
                         proteinPeptides.put(peptide.getModifiedSequence(), peptide);
@@ -197,7 +197,7 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
         } else {
             if (proteinPeptides == null) {
                 proteinPeptides = new LinkedHashMap<>();
-                ProteinObject protein = selectedProteinGraph.getProteinNodes().get((String) proteinId);
+                ProteinGroupObject protein = selectedProteinGraph.getProteinNodes().get((String) proteinId);
                 selectedProteinGraph.getPeptidesNodes().values().stream().filter((peptide) -> (peptide.getProteinsSet().contains(protein.getAccession()))).forEachOrdered((peptide) -> {
                     proteinPeptides.put(peptide.getModifiedSequence(), peptide);
                 });

@@ -1,4 +1,4 @@
-package com.uib.web.peptideshaker.presenter.core.filtercharts.charts;
+package archive;
 
 import com.byteowls.vaadin.chartjs.ChartJs;
 import com.byteowls.vaadin.chartjs.config.ScatterChartConfig;

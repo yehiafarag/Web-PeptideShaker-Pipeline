@@ -1,6 +1,6 @@
 package com.uib.web.peptideshaker.galaxy.utilities.history;
 
-import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.ProteinObject;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.ProteinGroupObject;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,9 +28,9 @@ public class FastaFileWebService {
      * @param accession the protein accession;
      * @return updated protein object
      */
-    public ProteinObject updateProteinInformation(ProteinObject protein, String accession) {
+    public ProteinGroupObject updateProteinInformation(ProteinGroupObject protein, String accession) {
         if (protein == null) {
-            protein = new ProteinObject();
+            protein = new ProteinGroupObject();
             protein.setAccession(accession);
             System.out.println("itr was null protein :( ");
         }

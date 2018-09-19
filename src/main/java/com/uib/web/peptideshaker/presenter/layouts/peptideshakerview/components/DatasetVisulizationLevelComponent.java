@@ -2,7 +2,7 @@ package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components
 
 import com.compomics.util.experiment.biology.PTMFactory;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
-import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.ProteinObject;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.ProteinGroupObject;
 import com.uib.web.peptideshaker.model.core.ModificationMatrix;
 import com.uib.web.peptideshaker.presenter.core.ColorLabel;
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.SelectionManager;
@@ -40,7 +40,7 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
     private final LayoutEvents.LayoutClickListener selectionListener;
     private PeptideShakerVisualizationDataset peptideShakerVisualizationDataset;
 
-    private final DecimalFormat df = new DecimalFormat("#.##");
+    private final DecimalFormat df =  new DecimalFormat("0.00E00");//new DecimalFormat("#.##");
 
     /**
      * The post translational modifications factory.
@@ -68,7 +68,7 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
         TableColumnHeader header5 = new TableColumnHeader("protein_group", String.class, null, "Protein Group", null, Table.Align.LEFT);
         TableColumnHeader header6 = new TableColumnHeader("geneName", String.class, null, "Gene Name", null, Table.Align.CENTER);
         TableColumnHeader header7 = new TableColumnHeader("chromosom", String.class, null, "Chr", null, Table.Align.CENTER);
-        TableColumnHeader header8 = new TableColumnHeader("possibleCoverage", SparkLineLabel.class, null, "Possible Coverage", null, Table.Align.LEFT);
+        TableColumnHeader header8 = new TableColumnHeader("coverage", SparkLineLabel.class, null, "Coverage", null, Table.Align.LEFT);
         TableColumnHeader header9 = new TableColumnHeader("peptides_number", SparkLineLabel.class, null, "#Peptides", null, Table.Align.LEFT);
         TableColumnHeader header10 = new TableColumnHeader("psm_number", SparkLineLabel.class, null, "#PSM", null, Table.Align.LEFT);
         TableColumnHeader header11 = new TableColumnHeader("ms2Quant", SparkLineLabel.class, null, "MS2 Quant", null, Table.Align.LEFT);
@@ -82,7 +82,11 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
 
             @Override
             public void itemSelected(Object itemId) {
+//                if(itemId!=null){
+//                    itemId = itemId.toString().split("_-_")[0];
+//                }
                 selectedIds.clear();
+                System.out.println("at selected id "+itemId+"");
                 selectedIds.add(itemId + "");
                 peptideShakerVisualizationDataset.selectUpdateProteins(selectedIds);
                 peptideShakerVisualizationDataset.processPSMFile();
@@ -106,7 +110,7 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
         this.peptideShakerVisualizationDataset = peptideShakerVisualizationDataset;
 
         peptideShakerVisualizationDataset.processDataFiles();
-        Map<String, ProteinObject> proteinTableMap = peptideShakerVisualizationDataset.getProteinsMap();
+        Map<String, ProteinGroupObject> proteinTableMap = peptideShakerVisualizationDataset.getProteinsMap();
         final Table mainTable = proteinTableContainer.getMainTable();
 
         mainTable.sort(new Object[]{"peptides_number", "psm_number"}, new boolean[]{false, false});
@@ -128,7 +132,7 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
 //            mainTable.setColumnWidth("index", 30);
 //            mainTable.setColumnWidth("proteinInference", 20);
 //            mainTable.setColumnWidth("Accession", 50);
-//            mainTable.setColumnWidth("possibleCoverage", 70);
+//            mainTable.setColumnWidth("coverage", 70);
 //            mainTable.setColumnWidth("peptides_number", 50);
 //            mainTable.setColumnWidth("psm_number", 50);
 //            mainTable.setColumnWidth("validation", 30);
@@ -139,7 +143,7 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
             mainTable.setColumnWidth("index", 50);
             mainTable.setColumnWidth("proteinInference", 37);
             mainTable.setColumnWidth("Accession", 100);
-            mainTable.setColumnWidth("possibleCoverage", 150);
+            mainTable.setColumnWidth("coverage", 150);
             mainTable.setColumnWidth("peptides_number", 150);
             mainTable.setColumnWidth("psm_number", 150);
             mainTable.setColumnWidth("ms2Quant", 150);
@@ -159,8 +163,8 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
             proteinAccLink.setStyleName("tablelink");
 
             Map<String, Number> coverageValues = new LinkedHashMap<>();
-            coverageValues.put("greenlayout", (float) protein.getPossibleCoverage() / 100f);
-            SparkLineLabel coverageLabel = new SparkLineLabel(df.format(protein.getPossibleCoverage()), coverageValues, protein.getAccession()) {
+            coverageValues.put("greenlayout", (float) protein.getCoverage()/ 100f);
+            SparkLineLabel coverageLabel = new SparkLineLabel(df.format(protein.getCoverage()), coverageValues, protein.getAccession()) {
                 @Override
                 public void selected(Object itemId) {
                     mainTable.setValue(itemId);
@@ -212,10 +216,9 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
             ValidationLabel validation = new ValidationLabel(protein.getValidation());
             validation.setData(protein.getAccession());
             validation.addLayoutClickListener(selectionListener);
-
+            
             String searchKey = protein.getAccession() + "_" + protein.getDescription() + "_" + protein.getProteinGroup().replace(",", "_");
-
-            proteinTableContainer.addTableItem(protein.getAccession(), new Object[]{protein.getIndex(), piLabel, proteinAccLink, protein.getDescription(), protein.getProteinGroup(), protein.getGeneName(), protein.getChromosome(), coverageLabel, peptidesNumberLabelLabel, psmNumberLabelLabel, ms2QuantLabelLabel, mwLabel, confidentLabel, validation}, searchKey);
+            proteinTableContainer.addTableItem(protein.getProteinGroupKey(), new Object[]{protein.getIndex(), piLabel, proteinAccLink, protein.getDescription(), protein.getProteinGroup(), protein.getGeneName(), protein.getChromosome(), coverageLabel, peptidesNumberLabelLabel, psmNumberLabelLabel, ms2QuantLabelLabel, mwLabel, confidentLabel, validation}, searchKey);
         });
         this.proteinTableContainer.activateValueChangeListener();
         this.proteinTableContainer.updateLabel();

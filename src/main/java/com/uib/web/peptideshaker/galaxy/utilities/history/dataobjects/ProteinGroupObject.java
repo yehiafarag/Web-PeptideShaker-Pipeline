@@ -13,12 +13,24 @@ import java.util.Set;
  *
  * @author Yehia Farag
  */
-public class ProteinObject extends Protein {
+public class ProteinGroupObject extends Protein {
 
     /**
      * UniProt accession number.
      */
     private String accession;
+    /**
+     * UniProt protein group key.
+     */
+    private String proteinGroupKey;
+
+    public String getProteinGroupKey() {
+        return proteinGroupKey;
+    }
+
+    public void setProteinGroupKey(String proteinGroupKey) {
+        this.proteinGroupKey = proteinGroupKey;
+    }
     /**
      * Protein short name.
      */
@@ -197,7 +209,7 @@ public class ProteinObject extends Protein {
     /**
      * Constructor to initialise the main data structure.
      */
-    public ProteinObject() {
+    public ProteinGroupObject() {
         this.secondaryAccessionSet = new LinkedHashSet<>();
         this.proteinGroupSet = new LinkedHashSet<>();
         this.relatedPeptidesList = new HashMap<>();

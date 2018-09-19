@@ -9,7 +9,7 @@ import com.compomics.util.preferences.SequenceMatchingPreferences;
 import com.google.common.collect.Sets;
 import com.uib.web.peptideshaker.galaxy.utilities.history.FastaFileWebService;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideObject;
-import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.ProteinObject;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.ProteinGroupObject;
 import com.uib.web.peptideshaker.model.core.ModificationMatrix;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,10 +36,10 @@ import uk.ac.ebi.pride.tools.braf.BufferedRandomAccessFile;
  */
 public class PeptideShakerVisualizationDataset1 extends GalaxyFileObject {
 
-    private Map<String, ProteinObject> proteinsMap;
-    private final Map<Object, ProteinObject> fastaProteinsMap;
+    private Map<String, ProteinGroupObject> proteinsMap;
+    private final Map<Object, ProteinGroupObject> fastaProteinsMap;
     private Map<String, Set<PeptideObject>> protein_peptide_Map;
-    private Map<String, Set<ProteinObject>> protein_relatedProteins_Map;
+    private Map<String, Set<ProteinGroupObject>> protein_relatedProteins_Map;
     private Map<Object, PeptideObject> peptidesMap;
     private final Map<String, Set<Comparable>> modificationMap;
     private final Map<String, Set<Comparable>> chromosomeMap;
@@ -99,11 +99,11 @@ public class PeptideShakerVisualizationDataset1 extends GalaxyFileObject {
     }
     private String enzyme;
 
-    public ProteinObject getProtein(String proteinKey) {
+    public ProteinGroupObject getProtein(String proteinKey) {
         if (proteinsMap.containsKey(proteinKey)) {
             return proteinsMap.get(proteinKey);
         } else {
-            ProteinObject newRelatedProt = updateProteinInformation(null, proteinKey);
+            ProteinGroupObject newRelatedProt = updateProteinInformation(null, proteinKey);
             return newRelatedProt;
         }
 
@@ -113,7 +113,7 @@ public class PeptideShakerVisualizationDataset1 extends GalaxyFileObject {
         return chromosomeMap;
     }
 
-    public Map<String, ProteinObject> getProteinsMap() {
+    public Map<String, ProteinGroupObject> getProteinsMap() {
         if (proteinsMap != null) {
             return proteinsMap;
         }
@@ -135,11 +135,11 @@ public class PeptideShakerVisualizationDataset1 extends GalaxyFileObject {
             while ((line = bufferedRandomAccessFile.getNextLine()) != null) {
                 String[] arr = line.split("\\t");
 //                Object[] obj = new Object[]{Integer.valueOf(arr[0]), arr[1], arr[2], arr[3], Double.valueOf(arr[5]), Double.valueOf(arr[6]), Integer.valueOf(arr[16])};
-                ProteinObject protein;
+                ProteinGroupObject protein;
                 if (fastaProteinsMap.containsKey(arr[1])) {
                     protein = fastaProteinsMap.get(arr[1]);
                 } else {
-                    protein = new ProteinObject();
+                    protein = new ProteinGroupObject();
                     System.out.println("not exist protein need sequence " + arr[1]);
                 }
                 protein.setAccession(arr[1]);
@@ -229,7 +229,7 @@ public class PeptideShakerVisualizationDataset1 extends GalaxyFileObject {
                 proteinsMap.put(protein.getAccession(), protein);
                 for (String acc : protein.getProteinGroupSet()) {
                     if (!protein_relatedProteins_Map.containsKey(acc)) {
-                        Set<ProteinObject> protenHashSet = new LinkedHashSet<>();
+                        Set<ProteinGroupObject> protenHashSet = new LinkedHashSet<>();
                         protein_relatedProteins_Map.put(acc, protenHashSet);
                     }
                     protein_relatedProteins_Map.get(acc).add(protein);
@@ -263,7 +263,7 @@ public class PeptideShakerVisualizationDataset1 extends GalaxyFileObject {
             while ((line = bufferedRandomAccessFile.getNextLine()) != null) {
                 if (line.startsWith(">")) {
                     if (!fastaHeader.equalsIgnoreCase("")) {
-                        ProteinObject protein = new ProteinObject();
+                        ProteinGroupObject protein = new ProteinGroupObject();
                         String accss = fastaHeader.split("\\|")[1];
                         String desc = fastaHeader.split("\\|")[2].split("OS=")[0];
                         desc = desc.replace(desc.split(" ")[0], "").trim();
@@ -378,7 +378,7 @@ public class PeptideShakerVisualizationDataset1 extends GalaxyFileObject {
         return null;
     }
 
-    public Set<ProteinObject> getRelatedProteinsSet(String proteinKey) {
+    public Set<ProteinGroupObject> getRelatedProteinsSet(String proteinKey) {
         if (protein_relatedProteins_Map.containsKey(proteinKey)) {
             return protein_relatedProteins_Map.get(proteinKey);
         }
@@ -624,7 +624,7 @@ public class PeptideShakerVisualizationDataset1 extends GalaxyFileObject {
         mgfFilesIndexes.put(mgfFileId, mgfFileIndex);
     }
 
-    public ProteinObject updateProteinInformation(ProteinObject protein, String accession) {
+    public ProteinGroupObject updateProteinInformation(ProteinGroupObject protein, String accession) {
         if (protein == null) {
             if (fastaProteinsMap.containsKey(accession)) {
                 protein = fastaProteinsMap.get(accession);

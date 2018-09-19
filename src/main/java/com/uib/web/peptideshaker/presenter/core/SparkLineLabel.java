@@ -26,7 +26,7 @@ public abstract class SparkLineLabel extends AbsoluteLayout implements Comparabl
         textLabel.setStyleName("sparklinelabel");
         SparkLineLabel.this.addComponent(textLabel,"left:10px;top:0px");
         HorizontalLayout sparkLineContainer = initSparkLine(values);
-        SparkLineLabel.this.addComponent(sparkLineContainer,"left:50px;top:0px");
+        SparkLineLabel.this.addComponent(sparkLineContainer,"left:60px;top:0px");
         SparkLineLabel.this.addLayoutClickListener((event) -> {
             selected(itemId);
         });

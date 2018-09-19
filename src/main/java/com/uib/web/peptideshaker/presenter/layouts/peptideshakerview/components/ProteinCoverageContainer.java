@@ -1,7 +1,7 @@
 package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components;
 
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideObject;
-import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.ProteinObject;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.ProteinGroupObject;
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components.coverage.ProteinCoverageComponent;
 import com.uib.web.peptideshaker.presenter.core.ActionLabel;
 import com.vaadin.event.LayoutEvents;
@@ -90,13 +90,14 @@ public abstract class ProteinCoverageContainer extends VerticalLayout {
         return tableData;
     }
 
-    public void selectDataset(Map<String, ProteinObject> proteinNodes, Map<String, PeptideObject> peptidesNodes, Set<Object> defaultSelectedProteinsItems, Set<Object> defaultSelectedPeptidesItems) {
+    public void selectDataset(Map<String, ProteinGroupObject> proteinNodes, Map<String, PeptideObject> peptidesNodes, Set<Object> defaultSelectedProteinsItems, Set<Object> defaultSelectedPeptidesItems) {
         tableData.clear();
         proteinNodes.values().forEach((protein) -> {
             
             ProteinCoverageComponent proteinLayout = new ProteinCoverageComponent(protein, peptidesNodes) {
                 @Override
                 public void selectPeptide(Object proteinId, Object peptideId) {
+                    System.out.println("at selected peptide "+proteinId+" ---  "+peptideId);
                     ProteinCoverageContainer.this.selectPeptide(proteinId, peptideId);
                     tableData.keySet().forEach((id) -> {
                         if (id.equals(proteinId)) {

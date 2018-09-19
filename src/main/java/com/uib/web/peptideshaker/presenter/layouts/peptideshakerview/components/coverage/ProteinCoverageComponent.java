@@ -1,7 +1,7 @@
 package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components.coverage;
 
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideObject;
-import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.ProteinObject;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.ProteinGroupObject;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Component;
@@ -31,7 +31,7 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
 
     Map<String, Color> ModificationColorMap;
 
-    public ProteinCoverageComponent(ProteinObject protein, Map<String, PeptideObject> peptidesNodes) {
+    public ProteinCoverageComponent(ProteinGroupObject protein, Map<String, PeptideObject> peptidesNodes) {
         ProteinCoverageComponent.this.setWidth(100, Unit.PERCENTAGE);
         HashMap<String, String> styles = new HashMap<>();
         styles.put("Confident", "greenbackground");

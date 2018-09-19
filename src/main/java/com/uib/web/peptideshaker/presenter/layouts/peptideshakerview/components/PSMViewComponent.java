@@ -43,7 +43,7 @@ public abstract class PSMViewComponent extends VerticalLayout {
     private final VerticalLayout chartContainer;
     private final SpectrumPlot spectrumPlot;
     private int index = 0;
-    private final DecimalFormat df = new DecimalFormat("#.##");
+    private final DecimalFormat df =  new DecimalFormat("0.00E00");//new DecimalFormat("#.##");
 
     public SpectrumPlot getSpectrumPlot() {
         return spectrumPlot;
@@ -68,7 +68,7 @@ public abstract class PSMViewComponent extends VerticalLayout {
             protected String formatPropertyValue(Object rowId, Object colId, Property property) {
                 Object v = property.getValue();
                 if (v instanceof Double) {
-                    DecimalFormat df = new DecimalFormat("#.##");
+                    DecimalFormat df = new DecimalFormat("0.00E00");// new DecimalFormat("#.##");
                     return df.format(v);
                 }
                 return super.formatPropertyValue(rowId, colId, property);

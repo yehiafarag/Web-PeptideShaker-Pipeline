@@ -139,7 +139,7 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
 
         int index = 1;
         for (String mgf : dataset.getInputMGFFiles().keySet()) {
-            Horizontal2Label mgfFile = new Horizontal2Label("MGF File " + index + " :", dataset.getInputMGFFiles().get(mgf).getName().replace("-"+dataset.getName(), "").replace("-"+index+"-MGFFile",""));
+            Horizontal2Label mgfFile = new Horizontal2Label("MGF File " + index + " :", dataset.getInputMGFFiles().get(mgf).getName().replace("-" + dataset.getName(), "").replace("-" + index + "-MGFFile", ""));
             upperPanel.addComponent(mgfFile);
             index++;
         }
@@ -248,13 +248,16 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
 
     private Table initModificationTable(String cap) {
         Table modificationsTable = new Table(cap) {
-            DecimalFormat df = new DecimalFormat("#.##");
-
-            @Override
+            DecimalFormat df = new DecimalFormat("0.00E00");//new DecimalFormat("#.##");
+            DecimalFormat df1 = new DecimalFormat("#.##");            @Override
             protected String formatPropertyValue(Object rowId, Object colId, Property property) {
                 Object v = property.getValue();
                 if (v instanceof Double) {
-                    return df.format(v);
+                    if ((double) v > 100) {
+                        return df.format(v);
+                    } else {
+                        return df1.format(v);
+                    }
                 }
                 return super.formatPropertyValue(rowId, colId, property);
             }

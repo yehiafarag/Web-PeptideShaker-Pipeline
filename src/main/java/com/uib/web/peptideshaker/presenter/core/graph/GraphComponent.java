@@ -4,7 +4,7 @@ import com.ejt.vaadin.sizereporter.ComponentResizeEvent;
 import com.ejt.vaadin.sizereporter.SizeReporter;
 import com.itextpdf.text.pdf.codec.Base64;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideObject;
-import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.ProteinObject;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.ProteinGroupObject;
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components.coverage.Legend;
 import com.vaadin.data.Property;
 import com.vaadin.event.LayoutEvents;
@@ -73,7 +73,7 @@ public abstract class GraphComponent extends VerticalLayout {
     /**
      * The nodes.
      */
-    private Map<String, ProteinObject> proteinNodes;
+    private Map<String, ProteinGroupObject> proteinNodes;
     private Map<String, PeptideObject> peptidesNodes;
     /**
      * The edges: the keys are the node labels and the elements the list of
@@ -368,7 +368,7 @@ public abstract class GraphComponent extends VerticalLayout {
 
     }
 
-    public void updateGraphData(ProteinObject selectedProtein, Map<String, ProteinObject> proteinNodes, Map<String, PeptideObject> peptidesNodes, HashMap<String, ArrayList<String>> edges) {
+    public void updateGraphData(ProteinGroupObject selectedProtein, Map<String, ProteinGroupObject> proteinNodes, Map<String, PeptideObject> peptidesNodes, HashMap<String, ArrayList<String>> edges) {
         uniqueOnly = nodeControl.getValue().equals("Unique Only");
         canvas.removeAllComponents();
         nodesMap.clear();

@@ -40,7 +40,7 @@ public class ChainCoverageComponent {
     private double coverage = -1;
     private Color chaincolor;
     private Color bordercolor;
-    private final DecimalFormat df = new DecimalFormat("#.#");
+    private final DecimalFormat df = new DecimalFormat("0.00E00");// new DecimalFormat("#.#");
 
     public ChainCoverageComponent(int proteinSequenceLength) {
         this.proteinSequenceLength = proteinSequenceLength;

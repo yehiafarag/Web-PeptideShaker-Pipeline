@@ -604,7 +604,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
      */
     private Table initModificationTable(String cap) {
         Table modificationsTable = new Table(cap) {
-            DecimalFormat df = new DecimalFormat("#.##");
+            DecimalFormat df =  new DecimalFormat("0.00E00");//new DecimalFormat("#.##");
 
             @Override
             protected String formatPropertyValue(Object rowId, Object colId, Property property) {
