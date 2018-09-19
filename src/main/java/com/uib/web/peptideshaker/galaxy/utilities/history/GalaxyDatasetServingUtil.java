@@ -60,8 +60,8 @@ public class GalaxyDatasetServingUtil {
     public MSnSpectrum getSpectrum(long startIndex, String historyId, String MGFGalaxyID, String MGFFileName) {
 
         try {
-
             StringBuilder locationBuilder = new StringBuilder(galaxyLink + "/api/histories/" + historyId + "/contents/" + MGFGalaxyID + "/display?");
+//            StringBuilder locationBuilder = new StringBuilder(galaxyLink + "/api/histories/" + "df7a1f0c02a5b08e" + "/contents/" + "9f916718ff70f082" + "/display?");
             for (int i = 0; i < params.length; i++) {
                 if (i > 0) {
                     locationBuilder.append('&');
@@ -77,7 +77,7 @@ public class GalaxyDatasetServingUtil {
             conn.addRequestProperty("Accept-Language", "ar,en-US;q=0.8,en;q=0.6,en-GB;q=0.4");
             conn.addRequestProperty("Cache-Control", "no-cache");
             conn.addRequestProperty("Connection", "keep-alive");
-            conn.addRequestProperty("Range", "bytes=" + startIndex + "-" + (startIndex + 10000));
+            conn.addRequestProperty("Range", "bytes=" + startIndex + "-" + Long.MAX_VALUE);
             conn.addRequestProperty("DNT", "1");
             conn.addRequestProperty("X-Requested-With", "XMLHttpRequest");
             conn.addRequestProperty("Pragma", "no-cache");
@@ -92,7 +92,8 @@ public class GalaxyDatasetServingUtil {
             boolean insideSpectrum = false;
 
             try (BufferedReader bin = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
-                while ((line = bin.readLine()) != null) {
+               
+                while ((line = bin.readLine()) != null) { 
                     // fix for lines ending with \r
                     if (line.endsWith("\r")) {
                         line = line.replace("\r", "");
@@ -191,6 +192,7 @@ public class GalaxyDatasetServingUtil {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
+        System.out.println("we will return null spectrum");
         return null;
     }
 

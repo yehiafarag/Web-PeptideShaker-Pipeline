@@ -566,7 +566,6 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
      * @param selectedIds selected protein IDs (accessions)
      */
     public void selectUpdateProteins(Set<Comparable> selectedIds) {
-        System.out.println("selecte ids ");
         if (selectedIds == null || selectedIds.isEmpty() || selectedIds.contains(null + "") || processFastaFileTask.getFastaProteinSequenceMap() == null) {
             return;
         }
@@ -1145,7 +1144,9 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
                     break;
                 }
             }
+            
             MSnSpectrum spectrum = galaxyDatasetServingUtil.getSpectrum(mgfIndex.getIndex(selectedPsm.getSpectrumTitle()), galaxyHistoryId, galaxyFileId, selectedPsm.getSpectrumFile());
+            
             int tCharge = 0;
             if (!selectedPsm.getMeasuredCharge().trim().equalsIgnoreCase("")) {
                 tCharge = Integer.parseInt(selectedPsm.getMeasuredCharge().replace("+", ""));
@@ -1168,7 +1169,7 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
 
             Peptide psPeptide = new Peptide(peptideObject.getSequence(), psModificationMatches);//modifiedPeptideSequence.replace("NH2-", "").replace("-COOH", "")
             psPeptide.setParentProteins(new ArrayList<>(selectedPsm.getProteins()));
-            PeptideAssumption psAssumption = new PeptideAssumption(psPeptide, new Charge(+2, 2));
+            PeptideAssumption psAssumption = new PeptideAssumption(psPeptide, new Charge(+2, 2));            
             SpectrumMatch spectrumMatch = new SpectrumMatch(spectrum.getSpectrumKey());
             spectrumMatch.setBestPeptideAssumption(psAssumption);
             SpectrumInformation spectrumInformation = new SpectrumInformation();

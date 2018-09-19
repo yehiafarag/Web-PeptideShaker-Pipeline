@@ -97,7 +97,6 @@ public abstract class ProteinCoverageContainer extends VerticalLayout {
             ProteinCoverageComponent proteinLayout = new ProteinCoverageComponent(protein, peptidesNodes) {
                 @Override
                 public void selectPeptide(Object proteinId, Object peptideId) {
-                    System.out.println("at selected peptide "+proteinId+" ---  "+peptideId);
                     ProteinCoverageContainer.this.selectPeptide(proteinId, peptideId);
                     tableData.keySet().forEach((id) -> {
                         if (id.equals(proteinId)) {

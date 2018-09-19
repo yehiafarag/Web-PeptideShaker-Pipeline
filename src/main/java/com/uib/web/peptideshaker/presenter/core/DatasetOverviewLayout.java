@@ -249,7 +249,9 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
     private Table initModificationTable(String cap) {
         Table modificationsTable = new Table(cap) {
             DecimalFormat df = new DecimalFormat("0.00E00");//new DecimalFormat("#.##");
-            DecimalFormat df1 = new DecimalFormat("#.##");            @Override
+            DecimalFormat df1 = new DecimalFormat("#.##");
+
+            @Override
             protected String formatPropertyValue(Object rowId, Object colId, Property property) {
                 Object v = property.getValue();
                 if (v instanceof Double) {

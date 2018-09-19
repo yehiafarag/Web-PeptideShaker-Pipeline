@@ -40,7 +40,7 @@ public class ChainCoverageComponent {
     private double coverage = -1;
     private Color chaincolor;
     private Color bordercolor;
-    private final DecimalFormat df = new DecimalFormat("0.00E00");// new DecimalFormat("#.#");
+    private final DecimalFormat df =  new DecimalFormat("#.#");
 
     public ChainCoverageComponent(int proteinSequenceLength) {
         this.proteinSequenceLength = proteinSequenceLength;
@@ -125,14 +125,14 @@ public class ChainCoverageComponent {
                     i = y;
                 }
                 g2.setColor(bordercolor);
-                g2.drawRect(25 + (int) ((double) start * correctFactor), 10, (int) ((end - start + 1) * correctFactor), 10);
+                g2.drawRect(25 + (int) ((double) start * correctFactor), 10, (int) ((end - start ) * correctFactor), 10);
                 g2.setColor(chaincolor);
-                g2.fillRect(25 + (int) ((double) start * correctFactor), 10, (int) ((end - start + 1) * correctFactor), 10);
+                g2.fillRect(25 + (int) ((double) start * correctFactor), 10, (int) ((end - start ) * correctFactor), 10);
 
                 icong2.setColor(bordercolor);
-                icong2.drawRect(5 + (int) ((double) start * iconCorrectFactor), 10, (int) ((end - start + 1) * correctFactor), 10);
+                icong2.drawRect(5 + (int) ((double) start * iconCorrectFactor), 10, (int) ((end - start ) * correctFactor), 10);
                 icong2.setColor(chaincolor);
-                icong2.fillRect(5 + (int) ((double) start * iconCorrectFactor), 10, (int) ((end - start + 1) * correctFactor), 10);
+                icong2.fillRect(5 + (int) ((double) start * iconCorrectFactor), 10, (int) ((end - start ) * correctFactor), 10);
 
             }
         }

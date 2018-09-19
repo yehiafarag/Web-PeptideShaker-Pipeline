@@ -117,9 +117,8 @@ public abstract class SearchableTable extends VerticalLayout implements Property
                     searchResultsLabel.setValue(key + " of " + tableSearchingResults.size());
                     Object itemId = tableSearchingMap.get(tableSearchingResults.get(key));
                     mainTable.setValue(itemId);
-                    mainTable.setCurrentPageFirstItemIndex(((int)mainTable.getItem(itemId).getItemProperty("index").getValue())-1);
+                    mainTable.setCurrentPageFirstItemIndex(((int) mainTable.getItem(itemId).getItemProperty("index").getValue()) - 1);
                     mainTable.commit();
-                    
 
                 }
             }
@@ -162,12 +161,18 @@ public abstract class SearchableTable extends VerticalLayout implements Property
      */
     private Table initTable(TableColumnHeader[] tableHeaders) {
         Table table = new Table() {
+            DecimalFormat df = new DecimalFormat("0.00E00");// new DecimalFormat("#.##");
+            DecimalFormat df1 = new DecimalFormat("#.##");
+
             @Override
             protected String formatPropertyValue(Object rowId, Object colId, Property property) {
                 Object v = property.getValue();
                 if (v instanceof Double) {
-                    DecimalFormat df =  new DecimalFormat("0.00E00");//new DecimalFormat("#.##");
-                    return df.format(v);
+                    if ((double) v > 100) {
+                        return df.format(v);
+                    } else {
+                        return df1.format(v);
+                    }
                 }
                 return super.formatPropertyValue(rowId, colId, property);
             }
@@ -288,6 +293,7 @@ public abstract class SearchableTable extends VerticalLayout implements Property
 ////    public void setTableData(Map<Comparable, Object[]> tableData) {
 ////        this.tableData = tableData;
 ////    }
+
     @Override
     public void valueChange(Property.ValueChangeEvent event) {
         Object objcetId = event.getProperty().getValue();//"P01889";

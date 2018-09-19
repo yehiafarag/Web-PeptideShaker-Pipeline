@@ -43,7 +43,7 @@ public abstract class PSMViewComponent extends VerticalLayout {
     private final VerticalLayout chartContainer;
     private final SpectrumPlot spectrumPlot;
     private int index = 0;
-    private final DecimalFormat df =  new DecimalFormat("0.00E00");//new DecimalFormat("#.##");
+    private final DecimalFormat df = new DecimalFormat("0.00E00");//new DecimalFormat("#.##");
 
     public SpectrumPlot getSpectrumPlot() {
         return spectrumPlot;
@@ -64,12 +64,18 @@ public abstract class PSMViewComponent extends VerticalLayout {
         psmTableWrapper.setSizeFull();
 
         psmOverviewTable = new Table() {
+            DecimalFormat df = new DecimalFormat("0.00E00");// new DecimalFormat("#.##");
+            DecimalFormat df1 = new DecimalFormat("#.##");
+
             @Override
             protected String formatPropertyValue(Object rowId, Object colId, Property property) {
                 Object v = property.getValue();
                 if (v instanceof Double) {
-                    DecimalFormat df = new DecimalFormat("0.00E00");// new DecimalFormat("#.##");
-                    return df.format(v);
+                    if ((double) v > 100) {
+                        return df.format(v);
+                    } else {
+                        return df1.format(v);
+                    }
                 }
                 return super.formatPropertyValue(rowId, colId, property);
             }
@@ -150,7 +156,6 @@ public abstract class PSMViewComponent extends VerticalLayout {
         });
         resizeControlBtn.resize(2);
 
-
     }
 
     public void updateView(List<PSMObject> psms, String tooltip, int peptideLength) {
@@ -158,8 +163,9 @@ public abstract class PSMViewComponent extends VerticalLayout {
         this.psmOverviewTable.removeAllItems();
         index = 1;
         spectrumInformationMap = getSpectrumData(psms);
-        if(spectrumInformationMap==null)
+        if (spectrumInformationMap == null) {
             return;
+        }
         psms.stream().map((psm) -> {
             return psm;
         }).forEachOrdered((psm) -> {
@@ -213,8 +219,8 @@ public abstract class PSMViewComponent extends VerticalLayout {
     }
 
     public abstract Map<Object, SpectrumInformation> getSpectrumData(List<PSMObject> psms);
-    
-    public void setThumbImage(Image thumbImage){
+
+    public void setThumbImage(Image thumbImage) {
         spectrumPlot.setPlotThumbImage(thumbImage);
     }
 }
