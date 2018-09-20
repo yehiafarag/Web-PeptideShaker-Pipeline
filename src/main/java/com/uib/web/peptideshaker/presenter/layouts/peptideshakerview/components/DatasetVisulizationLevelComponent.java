@@ -41,7 +41,7 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
     private PeptideShakerVisualizationDataset peptideShakerVisualizationDataset;
 
     private final DecimalFormat df = new DecimalFormat("#.##");
-    private final DecimalFormat df1 =new DecimalFormat("0.00E00");// new DecimalFormat("#.##");
+    private final DecimalFormat df1 = new DecimalFormat("0.00E00");// new DecimalFormat("#.##");
 
     /**
      * The post translational modifications factory.
@@ -83,9 +83,6 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
 
             @Override
             public void itemSelected(Object itemId) {
-//                if(itemId!=null){
-//                    itemId = itemId.toString().split("_-_")[0];
-//                }
                 selectedIds.clear();
                 selectedIds.add(itemId + "");
                 peptideShakerVisualizationDataset.selectUpdateProteins(selectedIds);
@@ -153,18 +150,16 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
             mainTable.setColumnWidth("confidence", 150);
         }
 
-        
         proteinTableContainer.resetTable();
         proteinTableMap.values().forEach((protein) -> {
-
-            ColorLabel piLabel = new ColorLabel(inferenceMap.get(protein.getProteinInference().trim()), protein.getProteinInference(), protein.getAccession(), selectionListener);
+            ColorLabel piLabel = new ColorLabel(inferenceMap.get(protein.getProteinInference().trim()), protein.getProteinInference(), protein.getProteinGroupKey(), selectionListener);
             Link proteinAccLink = new Link(protein.getAccession(), new ExternalResource("http://www.uniprot.org/uniprot/" + protein.getAccession().toUpperCase()));
             proteinAccLink.setTargetName("_blank");
             proteinAccLink.setStyleName("tablelink");
 
             Map<String, Number> coverageValues = new LinkedHashMap<>();
-            coverageValues.put("greenlayout", (float) protein.getCoverage()/ 100f);
-            SparkLineLabel coverageLabel = new SparkLineLabel(df.format(protein.getCoverage()), coverageValues, protein.getAccession()) {
+            coverageValues.put("greenlayout", (float) protein.getCoverage() / 100f);
+            SparkLineLabel coverageLabel = new SparkLineLabel(df.format(protein.getCoverage()), coverageValues, protein.getProteinGroupKey()) {
                 @Override
                 public void selected(Object itemId) {
                     mainTable.setValue(itemId);
@@ -173,7 +168,7 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
 
             Map<String, Number> peptidesNumValues = new LinkedHashMap<>();
             peptidesNumValues.put("greenlayout", (float) protein.getValidatedPeptidesNumber() / (float) peptideShakerVisualizationDataset.getMaxPeptideNumber());
-            SparkLineLabel peptidesNumberLabelLabel = new SparkLineLabel(df.format(protein.getValidatedPeptidesNumber()), peptidesNumValues, protein.getAccession()) {
+            SparkLineLabel peptidesNumberLabelLabel = new SparkLineLabel(df.format(protein.getValidatedPeptidesNumber()), peptidesNumValues, protein.getProteinGroupKey()) {
                 @Override
                 public void selected(Object itemId) {
                     mainTable.setValue(itemId);
@@ -182,7 +177,7 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
 
             Map<String, Number> psmNumValues = new LinkedHashMap<>();
             psmNumValues.put("greenlayout", (float) protein.getValidatedPSMsNumber() / (float) peptideShakerVisualizationDataset.getMaxPsmNumber());
-            SparkLineLabel psmNumberLabelLabel = new SparkLineLabel(df.format(protein.getValidatedPSMsNumber()), psmNumValues, protein.getAccession()) {
+            SparkLineLabel psmNumberLabelLabel = new SparkLineLabel(df.format(protein.getValidatedPSMsNumber()), psmNumValues, protein.getProteinGroupKey()) {
                 @Override
                 public void selected(Object itemId) {
                     mainTable.setValue(itemId);
@@ -190,7 +185,7 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
             };
             Map<String, Number> ms2QuantValues = new LinkedHashMap<>();
             ms2QuantValues.put("greenlayout", (float) protein.getSpectrumCounting() / (float) peptideShakerVisualizationDataset.getMaxMS2Quant());
-            SparkLineLabel ms2QuantLabelLabel = new SparkLineLabel(df1.format(protein.getSpectrumCounting()), ms2QuantValues, protein.getAccession()) {
+            SparkLineLabel ms2QuantLabelLabel = new SparkLineLabel(df1.format(protein.getSpectrumCounting()), ms2QuantValues, protein.getProteinGroupKey()) {
                 @Override
                 public void selected(Object itemId) {
                     mainTable.setValue(itemId);
@@ -198,7 +193,7 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
             };
             Map<String, Number> mwValues = new LinkedHashMap<>();
             mwValues.put("greenlayout", (float) protein.getMW() / (float) peptideShakerVisualizationDataset.getMaxMW());
-            SparkLineLabel mwLabel = new SparkLineLabel(df1.format(protein.getMW()), mwValues, protein.getAccession()) {
+            SparkLineLabel mwLabel = new SparkLineLabel(df1.format(protein.getMW()), mwValues, protein.getProteinGroupKey()) {
                 @Override
                 public void selected(Object itemId) {
                     mainTable.setValue(itemId);
@@ -207,16 +202,16 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
 
             Map<String, Number> confidentValues = new LinkedHashMap<>();
             confidentValues.put("greenlayout", (float) protein.getConfidence() / 100f);
-            SparkLineLabel confidentLabel = new SparkLineLabel(df.format(protein.getConfidence()), confidentValues, protein.getAccession()) {
+            SparkLineLabel confidentLabel = new SparkLineLabel(df.format(protein.getConfidence()), confidentValues, protein.getProteinGroupKey()) {
                 @Override
                 public void selected(Object itemId) {
                     mainTable.setValue(itemId);
                 }
             };
             ValidationLabel validation = new ValidationLabel(protein.getValidation());
-            validation.setData(protein.getAccession());
+            validation.setData(protein.getProteinGroupKey());
             validation.addLayoutClickListener(selectionListener);
-            
+
             String searchKey = protein.getAccession() + "_" + protein.getDescription() + "_" + protein.getProteinGroup().replace(",", "_");
             proteinTableContainer.addTableItem(protein.getProteinGroupKey(), new Object[]{protein.getIndex(), piLabel, proteinAccLink, protein.getDescription(), protein.getProteinGroup(), protein.getGeneName(), protein.getChromosome(), coverageLabel, peptidesNumberLabelLabel, psmNumberLabelLabel, ms2QuantLabelLabel, mwLabel, confidentLabel, validation}, searchKey);
         });
@@ -262,6 +257,12 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
     @Override
     public void updateFilterSelection(Set<Comparable> selection, Set<Comparable> selectedCategories, boolean topFilter, boolean selectOnly, boolean selfAction) {
         this.proteinTableContainer.filterTable(selection);
+        proteinTableContainer.getMainTable().sort();
+        int index = 1;
+        for (Object key : proteinTableContainer.getMainTable().getItemIds()) {
+            proteinTableContainer.getMainTable().getItem(key).getItemProperty("index").setValue(index++);
+        }
+        proteinTableContainer.getMainTable().setSortEnabled(false);
     }
 
     @Override

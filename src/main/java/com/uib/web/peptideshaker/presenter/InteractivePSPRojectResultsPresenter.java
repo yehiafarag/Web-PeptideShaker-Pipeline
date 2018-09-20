@@ -30,7 +30,7 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
     /**
      * The main left side buttons container in big screen mode.
      */
-    private VerticalLayout leftSideButtonsContainer;
+    private VerticalLayout viewControlButtonContainer;
     /**
      * The main bottom side buttons container in small/mobile screen mode.
      */
@@ -55,6 +55,10 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
      * Reference index to the last selected sup-view.
      */
     private int lastSelectedBtn = 1;
+     /**
+     * The view is in maximised mode.
+     */
+    private boolean maximisedMode;
 
     /**
      * Constructor to initialise the main layout and attributes.
@@ -77,16 +81,16 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
      */
     private void initLayout() {
         this.addStyleName("integratedframe");
-        leftSideButtonsContainer = new VerticalLayout();
-        leftSideButtonsContainer.setWidth(100, Unit.PERCENTAGE);
-        leftSideButtonsContainer.setHeightUndefined();
-        leftSideButtonsContainer.setSpacing(false);
-        leftSideButtonsContainer.setMargin(new MarginInfo(false, false, true, false));
+        viewControlButtonContainer = new VerticalLayout();
+        viewControlButtonContainer.setWidth(100, Unit.PERCENTAGE);
+        viewControlButtonContainer.setHeightUndefined();
+        viewControlButtonContainer.setSpacing(false);
+        viewControlButtonContainer.setMargin(new MarginInfo(false, false, true, false));
 
         BigSideBtn datasetsOverviewBtn = new BigSideBtn("Dataset overview", 1);
         datasetsOverviewBtn.setData("datasetoverview");
-        leftSideButtonsContainer.addComponent(datasetsOverviewBtn);
-        leftSideButtonsContainer.setComponentAlignment(datasetsOverviewBtn, Alignment.MIDDLE_CENTER);
+        viewControlButtonContainer.addComponent(datasetsOverviewBtn);
+        viewControlButtonContainer.setComponentAlignment(datasetsOverviewBtn, Alignment.MIDDLE_CENTER);
         datasetsOverviewBtn.addLayoutClickListener(InteractivePSPRojectResultsPresenter.this);
         Selection_Manager.addBtnLayout(datasetsOverviewBtn, datasetVisulizationLevelContainer);
         datasetVisulizationLevelContainer = new DatasetVisulizationLevelContainer(Selection_Manager, datasetsOverviewBtn);
@@ -96,8 +100,8 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
         BigSideBtn proteinoverviewBtn = new BigSideBtn("Protein Overview", 2);
         proteinoverviewBtn.updateIconResource(null);
         proteinoverviewBtn.setData("proteinoverview");
-        leftSideButtonsContainer.addComponent(proteinoverviewBtn);
-        leftSideButtonsContainer.setComponentAlignment(proteinoverviewBtn, Alignment.MIDDLE_CENTER);
+        viewControlButtonContainer.addComponent(proteinoverviewBtn);
+        viewControlButtonContainer.setComponentAlignment(proteinoverviewBtn, Alignment.MIDDLE_CENTER);
         proteinoverviewBtn.addLayoutClickListener(InteractivePSPRojectResultsPresenter.this);
 
         proteinsVisulizationLevelContainer = new ProteinVisulizationLevelContainer(Selection_Manager, proteinoverviewBtn);
@@ -106,8 +110,8 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
         BigSideBtn psmoverviewBtn = new BigSideBtn("PSM Overview", 3);
         psmoverviewBtn.updateIconResource(null);
         psmoverviewBtn.setData("psmoverview");
-        leftSideButtonsContainer.addComponent(psmoverviewBtn);
-        leftSideButtonsContainer.setComponentAlignment(psmoverviewBtn, Alignment.MIDDLE_CENTER);
+        viewControlButtonContainer.addComponent(psmoverviewBtn);
+        viewControlButtonContainer.setComponentAlignment(psmoverviewBtn, Alignment.MIDDLE_CENTER);
         psmoverviewBtn.addLayoutClickListener(InteractivePSPRojectResultsPresenter.this);
 
         peptideVisulizationLevelContainer = new PeptideVisulizationLevelContainer(Selection_Manager, psmoverviewBtn);
@@ -182,10 +186,9 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
     @Override
     public void minimizeView() {
         viewControlButton.setSelected(false);
-//        topViewControlButton.setSelected(false);
         this.addStyleName("hidepanel");
-        this.leftSideButtonsContainer.removeStyleName("visible");
-//        this.bottomSideButtonsContainer.addStyleName("hidepanel");
+        this.viewControlButtonContainer.removeStyleName("visible");
+        this.maximisedMode=false;
 
     }
 
@@ -194,10 +197,12 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
      */
     @Override
     public void maximizeView() {
+        if (maximisedMode) {
+            System.out.println("is selected??");
+            return;
+        }
         viewControlButton.setSelected(true);
-//        topViewControlButton.setSelected(true);
-        this.leftSideButtonsContainer.addStyleName("visible");
-//        this.bottomSideButtonsContainer.removeStyleName("hidepanel");
+        this.viewControlButtonContainer.addStyleName("visible");
         this.removeStyleName("hidepanel");
         Thread t = new Thread(() -> {
             try {
@@ -209,6 +214,7 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
         });
         t.start();
         datasetVisulizationLevelContainer.setMargin(true);
+        this.maximisedMode=true;
 
     }
 
@@ -243,9 +249,8 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
      */
     @Override
     public VerticalLayout getSubViewButtonsActionContainerLayout() {
-        return leftSideButtonsContainer;
+        return viewControlButtonContainer;
     }
-
 
     /**
      * Activate PeptideShaker dataset visualisation upon user selection

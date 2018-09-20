@@ -225,9 +225,12 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
      */
     public void viewLayout(String viewId) {
         visualizationMap.values().forEach((view) -> {
-            view.minimizeView();
+            if (viewId.equalsIgnoreCase(view.getViewId())) {
+                view.maximizeView();
+            } else {
+                view.minimizeView();
+            }
         });
-        visualizationMap.get(viewId).maximizeView();
         if (viewId.equalsIgnoreCase("com.uib.web.peptideshaker.presenter.WelcomePagePresenter")) {
             presenterButtonsContainer.addStyleName("welcomepagstyle");
         } else {

@@ -16,6 +16,7 @@ public class SmallSideBtn extends AbsoluteLayout {
 
     private final Image iconImage;
       private final Label iconLabel;
+      
 
     public SmallSideBtn(String iconUrl) {
         iconImage = new Image();
@@ -60,6 +61,9 @@ public class SmallSideBtn extends AbsoluteLayout {
             SmallSideBtn.this.removeStyleName("selectedpresenterbtn");
         }
     }
+
+
+   
 
     @Override
     public void setEnabled(boolean enabled) {

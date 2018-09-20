@@ -35,6 +35,7 @@ public abstract class SearchableTable extends VerticalLayout implements Property
     private boolean resetSearching = false;
     private final Map<String, String> tableSearchingMap;
     private final Table mainTable;
+    private Button searchBtn ;
 
     public SearchableTable(String title, String defaultSearchingMessage, TableColumnHeader[] tableHeaders) {
         SearchableTable.this.setSizeFull();
@@ -64,7 +65,7 @@ public abstract class SearchableTable extends VerticalLayout implements Property
         searchContainer.setHeight(25, Unit.PIXELS);
         searchContainer.addComponent(searchField);
 
-        final Button searchBtn = new Button(VaadinIcons.SEARCH);
+        searchBtn = new Button(VaadinIcons.SEARCH);
         searchBtn.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
         searchBtn.setWidth(25, Unit.PIXELS);
         searchBtn.setHeight(25, Unit.PIXELS);
@@ -135,9 +136,9 @@ public abstract class SearchableTable extends VerticalLayout implements Property
     }
 
     private void searchforKeyword(String keyWord) {
-        if (keyWord == null || keyWord.equalsIgnoreCase("")) {
-            tableSearchingResults.clear();
+           tableSearchingResults.clear();
             searchResultsLabel.setValue(0 + " of " + 0);
+        if (keyWord == null || keyWord.equalsIgnoreCase("")) {            
             mainTable.setValue(null);
             return;
 
@@ -146,7 +147,7 @@ public abstract class SearchableTable extends VerticalLayout implements Property
         int index = 1;
         tableSearchingResults.clear();
         for (String key : tableSearchingMap.keySet()) {
-            if (key.contains(keyWord)) {
+            if (key.contains(keyWord) && mainTable.containsId(tableSearchingMap.get(key))) {
                 tableSearchingResults.put(index++, key);
             }
         }
@@ -347,28 +348,27 @@ public abstract class SearchableTable extends VerticalLayout implements Property
     public abstract void itemSelected(Object itemId);
 
     public void filterTable(Set<Comparable> objectIds) {
+      
         if ((objectIds == null || objectIds.isEmpty()) && this.mainTable.getItemIds().size() == tableData.size()) {
             return;
         }
         if (objectIds != null && objectIds.size() == mainTable.getItemIds().size()) {
             return;
         }
-
-        this.tableSearchingMap.clear();
         mainTable.removeValueChangeListener(SearchableTable.this);
         mainTable.removeAllItems();
         if (objectIds != null && !objectIds.isEmpty()) {
-            for (Comparable data : objectIds) {
+            objectIds.forEach((data) -> {
                 if (tableData.containsKey(data)) {
                     this.mainTable.addItem(tableData.get(data), data);
                 } else {
                     System.out.println("at data " + data + "   " + tableData.keySet().size());
                 }
-            }
+            });
         } else if ((objectIds == null || objectIds.isEmpty()) && this.mainTable.getItemIds().size() != tableData.size()) {
-            for (Comparable data : tableData.keySet()) {
+            tableData.keySet().forEach((data) -> {
                 this.mainTable.addItem(tableData.get(data), data);
-            }
+            });
 
         }
         mainTable.setCaption("<b>" + tableMainTitle + " ( " + mainTable.getItemIds().size() + " / " + tableData.size() + " )</b>");
@@ -378,7 +378,8 @@ public abstract class SearchableTable extends VerticalLayout implements Property
         } else {
             mainTable.select(null);
             itemSelected(null);
-        }
+        }  
+       searchBtn.click();
 
     }
 

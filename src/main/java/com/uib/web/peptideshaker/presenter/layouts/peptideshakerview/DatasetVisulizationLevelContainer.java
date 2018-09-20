@@ -39,6 +39,7 @@ public class DatasetVisulizationLevelContainer extends HorizontalLayout {
         DatasetVisulizationLevelContainer.this.setSizeFull();
         DatasetVisulizationLevelContainer.this.setSpacing(true);
         DatasetVisulizationLevelContainer.this.setMargin(false);
+        datasetsOverviewBtn.setDescription("View selected dataset overview and the proteins list");
 
         defaultThemeIcon = new ThemeResource("img/ds_filters_icon.png");
         activeThemeIcon = new ThemeResource("img/ds_filters_icon_color.png");
