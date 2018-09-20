@@ -160,7 +160,7 @@ public abstract class DataViewLayout extends Panel {
             if (ds.getName() == null || ds.getType().equalsIgnoreCase("FASTA File")) {
                 continue;
             }
-            Component viewLabel;
+            Component infoLAbel;
             StatusLabel statusLabel = new StatusLabel();
             statusLabel.setStatus(ds.getStatus());
             ActionLabel downloadLabel = new ActionLabel(VaadinIcons.DOWNLOAD_ALT, "Download File") {
@@ -250,6 +250,7 @@ public abstract class DataViewLayout extends Panel {
                 nameLabel = new ActionLabel(VaadinIcons.CLUSTER, ds.getName().split("___")[0], "View PeptideShaker results ") {
                     @Override
                     public void layoutClick(LayoutEvents.LayoutClickEvent event) {
+                        DataViewLayout.this.setEnabled(false);
                         viewDataset((PeptideShakerVisualizationDataset) ds);
                     }
 
@@ -257,10 +258,10 @@ public abstract class DataViewLayout extends Panel {
                 nameLabel.addStyleName("bluecolor");
                 nameLabel.addStyleName("orangecolor");
 
-                viewLabel = new PopupWindow("   ");
-                viewLabel.setIcon(VaadinIcons.INFO_CIRCLE_O);
+                infoLAbel = new PopupWindow("   ");
+                infoLAbel.setIcon(VaadinIcons.INFO_CIRCLE_O);
                 DatasetOverviewLayout dsOverview = new DatasetOverviewLayout((PeptideShakerVisualizationDataset) ds) {
-                    private final PopupWindow tDsOverview = (PopupWindow) viewLabel;
+                    private final PopupWindow tDsOverview = (PopupWindow) infoLAbel;
 
                     @Override
                     public void close() {
@@ -269,8 +270,8 @@ public abstract class DataViewLayout extends Panel {
 
                 };
                 ((PeptideShakerVisualizationDataset) ds).setEnzyme(dsOverview.getEnzyme());
-                ((PopupWindow) viewLabel).setContent(dsOverview);
-                ((PopupWindow) viewLabel).setDescription("View searching settings ");
+                ((PopupWindow) infoLAbel).setContent(dsOverview);
+                ((PopupWindow) infoLAbel).setDescription("View searching settings ");
 
                 if (statusLabel.getStatus() == 2) {
                     statusLabel.setStatus("Some files are missings or corrupted please re-run SearchGUI-PeptideShaker-WorkFlow");
@@ -283,8 +284,8 @@ public abstract class DataViewLayout extends Panel {
 //                    }
 //
 //                };
-                viewLabel.addStyleName("centeredicon");
-                rowLayout = initializeRowData(new Component[]{new Label(i + ""), nameLabel, new Label(ds.getType()), viewLabel, getToGalaxyLabel, nelsLabel, downloadLabel, deleteLabel, statusLabel}, false);
+                infoLAbel.addStyleName("centeredicon");
+                rowLayout = initializeRowData(new Component[]{new Label(i + ""), nameLabel, new Label(ds.getType()), infoLAbel, getToGalaxyLabel, nelsLabel, downloadLabel, deleteLabel, statusLabel}, false);
                 topDataTable.addComponent(rowLayout);
             } else {
                 nameLabel = new Label(ds.getName());

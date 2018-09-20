@@ -30,11 +30,7 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
     /**
      * The small side button (normal size screen).
      */
-    private final SmallSideBtn rightViewControlButton;
-    /**
-     * The small top button (small screen support).
-     */
-    private final SmallSideBtn topViewControlButton;
+    private final SmallSideBtn controlButton;
     /**
      * The main left side buttons container in big screen mode.
      */
@@ -59,10 +55,9 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
         FileSystemPresenter.this.setSizeFull();
         FileSystemPresenter.this.setStyleName("activelayout");
         FileSystemPresenter.this.addStyleName("hidelowerpanel");
-        this.rightViewControlButton = new SmallSideBtn(VaadinIcons.GLOBE);
-        this.rightViewControlButton.setData(FileSystemPresenter.this.getViewId());
-        this.topViewControlButton = new SmallSideBtn(VaadinIcons.GLOBE);
-        this.topViewControlButton.setData(FileSystemPresenter.this.getViewId());
+        this.controlButton = new SmallSideBtn(VaadinIcons.GLOBE);
+        this.controlButton.setData(FileSystemPresenter.this.getViewId());
+        this.controlButton.setDescription("View available datastes and files");
         this.btnsLayoutMap = new LinkedHashMap<>();
         this.initLayout();
         FileSystemPresenter.this.minimizeView();
@@ -156,12 +151,10 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
      */
     public void updateSystemData(Map<String, GalaxyFileObject> historyFilesMap, boolean jobInProgress) {
         if (jobInProgress) {
-            rightViewControlButton.updateIconURL("img/globeearthanimation.gif");
-            topViewControlButton.updateIconURL("img/globeearthanimation.gif");
+            controlButton.updateIconURL("img/globeearthanimation.gif");
             viewDataBtn.updateIconResource(new ThemeResource("img/globeearthanimation.gif"));
         } else {
-            rightViewControlButton.updateIconURL(VaadinIcons.GLOBE);
-            topViewControlButton.updateIconURL(VaadinIcons.GLOBE);
+            controlButton.updateIconURL(VaadinIcons.GLOBE);
             viewDataBtn.updateIcon(VaadinIcons.GLOBE.getHtml());
         }
         if (historyFilesMap != null) {
@@ -187,7 +180,7 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
      */
     @Override
     public SmallSideBtn getPresenterControlButton() {
-        return rightViewControlButton;
+        return controlButton;
     }
 
     /**
@@ -205,8 +198,7 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
      */
     @Override
     public void minimizeView() {
-        rightViewControlButton.setSelected(false);
-        topViewControlButton.setSelected(false);
+        controlButton.setSelected(false);
         this.addStyleName("hidepanel");
         this.leftSideButtonsContainer.removeStyleName("visible");
 
@@ -217,8 +209,8 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
      */
     @Override
     public void maximizeView() {
-        rightViewControlButton.setSelected(true);
-        topViewControlButton.setSelected(true);
+        controlButton.setSelected(true);
+        dataLayout.setEnabled(true);
         this.leftSideButtonsContainer.addStyleName("visible");
         this.removeStyleName("hidepanel");
 
@@ -257,28 +249,6 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
     public VerticalLayout getSubViewButtonsActionContainerLayout() {
         return leftSideButtonsContainer;
     }
-
-    /**
-     * Get the bottom side container for bottom buttons (to be used in case of
-     * small screen mode with multiple sub view in same presenter)
-     *
-     * @return bottom layout buttons container
-     */
-    @Override
-    public HorizontalLayout getBottomView() {
-        return new HorizontalLayout();
-    }
-
-    /**
-     * Get the small top side button component (represent view control button in
-     * small/mobile screen mode)
-     *
-     * @return top view control button
-     */
-//    @Override
-//    public SmallSideBtn getTopView() {
-//        return topViewControlButton;
-//    }
 
     /**
      * Abstract method to allow customised delete action for files from Galaxy

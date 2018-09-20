@@ -92,11 +92,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
     /**
      * The side home button .
      */
-    private final SmallSideBtn homeBtn;
-    /**
-     * The top home button .
-     */
-    private final SmallSideBtn topHomeBtn;
+    private final SmallSideBtn viewControlButton;
     /**
      * Busy connecting window
      */
@@ -312,12 +308,13 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         });
 
 //
-        homeBtn = new SmallSideBtn("img/home-o.svg");
-        homeBtn.setData(WelcomePagePresenter.this.getViewId());
-
-        topHomeBtn = new SmallSideBtn("img/home-o.svg");
-        topHomeBtn.setData(WelcomePagePresenter.this.getViewId());
+        viewControlButton = new SmallSideBtn("img/home-o.svg");
+        viewControlButton.setData(WelcomePagePresenter.this.getViewId());
         busyConnectinWindow.addStyleName("hidewindow");
+        
+        
+        
+        this.viewControlButton.setDescription("View home page");
 
     }
 
@@ -373,21 +370,19 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
 
     @Override
     public void minimizeView() {
-        homeBtn.setSelected(false);
-        topHomeBtn.setSelected(false);
+        viewControlButton.setSelected(false);
         this.addStyleName("hidepanel");
     }
 
     @Override
     public void maximizeView() {
-        homeBtn.setSelected(true);
-        topHomeBtn.setSelected(true);
+        viewControlButton.setSelected(true);
         this.removeStyleName("hidepanel");
     }
 
     @Override
     public SmallSideBtn getPresenterControlButton() {
-        return homeBtn;
+        return viewControlButton;
     }
 
     @Override
@@ -400,10 +395,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         return new VerticalLayout();
     }
 
-    @Override
-    public HorizontalLayout getBottomView() {
-        return new HorizontalLayout();
-    }
+  
 
     /**
      * Start the Online PeptideShaker - Galaxy server connection.

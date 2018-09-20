@@ -15,9 +15,6 @@ public interface ViewableFrame {
 
     VerticalLayout getMainView();
 
-    HorizontalLayout getBottomView();
-//      SmallSideBtn getTopView(); 
-
     SmallSideBtn getPresenterControlButton();
 
     String getViewId();

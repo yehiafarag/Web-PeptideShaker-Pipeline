@@ -115,10 +115,17 @@ public class WebPeptideShakerApp extends VerticalLayout {
             }
 
             @Override
-            public void viewDataset(PeptideShakerVisualizationDataset ds) {
+            public void viewDataset(PeptideShakerVisualizationDataset peptideShakerVisualizationDataset) {
+                if(peptideShakerVisualizationDataset!=null){
+                if ((this.getData() + "").equalsIgnoreCase(peptideShakerVisualizationDataset.getProjectName())) {
+                     presentationManager.viewLayout(interactivePSPRojectResultsPresenter.getViewId());
+                    return;
+                }
+                this.setData(peptideShakerVisualizationDataset.getProjectName());
+                }
                 interactivePSPRojectResultsPresenter = new InteractivePSPRojectResultsPresenter();
                 presentationManager.registerView(interactivePSPRojectResultsPresenter);
-                interactivePSPRojectResultsPresenter.setSelectedDataset(ds);
+                interactivePSPRojectResultsPresenter.setSelectedDataset(peptideShakerVisualizationDataset);
                 presentationManager.viewLayout(interactivePSPRojectResultsPresenter.getViewId());
             }
 

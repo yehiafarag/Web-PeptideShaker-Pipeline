@@ -26,11 +26,7 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
     /**
      * The small side button (normal size screen).
      */
-    private final SmallSideBtn rightViewControlButton;
-    /**
-     * The small top button (small screen support).
-     */
-    private final SmallSideBtn topViewControlButton;
+    private final SmallSideBtn viewControlButton;
     /**
      * The main left side buttons container in big screen mode.
      */
@@ -38,7 +34,7 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
     /**
      * The main bottom side buttons container in small/mobile screen mode.
      */
-    private HorizontalLayout bottomSideButtonsContainer;
+//    private HorizontalLayout bottomSideButtonsContainer;
     /**
      * The first presenter layout (Dataset-protein level visualisation) .
      */
@@ -66,15 +62,13 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
     public InteractivePSPRojectResultsPresenter() {
         InteractivePSPRojectResultsPresenter.this.setSizeFull();
         InteractivePSPRojectResultsPresenter.this.setStyleName("activelayout");
-        this.rightViewControlButton = new SmallSideBtn("img/cluster.svg");
-        this.rightViewControlButton.setData(InteractivePSPRojectResultsPresenter.this.getViewId());
-        this.topViewControlButton = new SmallSideBtn("img/cluster.svg");
-        this.topViewControlButton.setData(InteractivePSPRojectResultsPresenter.this.getViewId());
+        this.viewControlButton = new SmallSideBtn("img/cluster.svg");
+        this.viewControlButton.setData(InteractivePSPRojectResultsPresenter.this.getViewId());
         this.Selection_Manager = new SelectionManager();
         this.initLayout();
         InteractivePSPRojectResultsPresenter.this.minimizeView();
-        this.topViewControlButton.setEnabled(false);
-        this.rightViewControlButton.setEnabled(false);
+        this.viewControlButton.setEnabled(false);
+        this.viewControlButton.setDescription("View selected dataset");
 
     }
 
@@ -134,20 +128,20 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
         toolViewFrameContent.addComponent(datasetVisulizationLevelContainer);
         toolViewFrameContent.addComponent(proteinsVisulizationLevelContainer);
         toolViewFrameContent.addComponent(peptideVisulizationLevelContainer);
-
-        bottomSideButtonsContainer = new HorizontalLayout();
-        bottomSideButtonsContainer.setHeight(100, Unit.PERCENTAGE);
-        bottomSideButtonsContainer.setWidthUndefined();
-        bottomSideButtonsContainer.setSpacing(true);
-        bottomSideButtonsContainer.setStyleName("bottomsidebtncontainer");
-
-        bottomSideButtonsContainer.addComponent(datasetsOverviewBtn.getMobileModeBtn());
-        bottomSideButtonsContainer.setComponentAlignment(datasetsOverviewBtn.getMobileModeBtn(), Alignment.TOP_CENTER);
+//
+//        bottomSideButtonsContainer = new HorizontalLayout();
+//        bottomSideButtonsContainer.setHeight(100, Unit.PERCENTAGE);
+//        bottomSideButtonsContainer.setWidthUndefined();
+//        bottomSideButtonsContainer.setSpacing(true);
+//        bottomSideButtonsContainer.setStyleName("bottomsidebtncontainer");
+//
+//        bottomSideButtonsContainer.addComponent(datasetsOverviewBtn.getMobileModeBtn());
+//        bottomSideButtonsContainer.setComponentAlignment(datasetsOverviewBtn.getMobileModeBtn(), Alignment.TOP_CENTER);
         datasetsOverviewBtn.setSelected(true);
-        bottomSideButtonsContainer.addComponent(proteinoverviewBtn.getMobileModeBtn());
-        bottomSideButtonsContainer.setComponentAlignment(proteinoverviewBtn.getMobileModeBtn(), Alignment.TOP_CENTER);
-        bottomSideButtonsContainer.addComponent(psmoverviewBtn.getMobileModeBtn());
-        bottomSideButtonsContainer.setComponentAlignment(psmoverviewBtn.getMobileModeBtn(), Alignment.TOP_CENTER);
+//        bottomSideButtonsContainer.addComponent(proteinoverviewBtn.getMobileModeBtn());
+//        bottomSideButtonsContainer.setComponentAlignment(proteinoverviewBtn.getMobileModeBtn(), Alignment.TOP_CENTER);
+//        bottomSideButtonsContainer.addComponent(psmoverviewBtn.getMobileModeBtn());
+//        bottomSideButtonsContainer.setComponentAlignment(psmoverviewBtn.getMobileModeBtn(), Alignment.TOP_CENTER);
 
     }
 
@@ -169,7 +163,7 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
      */
     @Override
     public SmallSideBtn getPresenterControlButton() {
-        return rightViewControlButton;
+        return viewControlButton;
     }
 
     /**
@@ -187,11 +181,11 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
      */
     @Override
     public void minimizeView() {
-        rightViewControlButton.setSelected(false);
-        topViewControlButton.setSelected(false);
+        viewControlButton.setSelected(false);
+//        topViewControlButton.setSelected(false);
         this.addStyleName("hidepanel");
         this.leftSideButtonsContainer.removeStyleName("visible");
-        this.bottomSideButtonsContainer.addStyleName("hidepanel");
+//        this.bottomSideButtonsContainer.addStyleName("hidepanel");
 
     }
 
@@ -200,10 +194,10 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
      */
     @Override
     public void maximizeView() {
-        rightViewControlButton.setSelected(true);
-        topViewControlButton.setSelected(true);
+        viewControlButton.setSelected(true);
+//        topViewControlButton.setSelected(true);
         this.leftSideButtonsContainer.addStyleName("visible");
-        this.bottomSideButtonsContainer.removeStyleName("hidepanel");
+//        this.bottomSideButtonsContainer.removeStyleName("hidepanel");
         this.removeStyleName("hidepanel");
         Thread t = new Thread(() -> {
             try {
@@ -252,27 +246,7 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
         return leftSideButtonsContainer;
     }
 
-    /**
-     * Get the bottom side container for bottom buttons (to be used in case of
-     * small screen mode with multiple sub view in same presenter)
-     *
-     * @return bottom layout buttons container
-     */
-    @Override
-    public HorizontalLayout getBottomView() {
-        return bottomSideButtonsContainer;
-    }
 
-    /**
-     * Get the small top side button component (represent view control button in
-     * small/mobile screen mode)
-     *
-     * @return top view control button
-     */
-//    @Override
-//    public SmallSideBtn getTopView() {
-//        return topViewControlButton;
-//    }
     /**
      * Activate PeptideShaker dataset visualisation upon user selection
      *
@@ -280,8 +254,7 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
      * dataset
      */
     public void setSelectedDataset(PeptideShakerVisualizationDataset peptideShakerVisualizationDataset) {
-        this.topViewControlButton.setEnabled(peptideShakerVisualizationDataset != null);
-        this.rightViewControlButton.setEnabled(peptideShakerVisualizationDataset != null);
+        this.viewControlButton.setEnabled(peptideShakerVisualizationDataset != null);
         Selection_Manager.reset();
         Selection_Manager.selectBtn(0);
         this.datasetVisulizationLevelContainer.selectDataset(peptideShakerVisualizationDataset);

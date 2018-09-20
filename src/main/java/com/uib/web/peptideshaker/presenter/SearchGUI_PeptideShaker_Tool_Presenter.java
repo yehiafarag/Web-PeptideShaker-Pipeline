@@ -30,11 +30,7 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
     /**
      * The tools layout side button.
      */
-    private final SmallSideBtn SearchGUI_PeptideShaker_Tool_side_Btn;
-    /**
-     * The tools layout top button.
-     */
-    private final SmallSideBtn SearchGUI_PeptideShaker_Tool_top_Btn;
+    private final SmallSideBtn viewControlButton;
     /**
      * The work-flow input form layout container.
      */
@@ -43,10 +39,6 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
      * The work-flow side button container (left side button container).
      */
     private VerticalLayout btnContainer;
-     /**
-     * The work-flow bottom button container (bottom buttons container for small screen support).
-     */
-    private HorizontalLayout mobilebtnContainer;
 
     /**
      * Initialise the web tool main attributes
@@ -57,13 +49,12 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
         SearchGUI_PeptideShaker_Tool_Presenter.this.setStyleName("activelayout");
         SearchGUI_PeptideShaker_Tool_Presenter.this.addStyleName("integratedframe");
 
-        this.SearchGUI_PeptideShaker_Tool_side_Btn = new SmallSideBtn("img/searchgui-medium-shadow-2.png");//spectra2.png
-        this.SearchGUI_PeptideShaker_Tool_side_Btn.setData(SearchGUI_PeptideShaker_Tool_Presenter.this.getViewId());
-        this.SearchGUI_PeptideShaker_Tool_top_Btn = new SmallSideBtn("img/searchgui-medium-shadow-2.png");//spectra2.png
-        this.SearchGUI_PeptideShaker_Tool_top_Btn.setData(SearchGUI_PeptideShaker_Tool_Presenter.this.getViewId());
+        this.viewControlButton = new SmallSideBtn("img/searchgui-medium-shadow-2.png");//spectra2.png
+        this.viewControlButton.setData(SearchGUI_PeptideShaker_Tool_Presenter.this.getViewId());
 
         this.initLayout();
         SearchGUI_PeptideShaker_Tool_Presenter.this.minimizeView();
+        this.viewControlButton.setDescription("View SearchGUI & PeptideShaker searching form");
 
     }
 
@@ -128,15 +119,6 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
 
         toolViewFrameContent.addComponent(peptideshakerToolInputForm);
 
-        mobilebtnContainer = new HorizontalLayout();
-        mobilebtnContainer.setHeightUndefined();
-        mobilebtnContainer.setWidthUndefined();
-        mobilebtnContainer.setSpacing(true);
-        mobilebtnContainer.setStyleName("bottomsidebtncontainer");
-
-//        mobilebtnContainer.addComponent(workFlowBtn.getMobileModeBtn());
-//        mobilebtnContainer.setComponentAlignment(workFlowBtn.getMobileModeBtn(), Alignment.TOP_CENTER);
-
     }
 
     /**
@@ -154,7 +136,7 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
      */
     @Override
     public SmallSideBtn getPresenterControlButton() {
-        return SearchGUI_PeptideShaker_Tool_side_Btn;
+        return viewControlButton;
     }
 
     /**
@@ -171,11 +153,9 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
      */
     @Override
     public void minimizeView() {
-        SearchGUI_PeptideShaker_Tool_side_Btn.setSelected(false);
-        SearchGUI_PeptideShaker_Tool_top_Btn.setSelected(false);
+        viewControlButton.setSelected(false);
         this.addStyleName("hidepanel");
         this.btnContainer.removeStyleName("visible");
-        this.mobilebtnContainer.addStyleName("hidepanel");
 
     }
 
@@ -184,28 +164,14 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
      */
     @Override
     public void maximizeView() {
-        SearchGUI_PeptideShaker_Tool_side_Btn.setSelected(true);
-        SearchGUI_PeptideShaker_Tool_top_Btn.setSelected(true);
+        viewControlButton.setSelected(true);
         this.btnContainer.addStyleName("visible");
-        this.mobilebtnContainer.removeStyleName("hidepanel");
         this.removeStyleName("hidepanel");
     }
 
     @Override
     public void layoutClick(LayoutEvents.LayoutClickEvent event) {
-//        BigSideBtn comp = (BigSideBtn) event.getComponent();
-//        for (BigSideBtn bbt : btnsLayoutMap.keySet()) {
-//            if (comp.getData().toString().equalsIgnoreCase(bbt.getData().toString())) {
-//                bbt.setSelected(true);
-//                btnsLayoutMap.get(bbt).removeStyleName("hidepanel");
-//            } else {
-//                bbt.setSelected(false);
-//                btnsLayoutMap.get(bbt).addStyleName("hidepanel");
-//            }
-//        }
-//
-//        if (comp.getData().toString().equalsIgnoreCase("nels")) {
-//        }
+
     }
 
     /**
@@ -217,23 +183,7 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
         return btnContainer;
     }
 
-    /**
-     *
-     * @return
-     */
-    @Override
-    public HorizontalLayout getBottomView() {
-        return mobilebtnContainer;
-    }
 
-    /**
-     *
-     * @return
-     */
-//    @Override
-//    public SmallSideBtn getTopView() {
-//        return SearchGUI_PeptideShaker_Tool_top_Btn;
-//    }
 
     /**
      * Run Online Peptide-Shaker work-flow
@@ -248,9 +198,9 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
     /**
      * Save search settings file into galaxy
      *
-     * 
+     *
      * @param searchParameters searchParameters .par file
-     * @param isNew  is new search parameter file 
+     * @param isNew is new search parameter file
      * @return updated search parameters file list
      */
     public abstract Map<String, GalaxyTransferableFile> saveSearchGUIParameters(SearchParameters searchParameters, boolean isNew);
