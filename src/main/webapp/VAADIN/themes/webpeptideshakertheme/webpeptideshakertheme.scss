@@ -861,7 +861,61 @@
     .v-slot-inframetable {
         margin-top:10px !important;
     }
+    .psmtable{
+        margin-top:-10px !important;
+        background-color:rgba(255,255,255,0) !important;
+        border:none !important;
+    }
+    .psmtable.v-table [class*="-row"].v-selected {
+        background-color: white !important;
+        background-image: -webkit-linear-gradient(top, #ffffff 2%, #ffffff 98%)!important;
+        background-image: linear-gradient(to bottom,#ffffff 2%, #ffffff 98%) !important;
+        background-origin: border-box !important;
+        color: #1572d2 !important;
+        text-shadow: none !important;
+        outline:1px solid #3d84dc;
+        outline-offset:-1px !important;
 
+    }
+    .psmtable.v-table [class*="-row"].v-selected .v-table-cell-content .sequencefragmentationchart img {
+        border:none !important;
+    }
+    .psmtable.v-table [class*="-row"].v-selected .v-table-cell-content div{    
+        border-left-color: lightgray !important;    
+        font-weight:bold !important;
+    }
+
+
+    .buttoncontainerstyle{
+        padding:5px;
+        margin-top:5px;
+        border:1px solid lightgray;
+        background-color:whitesmoke;
+        border-radius:5px;
+        min-height:35px;
+        z-index:2 !important;
+	position:relative !important;
+    }
+
+    .buttoncontainerstyle .v-button-tiny {
+        font-size:14px !important;
+        padding:0px !important;
+        margin-top:0px!important;
+    }
+    .buttoncontainerstyle .v-button-tiny.selectedBtn{
+        border-color:transparent;
+        border:1px solid #3d84dc !important; 
+
+    }
+    .buttoncontainerstyle .v-button:focus:after {
+
+    }
+
+    .selectedBtn .Vaadin-Icons{
+        color:#3d84dc !important ;
+
+
+    }
 
     .v-slot-largetitle {
         min-height: 30px;
@@ -2871,7 +2925,7 @@
         font-size: 60px;
         line-height: 77px;
         text-align: center !important;
-/*        color: #7d7d7d;*/
+        /*        color: #7d7d7d;*/
         border-radius: 5px;
         background-color: white;
         width: 94% !important;

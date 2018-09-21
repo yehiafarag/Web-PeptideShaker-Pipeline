@@ -14102,6 +14102,56 @@ div.v-layout.v-horizontal.v-widget {
 	margin-top: 10px !important;
 }
 
+.webpeptideshakertheme .psmtable {
+	margin-top: -10px !important;
+	background-color: rgba(255, 255, 255, 0) !important;
+	border: none !important;
+}
+
+.webpeptideshakertheme .psmtable.v-table [class*="-row"].v-selected {
+	background-color: white !important;
+	background-image: -webkit-linear-gradient(top, #ffffff 2%, #ffffff 98%) !important;
+	background-image: linear, to bottom, #ffffff 2%, #ffffff 98% !important;
+	background-origin: border-box !important;
+	color: #1572d2 !important;
+	text-shadow: none !important;
+	outline: 1px solid #3d84dc;
+	outline-offset: -1px !important;
+}
+
+.webpeptideshakertheme .psmtable.v-table [class*="-row"].v-selected .v-table-cell-content .sequencefragmentationchart img {
+	border: none !important;
+}
+
+.webpeptideshakertheme .psmtable.v-table [class*="-row"].v-selected .v-table-cell-content div {
+	border-left-color: lightgray !important;
+	font-weight: bold !important;
+}
+
+.webpeptideshakertheme .buttoncontainerstyle {
+	padding: 5px;
+	margin-top: 5px;
+	border: 1px solid lightgray;
+	background-color: whitesmoke;
+	border-radius: 5px;
+	min-height: 35px;
+}
+
+.webpeptideshakertheme .buttoncontainerstyle .v-button-tiny {
+	font-size: 14px !important;
+	padding: 0px !important;
+	margin-top: 0px !important;
+}
+
+.webpeptideshakertheme .buttoncontainerstyle .v-button-tiny.selectedBtn {
+	border-color: transparent;
+	border: 1px solid #3d84dc !important;
+}
+
+.webpeptideshakertheme .selectedBtn .Vaadin-Icons {
+	color: #3d84dc !important;
+}
+
 .webpeptideshakertheme .v-slot-largetitle {
 	min-height: 30px;
 }

@@ -21,12 +21,10 @@ import com.compomics.util.experiment.identification.spectrum_annotation.spectrum
 import com.compomics.util.experiment.identification.spectrum_assumptions.PeptideAssumption;
 import com.compomics.util.experiment.massspectrometry.MSnSpectrum;
 import com.compomics.util.experiment.massspectrometry.Precursor;
-import com.compomics.util.gui.spectrum.SequenceFragmentationPanel;
 import com.compomics.util.preferences.IdentificationParameters;
 import com.ejt.vaadin.sizereporter.ComponentResizeEvent;
 import com.ejt.vaadin.sizereporter.SizeReporter;
 import com.itextpdf.text.pdf.codec.Base64;
-import com.uib.web.peptideshaker.presenter.pscomponents.eu.isas.peptideshaker.parameters.PSPtmScores;
 import com.vaadin.data.Property;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Resource;
@@ -39,7 +37,6 @@ import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.themes.ValoTheme;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -48,6 +45,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import javax.swing.JPanel;
 import org.apache.commons.math.MathException;
 import org.jfree.chart.encoders.ImageEncoder;
@@ -259,13 +258,22 @@ public class SpectrumPlot extends AbsoluteLayout {
             } else {
                 selectedItem.setText("Show Peak Details");
             }
-            plot.setSource(new ExternalResource(drawImage(spectrumPanel)));
+            updateImage(spectrumPanel);
         };
         menue.addItem("Show Peak Details", null, showPeakDetailsCommand);
 
         resetAnnoItem.setVisible(false);
         disableSizeReporter = false;
 
+    }
+
+    private void updateImage(JPanel jpanel) {
+//        ExecutorService executorService = Executors.newSingleThreadExecutor();
+//        executorService.submit(() -> {
+        System.out.println("call table update");
+        plot.setSource(new ExternalResource(drawImage(jpanel)));
+//        });
+//        executorService.shutdown();
     }
 
     private void resetAnnotations() {
@@ -302,10 +310,12 @@ public class SpectrumPlot extends AbsoluteLayout {
         SelectioncanvasComponent sc = new SelectioncanvasComponent() {
             @Override
             public void dragSelectionIsPerformed(double startX, double startY, double endX, double endY) {
+                if ((endX - startX) < 5) {
+                    return;
+                }
                 if (spectrumPanel != null) {
                     spectrumPanel.zoom((int) startX, (int) startY, (int) endX, (int) endY);
-                    plot.setSource(new ExternalResource(drawImage(spectrumPanel)));
-
+                    updateImage(spectrumPanel);
                 }
             }
 
@@ -313,8 +323,7 @@ public class SpectrumPlot extends AbsoluteLayout {
             public void rightSelectionIsPerformed(double startX, double startY) {
                 if (spectrumPanel != null) {
                     spectrumPanel.reset();
-                    plot.setSource(new ExternalResource(drawImage(spectrumPanel)));
-
+                    updateImage(spectrumPanel);
                 }
             }
 
@@ -340,6 +349,7 @@ public class SpectrumPlot extends AbsoluteLayout {
         if (w <= 0 || h <= 0) {
             return;
         }
+
         if (selectionCanvas != null) {
             SpectrumPlot.this.removeComponent(selectionCanvas);
         }
@@ -350,8 +360,7 @@ public class SpectrumPlot extends AbsoluteLayout {
             spectrumPanel.setSize(w, h);
             plot.setWidth(w, Unit.PIXELS);
             plot.setHeight(h, Unit.PIXELS);
-            plot.setSource(new ExternalResource(drawImage(spectrumPanel)));
-
+            updateImage(spectrumPanel);
         }
         double tH = ((double) h * 0.8 * 0.5);
         levelSlider.setHeight((int) tH, Unit.PIXELS);
@@ -455,93 +464,16 @@ public class SpectrumPlot extends AbsoluteLayout {
                     forwardIon, rewindIon, annotationPreferences.getDeNovoCharge(),
                     annotationPreferences.showForwardIonDeNovoTags(),
                     annotationPreferences.showRewindIonDeNovoTags(), false);
-//                    SpectrumPanel.setKnownMassDeltas(getCurrentMassDeltas(identificationParameters));
             spectrumPanel.setAnnotateHighestPeak(annotationPreferences.getTiesResolution() == SpectrumAnnotator.TiesResolution.mostIntense); //@TODO: implement ties resolution in the spectrum panel
             spectrumPanel.setAnnotations(SpectrumAnnotator.getSpectrumAnnotation(annotations), annotationPreferences.getTiesResolution() == SpectrumAnnotator.TiesResolution.mostIntense); //@TODO: the selection of the peak to annotate should be done outside the spectrum panel
             spectrumPanel.updateUI();
-            plot.setSource(new ExternalResource(drawImage(spectrumPanel)));
+            updateImage(spectrumPanel);
 
         } catch (InterruptedException | MathException e) {
             e.printStackTrace();
-//            catchException(e);
         }
     }
 
-    /**
-     * Updates the annotations in the selected tab.
-     */
-//    public void selectDefaultAnnotations() {
-//
-////        AnnotationSettings annotationPreferences = getIdentificationParameters().getAnnotationPreferences();
-////        annotationPreferences.setIntensityLimit(levelSlider.getValue() / 100.0);
-////
-////        levelSlider.setCaption("<center>" + ((int) ((double) levelSlider.getValue())) + " %<center>");
-////        levelSlider.setDescription("Level : " + ((int) ((double) levelSlider.getValue())) + " %");
-////
-////        double accuracy = (annotationAccuracySlider.getValue() / 100.0) * fragmentIonAccuracy;
-////        annotationPreferences.setFragmentIonAccuracy(accuracy);
-////        defaultAnnotationInUse = true;
-////        annotationAccuracySlider.setCaption("<center>" + String.format("%.2f", accuracy) + " Da</center>");
-////        annotationAccuracySlider.setDescription("Annotation accuracy : " + accuracy + " Da");
-////        spectrumPanel.setDeltaMassWindow(accuracy);
-////        specificAnnotationPreferences = new SpecificAnnotationSettings(currentSpectrum.getSpectrumKey(), peptideAssumption);
-////        try {
-////            identificationParameters.setAnnotationSettings(annotationPreferences);
-////            specificAnnotationPreferences = annotationPreferences.getSpecificAnnotationPreferences(currentSpectrum.getSpectrumKey(),
-////                    specificAnnotationPreferences.getSpectrumIdentificationAssumption(), identificationParameters.getSequenceMatchingPreferences(),
-////                    identificationParameters.getPtmScoringPreferences().getSequenceMatchingPreferences());
-//
-////                            selectDefaultAnnotationMenuItem();
-//// The following preferences are kept for all spectra
-////            annotationPreferences.setTiesResolution(SpectrumAnnotator.TiesResolution.mostAccurateMz); //@TODO: replace by a drop down menu
-////            annotationPreferences.setShowAllPeaks(false);//@TODO:implement control btns
-////            annotationPreferences.setShowForwardIonDeNovoTags(false);
-////            annotationPreferences.setShowRewindIonDeNovoTags(false);
-////            annotationPreferences.setDeNovoCharge(1);
-////            annotationPreferences.setAutomaticAnnotation(true);
-//        } catch (IOException | ClassNotFoundException | InterruptedException | SQLException e) {
-//            e.printStackTrace();
-//        }
-//
-//        ArrayList<IonMatch> annotations = spectrumAnnotator.getSpectrumAnnotation(annotationPreferences, specificAnnotationPreferences, currentSpectrum, currentPeptide);
-//        spectrumPanel.setAnnotations(SpectrumAnnotator.getSpectrumAnnotation(annotations));
-//        spectrumPanel.showAnnotatedPeaksOnly(true);
-//        spectrumPanel.setYAxisZoomExcludesBackgroundPeaks(true);//
-//        Integer forwardIon = identificationParameters.getSearchParameters().getForwardIons().get(0);
-//        Integer rewindIon = identificationParameters.getSearchParameters().getRewindIons().get(0);//
-//        spectrumPanel.addAutomaticDeNovoSequencing(currentPeptide, annotations,
-//                forwardIon, rewindIon, annotationPreferences.getDeNovoCharge(),
-//                annotationPreferences.showForwardIonDeNovoTags(),
-//                annotationPreferences.showRewindIonDeNovoTags(), false);
-////                    SpectrumPanel.setKnownMassDeltas(getCurrentMassDeltas(identificationParameters));
-//        spectrumPanel.setAnnotateHighestPeak(annotationPreferences.getTiesResolution() == SpectrumAnnotator.TiesResolution.mostIntense); //@TODO: implement ties resolution in the spectrum panel
-//        spectrumPanel.setAnnotations(SpectrumAnnotator.getSpectrumAnnotation(annotations), annotationPreferences.getTiesResolution() == SpectrumAnnotator.TiesResolution.mostIntense); //@TODO: the selection of the peak to annotate should be done outside the spectrum panel
-//        spectrumPanel.updateUI();
-//        plot.setSource(new ExternalResource(drawImage(spectrumPanel)));
-//    }
-//
-//        IdentificationParameters identificationParameters = getIdentificationParameters();
-//        AnnotationSettings annotationPreferences = identificationParameters.getAnnotationPreferences();
-//        SearchParameters searchParameters = identificationParameters.getSearchParameters();
-//
-//        int selectedTabIndex = allTabsJTabbedPane.getSelectedIndex();
-//        IdentificationParameters identificationParameters = getIdentificationParameters();
-//        AnnotationSettings annotationPreferences = identificationParameters.getAnnotationPreferences();
-//        SearchParameters searchParameters = identificationParameters.getSearchParameters();
-//
-//        if (selectedTabIndex == OVER_VIEW_TAB_INDEX) {
-//            overviewPanel.setIntensitySliderValue((int) (annotationPreferences.getAnnotationIntensityLimit() * 100));
-//            overviewPanel.setAccuracySliderValue((int) ((annotationPreferences.getFragmentIonAccuracy() / searchParameters.getFragmentIonAccuracy()) * 100));
-//            overviewPanel.updateSpectrum();
-//        } else if (selectedTabIndex == SPECTRUM_ID_TAB_INDEX) {
-//            spectrumIdentificationPanel.setIntensitySliderValue((int) (annotationPreferences.getAnnotationIntensityLimit() * 100));
-//            spectrumIdentificationPanel.setAccuracySliderValue((int) ((annotationPreferences.getFragmentIonAccuracy() / searchParameters.getFragmentIonAccuracy()) * 100));
-//            spectrumIdentificationPanel.updateSpectrum();
-//        } else if (selectedTabIndex == MODIFICATIONS_TAB_INDEX) {
-//            ptmPanel.setIntensitySliderValue((int) (annotationPreferences.getAnnotationIntensityLimit() * 100));
-//            ptmPanel.setAccuracySliderValue((int) ((annotationPreferences.getFragmentIonAccuracy() / searchParameters.getFragmentIonAccuracy()) * 100));
-//            ptmPanel.updateGraphics(null);
-//        }
     private void initIonsItem(MenuItem parent, MenuBar.Command mainCommand) {
         ions.keySet().stream().map((str) -> parent.addItem(str, null, mainCommand)).forEachOrdered((ion) -> {
             ion.setCheckable(true);
@@ -627,8 +559,8 @@ public class SpectrumPlot extends AbsoluteLayout {
                     spectrumPanel.setMaxPadding(10);
                     plotThumbImage.setSource(new ExternalResource(drawImage(spectrumPanel)));
                     spectrumPanel.setMiniature(false);
-                      spectrumPanel.setPeakWidth(1f);
-                      spectrumPanel.setBackgroundPeakWidth(1f);
+                    spectrumPanel.setPeakWidth(1f);
+                    spectrumPanel.setBackgroundPeakWidth(1f);
                     spectrumPanel.setMaxPadding(50);
                 }
 
@@ -735,7 +667,7 @@ public class SpectrumPlot extends AbsoluteLayout {
         Collections.sort(modificationList);
 
         // iterate the modifications list and add the non-terminal modifications
-        for (String modification : modificationList) {
+        modificationList.forEach((modification) -> {
             PTM ptm = PTMFactory.getInstance().getPTM(modification);
 
             if (ptm != null) {
@@ -745,18 +677,16 @@ public class SpectrumPlot extends AbsoluteLayout {
 
                 if (ptm.getType() == PTM.MODAA) {
                     AminoAcidPattern ptmPattern = ptm.getPattern();
-                    for (Character aa : ptmPattern.getAminoAcidsAtTarget()) {
-                        if (!knownMassDeltas.containsValue(aa + "<" + shortName + ">")) {
-                            AminoAcid aminoAcid = AminoAcid.getAminoAcid(aa);
-                            knownMassDeltas.put(mass + aminoAcid.getMonoisotopicMass(),
-                                    aa + "<" + shortName + ">");
-                        }
-                    }
+                    ptmPattern.getAminoAcidsAtTarget().stream().filter((aa) -> (!knownMassDeltas.containsValue(aa + "<" + shortName + ">"))).forEachOrdered((aa) -> {
+                        AminoAcid aminoAcid = AminoAcid.getAminoAcid(aa);
+                        knownMassDeltas.put(mass + aminoAcid.getMonoisotopicMass(),
+                                aa + "<" + shortName + ">");
+                    });
                 }
             } else {
                 System.out.println("Error: PTM not found: " + modification);
             }
-        }
+        });
 
         return knownMassDeltas;
     }
@@ -765,79 +695,5 @@ public class SpectrumPlot extends AbsoluteLayout {
      * The spectrum annotator.
      */
     private final PeptideSpectrumAnnotator spectrumAnnotator = new PeptideSpectrumAnnotator();
-//
-//    /**
-//     * Returns the peptide with modification sites tagged (color coded or with
-//     * PTM tags, e.g, &lt;mox&gt;) in the sequence based on PeptideShaker site
-//     * inference results for the best assumption of the given spectrum match.
-//     *
-//     * @param spectrumMatch the spectrum match of interest
-//     * @param useHtmlColorCoding if true, color coded HTML is used, otherwise
-//     * PTM tags, e.g, &lt;mox&gt;, are used
-//     * @param includeHtmlStartEndTags if true, HTML start and end tags are added
-//     * @param useShortName if true the short names are used in the tags
-//     * @return the tagged peptide sequence
-//     */
-//    public String getTaggedPeptideSequence(SpectrumMatch spectrumMatch, boolean useHtmlColorCoding, boolean includeHtmlStartEndTags, boolean useShortName) {
-//        try {
-//            Peptide peptide = spectrumMatch.getBestPeptideAssumption().getPeptide();
-//            PSPtmScores ptmScores = new PSPtmScores();
-//            ptmScores = (PSPtmScores) spectrumMatch.getUrParam(ptmScores);
-//            return getTaggedPeptideSequence(peptide, ptmScores, useHtmlColorCoding, includeHtmlStartEndTags, useShortName);
-//        } catch (Exception e) {
-//           e.printStackTrace();
-//            return "Error";
-//        }
-//    }
-//
-//    /**
-//     * Returns the peptide with modification sites tagged (color coded or with
-//     * PTM tags, e.g, &lt;mox&gt;) in the sequence based on the provided PTM
-//     * localization scores.
-//     *
-//     * @param peptide the spectrum match of interest
-//     * @param ptmScores the PTM localization scores
-//     * @param useHtmlColorCoding if true, color coded HTML is used, otherwise
-//     * PTM tags, e.g, &lt;mox&gt;, are used
-//     * @param includeHtmlStartEndTags if true, HTML start and end tags are added
-//     * @param useShortName if true the short names are used in the tags
-//     *
-//     * @return the tagged peptide sequence
-//     */
-//    public String getTaggedPeptideSequence(Peptide peptide, PSPtmScores ptmScores, boolean useHtmlColorCoding, boolean includeHtmlStartEndTags, boolean useShortName) {
-//        HashMap<Integer, ArrayList<String>> fixedModifications = getFilteredModifications(peptide.getIndexedFixedModifications(), displayedPTMs);
-//        HashMap<Integer, ArrayList<String>> confidentLocations = new HashMap<Integer, ArrayList<String>>();
-//        HashMap<Integer, ArrayList<String>> representativeAmbiguousLocations = new HashMap<Integer, ArrayList<String>>();
-//        HashMap<Integer, ArrayList<String>> secondaryAmbiguousLocations = new HashMap<Integer, ArrayList<String>>();
-//        if (ptmScores != null) {
-//            confidentLocations = getFilteredConfidentModificationsSites(ptmScores, displayedPTMs);
-//            representativeAmbiguousLocations = getFilteredAmbiguousModificationsRepresentativeSites(ptmScores, displayedPTMs);
-//            secondaryAmbiguousLocations = getFilteredAmbiguousModificationsSecondarySites(ptmScores, displayedPTMs);
-//        }
-//        return Peptide.getTaggedModifiedSequence(modificationProfile,
-//                peptide, confidentLocations, representativeAmbiguousLocations, secondaryAmbiguousLocations, fixedModifications, useHtmlColorCoding, includeHtmlStartEndTags, useShortName);
-//    }
-//      /**
-//     * The displayed PTMs.
-//     */
-//    private HashMap<String, Boolean> displayedPTMs = new HashMap<String, Boolean>();
-//      /**
-//     * The display preferences.
-//     */
-//    private DisplayPreferences displayPreferences = new DisplayPreferences();
-//     /**
-//     * Returns a list containing the names of the PTMs to display.
-//     * 
-//     * @return a list containing the names of the PTMs to display
-//     */
-//    public ArrayList<String> getDisplayedPtms() {
-//        ArrayList<String> result = new ArrayList<String>();
-//        for (String ptmName : displayedPTMs.keySet()) {
-//            if (displayedPTMs.get(ptmName)) {
-//                result.add(ptmName);
-//            }
-//        }
-//        return result;
-//    }
 
 }
