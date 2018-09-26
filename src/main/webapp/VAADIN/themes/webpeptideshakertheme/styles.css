@@ -14135,6 +14135,8 @@ div.v-layout.v-horizontal.v-widget {
 	background-color: whitesmoke;
 	border-radius: 5px;
 	min-height: 35px;
+	z-index: 2 !important;
+	position: relative !important;
 }
 
 .webpeptideshakertheme .buttoncontainerstyle .v-button-tiny {
