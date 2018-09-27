@@ -1,6 +1,6 @@
 package com.uib.web.peptideshaker.presenter.core;
 
-import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.event.LayoutEvents.LayoutClickNotifier;
 import com.vaadin.ui.VerticalLayout;
 
 /**
@@ -15,7 +15,7 @@ public interface ViewableFrame {
 
     VerticalLayout getMainView();
 
-    SmallSideBtn getPresenterControlButton();
+    BigSideBtn getPresenterControlButton();
 
     String getViewId();
 

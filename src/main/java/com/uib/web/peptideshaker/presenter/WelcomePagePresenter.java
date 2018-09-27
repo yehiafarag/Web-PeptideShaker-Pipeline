@@ -3,9 +3,11 @@ package com.uib.web.peptideshaker.presenter;
 //import com.github.jmchilton.blend4j.galaxy.GalaxyInstance;
 //import com.uib.onlinepeptideshaker.managers.RegistrableView;
 //import com.uib.onlinepeptideshaker.presenter.view.SmallSideBtn;
+import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
 import com.uib.web.peptideshaker.presenter.core.ViewableFrame;
 import com.uib.web.peptideshaker.presenter.core.SmallSideBtn;
 import com.vaadin.event.FieldEvents;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
@@ -92,7 +94,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
     /**
      * The side home button .
      */
-    private final SmallSideBtn viewControlButton;
+    private final BigSideBtn viewControlButton;
     /**
      * Busy connecting window
      */
@@ -308,12 +310,11 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         });
 
 //
-        viewControlButton = new SmallSideBtn("img/home-o.svg");
+        viewControlButton = new BigSideBtn("Home Page",1);
+        viewControlButton.updateIcon(VaadinIcons.HOME_O.getHtml());
+        viewControlButton.addStyleName("homepagepresenterbtn");
         viewControlButton.setData(WelcomePagePresenter.this.getViewId());
-        busyConnectinWindow.addStyleName("hidewindow");
-        
-        
-        
+        busyConnectinWindow.addStyleName("hidewindow");        
         this.viewControlButton.setDescription("View home page");
 
     }
@@ -381,7 +382,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
     }
 
     @Override
-    public SmallSideBtn getPresenterControlButton() {
+    public BigSideBtn getPresenterControlButton() {
         return viewControlButton;
     }
 

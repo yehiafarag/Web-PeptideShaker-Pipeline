@@ -16086,7 +16086,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .bigmenubtn .v-icon {
-	font-size: 60px;
+	font-size: 30px;
 	line-height: 77px;
 	text-align: center !important;
 	border-radius: 5px;
@@ -16999,4 +16999,23 @@ div.v-layout.v-horizontal.v-widget {
 	-webkit-transition: width 160ms;
 	-moz-transition: width 160ms;
 	transition: width 160ms;
+}
+
+.webpeptideshakertheme .v-horizontallayout-homepagepresenterbtn .v-icon {
+	border: none !important;
+	font-size: 30px !important;
+	width: 82px !important;
+	min-width: 82px !important;
+}
+
+.webpeptideshakertheme .v-horizontallayout-homepagepresenterbtn {
+	padding: 0px !important;
+	border: 2px solid lightgray !important;
+	max-width: 86px !important;
+	border-radius: 5px !important;
+	margin: 0px !important;
+}
+
+.webpeptideshakertheme .v-horizontallayout-homepagepresenterbtn:hover {
+	border-color: #88bfff !important;
 }

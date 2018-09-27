@@ -8,14 +8,12 @@ import com.uib.web.peptideshaker.presenter.layouts.SearchGUIPeptideShakerWorkFlo
 import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
 import com.uib.web.peptideshaker.presenter.core.SmallSideBtn;
 import com.vaadin.event.LayoutEvents;
+import com.vaadin.event.LayoutEvents.LayoutClickNotifier;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,7 +28,7 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
     /**
      * The tools layout side button.
      */
-    private final SmallSideBtn viewControlButton;
+    private final BigSideBtn controlButton;
     /**
      * The work-flow input form layout container.
      */
@@ -49,12 +47,13 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
         SearchGUI_PeptideShaker_Tool_Presenter.this.setStyleName("activelayout");
         SearchGUI_PeptideShaker_Tool_Presenter.this.addStyleName("integratedframe");
 
-        this.viewControlButton = new SmallSideBtn("img/searchgui-medium-shadow-2.png");//spectra2.png
-        this.viewControlButton.setData(SearchGUI_PeptideShaker_Tool_Presenter.this.getViewId());
+        this.controlButton = new BigSideBtn("img/searchgui-medium-shadow-2.png",1);//spectra2.png
+        this.controlButton.setData(SearchGUI_PeptideShaker_Tool_Presenter.this.getViewId());
 
         this.initLayout();
         SearchGUI_PeptideShaker_Tool_Presenter.this.minimizeView();
-        this.viewControlButton.setDescription("View SearchGUI & PeptideShaker searching form");
+        this.controlButton.setDescription("View SearchGUI & PeptideShaker searching form");
+         this.controlButton.addStyleName("hidetopbtn");
 
     }
 
@@ -135,8 +134,8 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
      * @return
      */
     @Override
-    public SmallSideBtn getPresenterControlButton() {
-        return viewControlButton;
+    public BigSideBtn getPresenterControlButton() {
+        return controlButton;
     }
 
     /**
@@ -153,7 +152,7 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
      */
     @Override
     public void minimizeView() {
-        viewControlButton.setSelected(false);
+        controlButton.setSelected(false);
         this.addStyleName("hidepanel");
         this.btnContainer.removeStyleName("visible");
 
@@ -164,7 +163,7 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
      */
     @Override
     public void maximizeView() {
-        viewControlButton.setSelected(true);
+        controlButton.setSelected(true);
         this.btnContainer.addStyleName("visible");
         this.removeStyleName("hidepanel");
     }

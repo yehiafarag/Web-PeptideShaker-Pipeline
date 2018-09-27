@@ -30,7 +30,7 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
     /**
      * The small side button (normal size screen).
      */
-    private final SmallSideBtn controlButton;
+    private final BigSideBtn controlButton;
     /**
      * The main left side buttons container in big screen mode.
      */
@@ -55,9 +55,10 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
         FileSystemPresenter.this.setSizeFull();
         FileSystemPresenter.this.setStyleName("activelayout");
         FileSystemPresenter.this.addStyleName("hidelowerpanel");
-        this.controlButton = new SmallSideBtn(VaadinIcons.GLOBE);
+        this.controlButton = new BigSideBtn(VaadinIcons.GLOBE.getHtml(),1);
         this.controlButton.setData(FileSystemPresenter.this.getViewId());
         this.controlButton.setDescription("View available datastes and files");
+         this.controlButton.addStyleName("hidetopbtn");
         this.btnsLayoutMap = new LinkedHashMap<>();
         this.initLayout();
         FileSystemPresenter.this.minimizeView();
@@ -151,10 +152,10 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
      */
     public void updateSystemData(Map<String, GalaxyFileObject> historyFilesMap, boolean jobInProgress) {
         if (jobInProgress) {
-            controlButton.updateIconURL("img/globeearthanimation.gif");
+            controlButton.updateIconResource(new ThemeResource("img/globeearthanimation.gif"));
             viewDataBtn.updateIconResource(new ThemeResource("img/globeearthanimation.gif"));
         } else {
-            controlButton.updateIconURL(VaadinIcons.GLOBE);
+            controlButton.updateIcon(VaadinIcons.GLOBE.getHtml());
             viewDataBtn.updateIcon(VaadinIcons.GLOBE.getHtml());
         }
         if (historyFilesMap != null) {
@@ -179,7 +180,7 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
      * @return right view control button
      */
     @Override
-    public SmallSideBtn getPresenterControlButton() {
+    public BigSideBtn getPresenterControlButton() {
         return controlButton;
     }
 

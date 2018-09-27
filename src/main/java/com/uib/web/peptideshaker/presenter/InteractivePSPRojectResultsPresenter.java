@@ -26,7 +26,7 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
     /**
      * The small side button (normal size screen).
      */
-    private final SmallSideBtn viewControlButton;
+    private final BigSideBtn controlButton;
     /**
      * The main left side buttons container in big screen mode.
      */
@@ -66,13 +66,14 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
     public InteractivePSPRojectResultsPresenter() {
         InteractivePSPRojectResultsPresenter.this.setSizeFull();
         InteractivePSPRojectResultsPresenter.this.setStyleName("activelayout");
-        this.viewControlButton = new SmallSideBtn("img/cluster.svg");
-        this.viewControlButton.setData(InteractivePSPRojectResultsPresenter.this.getViewId());
+        this.controlButton = new BigSideBtn("img/cluster.svg",1);
+        this.controlButton.setData(InteractivePSPRojectResultsPresenter.this.getViewId());
         this.Selection_Manager = new SelectionManager();
         this.initLayout();
         InteractivePSPRojectResultsPresenter.this.minimizeView();
-        this.viewControlButton.setEnabled(false);
-        this.viewControlButton.setDescription("View selected dataset");
+        this.controlButton.setEnabled(false);
+        this.controlButton.setDescription("View selected dataset");
+         this.controlButton.addStyleName("hidetopbtn");
 
     }
 
@@ -166,8 +167,8 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
      * @return right view control button
      */
     @Override
-    public SmallSideBtn getPresenterControlButton() {
-        return viewControlButton;
+    public BigSideBtn getPresenterControlButton() {
+        return controlButton;
     }
 
     /**
@@ -185,7 +186,7 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
      */
     @Override
     public void minimizeView() {
-        viewControlButton.setSelected(false);
+        controlButton.setSelected(false);
         this.addStyleName("hidepanel");
         this.viewControlButtonContainer.removeStyleName("visible");
         this.maximisedMode=false;
@@ -201,7 +202,7 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
             System.out.println("is selected??");
             return;
         }
-        viewControlButton.setSelected(true);
+        controlButton.setSelected(true);
         this.viewControlButtonContainer.addStyleName("visible");
         this.removeStyleName("hidepanel");
         Thread t = new Thread(() -> {
@@ -259,7 +260,7 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
      * dataset
      */
     public void setSelectedDataset(PeptideShakerVisualizationDataset peptideShakerVisualizationDataset) {
-        this.viewControlButton.setEnabled(peptideShakerVisualizationDataset != null);
+        this.controlButton.setEnabled(peptideShakerVisualizationDataset != null);
         Selection_Manager.reset();
         Selection_Manager.selectBtn(0);
         this.datasetVisulizationLevelContainer.selectDataset(peptideShakerVisualizationDataset);

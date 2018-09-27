@@ -894,7 +894,7 @@
         border-radius:5px;
         min-height:35px;
         z-index:2 !important;
-	position:relative !important;
+        position:relative !important;
     }
 
     .buttoncontainerstyle .v-button-tiny {
@@ -2922,7 +2922,7 @@
         border-color: rgba(131, 188, 255, 0.96) !important;
     }
     .bigmenubtn .v-icon {	       
-        font-size: 60px;
+        font-size: 30px;
         line-height: 77px;
         text-align: center !important;
         /*        color: #7d7d7d;*/
@@ -3935,4 +3935,22 @@
         -moz-transition: width 160ms;
         transition: width 160ms;
     }
+    .v-horizontallayout-homepagepresenterbtn .v-icon{
+        border:none !important;
+        font-size:30px !important;
+        width:82px !important;
+        min-width:82px !important;
+    }
+    .v-horizontallayout-homepagepresenterbtn {		
+        padding:0px !important;
+        border:2px solid lightgray !important;
+        max-width:86px !important;
+        border-radius:5px !important;
+        margin:0px !important;
+    }
+
+    .v-horizontallayout-homepagepresenterbtn:hover {	
+        border-color: #88bfff !important;
+    }
+
 }
