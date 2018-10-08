@@ -147,13 +147,7 @@
 
 
     }
-    .v-link-headerlogo { 	
-        line-height:80px !important; 
-        color:black !important; 
-        font-size:30px; 
-        text-decoration:none !important;
-        margin-top: -40px;
-    }
+
     .v-link-headerlogo font{
         text-decoration: none !important;
         font-size: 15px;
@@ -2792,10 +2786,6 @@
 
 
 
-    .logocontainer{
-        top:-1px !important;
-        position:absolute;
-    }
     .v-slot-smallmenubtn {
         max-height: 80px !important;
         border: 2px solid lightgray;
@@ -3006,6 +2996,7 @@
         font-size: 20px !important;
         width: 500px !important;
         margin-top: calc(50vh - 10vw);
+        height:50px!important;
         text-align: left;
         background: linear-gradient(50deg,#2c3143 30%,hsl(59, 81%, 30%) 40%,hsl(28, 99%, 57%) 30% );
         background: -webkit-linear-gradient(50deg,#2c3143 30%,hsl(59, 81%, 30%) 40%,hsl(28, 99%, 57%) 30% );
@@ -3106,14 +3097,7 @@
             right: 10px;
         }*/
 
-    .v-horizontallayout-logocontainer{
-        margin-top:30px !important;
-        left:20px !important;
 
-        overflow:visible !important;
-        position:fixed !important;
-        z-index:5 !important;
-    }
     .smallscreenstyle .middleviewcontainer {
         padding-left: 0px;
         padding-right: 0px;
@@ -3263,7 +3247,7 @@
         background-color:whitesmoke !important;
         border-color:lightgray !important;
     }
-    .selectednode.nodemodificationbackground, .webpeptideshakertheme .proteinnode.selectednode.nodemodificationbackground, .webpeptideshakertheme .nodemodificationbackground:hover, .webpeptideshakertheme .proteinnode.nodemodificationbackground:hover,.selectedpeptide.nodemodificationbackground  {
+    .selectednode.nodemodificationbackground,  .proteinnode.selectednode.nodemodificationbackground,  .nodemodificationbackground:hover,  .proteinnode.nodemodificationbackground:hover,.selectedpeptide.nodemodificationbackground  {
         background-color: lightgray !important;
         border-color: black !important;
     }
@@ -3951,6 +3935,173 @@
 
     .v-horizontallayout-homepagepresenterbtn:hover {	
         border-color: #88bfff !important;
+    }
+
+
+
+    .welcomepagecontainer{
+        max-width:1000px ;
+        min-width: 1000px ;
+        overflow: auto;
+
+    }
+
+
+
+    .v-link-headerlogo{
+        line-height: 80px !important;
+        color: black !important;
+        font-size: 30px;
+        text-decoration: none !important;
+        margin-top: -40px;
+        cursor:pointer !important;
+    }
+
+    .v-link-headerlogo font {
+        text-decoration: none !important;
+        font-size: 15px;
+        font-style: italic;
+        color: #cd6e1d;
+    }
+    .welcomepagecontainer .v-image{
+        cursor:pointer;
+    }
+    .useroverviewpanelstyle{
+        border-right:1px solid lightgray;
+        margin-left: 20px;
+        min-height:400px;
+    }
+
+
+    .v-slot-clickableimg{
+        max-width:150px;
+        margin-top:20px;
+        float:right;
+    }
+    .v-slot-clickableimg div{
+        font-size:15px !important;
+    }
+    .btnwithtext {
+        max-width: 500px;
+    }
+
+    .btnwithtext img {
+        width: 70px !important;
+        height: 70px !important;
+        border:1px solid;
+        border-radius: 5px;
+        background-color: whitesmoke;
+        float: left;
+        padding :10px;
+    }
+    .btnwithtext .v-label{
+        font-size:15px !important;
+        line-height:50% !important;
+        vertical-align:middle !important;
+        margin-top:-20px;
+        font-weight:1000;
+
+    }
+    .btnwithtext{
+        cursor:pointer;
+    }
+    .v-slot-btnwithtext{
+        color:gray ;
+    }
+    .v-slot-btnwithtext :hover{
+        color:#cd6e1d !important;
+
+    }
+
+    .btnwithtext .iconimage{
+        width: 70px !important;
+        height: 70px !important;
+        border: 1px solid;
+        border-radius: 5px;
+        background-color: whitesmoke;
+        float: left;
+        margin:0px !important;
+        line-height:100% !important;
+
+    }
+    .btnwithtext .iconimage .v-icon{
+        width: 70px !important;
+        height: 70px !important;
+        float: left;
+        margin:0px !important;
+        line-height:70px !important;
+        text-align:center;
+        font-size:35px !important;
+        font-weight:5 !important;
+
+
+    }
+    .orangeiconcolor .v-icon{}
+    /*    .v-disabled .btnwithtext img {
+            border-color:gray !important;
+            opacity:0.6;
+        }*/
+
+    .v-slot-smaller .btnwithtext img {
+        width:30px !important;
+        height:30px !important;
+        vertical-align:center !important;
+        border-color:gray !important;
+        padding:0px !important;
+    }
+   
+    .v-slot-smaller .btnwithtext :hover{
+        color:gray !important;
+    }
+    .v-slot-smaller .btnwithtext div, .smaller {
+        color:gray !important;
+        cursor:default !important;
+    }
+    .smallest{
+        font-size:13px;
+        color:rgb(25, 125, 225);
+        text-decoration:none !important;
+        font-weight:1000 !important;
+        margin:0px !important;
+        padding:0px !important;
+        line-height:0px !important;
+        height:20px !important;
+        text-align: right;
+        z-index: 2 !important;
+
+    }
+    .smallest:hover{
+        color:blue !important;
+        text-decoration:underline !important;
+    }
+    .smallest img{
+        max-width:30px !important;
+    }
+    .v-window-windowcontainer .popupContent{
+        padding:20px;
+
+    }
+    .v-window-windowcontainer{
+
+        border:2px solid black;
+        border-radius:5px;
+    }
+    .v-window-closebox{
+        font-weight:1000 !important;
+        color:#1b7de1 !important;
+    }
+    .v-disabled.disableasenable div{
+        opacity:1 !important;
+        border-color:lightgray !important;
+
+    }
+    .v-disabled.disableasenable img{
+
+        border:1px solid lightgray !important;
+
+    }
+    .welcomepagstyle .v-horizontallayout-homepagepresenterbtn{
+        display:none !important;
     }
 
 }

@@ -12,7 +12,7 @@
     <context-param>
         <description>Test user API key for galaxy   </description>
         <param-name>testUserAPIKey</param-name>
-        <param-value>ab84003e53c247bd7e2ca7ec949ab2cb</param-value>
+        <param-value>9feedf06236826522f4935d56f958986</param-value>
     </context-param>
     <context-param>
         <description>exported files folder url D:\users_temp_files /home/generic_admin/webpeptideshaker</description>

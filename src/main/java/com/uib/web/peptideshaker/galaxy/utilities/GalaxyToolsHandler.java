@@ -101,6 +101,14 @@ public abstract class GalaxyToolsHandler {
      */
     private final List<String> ions = new ArrayList(Arrays.asList(new String[]{"a", "b", "c", "x", "y", "z"}));
 
+    public Tool getSearch_GUI_Tool() {
+        return search_GUI_Tool;
+    }
+
+    public Tool getPeptideShaker_Tool() {
+        return peptideShaker_Tool;
+    }
+
     /**
      * Constructor to initialise the main data structure and other variables.
      *
@@ -394,7 +402,6 @@ public abstract class GalaxyToolsHandler {
             if (mgfIdsList.size() > 1) {
                 file = new File(basepath + "/VAADIN/Galaxy-Workflow-Web-Peptide-Shaker-Multi-MGF-2018.ga");//Galaxy-Workflow-Web-Peptide-Shaker-Multi-MGF-2018.ga
                 input2 = prepareWorkflowCollectionList(WorkflowInputs.InputSourceType.HDCA, mgfIdsList.keySet(), historyId);
-                System.out.println("multi file selected");
             } else {
                 file = new File(basepath + "/VAADIN/Galaxy-Workflow-Web-Peptide-Shaker-Single-MGF-2018.ga");
                 input2 = new WorkflowInputs.WorkflowInput(mgfIdsList.keySet().iterator().next(), WorkflowInputs.InputSourceType.HDA);

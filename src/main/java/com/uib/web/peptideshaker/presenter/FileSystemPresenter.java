@@ -3,8 +3,9 @@ package com.uib.web.peptideshaker.presenter;
 import com.uib.web.peptideshaker.presenter.core.ViewableFrame;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyFileObject;
-import com.uib.web.peptideshaker.presenter.layouts.DataViewLayout;
 import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
+import com.uib.web.peptideshaker.presenter.layouts.DataViewLayout;
+import com.uib.web.peptideshaker.presenter.core.ButtonWithLabel;
 import com.uib.web.peptideshaker.presenter.core.SmallSideBtn;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
@@ -30,7 +31,7 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
     /**
      * The small side button (normal size screen).
      */
-    private final BigSideBtn controlButton;
+    private final ButtonWithLabel controlButton;
     /**
      * The main left side buttons container in big screen mode.
      */
@@ -55,10 +56,11 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
         FileSystemPresenter.this.setSizeFull();
         FileSystemPresenter.this.setStyleName("activelayout");
         FileSystemPresenter.this.addStyleName("hidelowerpanel");
-        this.controlButton = new BigSideBtn(VaadinIcons.GLOBE.getHtml(),1);
+        this.controlButton = new ButtonWithLabel("Data Access",1);
+        this.controlButton.updateIcon(VaadinIcons.GLOBE.getHtml());
         this.controlButton.setData(FileSystemPresenter.this.getViewId());
         this.controlButton.setDescription("View available datastes and files");
-         this.controlButton.addStyleName("hidetopbtn");
+//         this.controlButton.addStyleName("hidetopbtn");
         this.btnsLayoutMap = new LinkedHashMap<>();
         this.initLayout();
         FileSystemPresenter.this.minimizeView();
@@ -75,7 +77,8 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
         leftSideButtonsContainer.setSpacing(true);
         leftSideButtonsContainer.setMargin(new MarginInfo(false, false, true, false));
         leftSideButtonsContainer.addStyleName("singlebtn");
-        viewDataBtn = new BigSideBtn("Show Data", 1);
+        viewDataBtn = new BigSideBtn("Data Access",1);
+        viewDataBtn.setDescription("View available datasets and files");
         viewDataBtn.updateIcon(VaadinIcons.GLOBE.getHtml());
         viewDataBtn.setData("datasetoverview");
         leftSideButtonsContainer.addComponent(viewDataBtn);
@@ -180,9 +183,16 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
      * @return right view control button
      */
     @Override
-    public BigSideBtn getPresenterControlButton() {
+    public BigSideBtn getPresenterControlInframeButton() {
+        return null;
+    }
+
+    @Override
+    public ButtonWithLabel getPresenterControlButton() {
         return controlButton;
     }
+    
+    
 
     /**
      * Get the current view ID
@@ -225,7 +235,7 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
      */
     @Override
     public void layoutClick(LayoutEvents.LayoutClickEvent event) {
-        BigSideBtn comp = (BigSideBtn) event.getComponent();
+        ButtonWithLabel comp = (ButtonWithLabel) event.getComponent();
         btnsLayoutMap.keySet().forEach((bbt) -> {
             if (comp.getData().toString().equalsIgnoreCase(bbt.getData().toString())) {
                 bbt.setSelected(true);

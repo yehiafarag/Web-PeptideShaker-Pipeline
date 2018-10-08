@@ -6,6 +6,7 @@ import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyFile
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyTransferableFile;
 import com.uib.web.peptideshaker.presenter.layouts.SearchGUIPeptideShakerWorkFlowInputLayout;
 import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
+import com.uib.web.peptideshaker.presenter.core.ButtonWithLabel;
 import com.uib.web.peptideshaker.presenter.core.SmallSideBtn;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.event.LayoutEvents.LayoutClickNotifier;
@@ -28,7 +29,7 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
     /**
      * The tools layout side button.
      */
-    private final BigSideBtn controlButton;
+    private final ButtonWithLabel controlButton;
     /**
      * The work-flow input form layout container.
      */
@@ -47,13 +48,14 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
         SearchGUI_PeptideShaker_Tool_Presenter.this.setStyleName("activelayout");
         SearchGUI_PeptideShaker_Tool_Presenter.this.addStyleName("integratedframe");
 
-        this.controlButton = new BigSideBtn("img/searchgui-medium-shadow-2.png",1);//spectra2.png
+        this.controlButton = new ButtonWithLabel("SearchGUI & PeptideShaker",1);//spectra2.png
         this.controlButton.setData(SearchGUI_PeptideShaker_Tool_Presenter.this.getViewId());
+        this.controlButton.updateIconResource(new ThemeResource("img/searchgui-medium-shadow-2.png"));//img/workflow3.png
 
         this.initLayout();
         SearchGUI_PeptideShaker_Tool_Presenter.this.minimizeView();
-        this.controlButton.setDescription("View SearchGUI & PeptideShaker searching form");
-         this.controlButton.addStyleName("hidetopbtn");
+        this.controlButton.setDescription("Run SearchGUI & PeptideShaker tool");
+//         this.controlButton.addStyleName("hidetopbtn");
 
     }
 
@@ -115,7 +117,6 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
         toolViewFrameContent.addStyleName("viewframecontent");
         toolViewFrameContent.setSizeFull();
         toolViewFrame.addComponent(toolViewFrameContent);
-
         toolViewFrameContent.addComponent(peptideshakerToolInputForm);
 
     }
@@ -134,7 +135,11 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
      * @return
      */
     @Override
-    public BigSideBtn getPresenterControlButton() {
+    public BigSideBtn getPresenterControlInframeButton() {
+        return null;
+    }
+     @Override
+    public ButtonWithLabel getPresenterControlButton() {
         return controlButton;
     }
 

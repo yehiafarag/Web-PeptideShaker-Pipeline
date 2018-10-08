@@ -1,14 +1,16 @@
 package com.uib.web.peptideshaker.presenter;
 
 import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
+import com.uib.web.peptideshaker.presenter.core.ButtonWithLabel;
 import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import com.uib.web.peptideshaker.presenter.core.ViewableFrame;
 import com.vaadin.event.LayoutEvents;
+import com.vaadin.ui.AbstractOrderedLayout;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
 
 /**
@@ -49,6 +51,10 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
      * contain the small presenter control buttons.
      */
     private final GridLayout presenterButtonsContainerLayout;
+
+    public GridLayout getPresenterButtonsContainerLayout() {
+        return presenterButtonsContainerLayout;
+    }
     /**
      * Top layout container is the right side buttons layout container that
      * contain the small control buttons.
@@ -183,37 +189,37 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
     public void registerView(ViewableFrame view) {
         if (visualizationMap.containsKey(view.getViewId())) {
             ViewableFrame tview = visualizationMap.get(view.getViewId());
-            tview.getPresenterControlButton().removeLayoutClickListener(PresenterManager.this);
-            subViewButtonsActionContainer.removeComponent(tview.getSubViewButtonsActionContainerLayout());
-            subViewButtonsActionContainer.removeComponent(tview.getSubViewButtonsActionContainerLayout());
+            AbstractOrderedLayout cBtn = tview.getPresenterControlButton();
+            if (cBtn == null) {
+                cBtn = tview.getPresenterControlInframeButton();
+            }
 
+            cBtn.removeLayoutClickListener(PresenterManager.this);
+            subViewButtonsActionContainer.removeComponent(tview.getSubViewButtonsActionContainerLayout());
             topMiddleLayoutContainer.removeComponent(tview.getMainView());
-
-            GridLayout.Area postion = presenterButtonsContainerLayout.getComponentArea(tview.getPresenterControlButton());
-            column = postion.getColumn1();
-            rows = postion.getRow1();
-            presenterButtonsContainerLayout.removeComponent(tview.getPresenterControlButton());
+            column = presenterButtonsContainerLayout.getComponentArea(cBtn).getColumn1();
+            rows = presenterButtonsContainerLayout.getComponentArea(cBtn).getRow1();
+            presenterButtonsContainerLayout.removeComponent(cBtn);
+            homePageButtonsContainer.removeComponent(cBtn);
 
         }
-        view.getPresenterControlButton().addLayoutClickListener(PresenterManager.this);
-        visualizationMap.put(view.getViewId(), view);
         if (view.getViewId().equalsIgnoreCase("com.uib.web.peptideshaker.presenter.WelcomePagePresenter")) {
-            homePageButtonsContainer.addComponent(view.getPresenterControlButton());
+            view.getPresenterControlInframeButton().addLayoutClickListener(PresenterManager.this);
+            visualizationMap.put(view.getViewId(), view);
+            homePageButtonsContainer.addComponent(view.getPresenterControlInframeButton());
             subViewButtonsActionContainer.addComponent(view.getSubViewButtonsActionContainerLayout());
             topMiddleLayoutContainer.addComponent(view.getMainView());
         } else {
+            view.getPresenterControlButton().addLayoutClickListener(PresenterManager.this);
+            visualizationMap.put(view.getViewId(), view);
             subViewButtonsActionContainer.addComponent(view.getSubViewButtonsActionContainerLayout());
             topMiddleLayoutContainer.addComponent(view.getMainView());
             presenterButtonsContainerLayout.addComponent(view.getPresenterControlButton(), column++, rows);
-            presenterButtonsContainerLayout.setComponentAlignment(view.getPresenterControlButton(), Alignment.MIDDLE_CENTER);
             if (column == 2) {
-                column = 0;
                 rows++;
-            }
-            if (rows == 2) {
                 column = 0;
-                rows = 0;
             }
+
         }
 
     }
@@ -246,7 +252,13 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
      */
     @Override
     public void layoutClick(LayoutEvents.LayoutClickEvent event) {
-        String selectedBtnData = ((BigSideBtn) event.getComponent()).getData().toString();
+        Component com = event.getComponent();
+        String selectedBtnData = "";
+        if (com instanceof BigSideBtn) {
+            selectedBtnData = ((BigSideBtn) com).getData().toString();
+        } else {
+            selectedBtnData = ((ButtonWithLabel) com).getData().toString();
+        }
         if (selectedBtnData.equalsIgnoreCase("controlBtnsAction")) {
             return;
         }

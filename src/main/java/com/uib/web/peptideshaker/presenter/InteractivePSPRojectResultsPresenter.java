@@ -6,13 +6,13 @@ import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.DatasetVisu
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.ProteinVisulizationLevelContainer;
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.SelectionManager;
 import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
-import com.uib.web.peptideshaker.presenter.core.SmallSideBtn;
+import com.uib.web.peptideshaker.presenter.core.ButtonWithLabel;
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.PeptideVisulizationLevelContainer;
 import com.vaadin.event.LayoutEvents;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 
 /**
@@ -26,7 +26,7 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
     /**
      * The small side button (normal size screen).
      */
-    private final BigSideBtn controlButton;
+    private final ButtonWithLabel controlButton;
     /**
      * The main left side buttons container in big screen mode.
      */
@@ -66,14 +66,17 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
     public InteractivePSPRojectResultsPresenter() {
         InteractivePSPRojectResultsPresenter.this.setSizeFull();
         InteractivePSPRojectResultsPresenter.this.setStyleName("activelayout");
-        this.controlButton = new BigSideBtn("img/cluster.svg",1);
+        this.controlButton = new ButtonWithLabel("Datasets",1);
         this.controlButton.setData(InteractivePSPRojectResultsPresenter.this.getViewId());
-        this.Selection_Manager = new SelectionManager();
+        this.controlButton.updateIcon(VaadinIcons.CLUSTER.getHtml());
+         this.controlButton.setDescription("View selected dataset");
+         this.controlButton.setEnabled(false);
+         this.controlButton.addStyleName("orangeiconcolor");
+         this.Selection_Manager = new SelectionManager();
         this.initLayout();
         InteractivePSPRojectResultsPresenter.this.minimizeView();
-        this.controlButton.setEnabled(false);
-        this.controlButton.setDescription("View selected dataset");
-         this.controlButton.addStyleName("hidetopbtn");
+       
+//         this.controlButton.addStyleName("hidetopbtn");
 
     }
 
@@ -167,8 +170,8 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
      * @return right view control button
      */
     @Override
-    public BigSideBtn getPresenterControlButton() {
-        return controlButton;
+    public BigSideBtn getPresenterControlInframeButton() {
+        return null;
     }
 
     /**
@@ -251,6 +254,11 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
     @Override
     public VerticalLayout getSubViewButtonsActionContainerLayout() {
         return viewControlButtonContainer;
+    }
+
+    @Override
+    public ButtonWithLabel getPresenterControlButton() {
+        return controlButton;
     }
 
     /**

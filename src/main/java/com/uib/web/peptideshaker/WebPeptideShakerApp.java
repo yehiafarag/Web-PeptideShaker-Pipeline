@@ -13,6 +13,8 @@ import com.uib.web.peptideshaker.presenter.WelcomePagePresenter;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.VerticalLayout;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import pl.exsio.plupload.PluploadFile;
@@ -57,12 +59,14 @@ public class WebPeptideShakerApp extends VerticalLayout {
         WebPeptideShakerApp.this.setMargin(new MarginInfo(true, true, true, true));
         WebPeptideShakerApp.this.addStyleName("frame");
         this.Galaxy_Interactive_Layer = new GalaxyInteractiveLayer() {
+            private boolean initialised = false;
             @Override
             public void synchronizeDataWithGalaxyServer(Map<String, GalaxyFileObject> historyFilesMap, boolean jobsInProgress, boolean updatePresenterView) {
                 fileSystemPresenter.updateSystemData(historyFilesMap, jobsInProgress);
-                if (updatePresenterView) {
+                if (updatePresenterView && initialised) {
                     presentationManager.viewLayout(fileSystemPresenter.getViewId());
                 }
+                initialised=true;
             }
         };
         presentationManager = new PresenterManager();
@@ -73,21 +77,28 @@ public class WebPeptideShakerApp extends VerticalLayout {
          */
         WelcomePagePresenter welcomePage = new WelcomePagePresenter() {
             @Override
-            public boolean connectToGalaxy(String userAPI) {
+            public List<String> connectToGalaxy(String userAPI,String viewId) {
                 String galaxyServerUrl = VaadinSession.getCurrent().getAttribute("galaxyServerUrl").toString();
                 String userDataFolderUrl = VaadinSession.getCurrent().getAttribute("userDataFolderUrl").toString();
                 if (userAPI.equalsIgnoreCase("test_User_Login")) {
                     userAPI = VaadinSession.getCurrent().getAttribute("testUserAPIKey").toString();
                 }
                 boolean connected = Galaxy_Interactive_Layer.connectToGalaxyServer(galaxyServerUrl, userAPI, userDataFolderUrl);
-                presentationManager.setSideButtonsVisible(connected);
-                return connected;
+                presentationManager.setSideButtonsVisible(connected);                
+                return Galaxy_Interactive_Layer.getUserOverViewList();
 
+            }
+
+            @Override
+            public void maximizeView() {
+                super.updateUserOverviewPanel(Galaxy_Interactive_Layer.getUserOverViewList());
+                super.maximizeView(); //To change body of generated methods, choose Tools | Templates.
             }
 
         };
         presentationManager.registerView(welcomePage);
         presentationManager.viewLayout(welcomePage.getViewId());
+        welcomePage.setPresenterControlButtonContainer(presentationManager.getPresenterButtonsContainerLayout());        
         SearchGUI_PeptideShaker_Tool_Presenter = new SearchGUI_PeptideShaker_Tool_Presenter() {
             @Override
             public void execute_SearchGUI_PeptideShaker_WorkFlow(String projectName, String fastaFileId, Set<String> mgfIdsList, Set<String> searchEnginesList, SearchParameters searchParameters) {
@@ -172,9 +183,10 @@ public class WebPeptideShakerApp extends VerticalLayout {
             }
 
         };
-        presentationManager.registerView(fileSystemPresenter);
+        
         interactivePSPRojectResultsPresenter = new InteractivePSPRojectResultsPresenter();
         presentationManager.registerView(interactivePSPRojectResultsPresenter);
+        presentationManager.registerView(fileSystemPresenter);
     }
 
     /**

@@ -4,12 +4,13 @@ package com.uib.web.peptideshaker.presenter;
 //import com.uib.onlinepeptideshaker.managers.RegistrableView;
 //import com.uib.onlinepeptideshaker.presenter.view.SmallSideBtn;
 import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
+import com.uib.web.peptideshaker.presenter.core.ButtonWithLabel;
 import com.uib.web.peptideshaker.presenter.core.ViewableFrame;
-import com.uib.web.peptideshaker.presenter.core.SmallSideBtn;
+import com.uib.web.peptideshaker.presenter.core.form.Horizontal2Label;
 import com.vaadin.event.FieldEvents;
+import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ExternalResource;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
 import com.vaadin.server.ThemeResource;
@@ -17,16 +18,21 @@ import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.shared.ui.window.WindowMode;
+import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.TextField;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 //import sun.security.provider.certpath.Vertex;
@@ -41,7 +47,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
     /**
      * The header layout panel.
      */
-    private final VerticalLayout mainHeaderPanel;
+    private final HorizontalLayout mainHeaderPanel;
     /**
      * The header layout container layout.
      */
@@ -50,7 +56,9 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
     /**
      * The body layout panel.
      */
-    private final HorizontalLayout bodyPanel;
+    private final VerticalLayout userConnectionPanel;
+    private final Label connectingLabel;
+    private final ButtonWithLabel connectionBtnLabel;
     /**
      * The connection button to NeLS login page
      */
@@ -59,7 +67,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
      * Button to direct connection using testing account
      *
      */
-    private final Button loadExampleUserAccount;
+//    private final Button loadExampleUserAccount;
     /**
      * Button to connect to user account.
      *
@@ -79,7 +87,8 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
      * Connection to galaxy statues label.
      *
      */
-    private final Label connectionStatuesLabel;
+//    private final Label loginLabel;
+    private final ButtonWithLabel loginBtnLabel;
     /**
      * Galaxy login controls layout.
      *
@@ -99,10 +108,18 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
      * Busy connecting window
      */
     private final Window busyConnectinWindow;
-     /**
+    /**
      * Executor service to execute connection task to galaxy server.
      */
-    private  ExecutorService executorService = Executors.newFixedThreadPool(2);;
+    private ExecutorService executorService = Executors.newFixedThreadPool(2);
+
+    private final VerticalLayout presenteControlButtonsLayout;
+    private final VerticalLayout userOverviewLayout;
+    /**
+     *
+     */
+    private final Window connectinoWindow;
+    private String viewId;
 
     /**
      * Constructor to initialise the layout.
@@ -111,77 +128,256 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         WelcomePagePresenter.this.setSizeFull();
         WelcomePagePresenter.this.addStyleName("welcomepagestyle");
 
-        VerticalLayout windowContent = new VerticalLayout();
-        windowContent.setSizeFull();
+        AbsoluteLayout container = new AbsoluteLayout();
+        container.setSizeFull();
+//        container.setSpacing(true);
+        container.setStyleName("welcomepagecontainer");
 
-       
+        WelcomePagePresenter.this.addComponent(container);
+        WelcomePagePresenter.this.setComponentAlignment(container, Alignment.TOP_CENTER);
 
-        this.busyConnectinWindow = new Window(null, windowContent);
-        this.busyConnectinWindow.setSizeFull();
-        this.busyConnectinWindow.setStyleName("busyconnectingwindow");
-        this.busyConnectinWindow.setModal(false);
-        this.busyConnectinWindow.setDraggable(false);
-        this.busyConnectinWindow.setClosable(false);
-        this.busyConnectinWindow.setResizable(false);
-        busyConnectinWindow.center();
-        this.busyConnectinWindow.setWindowMode(WindowMode.NORMAL);
-
-        mainHeaderPanel = new VerticalLayout();
+        mainHeaderPanel = new HorizontalLayout();
         mainHeaderPanel.setHeight(50, Unit.PIXELS);
-        WelcomePagePresenter.this.addComponent(mainHeaderPanel);
-        WelcomePagePresenter.this.setComponentAlignment(mainHeaderPanel, Alignment.MIDDLE_LEFT);
-        WelcomePagePresenter.this.setExpandRatio(mainHeaderPanel, 10);
+        mainHeaderPanel.setWidth(100, Unit.PERCENTAGE);
+        container.addComponent(mainHeaderPanel, "left:10px;top:20px;");
+//        container.setExpandRatio(mainHeaderPanel, 10);
         headerPanelContentLayout = initializeHeaderPanel();
         mainHeaderPanel.addComponent(headerPanelContentLayout);
         mainHeaderPanel.setMargin(new MarginInfo(false, false, false, false));
 
-        bodyPanel = new HorizontalLayout();
-        bodyPanel.setSizeFull();
-        bodyPanel.setMargin(new MarginInfo(true, false, false, false));
-        WelcomePagePresenter.this.addComponent(bodyPanel);
-        WelcomePagePresenter.this.setComponentAlignment(bodyPanel, Alignment.TOP_CENTER);
-        WelcomePagePresenter.this.setExpandRatio(bodyPanel, 90);
+//        VerticalLayout connectionCommentLayout = new VerticalLayout();
+//        connectionCommentLayout.setSizeFull();
+//        mainHeaderPanel.addComponent(connectionCommentLayout);
+//        mainHeaderPanel.setComponentAlignment(connectionCommentLayout, Alignment.TOP_RIGHT);
+        loginBtnLabel = new ButtonWithLabel("Galaxy Login", 0);
+        loginBtnLabel.updateIconResource(new ThemeResource("img/galaxyicongray.png"));
+        loginBtnLabel.addStyleName("galaxylabel");
+        loginBtnLabel.setDescription("Login to Galaxy - API key required");
 
-        VerticalLayout bodyContent = new VerticalLayout();
-        bodyContent.setSizeFull();
-        bodyContent.addStyleName("mainbodystyle");
-        bodyContent.addStyleName("connectionpanelstyle");
-        bodyContent.setSpacing(true);
-        bodyContent.setWidth(405, Unit.PIXELS);
-        bodyContent.setHeight(400, Unit.PIXELS);
-        bodyPanel.addComponent(bodyContent);
-        bodyPanel.setComponentAlignment(bodyContent, Alignment.TOP_CENTER);
+//        loginLabel = new Label("<img src='VAADIN/themes/webpeptideshakertheme/img/galaxyLogo_2.png' alt style='width: 25px;height: 25px;border: 1px solid lightgray;border-radius: 5px;background-color: whitesmoke;cursor:pointer !important;'><font color='#cd6e1d' style='line-height: 0px !important; vertical-align:text-top;cursor:pointer !important;'> Galaxy Login</font>");
+//        loginLabel.setContentMode(ContentMode.HTML);
+//        loginLabel.setHeight(25, Sizeable.Unit.PIXELS);
+//        loginLabel.setWidth(160, Sizeable.Unit.PIXELS);
+//        loginLabel.setStyleName(ValoTheme.LABEL_SMALL);
+//        loginLabel.addStyleName(ValoTheme.LABEL_BOLD);
+//        loginLabel.addStyleName(ValoTheme.LABEL_TINY);
+//        loginLabel.addStyleName(ValoTheme.LABEL_NO_MARGIN);
+//        loginLabel.setVisible(true);
+//        connectionCommentLayout.addComponent(loginLabel);
+//
+//        connectionCommentLayout.setComponentAlignment(loginLabel, Alignment.TOP_LEFT);
+//        connectionCommentLayout.setStyleName("clickableimg");
+
+        HorizontalLayout mainMiddlePanel = new HorizontalLayout();
+        mainMiddlePanel.setSizeFull();
+        mainMiddlePanel.setSpacing(true);
+        container.addComponent(mainMiddlePanel, "left:10px;top:100px;");
+//        container.setExpandRatio(mainMiddlePanel, 70);
+
+        /**
+         * The left panel (user data overview/connect-disconnect)
+         */
+        VerticalLayout userOverviewPanel = new VerticalLayout();
+        userOverviewPanel.setWidth(100, Unit.PERCENTAGE);
+        userOverviewPanel.setHeightUndefined();
+        userOverviewPanel.setSpacing(true);
+        userOverviewPanel.setStyleName("useroverviewpanelstyle");
+        mainMiddlePanel.addComponent(userOverviewPanel);
+        mainMiddlePanel.setExpandRatio(userOverviewPanel, 20);
+
+        /**
+         * *user overview layout*
+         */
+        userOverviewLayout = new VerticalLayout();
+        userOverviewLayout.setSizeFull();
+        userOverviewPanel.addComponent(userOverviewLayout);
+        userOverviewPanel.setExpandRatio(userOverviewLayout, 0.7f);
+        userOverviewPanel.setComponentAlignment(userOverviewLayout, Alignment.TOP_LEFT);
+        Label overviewLabel = initLeftSideInfoLabel("<b>Overview</b>", "");
+        overviewLabel.addStyleName(ValoTheme.LABEL_H2);
+        userOverviewLayout.addComponent(overviewLabel);
+
+        Label userLabel = initLeftSideInfoLabel(VaadinIcons.USER.getHtml()+" User: ", "<i>Offline</i>");
+        userOverviewLayout.addComponent(userLabel);
+
+        Label dsNumberLabel = initLeftSideInfoLabel(VaadinIcons.CLUSTER.getHtml()+" Datasets: ", "<i></i>");
+        userOverviewLayout.addComponent(dsNumberLabel);
+
+        Label filesNumberLabel = initLeftSideInfoLabel(VaadinIcons.FILE_TEXT_O.getHtml()+" Files: ", "<i></i>");
+        userOverviewLayout.addComponent(filesNumberLabel);
+
+        Label usedMemory = initLeftSideInfoLabel(VaadinIcons.CLOUD_O.getHtml()+" Storage: ", "<i></i>");
+        userOverviewLayout.addComponent(usedMemory);
+        
+        Label searchGUI = initLeftSideInfoLabel("<img src='VAADIN/themes/webpeptideshakertheme/img/searchgui-medium-shadow.png' alt style='width: 25px;height: auto;margin-left: -11px;'>"+" SearchGUI ", "<i></i>");
+        userOverviewLayout.addComponent(searchGUI);
+        
+         Label peptideShaker = initLeftSideInfoLabel("<img src='VAADIN/themes/webpeptideshakertheme/img/peptideshaker.png' alt style='width: 20px'>"+" PeptideShaker ", "<i></i>");
+        userOverviewLayout.addComponent(peptideShaker);
+
+        /**
+         * The right panel (welcome message / presenter control buttons)
+         */
+        VerticalLayout presenterControlButtonsPanel = new VerticalLayout();
+        presenterControlButtonsPanel.setWidth(100, Unit.PERCENTAGE);
+        presenterControlButtonsPanel.setHeight(360, Unit.PIXELS);
+        presenterControlButtonsPanel.setSpacing(true);
+        mainMiddlePanel.addComponent(presenterControlButtonsPanel);
+        mainMiddlePanel.setExpandRatio(presenterControlButtonsPanel, 80);
+        presenterControlButtonsPanel.setMargin(new MarginInfo(false, false, false, true));
+
+        VerticalLayout welcomeTextContainerLayout = new VerticalLayout();
+        welcomeTextContainerLayout.setSizeFull();
+        welcomeTextContainerLayout.setData("ignoreclick");
+        welcomeTextContainerLayout.addStyleName("mainbodystyle");
+        welcomeTextContainerLayout.addStyleName("connectionpanelstyle");
+        welcomeTextContainerLayout.setSpacing(true);
+        welcomeTextContainerLayout.setWidth(100, Unit.PERCENTAGE);
+        welcomeTextContainerLayout.setHeight(100, Unit.PIXELS);
+        presenterControlButtonsPanel.addComponent(welcomeTextContainerLayout);
+        presenterControlButtonsPanel.setComponentAlignment(welcomeTextContainerLayout, Alignment.TOP_LEFT);
+        presenterControlButtonsPanel.setExpandRatio(welcomeTextContainerLayout, 0.4f);
 
         Label welcomeText = new Label();
         welcomeText.setSizeFull();
         welcomeText.setContentMode(ContentMode.HTML);
         welcomeText.setStyleName(ValoTheme.LABEL_NO_MARGIN);
-        welcomeText.setValue("<font style='font-weight: bold; font-size:23px'>Welcome to PeptideShaker <font size='2'><i>(online version)</i></font></font>");// <br/><br/>To start using the system connect to your Galaxy Server");
+        welcomeText.setValue("<font style='font-weight: bold; font-size:23px'>Welcome to PeptideShaker </font>");// <br/><br/>To start using the system connect to your Galaxy Server");
+        welcomeText.setData("ignoreclick");
+        welcomeTextContainerLayout.addComponent(welcomeText);
+        welcomeTextContainerLayout.setExpandRatio(welcomeText, 0.05f);
+        welcomeTextContainerLayout.setComponentAlignment(welcomeText, Alignment.TOP_LEFT);
 
-        bodyContent.addComponent(welcomeText);
-        bodyContent.setExpandRatio(welcomeText, 0.05f);
-        bodyContent.setComponentAlignment(welcomeText, Alignment.TOP_LEFT);
+        Label subWelcomeText = new Label();
+        subWelcomeText.setSizeFull();
+        subWelcomeText.setData("ignoreclick");
+        subWelcomeText.setContentMode(ContentMode.HTML);
+        subWelcomeText.setStyleName(ValoTheme.LABEL_NO_MARGIN);
+        subWelcomeText.setValue("<font>A web interactive visual analysis tool that attempts to give the best possible understanding of proteomics data on web!</font>");// <br/><br/>To start using the system connect to your Galaxy Server");
+
+        welcomeTextContainerLayout.addComponent(subWelcomeText);
+        welcomeTextContainerLayout.setExpandRatio(subWelcomeText, 0.05f);
+        welcomeTextContainerLayout.setComponentAlignment(subWelcomeText, Alignment.TOP_LEFT);
+
+        /**
+         * *Presenter control buttons container layout*
+         */
+        presenteControlButtonsLayout = new VerticalLayout();
+        presenteControlButtonsLayout.setHeight(180, Unit.PIXELS);
+        presenteControlButtonsLayout.setWidth(100, Unit.PERCENTAGE);
+        presenteControlButtonsLayout.setSpacing(true);
+        presenterControlButtonsPanel.addComponent(presenteControlButtonsLayout);
+        presenterControlButtonsPanel.setExpandRatio(presenteControlButtonsLayout, 0.6f);
+        presenteControlButtonsLayout.setEnabled(false);
+        presenteControlButtonsLayout.addStyleName("disableasenable");
+
+        /**
+         * Pop-up window layout to connect to Galaxy Server.
+         */
+        userConnectionPanel = new VerticalLayout();
+        userConnectionPanel.setWidth(500, Unit.PIXELS);
+        userConnectionPanel.setHeightUndefined();
+        userConnectionPanel.setMargin(new MarginInfo(true, true, true, true));
+        userConnectionPanel.setSpacing(true);
+
+        connectingLabel = new Label("<h1 class='animation'>Connecting to galaxy....</h1>");
+        connectingLabel.setVisible(false);
+        connectingLabel.setContentMode(ContentMode.HTML);
+        connectingLabel.setHeight(25, Sizeable.Unit.PIXELS);
+        connectingLabel.setWidth(160, Sizeable.Unit.PIXELS);
+        connectingLabel.setStyleName(ValoTheme.LABEL_SMALL);
+        connectingLabel.addStyleName(ValoTheme.LABEL_BOLD);
+        connectingLabel.addStyleName(ValoTheme.LABEL_TINY);
+        connectingLabel.addStyleName(ValoTheme.LABEL_NO_MARGIN);
+
+        userConnectionPanel.addComponent(connectingLabel);
+        userConnectionPanel.setComponentAlignment(connectingLabel, Alignment.MIDDLE_CENTER);
+
+        connectinoWindow = new Window(null, userConnectionPanel) {
+            @Override
+            public void close() {
+                this.setVisible(false);
+            }
+
+            @Override
+            public void setVisible(boolean visible) {
+                super.setVisible(visible);
+                if (visible) {
+                    this.center();
+                }
+            }
+
+        };
+        connectinoWindow.setModal(true);
+        connectinoWindow.setDraggable(false);
+        connectinoWindow.setClosable(true);
+
+        connectinoWindow.setResizable(false);
+        connectinoWindow.setStyleName("windowcontainer");
+        connectinoWindow.center();
+        connectinoWindow.setWindowMode(WindowMode.NORMAL);
+        UI.getCurrent().addWindow(connectinoWindow);
+        connectinoWindow.setVisible(false);
+
+        presenterControlButtonsPanel.addLayoutClickListener((LayoutEvents.LayoutClickEvent event) -> {
+            AbstractComponent comp = (AbstractComponent) event.getClickedComponent();
+            if (presenteControlButtonsLayout.isEnabled() || comp == null || (comp.getData() != null && comp.getData().toString().equalsIgnoreCase("ignoreclick"))) {
+                return;
+            }
+
+            if (loginBtnLabel.getData() == null) {
+                viewId = comp.getData().toString();
+                connectinoWindow.setVisible(true);
+            }
+        });
+        loginBtnLabel.addLayoutClickListener((LayoutEvents.LayoutClickEvent event) -> {
+            viewId = this.getViewId();
+            if (loginBtnLabel.getData() == null) {
+                connectinoWindow.setVisible(true);
+            } else {
+                VaadinSession.getCurrent().getSession().invalidate();
+                Page.getCurrent().reload();
+            }
+        });
 
         HorizontalLayout serviceButtonContainer = new HorizontalLayout();
         serviceButtonContainer.setWidth(100, Unit.PERCENTAGE);
-        serviceButtonContainer.setHeight(100, Unit.PERCENTAGE);
+        serviceButtonContainer.setHeight(40, Unit.PIXELS);
+        serviceButtonContainer.setMargin(false);
         serviceButtonContainer.setSpacing(true);
-        bodyContent.addComponent(serviceButtonContainer);
-        bodyContent.setExpandRatio(serviceButtonContainer, 0.1f);
-        bodyContent.setComponentAlignment(serviceButtonContainer, Alignment.TOP_LEFT);
-
-        loadExampleUserAccount = new Button("Example", new ThemeResource("img/peptideshaker_example_dataset_1.png"));
-        loadExampleUserAccount.setSizeFull();
-        serviceButtonContainer.addComponent(loadExampleUserAccount);
-        serviceButtonContainer.setComponentAlignment(loadExampleUserAccount, Alignment.TOP_LEFT);
-        loadExampleUserAccount.setDisableOnClick(true);
+        userConnectionPanel.addComponent(serviceButtonContainer);
+        userConnectionPanel.setExpandRatio(serviceButtonContainer, 0.1f);
+        userConnectionPanel.setComponentAlignment(serviceButtonContainer, Alignment.TOP_LEFT);
+//
+//        loadExampleUserAccount = new Button("Continue as guest", new ThemeResource("img/peptideshaker_example_dataset_1.png"));
+//        loadExampleUserAccount.setSizeFull();
+//        
+//        loadExampleUserAccount.setDescription("Continue as guest user");
+//        loadExampleUserAccount.setDisableOnClick(true);
+//        loadExampleUserAccount.setStyleName(ValoTheme.BUTTON_LINK);
+//        loadExampleUserAccount.addStyleName("smallest");
+////         userConnectionPanel.addComponent(loadExampleUserAccount);
+////         userConnectionPanel.setExpandRatio(loadExampleUserAccount, 0.1f);
+////        userConnectionPanel.setComponentAlignment(loadExampleUserAccount, Alignment.TOP_LEFT);
 
         galaxyConnectionBtn = new Button("Galaxy", new ThemeResource("img/galaxyLogo_2.png"));
         galaxyConnectionBtn.setSizeFull();
+        galaxyConnectionBtn.setEnabled(false);
         galaxyConnectionBtn.setCaptionAsHtml(true);
+//        serviceButtonContainer.addComponent(galaxyConnectionBtn);
+//        serviceButtonContainer.setComponentAlignment(galaxyConnectionBtn, Alignment.TOP_LEFT);
+//        serviceButtonContainer.setExpandRatio(galaxyConnectionBtn, 0.35f);
 
-        serviceButtonContainer.addComponent(galaxyConnectionBtn);
-        serviceButtonContainer.setComponentAlignment(galaxyConnectionBtn, Alignment.TOP_LEFT);
+//        Label galaxyConnectionText = new Label("<font style='width: 100%;height: 100%;font-size: 14px;font-weight: 600;text-align: justify;margin-top: 5px;'>Login to Galaxy Server using your API Key or as a guest</font>", ContentMode.HTML);
+//        galaxyConnectionText.setStyleName(ValoTheme.LABEL_BOLD);
+//        galaxyConnectionText.setSizeFull();
+//        serviceButtonContainer.addComponent(galaxyConnectionText);
+//        serviceButtonContainer.setComponentAlignment(galaxyConnectionText, Alignment.TOP_LEFT);
+//        serviceButtonContainer.setExpandRatio(galaxyConnectionText, 0.65f);
+        connectionBtnLabel = new ButtonWithLabel("<font style='width: 100%;height: 100%;font-size: 14px;font-weight: 600;text-align: justify;line-height: 70px;'>Login to Galaxy Server using your API Key</font>", 1);
+        connectionBtnLabel.updateIconResource(new ThemeResource("img/galaxyLogo_2.png"));
+        connectionBtnLabel.addStyleName("smaller");
+        serviceButtonContainer.addComponent(connectionBtnLabel);
 
         nelsGalaxyConnectionBtn = new Link("NeLS-Galaxy", new ExternalResource("http://localhost:8084/NelsGalaxyRedirectForm/"));
         nelsGalaxyConnectionBtn.setStyleName("nelslogo");
@@ -190,21 +386,15 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
          *
          */
         nelsGalaxyConnectionBtn.setVisible(false);
-        final VerticalLayout spacerLayout = new VerticalLayout();
-        galaxyLoginLayout = new VerticalLayout() {
-            @Override
-            public void setVisible(boolean visible) {
-                super.setVisible(visible);
-                spacerLayout.setVisible(!visible);
-            }
-
-        };
+//        final VerticalLayout spacerLayout = new VerticalLayout();
+        galaxyLoginLayout = new VerticalLayout();
         galaxyLoginLayout.setSizeFull();
         galaxyLoginLayout.setSpacing(true);
-        galaxyLoginLayout.setVisible(false);
-        bodyContent.addComponent(galaxyLoginLayout);
-        bodyContent.setExpandRatio(galaxyLoginLayout, 0.1f);
-        bodyContent.setComponentAlignment(galaxyLoginLayout, Alignment.TOP_LEFT);
+        galaxyLoginLayout.setVisible(true);
+        galaxyLoginLayout.setMargin(false);
+        userConnectionPanel.addComponent(galaxyLoginLayout);
+        userConnectionPanel.setExpandRatio(galaxyLoginLayout, 0.1f);
+        userConnectionPanel.setComponentAlignment(galaxyLoginLayout, Alignment.TOP_LEFT);
 
         userAPIFeald = new TextField("User API");
         userAPIFeald.addFocusListener((FieldEvents.FocusEvent event) -> {
@@ -228,62 +418,45 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         regLink.setStyleName("newlink");
         regLink.setTargetName("_blank");
         galaxyServiceBtns.addComponent(regLink);
-        galaxyServiceBtns.setExpandRatio(regLink, 0.15f);
+        galaxyServiceBtns.setExpandRatio(regLink, 0.1f);
 
         Link userAPI = new Link("Get User API", new ExternalResource("http://129.177.231.63:8081/galaxy/user/api_key"));
-        userAPI.setStyleName("newlink");
-        userAPI.setTargetName("_blank");
+        userAPI.setStyleName("newlink");       
+        userAPI.setTargetName("_blank");   
         galaxyServiceBtns.addComponent(userAPI);
-        galaxyServiceBtns.setExpandRatio(userAPI, 0.25f);
+        galaxyServiceBtns.setExpandRatio(userAPI, 0.4f);
+//
+//        galaxyServiceBtns.addComponent(loadExampleUserAccount);
+//        galaxyServiceBtns.setExpandRatio(loadExampleUserAccount, 0.1f);
+//        galaxyServiceBtns.setComponentAlignment(loadExampleUserAccount, Alignment.TOP_RIGHT);
+
         Button loginButton = new Button("Login");
         loginButton.setStyleName(ValoTheme.BUTTON_TINY);
         galaxyServiceBtns.addComponent(loginButton);
-        galaxyServiceBtns.setExpandRatio(loginButton, 0.6f);
+        galaxyServiceBtns.setExpandRatio(loginButton, 0.4f);
         galaxyServiceBtns.setComponentAlignment(loginButton, Alignment.TOP_RIGHT);
 
-        VerticalLayout connectionCommentLayout = new VerticalLayout();
-        connectionCommentLayout.setSizeFull();
-        bodyContent.addComponent(connectionCommentLayout);
-        bodyContent.setExpandRatio(connectionCommentLayout, 0.1f);
-        bodyContent.setComponentAlignment(connectionCommentLayout, Alignment.TOP_LEFT);
-
-        connectionStatuesLabel = new Label("Galaxy is<font color='red'>  not connected </font><font size='3' color='red'> " + FontAwesome.FROWN_O.getHtml() + "</font>");
-        connectionStatuesLabel.setContentMode(ContentMode.HTML);
-        connectionStatuesLabel.setHeight(25, Sizeable.Unit.PIXELS);
-        connectionStatuesLabel.setWidth(160, Sizeable.Unit.PIXELS);
-        connectionStatuesLabel.setStyleName(ValoTheme.LABEL_SMALL);
-        connectionStatuesLabel.addStyleName(ValoTheme.LABEL_BOLD);
-        connectionStatuesLabel.addStyleName(ValoTheme.LABEL_TINY);
-        connectionStatuesLabel.addStyleName(ValoTheme.LABEL_NO_MARGIN);
-        connectionCommentLayout.addComponent(connectionStatuesLabel);
-        connectionCommentLayout.setComponentAlignment(connectionStatuesLabel, Alignment.TOP_CENTER);
-
-        spacerLayout.setSizeFull();
-        spacerLayout.setSpacing(true);
-        spacerLayout.setVisible(true);
-        bodyContent.addComponent(spacerLayout);
-        bodyContent.setExpandRatio(spacerLayout, 0.1f);
-        bodyContent.setComponentAlignment(spacerLayout, Alignment.TOP_LEFT);
-
-        galaxyConnectionBtn.addClickListener((Button.ClickEvent event) -> {
-            if (galaxyConnectionBtn.getCaption().equalsIgnoreCase("<b>Disconnect</b>")) {
-                VaadinSession.getCurrent().getSession().invalidate();
-                Page.getCurrent().reload();
-            } else if (galaxyLoginLayout.isVisible()) {
-                galaxyLoginLayout.setVisible(false);
-            } else {
-                galaxyLoginLayout.setVisible(true);
-            }
-
-        });
+//        galaxyConnectionBtn.addClickListener((Button.ClickEvent event) -> {
+//            if (galaxyConnectionBtn.getCaption().equalsIgnoreCase("<b>Disconnect</b>")) {
+//                VaadinSession.getCurrent().getSession().invalidate();
+//                Page.getCurrent().reload();
+//            } else if (galaxyLoginLayout.isVisible()) {
+//                galaxyLoginLayout.setVisible(false);
+//            } else {
+//                galaxyLoginLayout.setVisible(true);
+//            }
+//
+//        });
         loginButton.addClickListener((Button.ClickEvent event) -> {
             userAPIFeald.commit();
-            connectionStatuesLabel.setValue("<h1 class='animation'>Connecting to galaxy....</h1>");
             if (userAPIFeald.isValid() && !userAPIFeald.getValue().equalsIgnoreCase(testUserLogin)) {
+                connectingLabel.setVisible(true);
+                connectinoWindow.setClosable(false);
+                connectionBtnLabel.setVisible(false);
                 galaxyLoginLayout.setVisible(false);
                 Runnable task = () -> {
-                    boolean connected = connectToGalaxy(userAPIFeald.getValue());
-                    connectedToGalaxy(connected);
+                    List<String> userOverviewData = connectToGalaxy(userAPIFeald.getValue(), viewId);
+                    connectedToGalaxy(userOverviewData);
                 };
                 if (executorService.isShutdown()) {
                     executorService = Executors.newFixedThreadPool(2);
@@ -294,28 +467,104 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
 
             }
         });
-        loadExampleUserAccount.addClickListener((Button.ClickEvent event) -> {
-            galaxyLoginLayout.setVisible(false);
-            Runnable task = () -> {
-                boolean connected = connectToGalaxy(testUserLogin);
-                connectedToGalaxy(connected);
-            };
-            connectionStatuesLabel.setValue("<h1 class='animation'>Connecting to galaxy....</h1>");
-            if (executorService.isShutdown()) {
-                    executorService = Executors.newFixedThreadPool(2);
-                }
-            executorService.submit(task);
-            executorService.shutdown();
-
-        });
+//        loadExampleUserAccount.addClickListener((Button.ClickEvent event) -> {
+//            galaxyLoginLayout.setVisible(false);
+//            connectinoWindow.setClosable(false);
+//            connectingLabel.setVisible(true);
+//            connectionBtnLabel.setVisible(false);
+//            Runnable task = () -> {
+//                List<Object> userOverviewData = connectToGalaxy(testUserLogin, viewId);
+//                connectedToGalaxy(userOverviewData);
+//            };
+//            if (executorService.isShutdown()) {
+//                executorService = Executors.newFixedThreadPool(2);
+//            }
+//            executorService.submit(task);
+//            executorService.shutdown();
+//
+//        });
 
 //
-        viewControlButton = new BigSideBtn("Home Page",1);
+        viewControlButton = new BigSideBtn("Home Page", 1);
         viewControlButton.updateIcon(VaadinIcons.HOME_O.getHtml());
         viewControlButton.addStyleName("homepagepresenterbtn");
         viewControlButton.setData(WelcomePagePresenter.this.getViewId());
-        busyConnectinWindow.addStyleName("hidewindow");        
+
         this.viewControlButton.setDescription("View home page");
+
+        VerticalLayout mainBottomPanel = new VerticalLayout();
+        mainBottomPanel.setStyleName("bluelayout");
+        mainBottomPanel.setHeight(65, Unit.PIXELS);
+        mainBottomPanel.setWidth(100, Unit.PERCENTAGE);
+        container.addComponent(mainBottomPanel,"left:0px;bottom:10px");
+        
+        HorizontalLayout sponserContainer = new HorizontalLayout();
+        sponserContainer.setHeight(100,Unit.PERCENTAGE);
+        sponserContainer.setSpacing(true);
+        sponserContainer.setWidthUndefined();
+        mainBottomPanel.addComponent(sponserContainer);
+        mainBottomPanel.setComponentAlignment(sponserContainer, Alignment.TOP_CENTER);
+        
+        Label developmentText = new Label("Development ref. bla bla", ContentMode.HTML);
+        sponserContainer.addComponent(developmentText);
+        
+        
+        Link probeLink = new Link("<img src='VAADIN/themes/webpeptideshakertheme/img/probe-updated.png' alt style='height: 65px;margin-top: -20px;cursor:pointer !important;'>", new ExternalResource("https://www.uib.no/rg/probe"));
+        probeLink.setCaptionAsHtml(true);
+        probeLink.setHeight(100,Unit.PERCENTAGE);
+        probeLink.setWidth(200,Unit.PIXELS);
+        probeLink.setTargetName("_blank"); 
+        sponserContainer.addComponent(probeLink);
+           Link uibLink = new Link("<img src='VAADIN/themes/webpeptideshakertheme/img/uib-logo.svg' alt style='height: 85px;margin-top: -30px;margin-left: -20px;cursor:pointer !important;'>", new ExternalResource("https://www.uib.no/"));
+        uibLink.setCaptionAsHtml(true);
+        uibLink.setHeight(100,Unit.PERCENTAGE);
+        uibLink.setWidth(65,Unit.PIXELS);
+        uibLink.setTargetName("_blank"); 
+         sponserContainer.addComponent(uibLink);
+         Link cbuLink = new Link("<img src='VAADIN/themes/webpeptideshakertheme/img/cbu_logo_lightBlue_transparent.png' alt style='height: 55px;margin-top: -10px;cursor:pointer !important;'>", new ExternalResource("http://www.cbu.uib.no/"));
+        cbuLink.setCaptionAsHtml(true);
+        cbuLink.setHeight(100,Unit.PERCENTAGE);
+        cbuLink.setWidth(112,Unit.PIXELS);
+        cbuLink.setTargetName("_blank"); 
+        sponserContainer.addComponent(cbuLink);
+         
+         
+      
+        
+//        container.setExpandRatio(mainBottomPanel, 20);
+
+        VerticalLayout windowContent = new VerticalLayout();
+        windowContent.setWidth(500, Unit.PIXELS);
+        this.busyConnectinWindow = new Window(null, windowContent);
+        this.busyConnectinWindow.setSizeFull();
+        this.busyConnectinWindow.setStyleName("busyconnectingwindow");
+        this.busyConnectinWindow.setModal(false);
+        this.busyConnectinWindow.setDraggable(false);
+        this.busyConnectinWindow.setClosable(false);
+        this.busyConnectinWindow.setResizable(false);
+        busyConnectinWindow.center();
+        this.busyConnectinWindow.setWindowMode(WindowMode.NORMAL);
+        busyConnectinWindow.addStyleName("hidewindow");
+
+        this.loginAsGuest();
+
+    }
+
+    private void loginAsGuest() {
+        connectionBtnLabel.setVisible(false);
+        connectinoWindow.setVisible(true);
+        galaxyLoginLayout.setVisible(false);
+        connectinoWindow.setClosable(false);
+        connectingLabel.setVisible(true);
+        Runnable task = () -> {
+            List<String> userOverviewData = connectToGalaxy(testUserLogin, viewId);
+            connectedToGalaxy(userOverviewData);
+        };
+        if (executorService.isShutdown()) {
+            executorService = Executors.newFixedThreadPool(2);
+        }
+        executorService.submit(task);
+        executorService.shutdown();
 
     }
 
@@ -324,22 +573,50 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
      *
      * @param connected connected to galaxy server
      */
-    private void connectedToGalaxy(boolean connected) {
-        if (connected) {
-            connectionStatuesLabel.setValue("Galaxy is <font color='green'>connected </font><font size='3' color='green'> " + FontAwesome.SMILE_O.getHtml() + "</font>");
-            galaxyConnectionBtn.setCaption("<b>Disconnect</b>");
+    private void connectedToGalaxy(List<String> userOverviewData) {
+        connectinoWindow.setClosable(true);
+        connectionBtnLabel.setVisible(true);
+        galaxyLoginLayout.setEnabled(true);
+//        loadExampleUserAccount.setEnabled(true);
+        galaxyLoginLayout.setVisible(true);
+        loginBtnLabel.setData(null);
+
+        if (userOverviewData != null && userOverviewData.get(0).contains("Guest User")) {
+            connectinoWindow.setVisible(false);
+            presenteControlButtonsLayout.setEnabled(true);
+        } else if (userOverviewData != null && !userOverviewData.get(0).contains("Guest User")) {
+            connectinoWindow.setVisible(false);
+            loginBtnLabel.updateText("Galaxy Logout");
+//            loginLabel.setValue("<img src='VAADIN/themes/webpeptideshakertheme/img/galaxyLogo_2.png' alt style='width: 25px;height: 25px;border: 1px solid lightgray;border-radius: 5px;background-color: whitesmoke;cursor:pointer !important;'><font color='green' style='line-height: 0px !important; vertical-align:text-top;cursor:pointer !important;'> Galaxy Logout </font>");
+            loginBtnLabel.setData("connected");
+//            loginLabel.setVisible(true);
             galaxyLoginLayout.setEnabled(false);
-            loadExampleUserAccount.setEnabled(false);
+//            loadExampleUserAccount.setEnabled(false);
+            presenteControlButtonsLayout.setEnabled(true);
 
         } else {
             userAPIFeald.setValue(apiErrorMessage);
             userAPIFeald.addStyleName("redfont");
-            connectionStatuesLabel.setValue("Galaxy is<font color='red'>  not connected </font><font size='3' color='red'> " + FontAwesome.FROWN_O.getHtml() + "</font>");
-            galaxyLoginLayout.setEnabled(true);
-            loadExampleUserAccount.setEnabled(true);
-            galaxyLoginLayout.setVisible(true);
+//            loginLabel.setValue("Galaxy is<font color='#cd6e1d'>  not connected </font><font size='3' color='#cd6e1d'> " + FontAwesome.FROWN_O.getHtml() + "</font>");
+//            galaxyLoginLayout.setEnabled(true);
+//            loadExampleUserAccount.setEnabled(true);
+//            galaxyLoginLayout.setVisible(true);
+//            loginLabel.setData(null);
+//            loginLabel.setVisible(false);
         }
+        updateUserOverviewPanel(userOverviewData);     
+        connectingLabel.setVisible(false);
 
+    }
+    public void updateUserOverviewPanel(List<String> userOverviewData){
+    if (userOverviewData != null && !userOverviewData.isEmpty()) {
+            Label l1 = initLeftSideInfoLabel(VaadinIcons.USER.getHtml()+" <b style='color:#cd6e1d !important'>" + userOverviewData.get(0) + "</b>", "");
+            userOverviewLayout.replaceComponent(userOverviewLayout.getComponent(1), l1);
+            for (int i = 2; i < userOverviewLayout.getComponentCount(); i++) {
+                Label l = (Label) userOverviewLayout.getComponent(i);
+                updateLeftSideInfoLabel(l, userOverviewData.get(i - 1));
+            }
+     }
     }
 
     /**
@@ -361,6 +638,9 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         headerLogoLabel.setCaptionAsHtml(true);
         headerLayoutContainer.setComponentAlignment(headerLogoLabel, Alignment.MIDDLE_LEFT);
         headerLogoLabel.setStyleName("headerlogo");
+        headerLayoutContainer.addLayoutClickListener((LayoutEvents.LayoutClickEvent event) -> {
+            Page.getCurrent().open("", "", false);
+        });
         return headerLayoutContainer;
     }
 
@@ -382,7 +662,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
     }
 
     @Override
-    public BigSideBtn getPresenterControlButton() {
+    public BigSideBtn getPresenterControlInframeButton() {
         return viewControlButton;
     }
 
@@ -396,14 +676,40 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         return new VerticalLayout();
     }
 
-  
-
     /**
      * Start the Online PeptideShaker - Galaxy server connection.
      *
+     * @param presenterId button used to login
      * @param userAPI user API key that is required to connect to galaxy
-     * @return boolean successful connection to galaxy
+     * @return list of overview data for the user / null indicate failed to
+     * connect to Galaxy Server
      */
-    public abstract boolean connectToGalaxy(String userAPI);
+    public abstract List<String> connectToGalaxy(String userAPI, String presenterId);
+
+    private Label initLeftSideInfoLabel(String title, String value) {
+        Label label = new Label("<font style='width:120px;font-size: 14px;'>" + title + "</font><font style='width:60px; text-align: right !important;font-size: 14px; float: right !important;  color:#cd6e1d'>  " + value + " </font>");
+        label.setContentMode(ContentMode.HTML);
+        label.setHeight(30, Sizeable.Unit.PIXELS);
+        label.setWidth(180, Sizeable.Unit.PIXELS);
+        label.setStyleName(ValoTheme.LABEL_SMALL);
+        return label;
+
+    }
+
+    private void updateLeftSideInfoLabel(Label label, String value) {
+        String org = label.getValue().split("</font>")[0];
+        label.setValue(org + "</font><font style='width:60px; text-align: right !important;font-size: 14px;float: right !important;  color:#cd6e1d'>  " + value + " </font>");      
+
+    }
+
+    @Override
+    public ButtonWithLabel getPresenterControlButton() {
+        return null;
+    }
+
+    public void setPresenterControlButtonContainer(GridLayout presenterBtnsContainer) {
+        presenterBtnsContainer.addComponent(loginBtnLabel, 1, 1);
+        presenteControlButtonsLayout.addComponent(presenterBtnsContainer);
+    }
 
 }
