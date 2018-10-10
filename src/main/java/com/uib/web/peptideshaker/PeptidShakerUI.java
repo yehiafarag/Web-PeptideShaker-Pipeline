@@ -141,6 +141,8 @@ public class PeptidShakerUI extends UI {
         if (isNelsGalaxyConnection || (VaadinSession.getCurrent().getAttribute("ApiKey") != null && VaadinSession.getCurrent().getAttribute("galaxyUrl") != null)) {
             webPeptideShakerApp.reConnectToGalaxyServer(VaadinSession.getCurrent().getAttribute("ApiKey") + "", VaadinSession.getCurrent().getAttribute("galaxyUrl") + "");
         }
+        
+        Page.getCurrent().setTitle("PeptideShaker");
 
     }
 

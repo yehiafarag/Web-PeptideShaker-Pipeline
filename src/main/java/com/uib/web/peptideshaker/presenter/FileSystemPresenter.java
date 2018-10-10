@@ -35,6 +35,10 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
     /**
      * The main left side buttons container in big screen mode.
      */
+    /**
+     * The small side button (normal size screen).
+     */
+    private final SmallSideBtn smallControlButton;
     private VerticalLayout leftSideButtonsContainer;
     /**
      * Map of layouts to coordinate left side buttons actions.
@@ -56,7 +60,10 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
         FileSystemPresenter.this.setSizeFull();
         FileSystemPresenter.this.setStyleName("activelayout");
         FileSystemPresenter.this.addStyleName("hidelowerpanel");
-        this.controlButton = new ButtonWithLabel("Data Access",1);
+        
+        this.smallControlButton = new SmallSideBtn(VaadinIcons.GLOBE);
+        this.smallControlButton.setData(FileSystemPresenter.this.getViewId());
+        this.controlButton = new ButtonWithLabel("Data Overview</br><font>Available files and projects</font>",1);
         this.controlButton.updateIcon(VaadinIcons.GLOBE.getHtml());
         this.controlButton.setData(FileSystemPresenter.this.getViewId());
         this.controlButton.setDescription("View available datastes and files");
@@ -77,8 +84,8 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
         leftSideButtonsContainer.setSpacing(true);
         leftSideButtonsContainer.setMargin(new MarginInfo(false, false, true, false));
         leftSideButtonsContainer.addStyleName("singlebtn");
-        viewDataBtn = new BigSideBtn("Data Access",1);
-        viewDataBtn.setDescription("View available datasets and files");
+        viewDataBtn = new BigSideBtn("Data Overview",1);
+        viewDataBtn.setDescription("Available datasets and files");
         viewDataBtn.updateIcon(VaadinIcons.GLOBE.getHtml());
         viewDataBtn.setData("datasetoverview");
         leftSideButtonsContainer.addComponent(viewDataBtn);
@@ -155,9 +162,11 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
      */
     public void updateSystemData(Map<String, GalaxyFileObject> historyFilesMap, boolean jobInProgress) {
         if (jobInProgress) {
+             smallControlButton.updateIconURL("img/globeearthanimation.gif");
             controlButton.updateIconResource(new ThemeResource("img/globeearthanimation.gif"));
             viewDataBtn.updateIconResource(new ThemeResource("img/globeearthanimation.gif"));
         } else {
+             smallControlButton.updateIconURL(VaadinIcons.GLOBE);
             controlButton.updateIcon(VaadinIcons.GLOBE.getHtml());
             viewDataBtn.updateIcon(VaadinIcons.GLOBE.getHtml());
         }
@@ -183,12 +192,12 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
      * @return right view control button
      */
     @Override
-    public BigSideBtn getPresenterControlInframeButton() {
-        return null;
+    public SmallSideBtn getSmallPresenterControlButton() {
+        return smallControlButton;
     }
 
     @Override
-    public ButtonWithLabel getPresenterControlButton() {
+    public ButtonWithLabel getLargePresenterControlButton() {
         return controlButton;
     }
     
@@ -209,6 +218,7 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
      */
     @Override
     public void minimizeView() {
+        smallControlButton.setSelected(false);
         controlButton.setSelected(false);
         this.addStyleName("hidepanel");
         this.leftSideButtonsContainer.removeStyleName("visible");
@@ -222,6 +232,7 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
     public void maximizeView() {
         controlButton.setSelected(true);
         dataLayout.setEnabled(true);
+         smallControlButton.setSelected(true);
         this.leftSideButtonsContainer.addStyleName("visible");
         this.removeStyleName("hidepanel");
 
@@ -235,7 +246,7 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
      */
     @Override
     public void layoutClick(LayoutEvents.LayoutClickEvent event) {
-        ButtonWithLabel comp = (ButtonWithLabel) event.getComponent();
+        BigSideBtn comp = (BigSideBtn) event.getComponent();
         btnsLayoutMap.keySet().forEach((bbt) -> {
             if (comp.getData().toString().equalsIgnoreCase(bbt.getData().toString())) {
                 bbt.setSelected(true);

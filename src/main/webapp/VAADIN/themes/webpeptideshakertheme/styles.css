@@ -13568,6 +13568,7 @@ div.v-layout.v-horizontal.v-widget {
 	border-bottom-right-radius: 0px !important;
 	z-index: 5 !important;
 	height: auto !important;
+	width: 106px !important;
 }
 
 .webpeptideshakertheme .selectedbiglbtn img {
@@ -13647,7 +13648,7 @@ div.v-layout.v-horizontal.v-widget {
 .webpeptideshakertheme .v-label-frametitle {
 	padding-left: 10px;
 	padding-top: 10px;
-	font-size: 16px;
+	font-size: 20px;
 	font-weight: bold;
 	font-family: "Open Sans", sans-serif;
 	color: #464646;
@@ -16665,24 +16666,8 @@ div.v-layout.v-horizontal.v-widget {
 	line-height: 30px;
 }
 
-.webpeptideshakertheme .bigmenubtn .selectedpresenterbtn img {
-	background-color: white;
-}
-
 .webpeptideshakertheme .bigmenubtn .selectedpresenterbtn {
 	border-color: orange !important;
-}
-
-.webpeptideshakertheme .bigmenubtn .selectedpresenterbtn .v-icon {
-	line-height: 30px;
-	text-align: center !important;
-	color: #000000 !important;
-	border-radius: 5px;
-	background-color: #ffffff;
-	width: 100% !important;
-	cursor: pointer;
-	position: relative;
-	z-index: 5 !important;
 }
 
 .webpeptideshakertheme .welcomepagstyle {
@@ -16696,10 +16681,6 @@ div.v-layout.v-horizontal.v-widget {
 	cursor: default !important;
 }
 
-.webpeptideshakertheme .welcomepagstyle.bigmenubtn :hover {
-	background-color: rgba(255, 255, 255, 0) !important;
-}
-
 .webpeptideshakertheme .v-slot-presentercontainer.v-slot-bigmenubtn.v-slot-selectedbiglbtn.v-slot-welcomepagstyle {
 	left: 50% !important;
 	top: 400px !important;
@@ -16710,6 +16691,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .v-slot-welcomepagstyle .v-absolutelayout-presentercontainer.v-absolutelayout-bigmenubtn {
 	background-color: white !important;
+	display: none !important;
 }
 
 .webpeptideshakertheme .v-slot-welcomepagstyle .v-gridlayout-slot {
@@ -17053,14 +17035,14 @@ div.v-layout.v-horizontal.v-widget {
 	border-radius: 5px;
 	background-color: whitesmoke;
 	float: left;
-	padding: 10px;
+	padding: 15px;
 }
 
 .webpeptideshakertheme .btnwithtext .v-label {
 	font-size: 15px !important;
 	line-height: 50% !important;
 	vertical-align: middle !important;
-	margin-top: -20px;
+	margin-top: 0px;
 	font-weight: 1000;
 }
 
@@ -17149,6 +17131,23 @@ div.v-layout.v-horizontal.v-widget {
 .webpeptideshakertheme .v-window-closebox {
 	font-weight: 1000 !important;
 	color: #1b7de1 !important;
+	position: absolute;
+	z-index: 3;
+	right: 20px !important;
+	margin-top: 20px !important;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	width: 22px !important;
+	height: 22px !important;
+	background-color: white;
+	line-height: 22px;
+	text-align: center;
+	cursor: pointer;
+	font-size: 22px !important;
+	-webkit-transition: color 140ms;
+	-moz-transition: color 140ms;
+	transition: color 140ms;
 }
 
 .webpeptideshakertheme .v-disabled.disableasenable div {
@@ -17162,4 +17161,86 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .welcomepagstyle .v-horizontallayout-homepagepresenterbtn {
 	display: none !important;
+}
+
+.webpeptideshakertheme .refrencetext a {
+	text-decoration: none;
+	font-weight: 1000;
+}
+
+.webpeptideshakertheme .refrencetext a:hover {
+	text-decoration: underline;
+}
+
+.webpeptideshakertheme .refrencetext {
+	max-width: 550px;
+	font-size: 12px;
+	text-align: justify;
+	white-space: pre-wrap !important;
+	margin-top: -15px;
+	color: black;
+}
+
+.webpeptideshakertheme .refrencetext i {
+	color: #ca7329;
+	font-size: 10px;
+}
+
+.webpeptideshakertheme .btnwithtext font {
+	font-size: 10px !important;
+	line-height: 35px;
+}
+
+.webpeptideshakertheme .btnwithtext.smaller .v-label {
+	margin-top: -20px !important;
+}
+
+.webpeptideshakertheme .btnwithtext.smaller font {
+	font-size: 13px !important;
+	height: 10px !important;
+	line-height: 10px !important;
+	margin-top: -20px !important;
+}
+
+.webpeptideshakertheme .galaxylabel img {
+	padding: 20px !important;
+}
+
+.webpeptideshakertheme .psprojectname {
+	max-width: 400px;
+	margin-left: 20px;
+	margin-top: 10px;
+}
+
+.webpeptideshakertheme .psprojectname .v-label b {
+	font-size: 16px !important;
+	font-weight: bold !important;
+	font-family: "Open Sans", sans-serif !important;
+	color: #464646 !important;
+}
+
+.webpeptideshakertheme .psprojectname .v-slot {
+	width: 70% !important;
+}
+
+.webpeptideshakertheme .psprojectname .v-slot-smallundecorated {
+	width: 30% !important;
+}
+
+.webpeptideshakertheme .v-slot-btnbesidetitle {
+	max-height: 0px;
+	max-width: 420px;
+	margin-top: -27px;
+}
+
+.webpeptideshakertheme .btnbesidetitle .v-label {
+	margin-top: 27px;
+	float: right !important;
+	margin-left: 150px !important;
+	font-style: italic;
+	font-size: 12px;
+}
+
+.webpeptideshakertheme .bottomformlayout .v-button {
+	margin-top: -40px;
 }

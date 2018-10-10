@@ -344,7 +344,7 @@ public abstract class HistoryHandler1 {
 //                        } else if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.text.Json") && map.get("name").toString().endsWith(".par")) {
 //                            SystemDataSet ds = new SystemDataSet();
 //                            ds.setName(map.get("name").toString());
-//                            ds.setType("Search Paramerters File (JSON)");
+//                            ds.setType("Search Parameters File (JSON)");
 //                            ds.setHistoryId(history.getId());
 //                            ds.setGalaxyId(map.get("id").toString());
 //                            ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + ds.getGalaxyId() + "/display");
@@ -387,7 +387,7 @@ public abstract class HistoryHandler1 {
 //                                ds.setDownloadUrl("to_ext=" + map.get("file_ext").toString());
 //                                HistoryHandler1.this.mgfFilesMap.put(ds.getGalaxyId(), ds);
 //                            } else if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.text.Json") && map.get("name").toString().endsWith(".par")) {
-//                                ds.setType("Search Paramerters File (JSON)");
+//                                ds.setType("Search Parameters File (JSON)");
 //                                ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + ds.getGalaxyId() + "/display");
 //                                GalaxyFile file = new GalaxyFile(userFolder, ds, false);
 //                                file.setDownloadUrl("to_ext=" + map.get("file_ext").toString());

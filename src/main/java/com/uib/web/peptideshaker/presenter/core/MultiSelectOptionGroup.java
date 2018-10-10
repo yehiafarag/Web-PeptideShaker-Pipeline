@@ -28,7 +28,6 @@ public class MultiSelectOptionGroup extends VerticalLayout implements LayoutEven
         }
         MultiSelectOptionGroup.this.setStyleName("optiongroupframe");
         if (title != null) {
-            title = "<div>&#10148; </div>" + title;
             list = new OptionGroup(title);
         } else {
             list = new OptionGroup();

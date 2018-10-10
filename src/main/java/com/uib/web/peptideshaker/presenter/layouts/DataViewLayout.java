@@ -4,6 +4,7 @@ import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideSha
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyFileObject;
 import com.uib.web.peptideshaker.presenter.core.DatasetOverviewLayout;
 import com.uib.web.peptideshaker.presenter.core.ActionLabel;
+import com.uib.web.peptideshaker.presenter.core.FileOverviewLayout;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
 import com.uib.web.peptideshaker.presenter.core.StatusLabel;
 import com.uib.web.peptideshaker.presenter.core.Uploader;
@@ -160,12 +161,12 @@ public abstract class DataViewLayout extends Panel {
             if (ds.getName() == null || ds.getType().equalsIgnoreCase("FASTA File")) {
                 continue;
             }
-            Component infoLAbel;
+            Component infoLabel;
             StatusLabel statusLabel = new StatusLabel();
             statusLabel.setStatus(ds.getStatus());
             ActionLabel downloadLabel = new ActionLabel(VaadinIcons.DOWNLOAD_ALT, "Download File") {
                 @Override
-                public void layoutClick(LayoutEvents.LayoutClickEvent event) {
+                public void layoutClick(LayoutEvents.LayoutClickEvent event) {                    
                     Page.getCurrent().open(ds.getDownloadUrl(), "", false);
                 }
 
@@ -258,10 +259,10 @@ public abstract class DataViewLayout extends Panel {
                 nameLabel.addStyleName("bluecolor");
                 nameLabel.addStyleName("orangecolor");
 
-                infoLAbel = new PopupWindow("   ");
-                infoLAbel.setIcon(VaadinIcons.INFO_CIRCLE_O);
+                infoLabel = new PopupWindow("   ");
+                infoLabel.setIcon(VaadinIcons.INFO_CIRCLE_O);
                 DatasetOverviewLayout dsOverview = new DatasetOverviewLayout((PeptideShakerVisualizationDataset) ds) {
-                    private final PopupWindow tDsOverview = (PopupWindow) infoLAbel;
+                    private final PopupWindow tDsOverview = (PopupWindow) infoLabel;
 
                     @Override
                     public void close() {
@@ -270,8 +271,8 @@ public abstract class DataViewLayout extends Panel {
 
                 };
                 ((PeptideShakerVisualizationDataset) ds).setEnzyme(dsOverview.getEnzyme());
-                ((PopupWindow) infoLAbel).setContent(dsOverview);
-                ((PopupWindow) infoLAbel).setDescription("View searching settings ");
+                ((PopupWindow) infoLabel).setContent(dsOverview);
+                ((PopupWindow) infoLabel).setDescription("View searching settings ");
 
                 if (statusLabel.getStatus() == 2) {
                     statusLabel.setStatus("Some files are missings or corrupted please re-run SearchGUI-PeptideShaker-WorkFlow");
@@ -284,13 +285,28 @@ public abstract class DataViewLayout extends Panel {
 //                    }
 //
 //                };
-                infoLAbel.addStyleName("centeredicon");
-                rowLayout = initializeRowData(new Component[]{new Label(i + ""), nameLabel, new Label(ds.getType()), infoLAbel, getToGalaxyLabel, nelsLabel, downloadLabel, deleteLabel, statusLabel}, false);
+                infoLabel.addStyleName("centeredicon");
+                rowLayout = initializeRowData(new Component[]{new Label(i + ""), nameLabel, new Label(ds.getType()), infoLabel, getToGalaxyLabel, nelsLabel, downloadLabel, deleteLabel, statusLabel}, false);
                 topDataTable.addComponent(rowLayout);
             } else {
+                infoLabel = new PopupWindow("   ");
+                infoLabel.setIcon(VaadinIcons.INFO_CIRCLE_O);
+                 infoLabel.addStyleName("centeredicon");
+                FileOverviewLayout fileOverview = new FileOverviewLayout(ds) {
+                    private final PopupWindow tFileOverview = (PopupWindow) infoLabel;
+
+                    @Override
+                    public void close() {
+                        ((PopupWindow) tFileOverview).setPopupVisible(false);
+                    }
+
+                };
+                ((PopupWindow) infoLabel).setContent(fileOverview);
+                ((PopupWindow) infoLabel).setDescription("View searching settings ");
+
                 nameLabel = new Label(ds.getName());
                 ((Label) nameLabel).setDescription(ds.getName());
-                rowLayout = initializeRowData(new Component[]{new Label(i + ""), nameLabel, new Label(ds.getType()), new Label(), getToGalaxyLabel, nelsLabel, downloadLabel, deleteLabel, statusLabel}, false);
+                rowLayout = initializeRowData(new Component[]{new Label(i + ""), nameLabel, new Label(ds.getType()), infoLabel, getToGalaxyLabel, nelsLabel, downloadLabel, deleteLabel, statusLabel}, false);
                 bottomDataTable.addComponent(rowLayout);
             }
 

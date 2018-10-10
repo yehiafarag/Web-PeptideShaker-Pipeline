@@ -9,6 +9,7 @@ import com.uib.web.peptideshaker.presenter.core.form.SparkLine;
 import com.vaadin.data.Property;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -76,7 +77,7 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
             return;
         }
         DatasetOverviewLayout.this.addComponent(titleLayout);
-        Label projectNameLabel = new Label(dataset.getName().split("___")[0]);
+        Label projectNameLabel = new Label(dataset.getName().split("___")[0] + " <i style='color: gray;font-size: 12px;'>(" + dataset.getCreateTime() + ")</i>", ContentMode.HTML);
 //        String timeStamp = "";
 //        if (dataset.getName().split("___").length > 1) {
 //            timeStamp = "___"+dataset.getName().split("___")[1];
@@ -134,12 +135,12 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
             upperPanel.addComponent(addDecoy);
 
         }
-        Horizontal2Label searchEnginesLabel = new Horizontal2Label("Search Engines :", dataset.getSearchEngines());
+        Horizontal2Label searchEnginesLabel = new Horizontal2Label("Search Engines :", dataset.getSearchEngines().replace(",", " , "));
         upperPanel.addComponent(searchEnginesLabel);
 
         int index = 1;
         for (String mgf : dataset.getInputMGFFiles().keySet()) {
-            Horizontal2Label mgfFile = new Horizontal2Label("MGF File " + index + " :", dataset.getInputMGFFiles().get(mgf).getName().replace("-" + dataset.getName(), "").replace("-" + index + "-MGFFile", ""));
+            Horizontal2Label mgfFile = new Horizontal2Label("MGF File " + index + " :", dataset.getInputMGFFiles().get(mgf).getName().replace(dataset.getName(), "").replace("-" + index + "-MGFFile", "").replaceFirst("-", ""));
             upperPanel.addComponent(mgfFile);
             index++;
         }
@@ -149,141 +150,17 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
 
         List<String> fixedMod = dataset.getFixedModification();
         List<String> varMod = dataset.getVariableModification();
-        HorizontalLayout modificationContainer = inititModificationLayout(fixedMod, varMod);
-        modificationContainer.addStyleName("subpanelframe");
-        if (!variableModificationTable.getItemIds().isEmpty() || !fixedModificationTable.getItemIds().isEmpty()) {
-            DatasetOverviewLayout.this.addComponent(modificationContainer);
-        }
-        variableModificationTable.setVisible(!variableModificationTable.getItemIds().isEmpty());
-        fixedModificationTable.setVisible(!fixedModificationTable.getItemIds().isEmpty());
+
+        Horizontal2Label fixedModificationLabelLabel = new Horizontal2Label("Fixed Modifications  :", fixedMod.toString().replace("[", "").replace("]", ""));
+        upperPanel.addComponent(fixedModificationLabelLabel);
+
+        Horizontal2Label variableModificationLabelLabel = new Horizontal2Label("Variable Modifications :", varMod.toString().replace("[", " , ").replace("]", ""));
+        upperPanel.addComponent(variableModificationLabelLabel);
 
         GridLayout proteaseFragmentationContainer = inititProteaseFragmentationLayout(dataset.getSearchingParameters());
         proteaseFragmentationContainer.addStyleName("subpanelframe");
         DatasetOverviewLayout.this.addComponent(proteaseFragmentationContainer);
 
-        HorizontalLayout searchEngines = new HorizontalLayout();
-        searchEngines.setSizeFull();
-        searchEngines.addStyleName("subpanelframe");
-        DatasetOverviewLayout.this.addComponent(searchEngines);
-        HorizontalLayout bottomPanel = new HorizontalLayout();
-        bottomPanel.setSizeFull();
-        bottomPanel.setSpacing(true);
-
-        Button closeBtn = new Button("Close");
-        closeBtn.setStyleName(ValoTheme.BUTTON_SMALL);
-        closeBtn.addStyleName(ValoTheme.BUTTON_TINY);
-        closeBtn.setHeight(25, Unit.PIXELS);
-        closeBtn.setWidth(100, Unit.PIXELS);
-        closeBtn.addClickListener((Button.ClickEvent event) -> {
-            close();
-        });
-        searchEngines.addComponent(closeBtn);
-        searchEngines.setComponentAlignment(closeBtn, Alignment.TOP_RIGHT);
-
-        //search_engines_options  engines
-    }
-
-    private HorizontalLayout inititModificationLayout(List<String> fixedMod, List<String> varMod) {
-        HorizontalLayout modificationContainer = new HorizontalLayout();
-        modificationContainer.setSpacing(true);
-        modificationContainer.setStyleName("panelframe");
-        modificationContainer.setSizeFull();
-        modificationContainer.setMargin(new MarginInfo(false, false, false, false));
-        modificationContainer.setWidth(650, Unit.PIXELS);
-        modificationContainer.setHeight(155, Unit.PIXELS);
-
-        VerticalLayout leftSideLayout = new VerticalLayout();
-        leftSideLayout.setSizeFull();
-        leftSideLayout.setSpacing(true);
-        modificationContainer.addComponent(leftSideLayout);
-        fixedModificationTable = initModificationTable("Fixed Modifications");
-        leftSideLayout.addComponent(fixedModificationTable);
-
-        VerticalLayout rightSideLayout = new VerticalLayout();
-        rightSideLayout.setSizeFull();
-        rightSideLayout.setSpacing(true);
-        modificationContainer.addComponent(rightSideLayout);
-        variableModificationTable = initModificationTable("Variable Modifications");
-        rightSideLayout.addComponent(variableModificationTable);
-
-        // get the min and max values for the mass sparklines
-        double maxMass = Double.MIN_VALUE;
-        double minMass = Double.MAX_VALUE;
-
-        for (String ptm : PTM.getPTMs()) {
-            if (PTM.getPTM(ptm).getMass() > maxMass) {
-                maxMass = PTM.getPTM(ptm).getMass();
-            }
-            if (PTM.getPTM(ptm).getMass() < minMass) {
-                minMass = PTM.getPTM(ptm).getMass();
-            }
-        }
-        for (String mod : fixedMod) {
-            if (mod.equalsIgnoreCase("null")) {
-                continue;
-            }
-            ColorLabel color = new ColorLabel(PTM.getColor(mod));
-            SparkLine sLine = new SparkLine(PTM.getPTM(mod).getMass(), minMass, maxMass);
-            Object[] modificationArr = new Object[]{color, mod, sLine};
-            fixedModificationTable.addItem(modificationArr, mod);
-        }
-        for (String mod : varMod) {
-            if (mod.equalsIgnoreCase("null")) {
-                continue;
-            }
-            mod = mod.replace("\"", "");
-            ColorLabel color = new ColorLabel(PTM.getColor(mod));
-            SparkLine sLine = new SparkLine(PTM.getPTM(mod).getMass(), minMass, maxMass);
-            Object[] modificationArr = new Object[]{color, mod, sLine};
-            variableModificationTable.addItem(modificationArr, mod);
-        }
-        return modificationContainer;
-
-    }
-
-    private VerticalLayout initAdvancedSearchOption() {
-        return new VerticalLayout();
-
-    }
-
-    private Table initModificationTable(String cap) {
-        Table modificationsTable = new Table(cap) {
-            DecimalFormat df = new DecimalFormat("0.00E00");//new DecimalFormat("#.##");
-            DecimalFormat df1 = new DecimalFormat("#.##");
-
-            @Override
-            protected String formatPropertyValue(Object rowId, Object colId, Property property) {
-                Object v = property.getValue();
-                if (v instanceof Double) {
-                    if ((double) v > 100) {
-                        return df.format(v);
-                    } else {
-                        return df1.format(v);
-                    }
-                }
-                return super.formatPropertyValue(rowId, colId, property);
-            }
-
-        };
-        Set<Object> idSet = new HashSet<>();
-        modificationsTable.setData(idSet);
-        modificationsTable.setSizeFull();
-        modificationsTable.setStyleName(ValoTheme.TABLE_SMALL);
-        modificationsTable.addStyleName(ValoTheme.TABLE_COMPACT);
-        modificationsTable.addStyleName(ValoTheme.TABLE_NO_VERTICAL_LINES);
-        modificationsTable.addStyleName("smalltable");
-        modificationsTable.setMultiSelect(false);
-        modificationsTable.setSelectable(false);
-        modificationsTable.addContainerProperty("color", ColorLabel.class, null, "", null, Table.Align.CENTER);
-        modificationsTable.addContainerProperty("name", String.class, null, "Name", null, Table.Align.LEFT);
-        modificationsTable.addContainerProperty("mass", SparkLine.class, null, "Mass", null, Table.Align.LEFT);
-        modificationsTable.setColumnExpandRatio("color", 10);
-        modificationsTable.setColumnExpandRatio("name", 55);
-        modificationsTable.setColumnExpandRatio("mass", 35);
-        modificationsTable.sort(new Object[]{"name"}, new boolean[]{true});
-        modificationsTable.setSortEnabled(false);
-        modificationsTable.setItemDescriptionGenerator((Component source, Object itemId, Object propertyId) -> PTM.getPTM(itemId.toString()).getHtmlTooltip());
-        return modificationsTable;
     }
 
     private GridLayout inititProteaseFragmentationLayout(IdentificationParameters parameters) {
@@ -292,19 +169,19 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
         proteaseFragmentationContainer.setStyleName("panelframe");
         proteaseFragmentationContainer.setColumnExpandRatio(0, 55);
         proteaseFragmentationContainer.setColumnExpandRatio(1, 45);
-        proteaseFragmentationContainer.setMargin(new MarginInfo(false, false, false, false));
+        proteaseFragmentationContainer.setMargin(new MarginInfo(false, false, true, false));
         proteaseFragmentationContainer.setWidth(650, Unit.PIXELS);
-        proteaseFragmentationContainer.setHeight(190, Unit.PIXELS);
+        proteaseFragmentationContainer.setHeight(200, Unit.PIXELS);
         proteaseFragmentationContainer.setSpacing(true);
 
         String digestion = "";
         String specificity = "";
         Integer maxMissCleavValue = null;
-        String ion = "";
-        String precursor_ion = "";
-        String fragment_tol = "";
-        String _charge = "";
-        String iso = "";
+        String ion;
+        String precursor_ion;
+        String fragment_tol;
+        String _charge;
+        String iso;
         try {
 //            Map<String, Object> jsonProtein_digest_optionsObjects = (Map<String, Object>) jsonToMap(new JSONObject(parameters.get("protein_digest_options").toString())).get("digestion");
             parameters.getSearchParameters().getDigestionPreferences();

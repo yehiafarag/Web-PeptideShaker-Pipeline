@@ -359,6 +359,7 @@
         border-bottom-right-radius: 0px !important;
         z-index: 5 !important;
         height:auto !important;
+        width:106px !important;
     }
 
     .selectedbiglbtn img {
@@ -429,7 +430,7 @@
     .v-label-frametitle{
         padding-left:10px;
         padding-top:10px;
-        font-size:16px;
+        font-size:20px;
         font-weight:bold;
         font-family:"Open Sans", sans-serif;
         color:rgb(70,70,70);
@@ -3541,23 +3542,11 @@
         line-height:30px;
 
     }
-    .bigmenubtn .selectedpresenterbtn img {
-        background-color: white;
-    }
+
     .bigmenubtn .selectedpresenterbtn {
         border-color:orange !important;// rgba(131, 188, 255, 0.96) !important;
     }
-    .bigmenubtn .selectedpresenterbtn .v-icon {
-        line-height: 30px;
-        text-align: center !important;
-        color: #000000 !important;
-        border-radius: 5px;
-        background-color: #ffffff;
-        width: 100% !important;
-        cursor: pointer;
-        position: relative;
-        z-index: 5 !important;
-    }
+
 
 
 
@@ -3572,11 +3561,6 @@
         margin-left: -50px;
         cursor: default !important;
     }
-
-    .welcomepagstyle.bigmenubtn :hover {
-        background-color: rgba(255, 255, 255, 0) !important;
-    }
-
     .v-slot-presentercontainer.v-slot-bigmenubtn.v-slot-selectedbiglbtn.v-slot-welcomepagstyle {
         left: 50% !important;
         top:400px !important;
@@ -3586,6 +3570,7 @@
     }
     .v-slot-welcomepagstyle .v-absolutelayout-presentercontainer.v-absolutelayout-bigmenubtn {
         background-color:white !important;
+        display: none !important;
     }
 
     .v-slot-welcomepagstyle .v-gridlayout-slot {
@@ -3992,13 +3977,13 @@
         border-radius: 5px;
         background-color: whitesmoke;
         float: left;
-        padding :10px;
+        padding :15px;
     }
     .btnwithtext .v-label{
         font-size:15px !important;
         line-height:50% !important;
         vertical-align:middle !important;
-        margin-top:-20px;
+        margin-top:0px;
         font-weight:1000;
 
     }
@@ -4049,7 +4034,7 @@
         border-color:gray !important;
         padding:0px !important;
     }
-   
+
     .v-slot-smaller .btnwithtext :hover{
         color:gray !important;
     }
@@ -4087,8 +4072,25 @@
         border-radius:5px;
     }
     .v-window-closebox{
-        font-weight:1000 !important;
-        color:#1b7de1 !important;
+        font-weight: 1000 !important;
+        color: #1b7de1 !important;
+        position: absolute;
+        z-index: 3;
+        right:20px !important;
+        margin-top:20px !important;
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        width: 22px !important;
+        height: 22px !important;
+        background-color: white;
+        line-height: 22px;
+        text-align: center;
+        cursor: pointer;
+        font-size: 22px !important;
+        -webkit-transition: color 140ms;
+        -moz-transition: color 140ms;
+        transition: color 140ms;
     }
     .v-disabled.disableasenable div{
         opacity:1 !important;
@@ -4103,5 +4105,83 @@
     .welcomepagstyle .v-horizontallayout-homepagepresenterbtn{
         display:none !important;
     }
+    .refrencetext a{
+        text-decoration:none;
+        font-weight:1000;
+    }
+    .refrencetext a:hover{
+        text-decoration:underline;
 
+    }
+    .refrencetext {
+        max-width:550px;
+        font-size:12px;
+        text-align:justify;
+        white-space: pre-wrap !important;
+        margin-top:-15px;
+        color:black;
+
+    }
+    .refrencetext i{
+        color:#ca7329;
+        font-size:10px;
+    }
+    .btnwithtext font{
+        font-size:10px !important;
+        line-height:35px;
+    }
+    .btnwithtext.smaller .v-label{
+        margin-top:-20px !important;
+    }
+    .btnwithtext.smaller font{
+        font-size:13px !important;
+        height:10px !important;
+        line-height:10px !important;
+        margin-top:-20px !important;
+    }
+    .galaxylabel img{
+        padding:20px !important;
+    }
+    .psprojectname{
+        max-width:400px;
+        margin-left:20px;
+        margin-top:20px;
+        margin-bottom: 10px;
+
+    }
+    .psprojectname .v-label b{
+
+        font-size:16px !important;
+        font-weight: bold  !important;
+        font-family: "Open Sans", sans-serif  !important;
+        color: #464646  !important;
+    }
+    .psprojectname .v-slot{
+        width:70% !important;
+    }
+    .psprojectname .v-slot-smallundecorated{
+        width:30% !important;
+    }
+    .v-slot-btnbesidetitle{
+        max-height:0px;
+        max-width:420px;
+        margin-top:-27px
+
+    }
+    .btnbesidetitle .v-label{
+        margin-top:27px;	
+        float:right !important;
+        margin-left:150px !important;
+        font-style:italic;
+        font-size:12px;
+    }
+    .bottomformlayout .v-button{
+        margin-top:-40px;
+    }
+    .v-select-optiongroup-showlist{
+        min-height:20px;
+    }
+    .padding20 img{
+	padding:20% !important;
+}
 }

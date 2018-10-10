@@ -21,7 +21,7 @@ public class DropDownList extends VerticalLayout {
     private Property.ValueChangeListener listener;
 
     /**
-     * Constructor to initialize the main attributes.
+     * Constructor to initialise the main attributes.
      *
      * @param title the title of the list
      */

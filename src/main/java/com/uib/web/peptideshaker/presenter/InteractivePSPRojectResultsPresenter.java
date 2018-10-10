@@ -7,6 +7,7 @@ import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.ProteinVisu
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.SelectionManager;
 import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
 import com.uib.web.peptideshaker.presenter.core.ButtonWithLabel;
+import com.uib.web.peptideshaker.presenter.core.SmallSideBtn;
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.PeptideVisulizationLevelContainer;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
@@ -27,6 +28,10 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
      * The small side button (normal size screen).
      */
     private final ButtonWithLabel controlButton;
+    /**
+     * The small side button (normal size screen).
+     */
+    private final SmallSideBtn smallControlButton;
     /**
      * The main left side buttons container in big screen mode.
      */
@@ -66,12 +71,17 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
     public InteractivePSPRojectResultsPresenter() {
         InteractivePSPRojectResultsPresenter.this.setSizeFull();
         InteractivePSPRojectResultsPresenter.this.setStyleName("activelayout");
-        this.controlButton = new ButtonWithLabel("Datasets",1);
+        
+        this.smallControlButton = new SmallSideBtn("img/cluster.svg");
+        this.smallControlButton.setData(InteractivePSPRojectResultsPresenter.this.getViewId());
+        
+        this.controlButton = new ButtonWithLabel("Results</br><font>Interactive visualization for results</font>",1);
         this.controlButton.setData(InteractivePSPRojectResultsPresenter.this.getViewId());
         this.controlButton.updateIcon(VaadinIcons.CLUSTER.getHtml());
-         this.controlButton.setDescription("View selected dataset");
+         this.controlButton.setDescription("View selected projects");
          this.controlButton.setEnabled(false);
          this.controlButton.addStyleName("orangeiconcolor");
+          this.smallControlButton.setEnabled(false);
          this.Selection_Manager = new SelectionManager();
         this.initLayout();
         InteractivePSPRojectResultsPresenter.this.minimizeView();
@@ -170,8 +180,8 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
      * @return right view control button
      */
     @Override
-    public BigSideBtn getPresenterControlInframeButton() {
-        return null;
+    public SmallSideBtn getSmallPresenterControlButton() {
+        return smallControlButton;
     }
 
     /**
@@ -190,6 +200,7 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
     @Override
     public void minimizeView() {
         controlButton.setSelected(false);
+         smallControlButton.setSelected(false);
         this.addStyleName("hidepanel");
         this.viewControlButtonContainer.removeStyleName("visible");
         this.maximisedMode=false;
@@ -205,6 +216,7 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
             System.out.println("is selected??");
             return;
         }
+          smallControlButton.setSelected(true);
         controlButton.setSelected(true);
         this.viewControlButtonContainer.addStyleName("visible");
         this.removeStyleName("hidepanel");
@@ -257,7 +269,7 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
     }
 
     @Override
-    public ButtonWithLabel getPresenterControlButton() {
+    public ButtonWithLabel getLargePresenterControlButton() {
         return controlButton;
     }
 
@@ -269,6 +281,7 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
      */
     public void setSelectedDataset(PeptideShakerVisualizationDataset peptideShakerVisualizationDataset) {
         this.controlButton.setEnabled(peptideShakerVisualizationDataset != null);
+        this.smallControlButton.setEnabled(peptideShakerVisualizationDataset != null);
         Selection_Manager.reset();
         Selection_Manager.selectBtn(0);
         this.datasetVisulizationLevelContainer.selectDataset(peptideShakerVisualizationDataset);

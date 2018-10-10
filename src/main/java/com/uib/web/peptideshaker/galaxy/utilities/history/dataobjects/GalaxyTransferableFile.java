@@ -126,7 +126,7 @@ public class GalaxyTransferableFile extends GalaxyFileObject {
      */
     public File getFile() throws IOException {
         String fileName = galaxyFileObject.getGalaxyId().replace("/", "_");
-        if (galaxyFileObject.getType().equalsIgnoreCase("Search Paramerters File (JSON)") && !zipped) {
+        if (galaxyFileObject.getType().equalsIgnoreCase("Search Parameters File (JSON)") && !zipped) {
             fileName += galaxyFileObject.getName();
         }
         File file = new File(user_folder, fileName);

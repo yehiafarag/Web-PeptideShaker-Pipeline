@@ -1,7 +1,7 @@
 package com.uib.web.peptideshaker.presenter;
 
-import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
 import com.uib.web.peptideshaker.presenter.core.ButtonWithLabel;
+import com.uib.web.peptideshaker.presenter.core.SmallSideBtn;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
@@ -9,7 +9,11 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import com.uib.web.peptideshaker.presenter.core.ViewableFrame;
 import com.vaadin.event.LayoutEvents;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Page;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.AbstractOrderedLayout;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
 
@@ -52,6 +56,8 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
      */
     private final GridLayout presenterButtonsContainerLayout;
 
+    private final Button signOutBtn;
+
     public GridLayout getPresenterButtonsContainerLayout() {
         return presenterButtonsContainerLayout;
     }
@@ -64,7 +70,7 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
      * Presenter buttons layout container contains the presenter control buttons
      * layout.
      */
-    private final AbsoluteLayout homePageButtonsContainer;
+    private final AbsoluteLayout subPresenterButtonsContainer;
     /**
      * Map of current registered views.
      */
@@ -80,6 +86,7 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
     private boolean startDrag = false;
     private long startX = 0;
     private long endX = 0;
+    private final Map<String, SmallSideBtn> presenterBtnsMap = new LinkedHashMap<>();
 
     /**
      * Constructor to initialise the layout.
@@ -116,16 +123,16 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
         middleLayoutContainer.setExpandRatio(topMiddleLayoutContainer, 100);
 //        topLayoutContainer.addStyleName("hide");
 
-        homePageButtonsContainer = new AbsoluteLayout();
-        homePageButtonsContainer.setSizeFull();
-        homePageButtonsContainer.setData("controlBtnsAction");
-        homePageButtonsContainer.setStyleName("presentercontainer");
-        homePageButtonsContainer.addStyleName("bigmenubtn");
-        homePageButtonsContainer.addStyleName("selectedbiglbtn");
-        homePageButtonsContainer.addStyleName("hide");
-        homePageButtonsContainer.addStyleName("welcomepagstyle");
-        PresenterManager.this.addComponent(homePageButtonsContainer);
-        PresenterManager.this.setExpandRatio(homePageButtonsContainer, 0);
+        subPresenterButtonsContainer = new AbsoluteLayout();
+        subPresenterButtonsContainer.setSizeFull();
+        subPresenterButtonsContainer.setData("controlBtnsAction");
+        subPresenterButtonsContainer.setStyleName("presentercontainer");
+        subPresenterButtonsContainer.addStyleName("bigmenubtn");
+        subPresenterButtonsContainer.addStyleName("selectedbiglbtn");
+        subPresenterButtonsContainer.addStyleName("hide");
+        subPresenterButtonsContainer.addStyleName("welcomepagstyle");
+        PresenterManager.this.addComponent(subPresenterButtonsContainer);
+        PresenterManager.this.setExpandRatio(subPresenterButtonsContainer, 0);
 
         this.presenterButtonsContainerLayout = new GridLayout(2, 2);
         presenterButtonsContainerLayout.setSizeFull();
@@ -163,6 +170,12 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
 //            }
 //        });
 //        leftLayoutContainer.addComponent(presenterButtonsContainerLayout);
+
+        signOutBtn = new Button("Signout");
+        signOutBtn.addClickListener((Button.ClickEvent event) -> {
+            VaadinSession.getCurrent().getSession().invalidate();
+            Page.getCurrent().reload();
+        });
     }
 
     /**
@@ -172,10 +185,10 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
      */
     public void setSideButtonsVisible(boolean showSideButtons) {
         if (showSideButtons) {
-            homePageButtonsContainer.removeStyleName("hide");
+            subPresenterButtonsContainer.removeStyleName("hide");
 //            topLayoutContainer.removeStyleName("hide");
         } else {
-            homePageButtonsContainer.addStyleName("hide");
+            subPresenterButtonsContainer.addStyleName("hide");
 //            topLayoutContainer.addStyleName("hide");
         }
 
@@ -188,40 +201,38 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
      */
     public void registerView(ViewableFrame view) {
         if (visualizationMap.containsKey(view.getViewId())) {
+            presenterBtnsMap.remove(view.getViewId());
             ViewableFrame tview = visualizationMap.get(view.getViewId());
-            AbstractOrderedLayout cBtn = tview.getPresenterControlButton();
-            if (cBtn == null) {
-                cBtn = tview.getPresenterControlInframeButton();
-            }
-
+            AbstractOrderedLayout cBtn = tview.getLargePresenterControlButton();
             cBtn.removeLayoutClickListener(PresenterManager.this);
             subViewButtonsActionContainer.removeComponent(tview.getSubViewButtonsActionContainerLayout());
             topMiddleLayoutContainer.removeComponent(tview.getMainView());
             column = presenterButtonsContainerLayout.getComponentArea(cBtn).getColumn1();
             rows = presenterButtonsContainerLayout.getComponentArea(cBtn).getRow1();
             presenterButtonsContainerLayout.removeComponent(cBtn);
-            homePageButtonsContainer.removeComponent(cBtn);
 
         }
-        if (view.getViewId().equalsIgnoreCase("com.uib.web.peptideshaker.presenter.WelcomePagePresenter")) {
-            view.getPresenterControlInframeButton().addLayoutClickListener(PresenterManager.this);
-            visualizationMap.put(view.getViewId(), view);
-            homePageButtonsContainer.addComponent(view.getPresenterControlInframeButton());
-            subViewButtonsActionContainer.addComponent(view.getSubViewButtonsActionContainerLayout());
-            topMiddleLayoutContainer.addComponent(view.getMainView());
-        } else {
-            view.getPresenterControlButton().addLayoutClickListener(PresenterManager.this);
-            visualizationMap.put(view.getViewId(), view);
-            subViewButtonsActionContainer.addComponent(view.getSubViewButtonsActionContainerLayout());
-            topMiddleLayoutContainer.addComponent(view.getMainView());
-            presenterButtonsContainerLayout.addComponent(view.getPresenterControlButton(), column++, rows);
+
+        visualizationMap.put(view.getViewId(), view);
+        presenterBtnsMap.put(view.getViewId(), view.getSmallPresenterControlButton());
+
+        subViewButtonsActionContainer.addComponent(view.getSubViewButtonsActionContainerLayout());
+        topMiddleLayoutContainer.addComponent(view.getMainView());
+        view.getSmallPresenterControlButton().addLayoutClickListener(PresenterManager.this);
+        if (!view.getViewId().equalsIgnoreCase("com.uib.web.peptideshaker.presenter.WelcomePagePresenter")) {
+            view.getLargePresenterControlButton().addLayoutClickListener(PresenterManager.this);
+            presenterButtonsContainerLayout.addComponent(view.getLargePresenterControlButton(), column++, rows);
             if (column == 2) {
                 rows++;
                 column = 0;
             }
 
+        } else {
+//            view.getSubViewButtonsActionContainerLayout().addLayoutClickListener(PresenterManager.this);
+            view.getSmallPresenterControlButton().addLayoutClickListener(PresenterManager.this);
+//             view.getLargePresenterControlButton().addLayoutClickListener(PresenterManager.this);
         }
-
+        reOrganizePresenterButtons();
     }
 
     /**
@@ -238,9 +249,9 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
             }
         });
         if (viewId.equalsIgnoreCase("com.uib.web.peptideshaker.presenter.WelcomePagePresenter")) {
-            homePageButtonsContainer.addStyleName("welcomepagstyle");
+            subPresenterButtonsContainer.addStyleName("welcomepagstyle");
         } else {
-            homePageButtonsContainer.removeStyleName("welcomepagstyle");
+            subPresenterButtonsContainer.removeStyleName("welcomepagstyle");
         }
 
     }
@@ -253,16 +264,37 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
     @Override
     public void layoutClick(LayoutEvents.LayoutClickEvent event) {
         Component com = event.getComponent();
-        String selectedBtnData = "";
-        if (com instanceof BigSideBtn) {
-            selectedBtnData = ((BigSideBtn) com).getData().toString();
+        String selectedBtnData;
+        if (com instanceof SmallSideBtn) {
+            selectedBtnData = ((SmallSideBtn) com).getData().toString();
         } else {
             selectedBtnData = ((ButtonWithLabel) com).getData().toString();
         }
+        System.out.println("at selected data " + selectedBtnData);
         if (selectedBtnData.equalsIgnoreCase("controlBtnsAction")) {
             return;
         }
         this.viewLayout(selectedBtnData);
+    }
+
+    private void reOrganizePresenterButtons() {
+        if (presenterBtnsMap.size() < 4) {
+            System.out.println("no change in presenter btn " + presenterBtnsMap.size() + "  " + FontAwesome.SIGN_OUT.getHtml());
+            return;
+        }
+        int l = 0;
+        int t = 0;
+        subPresenterButtonsContainer.removeAllComponents();
+        for (SmallSideBtn btn : presenterBtnsMap.values()) {
+            subPresenterButtonsContainer.addComponent(btn, "left:" + l + "px; top:" + t + "px;");
+            l = l + 45;
+            if (l > 50) {
+                l = 0;
+                t = 45;
+            }
+        }
+        System.out.println("reorgnize presenter btn");
+        //subPresenterButtonsContainer.addComponent(view.getSmallPresenterControlButton());
     }
 
 }

@@ -70,7 +70,7 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
      */
     @SuppressWarnings("Convert2Lambda")
     public SearchGUIPeptideShakerWorkFlowInputLayout() {
-        
+
         SearchGUIPeptideShakerWorkFlowInputLayout.this.setWidth(100, Unit.PERCENTAGE);
         SearchGUIPeptideShakerWorkFlowInputLayout.this.setHeight(100, Unit.PERCENTAGE);
 
@@ -82,27 +82,32 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
         SearchGUIPeptideShakerWorkFlowInputLayout.this.addStyleName("floatrightinyscreen");
         content.setSpacing(true);
 
-        Label titleLabel = new Label("SearchGUI-PeptideShaker-WorkFlow");
+        Label titleLabel = new Label("SearchGUI-PeptideShaker");
         titleLabel.setStyleName("frametitle");
         content.addComponent(titleLabel);
 
-        searchSettingsFileList = new DropDownList("Search Settings (Select or Enter New Name)");
-        content.addComponent(searchSettingsFileList);
-        searchSettingsFileList.setFocous();
-
+        projectNameField = new HorizontalLabelTextField("<b>Project Name</b>", "New Project Name", null);
+        projectNameField.setWidth(100, Unit.PERCENTAGE);
+        projectNameField.setRequired(false);
+        projectNameField.addStyleName("psprojectname");
+        content.addComponent(projectNameField);
         HorizontalLayout btnsFrame = new HorizontalLayout();
         btnsFrame.setWidthUndefined();
         btnsFrame.setSpacing(true);
-        btnsFrame.setStyleName("bottomformlayout");
+        btnsFrame.setStyleName("btnbesidetitle");
         content.addComponent(btnsFrame);
 
-        Label addNewSearchSettings = new Label("Add");
+        searchSettingsFileList = new DropDownList("Search Settings");
+        content.addComponent(searchSettingsFileList);
+        searchSettingsFileList.setFocous();
+
+        Label addNewSearchSettings = new Label("<<Add new>>");
         addNewSearchSettings.addStyleName("windowtitle");
         btnsFrame.addLayoutClickListener(new LayoutEvents.LayoutClickListener() {
             @Override
             public void layoutClick(LayoutEvents.LayoutClickEvent event) {
                 Component c = event.getClickedComponent();
-                if (c != null && c instanceof Label && ((Label) c).getValue().equalsIgnoreCase("Add")) {
+                if (c != null && c instanceof Label && ((Label) c).getValue().equalsIgnoreCase("<<Add new>>")) {
                     String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
                     File file = new File(basepath + "/VAADIN/default_searching.par");
                     SearchParameters searchParameters;
@@ -133,9 +138,9 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
             }
         });
         btnsFrame.addComponent(addNewSearchSettings);
-        Label editSearchSettings = new Label("Edit");
-        editSearchSettings.addStyleName("windowtitle");
-        btnsFrame.addComponent(editSearchSettings);
+//        Label editSearchSettings = new Label("Edit");
+//        editSearchSettings.addStyleName("windowtitle");
+//        btnsFrame.addComponent(editSearchSettings);
         searchSettingsLayout = new SearchSettingsLayout() {
             @Override
             public void saveSearchingFile(SearchParameters searchParameters, boolean isNew) {
@@ -164,7 +169,7 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
 
         mgfFileList = new MultiSelectOptionGroup("Spectrum File(s)", false);
         content.addComponent(mgfFileList);
-        mgfFileList.setRequired(true, "Select at least 1 MGF file");
+        mgfFileList.setRequired(false, "Select at least 1 MGF file");
         mgfFileList.setViewList(true);
         mgfFileList.addStyleName("smallscreenfloatright");
         mgfFileList.addStyleName("top220");
@@ -172,17 +177,17 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
         MultiSelectOptionGroup searchEngines = new MultiSelectOptionGroup("Search Engines", false);
         searchEngines.addStyleName("smallscreenfloatright");
         content.addComponent(searchEngines);
-        searchEngines.setRequired(true, "Select at least 1 search engine");
+        searchEngines.setRequired(false, "Select at least 1 search engine");
         searchEngines.setViewList(true);
 
         Map<String, String> searchEngienList = new LinkedHashMap<>();
-        searchEngienList.put("X!Tandem", "X!Tandem");
+        searchEngienList.put("X!Tandem", "X! Tandem");
         searchEngienList.put("MS-GF+", "MS-GF+");
         searchEngienList.put("OMSSA", "OMSSA");
         searchEngienList.put("Comet", "Comet");
         searchEngienList.put("Tide", "Tide");
         searchEngienList.put("MyriMatch", "MyriMatch");
-        searchEngienList.put("MS_Amanda", "MS_Amanda");
+        searchEngienList.put("MS_Amanda", "MS Amanda");
         searchEngienList.put("DirecTag", "DirecTag");
         searchEngienList.put("Novor (Select for non-commercial use only)", "Novor (Select for non-commercial use only)");
         searchEngines.updateList(searchEngienList);
@@ -195,12 +200,6 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
         bottomLayout.setSpacing(true);
         content.addComponent(bottomLayout);
 
-        projectNameField = new HorizontalLabelTextField("<b>Project Name</b>", "New Project Name", null);
-        projectNameField.setWidth(100, Unit.PERCENTAGE);
-        projectNameField.setRequired(true);
-        bottomLayout.addComponent(projectNameField);
-        bottomLayout.setExpandRatio(projectNameField, 70);
-
         Button executeWorkFlow = new Button("Execute");
         executeWorkFlow.setStyleName(ValoTheme.BUTTON_SMALL);
         executeWorkFlow.addStyleName(ValoTheme.BUTTON_TINY);
@@ -209,13 +208,21 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
         bottomLayout.setExpandRatio(executeWorkFlow, 30);
 
         executeWorkFlow.addClickListener((Button.ClickEvent event) -> {
+            projectNameField.setRequired(true);
+            mgfFileList.setRequired(true, "Select at least 1 MGF file");
+            searchEngines.setRequired(true, "Select at least 1 search engine");
+            
             String fastFileId = searchSettingsLayout.getFastaFileId();
             Set<String> spectrumIds = mgfFileList.getSelectedValue();
             Set<String> searchEnginesIds = searchEngines.getSelectedValue();
-            String projectName = projectNameField.getSelectedValue().replace(" ", "_").replace("-", "_")+"___"+(new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Timestamp(System.currentTimeMillis())));
+            String projectName = projectNameField.getSelectedValue().replace(" ", "_").replace("-", "_") + "___" + (new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Timestamp(System.currentTimeMillis())));
+            
             if (!projectNameField.isValid() || fastFileId == null || spectrumIds == null || searchEnginesIds == null) {
                 return;
             }
+            projectNameField.setRequired(false);
+            mgfFileList.setRequired(false, "Select at least 1 MGF file");
+            searchEngines.setRequired(false, "Select at least 1 search engine");
             Map<String, Boolean> selectedSearchEngines = new HashMap<>();
             searchEngienList.keySet().forEach((paramId) -> {
                 selectedSearchEngines.put(paramId, searchEngines.getSelectedValue().contains(paramId));
@@ -225,14 +232,14 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
         mgfFileList.setEnabled(false);
         searchEngines.setEnabled(false);
         projectNameField.setEnabled(false);
-        editSearchSettings.setEnabled(false);
+//        editSearchSettings.setEnabled(false);
         executeWorkFlow.setEnabled(false);
         searchSettingsFileList.addValueChangeListener((Property.ValueChangeEvent event) -> {
             if (searchSettingsFileList.getSelectedValue() != null) {
                 mgfFileList.setEnabled(true);
                 searchEngines.setEnabled(true);
                 projectNameField.setEnabled(true);
-                editSearchSettings.setEnabled(true);
+//                editSearchSettings.setEnabled(true);
                 executeWorkFlow.setEnabled(true);
                 try {
                     File file = searchSettingsMap.get(searchSettingsFileList.getSelectedValue()).getFile();

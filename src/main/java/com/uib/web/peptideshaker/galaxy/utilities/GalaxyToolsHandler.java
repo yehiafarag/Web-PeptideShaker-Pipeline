@@ -276,7 +276,7 @@ public abstract class GalaxyToolsHandler {
             OutputDataset oDs = excList.get(0);
             GalaxyFileObject ds = new GalaxyFileObject();
             ds.setName(oDs.getName());
-            ds.setType("Search Paramerters File (JSON)");
+            ds.setType("Search Parameters File (JSON)");
             ds.setHistoryId(workHistoryId);
             ds.setGalaxyId(oDs.getId());
             ds.setDownloadUrl(galaxyURL + "/datasets/" + ds.getGalaxyId() + "/display?to_ext=" + oDs.getDataTypeExt());

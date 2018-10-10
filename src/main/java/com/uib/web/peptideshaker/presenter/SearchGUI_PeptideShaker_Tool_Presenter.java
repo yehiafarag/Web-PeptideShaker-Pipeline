@@ -9,7 +9,6 @@ import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
 import com.uib.web.peptideshaker.presenter.core.ButtonWithLabel;
 import com.uib.web.peptideshaker.presenter.core.SmallSideBtn;
 import com.vaadin.event.LayoutEvents;
-import com.vaadin.event.LayoutEvents.LayoutClickNotifier;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbsoluteLayout;
@@ -25,7 +24,10 @@ import java.util.Set;
  * @author Yehia Farag
  */
 public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLayout implements ViewableFrame, LayoutEvents.LayoutClickListener {
-
+ /**
+     * The tools layout side button.
+     */
+    private final SmallSideBtn smallControlButton;
     /**
      * The tools layout side button.
      */
@@ -48,7 +50,9 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
         SearchGUI_PeptideShaker_Tool_Presenter.this.setStyleName("activelayout");
         SearchGUI_PeptideShaker_Tool_Presenter.this.addStyleName("integratedframe");
 
-        this.controlButton = new ButtonWithLabel("SearchGUI & PeptideShaker",1);//spectra2.png
+         this.smallControlButton = new SmallSideBtn("img/searchgui-medium-shadow-2.png");//spectra2.png
+        this.smallControlButton.setData(SearchGUI_PeptideShaker_Tool_Presenter.this.getViewId());
+        this.controlButton = new ButtonWithLabel("SearchGUI & PeptideShaker</br><font>Run SearchGUI & PeptideShaker tools on Galaxy Server</font>",1);//spectra2.png
         this.controlButton.setData(SearchGUI_PeptideShaker_Tool_Presenter.this.getViewId());
         this.controlButton.updateIconResource(new ThemeResource("img/searchgui-medium-shadow-2.png"));//img/workflow3.png
 
@@ -98,9 +102,9 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
         };
 
         BigSideBtn workFlowBtn = new BigSideBtn("Work-Flow", 2);
-        workFlowBtn.updateIconResource(new ThemeResource("img/workflow3.png"));
+        workFlowBtn.updateIconResource(new ThemeResource("img/searchgui-medium-shadow-2.png"));
+        workFlowBtn.addStyleName("padding20");
         workFlowBtn.setData("workflow");
-        workFlowBtn.addStyleName("zeropadding");
         btnContainer.addComponent(workFlowBtn);
         btnContainer.setComponentAlignment(workFlowBtn, Alignment.TOP_CENTER);
         workFlowBtn.addLayoutClickListener(SearchGUI_PeptideShaker_Tool_Presenter.this);
@@ -135,11 +139,11 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
      * @return
      */
     @Override
-    public BigSideBtn getPresenterControlInframeButton() {
-        return null;
+    public SmallSideBtn getSmallPresenterControlButton() {
+        return smallControlButton;
     }
      @Override
-    public ButtonWithLabel getPresenterControlButton() {
+    public ButtonWithLabel getLargePresenterControlButton() {
         return controlButton;
     }
 
@@ -157,6 +161,7 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
      */
     @Override
     public void minimizeView() {
+         smallControlButton.setSelected(false);
         controlButton.setSelected(false);
         this.addStyleName("hidepanel");
         this.btnContainer.removeStyleName("visible");
@@ -168,6 +173,7 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
      */
     @Override
     public void maximizeView() {
+        smallControlButton.setSelected(true);
         controlButton.setSelected(true);
         this.btnContainer.addStyleName("visible");
         this.removeStyleName("hidepanel");
