@@ -9,6 +9,7 @@ import com.github.jmchilton.blend4j.galaxy.HistoriesClient;
 import com.github.jmchilton.blend4j.galaxy.beans.History;
 import com.github.wolfie.refresher.Refresher;
 import com.uib.web.peptideshaker.PeptidShakerUI;
+import com.vaadin.server.Page;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Notification;
 
@@ -721,6 +722,8 @@ public abstract class GalaxyHistoryHandler {
                 } else {
                     e.printStackTrace();
                     System.out.println("at history are not available");
+                    VaadinSession.getCurrent().getSession().invalidate();
+                    Page.getCurrent().reload();
                 }
             }
             memoryUsed = memoryUsed / 1000000000.0;

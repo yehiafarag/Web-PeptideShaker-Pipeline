@@ -154,7 +154,7 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
         Horizontal2Label fixedModificationLabelLabel = new Horizontal2Label("Fixed Modifications  :", fixedMod.toString().replace("[", "").replace("]", ""));
         upperPanel.addComponent(fixedModificationLabelLabel);
 
-        Horizontal2Label variableModificationLabelLabel = new Horizontal2Label("Variable Modifications :", varMod.toString().replace("[", " , ").replace("]", ""));
+        Horizontal2Label variableModificationLabelLabel = new Horizontal2Label("Variable Modifications :", varMod.toString().replace("[", "").replace("]", ""));
         upperPanel.addComponent(variableModificationLabelLabel);
 
         GridLayout proteaseFragmentationContainer = inititProteaseFragmentationLayout(dataset.getSearchingParameters());

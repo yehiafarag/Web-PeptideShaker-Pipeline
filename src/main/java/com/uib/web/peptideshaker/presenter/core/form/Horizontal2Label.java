@@ -19,7 +19,7 @@ import java.util.Set;
  */
 public class Horizontal2Label extends HorizontalLayout {
 
-
+private final  Label valueLabel ;
     /**
      * Constructor to initialize the main attributes
      *
@@ -34,7 +34,9 @@ public class Horizontal2Label extends HorizontalLayout {
         cap.addStyleName(ValoTheme.LABEL_SMALL);
         cap.addStyleName(ValoTheme.LABEL_BOLD);
         cap.addStyleName("smallundecorated");
-        Horizontal2Label.this.addComponent(cap);  
+        Horizontal2Label.this.addComponent(cap); 
+        this.valueLabel = new Label();      
+        valueLabel.setContentMode(ContentMode.HTML);
         if(defaultValue==null)
         {
             Horizontal2Label.this.setEnabled(false);
@@ -42,7 +44,7 @@ public class Horizontal2Label extends HorizontalLayout {
             
         }
 
-        Label valueLabel = new Label();       
+          
         valueLabel.addStyleName(ValoTheme.TEXTFIELD_ALIGN_CENTER);
         valueLabel.setWidth(100, Unit.PERCENTAGE);
         valueLabel.addStyleName(ValoTheme.LABEL_TINY);
@@ -52,6 +54,9 @@ public class Horizontal2Label extends HorizontalLayout {
         valueLabel.setHeight(25, Unit.PIXELS);
         valueLabel.addStyleName("smallundecorated");
         Horizontal2Label.this.addComponent(valueLabel);
+    }
+    public void updateValue(String value){
+        this.valueLabel.setValue(value);
     }
 
     

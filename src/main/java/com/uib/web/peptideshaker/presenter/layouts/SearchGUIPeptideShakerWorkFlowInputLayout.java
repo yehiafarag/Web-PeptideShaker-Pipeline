@@ -9,8 +9,10 @@ import com.uib.web.peptideshaker.presenter.core.PopupWindow;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelTextField;
 import com.vaadin.data.Property;
 import com.vaadin.event.LayoutEvents;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.server.VaadinService;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -101,13 +103,13 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
         content.addComponent(searchSettingsFileList);
         searchSettingsFileList.setFocous();
 
-        Label addNewSearchSettings = new Label("<<Add new>>");
+        Label addNewSearchSettings = new Label(VaadinIcons.FILE_ADD.getHtml(),ContentMode.HTML);
         addNewSearchSettings.addStyleName("windowtitle");
         btnsFrame.addLayoutClickListener(new LayoutEvents.LayoutClickListener() {
             @Override
             public void layoutClick(LayoutEvents.LayoutClickEvent event) {
                 Component c = event.getClickedComponent();
-                if (c != null && c instanceof Label && ((Label) c).getValue().equalsIgnoreCase("<<Add new>>")) {
+                if (c != null && c instanceof Label && ((Label) c).getValue().equalsIgnoreCase(VaadinIcons.FILE_ADD.getHtml())) {
                     String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
                     File file = new File(basepath + "/VAADIN/default_searching.par");
                     SearchParameters searchParameters;
@@ -189,7 +191,7 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
         searchEngienList.put("MyriMatch", "MyriMatch");
         searchEngienList.put("MS_Amanda", "MS Amanda");
         searchEngienList.put("DirecTag", "DirecTag");
-        searchEngienList.put("Novor (Select for non-commercial use only)", "Novor (Select for non-commercial use only)");
+        searchEngienList.put("Novor (Select for non-commercial use only)", "Novor (non-commercial use)");
         searchEngines.updateList(searchEngienList);
         searchEngines.setSelectedValue("X!Tandem");
         searchEngines.setSelectedValue("MS-GF+");

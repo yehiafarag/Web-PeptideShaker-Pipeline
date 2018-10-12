@@ -34,6 +34,7 @@ public class DropDownList extends VerticalLayout {
         list.setStyleName("dropdownlist");
         list.setInputPrompt("Please select from the list");
         list.setNullSelectionAllowed(false);
+      
 
         DropDownList.this.addComponent(list);
 

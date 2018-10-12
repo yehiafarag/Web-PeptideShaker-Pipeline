@@ -637,8 +637,9 @@
         min-width:650px !important;
     }
     .panelframe .v-label{
-        text-decoration:underline;
-        font-size:15px !important;
+        text-decoration: none;
+	font-size: 15px !important;
+	font-weight:bold;
     }
     .panelframe .v-captiontext{
         margin-top:5px;
@@ -659,6 +660,7 @@
         text-decoration: none !important;
         font-size: 12px !important;
         font-weight:normal !important;
+        vertical-align:middle;
     }
     .windowtitle{
         font-size:13px;
@@ -4169,19 +4171,88 @@
 
     }
     .btnbesidetitle .v-label{
-        margin-top:27px;	
-        float:right !important;
-        margin-left:150px !important;
-        font-style:italic;
-        font-size:12px;
+        margin-top: 20px;
+        float: right !important;
+        margin-left: 150px !important;
+        font-size: 20px;
+        z-index: 2 !important;
+        position: relative !important;
+        min-width:30px;
+        min-height:30px;
+
     }
     .bottomformlayout .v-button{
         margin-top:-40px;
     }
-    .v-select-optiongroup-showlist{
-        min-height:20px;
+    .v-select-optiongroup-showlist .v-checkbox{
+        min-height: 19px !important;
     }
     .padding20 img{
-	padding:20% !important;
+        padding:20% !important;
+    }
+    .subpanelframe .v-button {
+        text-decoration:none !important;
+        padding-left: 2px;
+        font-size: 12px;
+        font-weight: bold;
+        font-family: "Open Sans", sans-serif;
+    }
+    .subpanelframe .v-button:hover {
+        text-decoration:underline !important;
+    }
+    .subpanelframe .v-button:focus:after  {
+        text-decoration: underline !important;
+        outline-color:transparent !important;
+        border-color: transparent !important;
+        -webkit-box-shadow: none !important;
+        box-shadow:  none !important;
+    }
+    .popupwindow .v-window-closebox {
+        z-index: 3;
+        right: 10px !important;
+        margin-top: 10px !important;    
+        font-size: 25px !important;
+        font-weight: bold !important;
+        font-family: "Open Sans", sans-serif !important;
+        text-decoration: none !important;
+        width:25px !important;
+        height: 25px !important;
+        border:1px solid gray;
+        text-align: center;
+        outline: none;   
+
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+        cursor: pointer;
+        color: gray !important;
+        font-weight: 400;
+        border-radius: 4px;
+        border: 1px solid #c5c5c5;
+        background-color: #fafafa;
+    }
+    .subpanelframe .Vaadin-Icons{
+        font-size:15px;
+    }
+    .panelframe .v-filterselect{
+        margin-top:35px !important;
+        border-bottom:1px solid white !important;
+        max-height:25px;
+
+    }
+    .breakline .v-label{
+	min-width: 130px;
+	max-width: 500px;
+	text-align: left !important;
+	word-wrap: break-word !important;
+	white-space: pre-wrap;
+	height: auto !important;
+
+}
+.v-caption-on-left .v-slot-dropdownlist div{
+	display: inline-block !important;
+	vertical-align:middle;
+}
+.v-verticallayout-v-caption-on-left{
+		margin-top:10px;
 }
 }

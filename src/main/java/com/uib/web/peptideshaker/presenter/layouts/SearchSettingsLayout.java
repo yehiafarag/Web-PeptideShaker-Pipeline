@@ -12,12 +12,14 @@ import com.uib.web.peptideshaker.presenter.core.DropDownList;
 import com.uib.web.peptideshaker.presenter.core.MultiSelectOptionGroup;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
 import com.uib.web.peptideshaker.presenter.core.form.ColorLabel;
+import com.uib.web.peptideshaker.presenter.core.form.Horizontal2Label;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabel2DropdownList;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabel2TextField;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelDropDounList;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelTextField;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelTextFieldDropdownList;
 import com.uib.web.peptideshaker.presenter.core.form.SparkLine;
+import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.validator.DoubleRangeValidator;
 import com.vaadin.data.validator.IntegerRangeValidator;
@@ -40,6 +42,7 @@ import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -175,15 +178,17 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
     /**
      * Coordinate view of sub panels in mobile and small screen mode.
      */
-    private final LayoutEvents.LayoutClickListener viewCoordinatorListener;    
-   /**
+    private final LayoutEvents.LayoutClickListener viewCoordinatorListener;
+    /**
      * Modification container layout.
      */
-    private final HorizontalLayout modificationContainer;
+    private final PopupWindow modificationContainer;
+    private final VerticalLayout modificationLabelsContainer;
     /**
-     *Protease fragmentation container layout.
+     * Protease fragmentation container layout.
      */
-    private final   GridLayout proteaseFragmentationContainer;
+    private final GridLayout proteaseFragmentationContainer;
+    DecimalFormat df = new DecimalFormat("0.00E00");//new DecimalFormat("#.##");
 
     /**
      * Constructor to initialise the main setting parameters.
@@ -206,16 +211,15 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         titleLayout.addComponent(setteingsLabel);
         titleLayout.setExpandRatio(setteingsLabel, 20);
 
-        PopupWindow advancedSearchOption = new PopupWindow("(Advanced Settings)");
-        advancedSearchOption.setContent(initAdvancedSearchOption());
-        advancedSearchOption.setDescription("Not supported yet!");
-        advancedSearchOption.setSizeFull();
-        advancedSearchOption.addStyleName("centerwindow");
-        titleLayout.addComponent(advancedSearchOption);
-        titleLayout.setComponentAlignment(advancedSearchOption, Alignment.MIDDLE_LEFT);
-        titleLayout.setExpandRatio(advancedSearchOption, 80);
-        advancedSearchOption.setEnabled(false);
-
+//        PopupWindow advancedSearchOption = new PopupWindow("(Advanced Settings)");
+//        advancedSearchOption.setContent(initAdvancedSearchOption());
+//        advancedSearchOption.setDescription("Not supported yet!");
+//        advancedSearchOption.setSizeFull();
+//        advancedSearchOption.addStyleName("centerwindow");
+//        titleLayout.addComponent(advancedSearchOption);
+//        titleLayout.setComponentAlignment(advancedSearchOption, Alignment.MIDDLE_LEFT);
+//        titleLayout.setExpandRatio(advancedSearchOption, 80);
+//        advancedSearchOption.setEnabled(false);
         Button closeIconBtn = new Button("Close");
         closeIconBtn.setIcon(VaadinIcons.CLOSE_SMALL, "Close window");
         closeIconBtn.setStyleName(ValoTheme.BUTTON_SMALL);
@@ -236,34 +240,57 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         upperPanel.addStyleName("subpanelframe");
         SearchSettingsLayout.this.addComponent(upperPanel);
 
-        searchParametersFileNameInputField = new HorizontalLabelTextField("<b>Search Settings Name</b>", "New Searching Settings Name", null);
-        searchParametersFileNameInputField.setWidth(60, Unit.PERCENTAGE);
-        searchParametersFileNameInputField.setRequired(true);
-        upperPanel.addComponent(searchParametersFileNameInputField);
-
-        HorizontalLayout protDatabaseContainer = new HorizontalLayout();
-        protDatabaseContainer.setWidthUndefined();
-        protDatabaseContainer.setHeight(60, Unit.PIXELS);
-        upperPanel.addComponent(protDatabaseContainer);
-        fastaFileList = new DropDownList("Protein Database (FASTA)");
-        protDatabaseContainer.addComponent(fastaFileList);
-        fastaFileList.setRequired(true, "Select FASTA file");
-        fastaFileList.addStyleName("paddingleft-20");
+        HorizontalLayout searchsettingsContainer = new HorizontalLayout();
+        searchsettingsContainer.setWidth(100,Unit.PERCENTAGE);
+        searchsettingsContainer.setHeight(25, Unit.PIXELS);
+        searchsettingsContainer.setSpacing(true);
+        searchParametersFileNameInputField = new HorizontalLabelTextField("<b>Search Settings Name</b>", "Searching Settings Name", null);
+        searchParametersFileNameInputField.setWidth(100, Unit.PERCENTAGE);
+        searchParametersFileNameInputField.setRequired(false);
+        searchsettingsContainer.addComponent(searchParametersFileNameInputField);
+        searchsettingsContainer.setExpandRatio(searchParametersFileNameInputField, 54);
         createDecoyDatabaseOptionList = new MultiSelectOptionGroup(null, false);
-
-        protDatabaseContainer.addComponent(createDecoyDatabaseOptionList);
-        protDatabaseContainer.setComponentAlignment(createDecoyDatabaseOptionList, Alignment.BOTTOM_LEFT);
-        Map<String, String> paramMap = new LinkedHashMap<>();
+        searchsettingsContainer.addComponent(createDecoyDatabaseOptionList);
+        searchsettingsContainer.setComponentAlignment(createDecoyDatabaseOptionList, Alignment.TOP_LEFT); 
+        searchsettingsContainer.setExpandRatio(createDecoyDatabaseOptionList, 46);
+         Map<String, String> paramMap = new LinkedHashMap<>();
         paramMap.put("create_decoy", "Add Decoy Sequences");
-
         createDecoyDatabaseOptionList.updateList(paramMap);
         createDecoyDatabaseOptionList.setSelectedValue("create_decoy");
         createDecoyDatabaseOptionList.setViewList(true);
+//        HorizontalLayout protDatabaseContainer = new HorizontalLayout();
+//        protDatabaseContainer.setWidthUndefined();
+//        protDatabaseContainer.setHeight(60, Unit.PIXELS);
+        upperPanel.addComponent(searchsettingsContainer);
+        fastaFileList = new DropDownList("Protein Database (FASTA)");
+        fastaFileList.addStyleName("v-caption-on-left");
+        upperPanel.addComponent(fastaFileList);
+        fastaFileList.setRequired(false, "Select FASTA file");
+        fastaFileList.addStyleName("paddingleft-20");
+
+       
+
+       
+
+        Button modifications = new Button("Modification");
+        modifications.setIcon(VaadinIcons.EDIT);
+        modifications.setStyleName(ValoTheme.BUTTON_LINK);
+        upperPanel.addComponent(modifications);
+
+        modificationLabelsContainer = new VerticalLayout();
+        modificationLabelsContainer.setWidth(100, Unit.PERCENTAGE);
+        modificationLabelsContainer.setHeightUndefined();
+        modificationLabelsContainer.setSpacing(true);
+        modificationLabelsContainer.setMargin(new MarginInfo(false, false, false, true));
+        upperPanel.addComponent(modificationLabelsContainer);
 
         modificationContainer = inititModificationLayout();
-        modificationContainer.addStyleName("subpanelframe");
-        SearchSettingsLayout.this.addComponent(modificationContainer);
+        modifications.addClickListener((Button.ClickEvent event) -> {
+            modificationContainer.setPopupVisible(true);
+        });
 
+//        
+//        SearchSettingsLayout.this.addComponent(modificationContainer);
         proteaseFragmentationContainer = inititProteaseFragmentationLayout();
         proteaseFragmentationContainer.addStyleName("subpanelframe");
         SearchSettingsLayout.this.addComponent(proteaseFragmentationContainer);
@@ -359,22 +386,24 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
      *
      * @return initialised modification layout
      */
-    private HorizontalLayout inititModificationLayout() {
-        HorizontalLayout modificationContainer = new HorizontalLayout();
-        modificationContainer.setStyleName("panelframe");
-        modificationContainer.setSizeFull();
-        modificationContainer.setMargin(new MarginInfo(false, false, false, false));
-        modificationContainer.setWidth(700, Unit.PIXELS);
-        modificationContainer.setHeight(360, Unit.PIXELS);
+    private PopupWindow inititModificationLayout() {
+        PopupWindow modificationWindow = new PopupWindow("Edit Modifications");
+        modificationWindow.setClosable(true);
+
+        HorizontalLayout popupModificationContainer = new HorizontalLayout();
+        popupModificationContainer.setStyleName("panelframe");
+        popupModificationContainer.setMargin(new MarginInfo(true, true, true, true));
+        popupModificationContainer.setWidth(700, Unit.PIXELS);
+        popupModificationContainer.setHeight(500, Unit.PIXELS);
 
         VerticalLayout leftSideLayout = new VerticalLayout();
         leftSideLayout.setSizeFull();
         leftSideLayout.setSpacing(true);
         leftSideLayout.setMargin(new MarginInfo(false, false, false, false));
-        modificationContainer.addComponent(leftSideLayout);
-        modificationContainer.setExpandRatio(leftSideLayout, 45);
+        popupModificationContainer.addComponent(leftSideLayout);
+        popupModificationContainer.setExpandRatio(leftSideLayout, 45);
 
-        Label modificationLabel = new Label(VaadinIcons.ANGLE_DOUBLE_DOWN.getHtml() + "  Modifications", ContentMode.HTML);
+        Label modificationLabel = new Label("Edit  Modifications", ContentMode.HTML);
         modificationLabel.setSizeFull();
         leftSideLayout.addComponent(modificationLabel);
         leftSideLayout.setExpandRatio(modificationLabel, 4);
@@ -399,8 +428,8 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
 
         VerticalLayout middleSideLayout = new VerticalLayout();
         middleSideLayout.setSizeFull();
-        modificationContainer.addComponent(middleSideLayout);
-        modificationContainer.setExpandRatio(middleSideLayout, 10);
+        popupModificationContainer.addComponent(middleSideLayout);
+        popupModificationContainer.setExpandRatio(middleSideLayout, 10);
 
         VerticalLayout spacer = new VerticalLayout();
         spacer.setSizeFull();
@@ -410,39 +439,39 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         VerticalLayout sideTopButtons = new VerticalLayout();
         sideTopButtons.setSizeUndefined();
         middleSideLayout.addComponent(sideTopButtons);
-        middleSideLayout.setComponentAlignment(sideTopButtons, Alignment.BOTTOM_CENTER);
+        middleSideLayout.setComponentAlignment(sideTopButtons, Alignment.MIDDLE_CENTER);
         middleSideLayout.setExpandRatio(sideTopButtons, 48);
 
         addToFixedModificationTableBtn = new Button(VaadinIcons.ARROW_LEFT);
         addToFixedModificationTableBtn.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
         sideTopButtons.addComponent(addToFixedModificationTableBtn);
-        sideTopButtons.setComponentAlignment(addToFixedModificationTableBtn, Alignment.BOTTOM_CENTER);
+        sideTopButtons.setComponentAlignment(addToFixedModificationTableBtn, Alignment.TOP_CENTER);
 
         removeFromFixedModificationTableBtn = new Button(VaadinIcons.ARROW_RIGHT);
         removeFromFixedModificationTableBtn.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
         sideTopButtons.addComponent(removeFromFixedModificationTableBtn);
-        sideTopButtons.setComponentAlignment(removeFromFixedModificationTableBtn, Alignment.MIDDLE_CENTER);
+        sideTopButtons.setComponentAlignment(removeFromFixedModificationTableBtn, Alignment.TOP_CENTER);
 
         VerticalLayout sideBottomButtons = new VerticalLayout();
         middleSideLayout.addComponent(sideBottomButtons);
-        middleSideLayout.setComponentAlignment(sideBottomButtons, Alignment.BOTTOM_CENTER);
+        middleSideLayout.setComponentAlignment(sideBottomButtons, Alignment.MIDDLE_CENTER);
         middleSideLayout.setExpandRatio(sideBottomButtons, 48);
 
         addToVariableModificationTableBtn = new Button(VaadinIcons.ARROW_LEFT);
         addToVariableModificationTableBtn.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
         sideBottomButtons.addComponent(addToVariableModificationTableBtn);
-        sideBottomButtons.setComponentAlignment(addToVariableModificationTableBtn, Alignment.MIDDLE_CENTER);
+        sideBottomButtons.setComponentAlignment(addToVariableModificationTableBtn, Alignment.TOP_CENTER);
 
         removeFromVariableModificationTableBtn = new Button(VaadinIcons.ARROW_RIGHT);
         removeFromVariableModificationTableBtn.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
         sideBottomButtons.addComponent(removeFromVariableModificationTableBtn);
-        sideBottomButtons.setComponentAlignment(removeFromVariableModificationTableBtn, Alignment.MIDDLE_CENTER);
+        sideBottomButtons.setComponentAlignment(removeFromVariableModificationTableBtn, Alignment.TOP_CENTER);
 
         VerticalLayout rightSideLayout = new VerticalLayout();
         rightSideLayout.setSizeFull();
         rightSideLayout.setSpacing(true);
-        modificationContainer.addComponent(rightSideLayout);
-        modificationContainer.setExpandRatio(rightSideLayout, 45);
+        popupModificationContainer.addComponent(rightSideLayout);
+        popupModificationContainer.setExpandRatio(rightSideLayout, 45);
 
         ComboBox modificationListControl = new ComboBox();
         modificationListControl.setWidth(100, Unit.PERCENTAGE);
@@ -472,12 +501,16 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
                 minMass = PTM.getPTM(ptm).getMass();
             }
         }
+        Map<String, String> updatedModiList = new HashMap<>();
 
         for (int x = 0; x < allModiList.size(); x++) {
             ColorLabel color = new ColorLabel(PTM.getColor(allModiList.get(x)));
             SparkLine sLine = new SparkLine(PTM.getPTM(allModiList.get(x)).getMass(), minMass, maxMass);
             Object[] modificationArr = new Object[]{color, allModiList.get(x), sLine};
+            String updatedId = "<font style='color:" + color.getRGBColorAsString() + ";font-size:10px !important;margin-right:5px'> " + VaadinIcons.CIRCLE.getHtml() + "</font>" + allModiList.get(x);
+            updatedModiList.put(allModiList.get(x), updatedId);
             completeModificationItems.put(allModiList.get(x), modificationArr);
+
         }
         rightSideLayout.addComponent(mostUsedModificationsTable);
         completeModificationItems.keySet().stream().filter((id) -> (commonModificationIds.contains(id.toString()))).forEachOrdered((id) -> {
@@ -491,6 +524,12 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         rightSideLayout.setExpandRatio(allModificationsTable, 96);
         allModificationsTable.setVisible(false);
 
+        Horizontal2Label fixedModificationLabel = new Horizontal2Label("Fixed Modifications:", "");
+        fixedModificationLabel.addStyleName("breakline");
+        Horizontal2Label variableModificationLabel = new Horizontal2Label("Variable Modifications:", "");
+        variableModificationLabel.addStyleName("breakline");
+        modificationLabelsContainer.addComponent(fixedModificationLabel);
+        modificationLabelsContainer.addComponent(variableModificationLabel);
         modificationListControl.addValueChangeListener((Property.ValueChangeEvent event) -> {
             allModificationsTable.removeAllItems();
             mostUsedModificationsTable.removeAllItems();
@@ -531,7 +570,15 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
             });
             fixedModificationTable.sort(new Object[]{"name"}, new boolean[]{true});
             fixedModificationTable.setCaption("Fixed Modifications (" + fixedModificationTable.getItemIds().size() + ")");
-            selectionTable.setCaption("(" + selectionTable.getItemIds().size() + ")");
+            Object id = modificationListControl.getValue();
+            String cap = modificationListControl.getItemCaption(id).split("\\(")[0] + " (" + selectionTable.getItemIds().size() + ")";
+            modificationListControl.setItemCaption(id, cap);
+            String updateMod = "";
+            for (String tid : fixedModificationTable.getItemIds().toString().replace("[", "").replace("]", "").split(",")) {
+                updateMod = updateMod + " , " + updatedModiList.get(tid.trim());
+            }
+            updateMod = updateMod.replaceFirst(" , ", "");
+            fixedModificationLabel.updateValue(updateMod);
 
         });
         removeFromFixedModificationTableBtn.addClickListener((Button.ClickEvent event) -> {
@@ -550,8 +597,16 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
             });
             selectionTable.sort(new Object[]{"name"}, new boolean[]{true});
             fixedModificationTable.setCaption("Fixed Modifications (" + fixedModificationTable.getItemIds().size() + ")");
-            selectionTable.setCaption("(" + selectionTable.getItemIds().size() + ")");
-
+//            selectionTable.setCaption("(" + selectionTable.getItemIds().size() + ")");
+            Object id = modificationListControl.getValue();
+            String cap = modificationListControl.getItemCaption(id).split("\\(")[0] + "(" + selectionTable.getItemIds().size() + ")";
+            modificationListControl.setItemCaption(id, cap);
+            String updateMod = "";
+            for (String tid : fixedModificationTable.getItemIds().toString().replace("[", "").replace("]", "").split(",")) {
+                updateMod = updateMod + " , " + updatedModiList.get(tid.trim());
+            }
+            updateMod = updateMod.replaceFirst(" , ", "");
+            fixedModificationLabel.updateValue(updateMod);
         });
         addToVariableModificationTableBtn.addClickListener((Button.ClickEvent event) -> {
             Table selectionTable;
@@ -569,7 +624,16 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
             });
             variableModificationTable.sort(new Object[]{"name"}, new boolean[]{true});
             variableModificationTable.setCaption("Variable Modifications (" + variableModificationTable.getItemIds().size() + ")");
-            selectionTable.setCaption("(" + selectionTable.getItemIds().size() + ")");
+//            selectionTable.setCaption("(" + selectionTable.getItemIds().size() + ")");
+            Object id = modificationListControl.getValue();
+            String cap = modificationListControl.getItemCaption(id).split("\\(")[0] + " (" + selectionTable.getItemIds().size() + ")";
+            modificationListControl.setItemCaption(id, cap);
+            String updateMod = "";
+            for (String tid : variableModificationTable.getItemIds().toString().replace("[", "").replace("]", "").split(",")) {
+                updateMod = updateMod + " , " + updatedModiList.get(tid.trim());
+            }
+            updateMod = updateMod.replaceFirst(" , ", "");
+            variableModificationLabel.updateValue(updateMod);
 
         });
         removeFromVariableModificationTableBtn.addClickListener((Button.ClickEvent event) -> {
@@ -588,12 +652,26 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
             });
             selectionTable.sort(new Object[]{"name"}, new boolean[]{true});
             variableModificationTable.setCaption("Variable Modifications (" + variableModificationTable.getItemIds().size() + ")");
-            selectionTable.setCaption("(" + selectionTable.getItemIds().size() + ")");
+//            selectionTable.setCaption("(" + selectionTable.getItemIds().size() + ")");
+            Object id = modificationListControl.getValue();
+            String cap = modificationListControl.getItemCaption(id).split("\\(")[0] + " (" + selectionTable.getItemIds().size() + ")";
+            modificationListControl.setItemCaption(id, cap);
+            String updateMod = "";
+            for (String tid : variableModificationTable.getItemIds().toString().replace("[", "").replace("]", "").split(",")) {
+                updateMod = updateMod + " , " + updatedModiList.get(tid.trim());
+            }
+            updateMod = updateMod.replaceFirst(" , ", "");
+            variableModificationLabel.updateValue(updateMod);
 
         });
         mostUsedModificationsTable.setVisible(true);
-
-        return modificationContainer;
+        Object id = modificationListControl.getValue();
+        String cap = mostUsedModificationsTable.getItemCaption(id).split("\\(")[0] + " (" + mostUsedModificationsTable.getItemIds().size() + ")";
+        modificationListControl.setItemCaption(id, cap);
+        modificationWindow.setContent(popupModificationContainer);
+        fixedModificationLabel.updateValue(fixedModificationTable.getItemIds().toString().replace("[", "").replace("]", ""));
+        variableModificationLabel.updateValue(variableModificationTable.getItemIds().toString().replace("[", "").replace("]", ""));
+        return modificationWindow;
 
     }
 
@@ -604,7 +682,6 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
      */
     private Table initModificationTable(String cap) {
         Table modificationsTable = new Table(cap) {
-            DecimalFormat df =  new DecimalFormat("0.00E00");//new DecimalFormat("#.##");
 
             @Override
             protected String formatPropertyValue(Object rowId, Object colId, Property property) {
@@ -618,7 +695,9 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         };
         Set<Object> idSet = new HashSet<>();
         modificationsTable.setData(idSet);
-        modificationsTable.setSizeFull();
+        modificationsTable.setWidth(99, Unit.PERCENTAGE);
+        modificationsTable.setHeight(99, Unit.PERCENTAGE);
+
         modificationsTable.setStyleName(ValoTheme.TABLE_SMALL);
         modificationsTable.addStyleName(ValoTheme.TABLE_COMPACT);
         modificationsTable.addStyleName(ValoTheme.TABLE_NO_VERTICAL_LINES);
@@ -649,6 +728,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
      * @return initialised layout
      */
     private GridLayout inititProteaseFragmentationLayout() {
+
         GridLayout proteaseFragmentationContainer = new GridLayout(2, 6);
         proteaseFragmentationContainer.setStyleName("panelframe");
         proteaseFragmentationContainer.setColumnExpandRatio(0, 55);
@@ -851,7 +931,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
 
         mostUsedModificationsTable.setCaption("(" + mostUsedModificationsTable.getItemIds().size() + ")");
         allModificationsTable.setCaption("(" + allModificationsTable.getItemIds().size() + ")");
-        
+
         if (((boolean) VaadinSession.getCurrent().getAttribute("smallscreenstyle"))) {
             modificationContainer.setHeight(270, Unit.PIXELS);
             modificationContainer.addLayoutClickListener(viewCoordinatorListener);
