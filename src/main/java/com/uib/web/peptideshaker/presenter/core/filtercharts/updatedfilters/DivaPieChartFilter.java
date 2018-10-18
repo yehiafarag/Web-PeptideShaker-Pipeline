@@ -96,7 +96,6 @@ public abstract class DivaPieChartFilter extends HorizontalLayout implements Reg
     private final LayoutEvents.LayoutClickListener dountChartListener;
     private Map<String, Set<Comparable>> fullData;
     private List<Color> colorsList;
-    private Timer redrawTimer = new Timer();
 
     public DivaPieChartFilter(String title, String filterId, SelectionManager Selection_Manager) {
         this.mainWidth = -1;
@@ -140,6 +139,7 @@ public abstract class DivaPieChartFilter extends HorizontalLayout implements Reg
         DivaPieChartFilter.this.addComponent(topLeftContainer);
         DivaPieChartFilter.this.setComponentAlignment(topLeftContainer, Alignment.TOP_LEFT);
         DivaPieChartFilter.this.setExpandRatio(topLeftContainer, 15);
+        topLeftContainer.addStyleName("toppanel");
 
         chartTitle = new Label("<font style='padding-top: 10px;position: absolute;'>" + title + "</font>", ContentMode.HTML);
         chartTitle.setStyleName(ValoTheme.LABEL_BOLD);
@@ -259,12 +259,13 @@ public abstract class DivaPieChartFilter extends HorizontalLayout implements Reg
         removeFilterIcon.setVisible(false);
 //        removeFilterIcon.setActiveBtn(true);
         removeFilterIcon.addStyleName("btninframe");
+        removeFilterIcon.addStyleName("alignwithtitle");
 
 //        topLeftContainer.addComponent(removeFilterIcon);
 //        topLeftContainer.setComponentAlignment(removeFilterIcon, Alignment.TOP_CENTER);
         DivaPieChartFilter.this.addComponent(removeFilterIcon);
         DivaPieChartFilter.this.setComponentAlignment(removeFilterIcon, Alignment.TOP_RIGHT);
-        DivaPieChartFilter.this.setExpandRatio(removeFilterIcon, 1);
+        DivaPieChartFilter.this.setExpandRatio(removeFilterIcon, 0);
 
     }
 

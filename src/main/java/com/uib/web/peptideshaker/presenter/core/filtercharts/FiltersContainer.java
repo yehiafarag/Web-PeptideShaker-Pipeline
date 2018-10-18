@@ -187,7 +187,7 @@ public class FiltersContainer extends HorizontalLayout {
 
         filterRightPanelContainer.addComponent(coverageFilter);
     }
-    private final Color[] colorsArr = new Color[]{Color.DARK_GRAY, new Color(4, 180, 95), Color.YELLOW, new Color(213, 8, 8), Color.ORANGE};
+    private final Color[] colorsArr = new Color[]{Color.DARK_GRAY, new Color(4, 180, 95), new Color(245, 226, 80), new Color(213, 8, 8), Color.ORANGE};
     private final Color[] colorsArrII = new Color[]{Color.DARK_GRAY, new Color(4, 180, 95),Color.ORANGE, new Color(213, 8, 8)};
 
     public void updateFiltersData(ModificationMatrix modificationMatrix, Map<String, Color> modificationsColorMap, Map<Integer, Set<Comparable>> chromosomeMap, Map<String, Set<Comparable>> piMap, Map<String, Set<Comparable>> proteinValidationMap, TreeMap<Comparable, Set<Comparable>> proteinPeptidesNumberMap, TreeMap<Comparable, Set<Comparable>> proteinPSMNumberMap, TreeMap<Comparable, Set<Comparable>> proteinCoverageMap) {

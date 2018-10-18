@@ -406,8 +406,8 @@
     }
     .v-panel-integratedframe{border-top-left-radius: 5px !important;}
     .integratedframe .v-captiontext{
-        font-size:16px;
-        font-weight:bold;
+        /*        font-size:16px;
+                font-weight:bold;*/
         font-family:"Open Sans", sans-serif;
         color:rgb(70,70,70);
         border-top-left-radius:0px !important;
@@ -445,7 +445,7 @@
         font-family: "Open Sans", sans-serif;
     }
     .v-caption-dropdownlist {
-        padding-left: 20px;
+        margin-left: 20px;
         padding-top: 10px;
         font-size: 12px;
         font-weight: bold;
@@ -454,8 +454,11 @@
 
     .dropdownlist {
         max-height: 25px;
-        padding-left: 20px;
-        min-width: 420px !important;
+        margin-left: 20px;
+        min-width: 250px !important;
+    }
+    .v-slot-dropdownlist .v-widget{
+        width:100% !important;
     }
 
     .dropdownlistframe {
@@ -592,10 +595,14 @@
         text-decoration:underline;
     }
     .bottomformlayout .v-button{
-        max-height:25px;
-        margin-left:20px;
-        font-weight:bold !important;
+        max-height: 25px;	
+        font-weight: bold !important;
         font-size: 13px !important;
+        min-width:60% ;
+    }
+    .v-horizontallayout-bottomformlayout{
+        border-top:1px solid lightgray;
+        padding-top:10px;
     }
     .error {
         color:red;
@@ -638,8 +645,8 @@
     }
     .panelframe .v-label{
         text-decoration: none;
-	font-size: 15px !important;
-	font-weight:bold;
+        font-size: 15px !important;
+        font-weight:bold;
     }
     .panelframe .v-captiontext{
         margin-top:5px;
@@ -660,7 +667,6 @@
         text-decoration: none !important;
         font-size: 12px !important;
         font-weight:normal !important;
-        vertical-align:middle;
     }
     .windowtitle{
         font-size:13px;
@@ -1194,20 +1200,30 @@
     }
     .v-slot-searchtablecontainer {
         max-width: 345px;
-        max-height: 0px !important;
-        margin-top: 0px !important;
+        max-height: 4px !important;
+        margin-top: -35px !important;
         float: right;
+        padding-top:20px;
     }
-
+    .v-verticallayout-datasetproteinstablestyle .v-slot-framedpanel{
+        margin-top:-25px !important;
+    }
     .searchtablecontainer {
-        width: 430px !important;
-        text-align: middle !important;
-        position: relative !important;
+        .searchtablecontainer {
+            width: 530px !important;
+            text-align: middle !important;
+            position: relative !important;
+            right:-35px;
+        }
+    }
+    .v-verticallayout-datasetproteinstablestyle .v-caption-framedpanel .v-captiontext{
+
+        position:relative;
+        top:-1px !important;
     }
 
     .searchtablecontainer .v-label,  .searchtablecontainer .smallundecorated.v-label-smallundecorated {
         text-align: center;
-        margin-left: -10px;
         max-width: 300px;
         font-size: 15px !important;
         color: gray !important;
@@ -1220,11 +1236,12 @@
         text-overflow: ellipsis !important;
         overflow: hidden !important;
         border-width: 2px;
-        margin-left:5px;
+        margin-right: 5px;        
+        z-index:3 !important;
+        position:relative !important;
     }
     .searchtablecontainer .v-button{
-        margin-left:-5px !important;
-        margin-right:5px;
+        margin-left: 5px !important;
         color:gray;
 
     }
@@ -1518,7 +1535,8 @@
     .popupframe{
         padding-left:10px;
         padding-right:10px;
-        padding-top:10px;margin-right:35px;
+        padding-top:10px;
+        margin-right:35px;
     }
     .popupframe .v-verticallayout-closeboxbtn{
         border: 1px solid lightgray;
@@ -1621,31 +1639,16 @@
 
     .rangeslider .v-slider-handle:before {
         height: 20px !important;
-        width:5px !important;
+        width:20px !important;
     }
 
-
-    .v-slot-btninframe{
-        right:0px !important;
-        bottom:0px !important;
-        position: absolute !important;
-    }
-    .v-verticallayout-btninframe {
-        position: absolute !important;
-        z-index:3 !important;
-        bottom: -2px !important;
-        right:-2px !important;
-        margin:0px !important;
-        padding:0px !important;
-        width:25px !important;
-    }
     .rangeslider .v-slider-handle:before, .rangeslider .v-slider-handle:after {
         content: "";
         -webkit-box-sizing: border-box;
         -moz-box-sizing: border-box;
         box-sizing: border-box;
         padding: 0 !important;
-        width: 5px;
+        width: 20px;
         height: 20px;
         border-radius: 11px;
         margin-left: 0px;
@@ -1655,7 +1658,43 @@
         z-index:3 !important;
 
     }
+    .visibleoverflow,.visibleoverflow .v-absolutelayout-margin{
+        overflow: visible !important;
+        margin-left:-5px;
+    }
+    .v-label-leftrangebarlabel {
+        background: whitesmoke !important;
+        color: gray;
+        line-height: 18px !important;
+        top: 0px !important;
+        position: relative !important;
+        border: 1px solid lightgray;
+        border-radius: 5px !important;
+        max-height: 20px;
+        width:auto !important;
+        z-index: 2;
+        padding-left:5px;
+        padding-right:5px;
+        margin-top:-13px;
+        margin-left:15px;
+    }
 
+    .v-label-rightrangebarlabel {
+        background: whitesmoke !important;
+        color: gray;
+        line-height: 18px !important;
+        top: 0px !important;
+        position: relative !important;
+        border: 1px solid lightgray;
+        border-radius: 5px !important;
+        max-height: 20px;
+        width:auto !important;
+        z-index: 2;
+        padding-left:5px;
+        padding-right:5px;
+        margin-top:-13px;
+        margin-right:-3px !important;
+    }
 
 
     .rangeslider.upper .v-slider-base{   
@@ -1771,9 +1810,9 @@
         -webkit-border-radius:100%;
         -moz-border-radius: 100%;
         position:relative;
-        box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
-        -webkit-box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
-        -moz-box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
+        /*        box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
+                -webkit-box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;
+                -moz-box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2), inset 0px 10px 30px 5px white;*/
         font-size:1.5vh;
         z-index: 2 !important;
         cursor: pointer;
@@ -1821,21 +1860,23 @@
         border-top-right-radius:5px;
         border-top-left-radius:5px;
     }
-    .stacked{
-        z-index:3;
-        position:relative;
-        background-color:white !important;
-        margin-top: 4px;
-
+    .stacked {
+        z-index: 3;
+        position: relative;
+        background-color: white !important;
+        margin-top: 1px;
+        overflow:visible !important;
+    }
+    .stacked center{
+        margin-top: 5px;
+        line-height:10px;
     }
     .colorscale {
         position:relative !important;
         right:10px;
         bottom:3px;
     }
-    .stacked center{
-        background-color:white ;
-    }
+
     .v-gridlayout-slot .centeredtext{
         padding-top:10px;
         overflow:hidden;
@@ -1909,10 +1950,9 @@
         max-height: 20px;
     }
     .v-label-legenditem{
-        white-space: nowrap;
-        overflow:hidden !important;
-        text-overflow:ellipsis !important;	
-        position:relative !important;
+        white-space: pre-line;
+        position: relative !important;
+        padding-left:5px !important;
     }
 
     .btnlayout{
@@ -1938,7 +1978,7 @@
         /*background-color:#dfebf9*/
     }
     .highlightfilter:hover{
-        border-color:orange !important; 
+        /*border-color:orange !important;*/ 
 
         /*background-color:#dfebf9*/
     }
@@ -2751,7 +2791,7 @@
         height:12px !important;
     }
     .yellowincolor{
-        background-color: #f5f518 !important;
+        background-color: #f5e250 !important;
         width:20px !important;
         height:12px !important;
         border:1px solid #e8dddd;
@@ -4149,10 +4189,8 @@
         margin-left:20px;
         margin-top:20px;
         margin-bottom: 10px;
-
     }
     .psprojectname .v-label b{
-
         font-size:16px !important;
         font-weight: bold  !important;
         font-family: "Open Sans", sans-serif  !important;
@@ -4181,9 +4219,7 @@
         min-height:30px;
 
     }
-    .bottomformlayout .v-button{
-        margin-top:-40px;
-    }
+
     .v-select-optiongroup-showlist .v-checkbox{
         min-height: 19px !important;
     }
@@ -4240,19 +4276,274 @@
 
     }
     .breakline .v-label{
-	min-width: 130px;
-	max-width: 500px;
-	text-align: left !important;
-	word-wrap: break-word !important;
-	white-space: pre-wrap;
-	height: auto !important;
+        min-width: 50px;
+        max-width: 500px;
+        text-align: left !important;
+        word-wrap: break-word !important;
+        white-space: pre-wrap;
+        height: auto !important;
+        font-size: 11px !important;
+        width: 100% !important;
+        padding: 0px !important;
+        color: black;
 
-}
-.v-caption-on-left .v-slot-dropdownlist div{
-	display: inline-block !important;
-	vertical-align:middle;
-}
-.v-verticallayout-v-caption-on-left{
-		margin-top:10px;
-}
+    }
+    .v-caption-on-left .v-slot-dropdownlist div{
+        display: inline-block !important;
+        vertical-align:middle;
+    }
+    .v-verticallayout-v-caption-on-left{
+        margin-top:10px;
+    }
+    .nomargin .v-filterselect.v-filterselect-small.v-filterselect-tiny.v-filterselect-align-center{
+        margin-top: 0px !important;
+    }
+    .v-caption-psprojectname{
+        font-family: "Open Sans", sans-serif !important;
+        color: #464646;
+        font-size:12px !important;
+        font-weight:bold !important;
+        margin-left:20px;
+        height:0px !important;
+
+    }
+    .v-slot-psprojectname{
+        max-height:40px;
+    }
+
+    .v-textfield-psprojectname{
+        max-height:25px;
+        font-size:12px !important;
+        background-color:whitesmoke !important;
+    }
+    .v-filterselect span.v-icon{
+        margin-left:10px;
+    }
+    .v-caption-on-left .v-slot-dropdownlist{
+        vertical-align:middle !important;
+    }
+
+    .v-caption-on-left .v-slot-dropdownlist div {
+        display: inline-block !important;
+        vertical-align: middle !important;
+    }
+    .v-slot-v-caption-on-left .v-caption-dropdownlist{
+
+        max-width:145px !important;
+
+    }
+
+    .v-filterselect.v-widget.dropdownlist.v-filterselect-dropdownlist {
+        max-width:300px !important;
+    }
+    .nopaddingmiddlealign .v-select-optiongroup{
+        margin-top:10px;
+        padding-left:0px !important;
+    }
+    .nomargintop .v-filterselect.v-widget.dropdownlist.v-filterselect-dropdownlist {
+        max-width:400px !important;
+        margin-top:0px;
+    }
+    .v-slot-multiheaders {
+        font-size: 11px !important;
+        min-width: 50px;
+        word-spacing: 15px;
+        display: inline-block !important;
+        width:100% !important;
+        padding:0px !important;
+        color:black;
+        margin-top:-5px !important;
+    }
+
+    .multiheaders b {
+        font-size: 11px !important;
+        word-spacing: 1px;
+
+    }
+    .multiheaders center {
+        width:33.333%;
+        max-height:20px;
+        display: inline-block !important;
+        text-align:left;
+        text-overflow:ellipsis;
+        overflow:hidden;
+
+    }
+    .subpanelframe .v-button-icon-align-right .Vaadin-Icons {
+        font-weight: normal !important;
+        font-size: 12px;
+        margin-top: -2px;
+    }
+    .subpanelframe .v-button-icon-align-right {
+        color: transparent ;
+    }
+    .v-slot-icon-align-right div:hover {
+        color: #1b7de1 !important;
+    }
+    .subpanelframe .v-button-icon-align-right .v-button-caption{
+        color:#1b7de1;
+    }
+    .v-slot-bordertopseparator {
+        border-top: 1px solid lightgray;
+        margin-top: 10px;
+        padding-top: 10px;
+        max-width: 80%;
+        float: center !important;
+        vertical-align: center;
+        left: 50% !important;
+        position: relative;
+        margin-left: -40%;
+    }
+    /*
+        .v-slot-extralayersidebtn {
+            width:32px !important;
+            height:32px !important;
+            background-color:transparent !important;
+            position:absolute !important;
+            left:50% !important;
+            margin-left:-16px;
+            top:50% !important;
+            margin-top:-16px;
+            visibility:visible !important;
+            z-index:100 !important;
+        }
+        .v-slot-extralayersidebtn .v-absolutelayout-margin{
+            overflow:visible !important;
+            width : 32px !important;
+    
+        }
+        .v-absolutelayout-extralayersidebtn{
+            width:32px !important;
+            height:32px !important;
+        }
+        .v-label-clusterouter{
+            width:32px !important;
+            height:32px !important;
+        }
+        .clusterouter .v-icon-cluster {
+            width:32px !important;
+            height:32px !important;
+            line-height:32px !important;
+            border:none !important;
+            background-color:transparent !important;
+            font-size:30px !important;
+            font-weight:10000 !important;
+            color:white !important;
+    
+        }*/
+    .chromosomfilter .v-slot-toppanel{
+        min-height: 15px;
+        padding-top: 10px;
+        line-height:6px !important;
+
+    }
+    /*    .btninframe.v-verticallayout-hide{
+            visibility:visible !important;
+            opacity:0.5;
+            position: absolute !important;
+            z-index: 3 !important;
+            margin: 0px !important;
+            padding: 0px !important;
+            width: 23px !important;
+            height: 23px !important;
+            left: 2px !important;
+            top:2px !important;
+            border: none !important;
+    
+        }*/
+
+    .v-absolutelayout-chromosomefiltercontainerstyle .v-label-resizableimg{
+
+        bottom:20px !important;
+        position:absolute;
+
+    } 
+    .v-slot-btninframe {
+        right: 19px !important;
+        top: -2px !important;
+        position: absolute !important;
+    }
+
+    .v-verticallayout-btninframe {
+        position: absolute !important;
+        z-index: 3 !important;
+        margin: 0px !important;
+        padding: 0px !important;
+        width: 23px !important;
+        height: 23px !important;
+        left: 0px !important;
+        border: 2px solid orange !important;
+        border-top-color:white !important;
+        border-righ-colort:white !important;
+        border-top-left-radius:0px !important;
+        border-bottom-right-radius:0px !important;
+    }
+    .btninframe .v-image{
+        padding:10% !important;
+        border:1px solid transparent  !important;
+        border-radius:2px;
+        background-color:white !important;
+
+    }
+    .btninframe .v-image:hover{
+
+
+    }
+    .v-slot-toppanel {
+        min-height: 20px;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /*
+        .designicon{
+    
+            top:50% !important;
+            position:absolute;
+            width:120px !important;
+            height:120px !important;
+    
+        }
+        .designicon .v-label{
+            font-size:95px ;
+            color:gray;
+        }
+        .v-label-lb{
+            font-size:50px !important;
+            color:blue !important;
+            background-color:orange;
+            border-radius:100%;
+            line-height:50px;
+            width:50px !important;
+            height:50px !important;
+            text-align:top;
+            vertical-align:top !important;;
+            padding:0px !important;
+    
+        }*/
+
+
 }

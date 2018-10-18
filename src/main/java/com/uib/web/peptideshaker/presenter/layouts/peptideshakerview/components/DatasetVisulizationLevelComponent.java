@@ -55,7 +55,6 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
 
         this.datasetFiltersContainer = new FiltersContainer(Selection_Manager);
         DatasetVisulizationLevelComponent.this.addComponent(datasetFiltersContainer);
-        DatasetVisulizationLevelComponent.this.setExpandRatio(datasetFiltersContainer, 100f);
 
         this.inferenceMap = new HashMap<>();
         this.inferenceMap.put("Single Protein", 1);
@@ -94,7 +93,6 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
         };
         this.proteinTableContainer.setStyleName("datasetproteinstablestyle");
         DatasetVisulizationLevelComponent.this.addComponent(proteinTableContainer);
-        DatasetVisulizationLevelComponent.this.setExpandRatio(proteinTableContainer, 100f);
 
         Selection_Manager.RegistrDatasetsFilter(DatasetVisulizationLevelComponent.this);
         selectionListener = (event) -> {
@@ -118,11 +116,11 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
         mainTable.setColumnCollapsed("geneName", true);
         boolean smallScreen = (boolean) VaadinSession.getCurrent().getAttribute("smallscreenstyle");
 
-        mainTable.setColumnCollapsible("mwkDa", smallScreen);
-        mainTable.setColumnCollapsible("ms2Quant", smallScreen);
+        mainTable.setColumnCollapsible("mwkDa", true);
+        mainTable.setColumnCollapsible("ms2Quant", true);
         mainTable.setColumnCollapsible("chromosom", smallScreen);
-        mainTable.setColumnCollapsed("mwkDa", smallScreen);
-        mainTable.setColumnCollapsed("ms2Quant", smallScreen);
+        mainTable.setColumnCollapsed("mwkDa", true);
+        mainTable.setColumnCollapsed("ms2Quant", true);
         mainTable.setColumnCollapsed("chromosom", smallScreen);
 
         if (smallScreen) {
@@ -225,6 +223,8 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
         }
         mainTable.setSortEnabled(false);
         ModificationMatrix modificationMatrix = peptideShakerVisualizationDataset.getModificationMatrix();
+        if(modificationMatrix.getRows()==null)
+            System.out.println("modification matrix has an error ");
         modificationMatrix.getRows().keySet().forEach((mod) -> {
             if (PTM.containsPTM(mod)) {
                 ModificationColorMap.put(mod, PTMFactory.getDefaultColor(mod));

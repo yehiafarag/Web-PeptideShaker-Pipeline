@@ -21,6 +21,7 @@ public class HorizontalLabelTextField extends HorizontalLayout {
      */
     private final TextField textField;
     private String defaultValue;
+    private final Label captionLabel;
 
     /**
      * Constructor to initialize the main attributes
@@ -30,13 +31,13 @@ public class HorizontalLabelTextField extends HorizontalLayout {
      */
     public HorizontalLabelTextField(String caption, Object defaultValue, Validator validator) {
         HorizontalLabelTextField.this.setSizeFull();
-        Label cap = new Label(caption);
-        cap.setContentMode(ContentMode.HTML);
-        cap.addStyleName(ValoTheme.LABEL_TINY);
-        cap.addStyleName(ValoTheme.LABEL_SMALL);
-        cap.addStyleName("smallundecorated");
-        HorizontalLabelTextField.this.addComponent(cap);
-        HorizontalLabelTextField.this.setExpandRatio(cap, 45);
+        captionLabel = new Label(caption);
+        captionLabel.setContentMode(ContentMode.HTML);
+        captionLabel.addStyleName(ValoTheme.LABEL_TINY);
+        captionLabel.addStyleName(ValoTheme.LABEL_SMALL);
+        captionLabel.addStyleName("smallundecorated");
+        HorizontalLabelTextField.this.addComponent(captionLabel);
+        HorizontalLabelTextField.this.setExpandRatio(captionLabel, 45);
 
         if (defaultValue == null) {
             this.defaultValue = "0";
@@ -64,6 +65,10 @@ public class HorizontalLabelTextField extends HorizontalLayout {
         HorizontalLabelTextField.this.setExpandRatio(textField, 55);
        
     }
+    public void updateExpandingRatio(float first,float secound){
+     HorizontalLabelTextField.this.setExpandRatio(captionLabel, first);
+     HorizontalLabelTextField.this.setExpandRatio(textField, secound);
+    }
     public void addTextChangeListener(FieldEvents.TextChangeListener listener){
         textField.addTextChangeListener(listener);
         textField.setTextChangeTimeout(2000);
@@ -76,7 +81,9 @@ public class HorizontalLabelTextField extends HorizontalLayout {
     }
 
     public boolean isValid() {
+        textField.setRequired(true);
         boolean check = textField.isValid();
+        textField.setRequired(!check);
         return check;
 
     }
@@ -102,6 +109,10 @@ public class HorizontalLabelTextField extends HorizontalLayout {
         }
         return textField.getValue().replace(" ","_");
 
+    }
+    public String fullLabelValue(){
+        return "<b>"+captionLabel.getValue()+": </b>"+textField.getValue();
+    
     }
 
 }

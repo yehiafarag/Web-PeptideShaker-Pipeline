@@ -25,6 +25,7 @@ import com.vaadin.data.validator.DoubleRangeValidator;
 import com.vaadin.data.validator.IntegerRangeValidator;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -110,6 +111,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
      * The modification items that is used for initialise modifications tables.
      */
     private final Map<Object, Object[]> completeModificationItems = new LinkedHashMap<>();
+    private final Map<String, String> updatedModiList = new HashMap<>();
     /**
      * Select FASTA file drop-down list from available FAST files.
      */
@@ -184,10 +186,12 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
      */
     private final PopupWindow modificationContainer;
     private final VerticalLayout modificationLabelsContainer;
+    private final VerticalLayout proteaseFragmentationLabelsContainer;
+    private Label proteaseFragmentationLabels;
     /**
      * Protease fragmentation container layout.
      */
-    private final GridLayout proteaseFragmentationContainer;
+    private final PopupWindow proteaseFragmentationContainer;
     DecimalFormat df = new DecimalFormat("0.00E00");//new DecimalFormat("#.##");
 
     /**
@@ -195,17 +199,23 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
      */
     public SearchSettingsLayout() {
         SearchSettingsLayout.this.setMargin(true);
-        SearchSettingsLayout.this.setSizeUndefined();
+        SearchSettingsLayout.this.setHeightUndefined();
+        SearchSettingsLayout.this.setWidth(630, Unit.PIXELS);
         SearchSettingsLayout.this.setSpacing(true);
+        VerticalLayout upperPanel = new VerticalLayout();
+        upperPanel.setWidth(100, Unit.PERCENTAGE);
+        upperPanel.addStyleName("subpanelframe");
+        SearchSettingsLayout.this.addComponent(upperPanel);
         HorizontalLayout titleLayout = new HorizontalLayout();
         titleLayout.setSizeFull();
-        titleLayout.addStyleName("subpanelframe");
+        titleLayout.setHeight(40, Unit.PIXELS);
+//        titleLayout.addStyleName("subpanelframe");
 
         this.commonModificationIds = new HashSet<>();
         String mod = "Acetylation of K//Acetylation of protein N-term//Carbamidomethylation of C//Oxidation of M//Phosphorylation of S//Phosphorylation of T//Phosphorylation of Y//Arginine 13C6//Lysine 13C6//iTRAQ 4-plex of peptide N-term//iTRAQ 4-plex of K//iTRAQ 4-plex of Y//iTRAQ 8-plex of peptide N-term//iTRAQ 8-plex of K//iTRAQ 8-plex of Y//TMT 6-plex of peptide N-term//TMT 6-plex of K//TMT 10-plex of peptide N-term//TMT 10-plex of K//Pyrolidone from E//Pyrolidone from Q//Pyrolidone from carbamidomethylated C//Deamidation of N//Deamidation of Q";
         commonModificationIds.addAll(Arrays.asList(mod.split("//")));
 
-        SearchSettingsLayout.this.addComponent(titleLayout);
+        upperPanel.addComponent(titleLayout);
         Label setteingsLabel = new Label("Search Settings");
         setteingsLabel.addStyleName(ValoTheme.LABEL_BOLD);
         titleLayout.addComponent(setteingsLabel);
@@ -235,82 +245,104 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         titleLayout.addComponent(closeIconBtn);
         titleLayout.setComponentAlignment(closeIconBtn, Alignment.TOP_RIGHT);
 
-        VerticalLayout upperPanel = new VerticalLayout();
-        upperPanel.setWidth(100, Unit.PERCENTAGE);
-        upperPanel.addStyleName("subpanelframe");
-        SearchSettingsLayout.this.addComponent(upperPanel);
-
         HorizontalLayout searchsettingsContainer = new HorizontalLayout();
-        searchsettingsContainer.setWidth(100,Unit.PERCENTAGE);
+        searchsettingsContainer.setWidth(100, Unit.PERCENTAGE);
         searchsettingsContainer.setHeight(25, Unit.PIXELS);
         searchsettingsContainer.setSpacing(true);
         searchParametersFileNameInputField = new HorizontalLabelTextField("<b>Search Settings Name</b>", "Searching Settings Name", null);
         searchParametersFileNameInputField.setWidth(100, Unit.PERCENTAGE);
+        searchParametersFileNameInputField.updateExpandingRatio(0.28f, 0.505f);
         searchParametersFileNameInputField.setRequired(false);
+        VerticalLayout spacer = new VerticalLayout();
+        searchParametersFileNameInputField.addComponent(spacer);
+        searchParametersFileNameInputField.setExpandRatio(spacer, 0.215f);
+
         searchsettingsContainer.addComponent(searchParametersFileNameInputField);
-        searchsettingsContainer.setExpandRatio(searchParametersFileNameInputField, 54);
+
+        upperPanel.addComponent(searchsettingsContainer);
+        HorizontalLayout protDatabaseContainer = new HorizontalLayout();
+        protDatabaseContainer.setHeight(40, Unit.PIXELS);
+        protDatabaseContainer.setWidth(100, Unit.PERCENTAGE);
+        fastaFileList = new DropDownList("Protein Database (FASTA)") {
+            @Override
+            public boolean isValid() {
+                fastaFileList.setRequired(true,"No FASTA FILE AVAILABLE");
+                boolean check = super.isValid();
+                fastaFileList.setRequired(!check,"No FASTA FILE AVAILABLE");
+                return check;
+
+            }
+        };
+        fastaFileList.addStyleName("v-caption-on-left");
+        protDatabaseContainer.addComponent(fastaFileList);
+        protDatabaseContainer.setExpandRatio(fastaFileList, 0.82f);
+//        fastaFileList.setRequired(false, "Select FASTA file");
+        fastaFileList.addStyleName("paddingleft-20");
+        upperPanel.addComponent(protDatabaseContainer);
+
         createDecoyDatabaseOptionList = new MultiSelectOptionGroup(null, false);
-        searchsettingsContainer.addComponent(createDecoyDatabaseOptionList);
-        searchsettingsContainer.setComponentAlignment(createDecoyDatabaseOptionList, Alignment.TOP_LEFT); 
-        searchsettingsContainer.setExpandRatio(createDecoyDatabaseOptionList, 46);
-         Map<String, String> paramMap = new LinkedHashMap<>();
-        paramMap.put("create_decoy", "Add Decoy Sequences");
+        protDatabaseContainer.addComponent(createDecoyDatabaseOptionList);
+        protDatabaseContainer.setComponentAlignment(createDecoyDatabaseOptionList, Alignment.TOP_LEFT);
+        createDecoyDatabaseOptionList.addStyleName("nopaddingmiddlealign");
+        protDatabaseContainer.setExpandRatio(createDecoyDatabaseOptionList, 0.18f);
+        Map<String, String> paramMap = new LinkedHashMap<>();
+        paramMap.put("create_decoy", "Add Decoy");
         createDecoyDatabaseOptionList.updateList(paramMap);
         createDecoyDatabaseOptionList.setSelectedValue("create_decoy");
         createDecoyDatabaseOptionList.setViewList(true);
-//        HorizontalLayout protDatabaseContainer = new HorizontalLayout();
-//        protDatabaseContainer.setWidthUndefined();
-//        protDatabaseContainer.setHeight(60, Unit.PIXELS);
-        upperPanel.addComponent(searchsettingsContainer);
-        fastaFileList = new DropDownList("Protein Database (FASTA)");
-        fastaFileList.addStyleName("v-caption-on-left");
-        upperPanel.addComponent(fastaFileList);
-        fastaFileList.setRequired(false, "Select FASTA file");
-        fastaFileList.addStyleName("paddingleft-20");
 
-       
-
-       
-
-        Button modifications = new Button("Modification");
-        modifications.setIcon(VaadinIcons.EDIT);
-        modifications.setStyleName(ValoTheme.BUTTON_LINK);
-        upperPanel.addComponent(modifications);
+        Button modificationsBtn = new Button("Modification");
+        modificationsBtn.setIcon(VaadinIcons.PENCIL);
+        modificationsBtn.setStyleName(ValoTheme.BUTTON_LINK);
+        modificationsBtn.addStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
+        upperPanel.addComponent(modificationsBtn);
 
         modificationLabelsContainer = new VerticalLayout();
         modificationLabelsContainer.setWidth(100, Unit.PERCENTAGE);
         modificationLabelsContainer.setHeightUndefined();
-        modificationLabelsContainer.setSpacing(true);
+        modificationLabelsContainer.setSpacing(false);
         modificationLabelsContainer.setMargin(new MarginInfo(false, false, false, true));
         upperPanel.addComponent(modificationLabelsContainer);
-
         modificationContainer = inititModificationLayout();
-        modifications.addClickListener((Button.ClickEvent event) -> {
+        modificationsBtn.addClickListener((Button.ClickEvent event) -> {
             modificationContainer.setPopupVisible(true);
         });
 
-//        
+        Button proteaseFragmentationBtn = new Button("Protease & Fragmentation");
+        proteaseFragmentationBtn.setIcon(VaadinIcons.PENCIL);
+        proteaseFragmentationBtn.setStyleName(ValoTheme.BUTTON_LINK);
+        proteaseFragmentationBtn.addStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
+        upperPanel.addComponent(proteaseFragmentationBtn);
+
+        proteaseFragmentationLabelsContainer = new VerticalLayout();
+        proteaseFragmentationLabelsContainer.setWidth(100, Unit.PERCENTAGE);
+        proteaseFragmentationLabelsContainer.setHeightUndefined();
+        proteaseFragmentationLabelsContainer.setSpacing(false);
+        proteaseFragmentationLabelsContainer.setMargin(new MarginInfo(false, false, false, true));
+        upperPanel.addComponent(proteaseFragmentationLabelsContainer);
+
 //        SearchSettingsLayout.this.addComponent(modificationContainer);
         proteaseFragmentationContainer = inititProteaseFragmentationLayout();
-        proteaseFragmentationContainer.addStyleName("subpanelframe");
-        SearchSettingsLayout.this.addComponent(proteaseFragmentationContainer);
+        proteaseFragmentationBtn.addClickListener((Button.ClickEvent event) -> {
+            proteaseFragmentationContainer.setPopupVisible(true);
+        });
 
-        HorizontalLayout actionButtonsLayout = new HorizontalLayout();
-        actionButtonsLayout.setSizeFull();
-        actionButtonsLayout.addStyleName("subpanelframe");
-        SearchSettingsLayout.this.addComponent(actionButtonsLayout);
-
-        HorizontalLayout btnsContainer = new HorizontalLayout();
-        btnsContainer.setHeight(25, Unit.PIXELS);
-        btnsContainer.setWidth(55, Unit.PERCENTAGE);
-        actionButtonsLayout.addComponent(btnsContainer);
-        actionButtonsLayout.setComponentAlignment(btnsContainer, Alignment.MIDDLE_CENTER);
-
+//        HorizontalLayout actionButtonsLayout = new HorizontalLayout();
+//        actionButtonsLayout.setSizeFull();
+//        actionButtonsLayout.addStyleName("subpanelframe");
+//        SearchSettingsLayout.this.addComponent(actionButtonsLayout);
+//        HorizontalLayout btnsContainer = new HorizontalLayout();
+//        btnsContainer.setHeight(25, Unit.PIXELS);
+//        btnsContainer.setWidth(55, Unit.PERCENTAGE);
+//        actionButtonsLayout.addComponent(btnsContainer);
+//        actionButtonsLayout.setComponentAlignment(btnsContainer, Alignment.MIDDLE_CENTER);
         Button saveBtn = new Button("Save");
+        saveBtn.setIcon(FontAwesome.SAVE);
         saveBtn.setStyleName(ValoTheme.BUTTON_SMALL);
         saveBtn.addStyleName(ValoTheme.BUTTON_TINY);
-        saveBtn.setHeight(25, Unit.PIXELS);
-        saveBtn.setWidth(100, Unit.PERCENTAGE);
+        saveBtn.addStyleName("bordertopseparator");
+        saveBtn.setHeight(20, Unit.PIXELS);
+        saveBtn.setWidth(40, Unit.PERCENTAGE);
         saveBtn.addClickListener((Button.ClickEvent event) -> {
             if (this.isValidForm()) {
                 if (this.isModifiedForm()) {
@@ -320,22 +352,23 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
                 }
             }
         });
-        btnsContainer.addComponent(saveBtn);
-        Button closeBtn = new Button("Close");
-        closeBtn.setStyleName(ValoTheme.BUTTON_SMALL);
-        closeBtn.addStyleName(ValoTheme.BUTTON_TINY);
-        closeBtn.setHeight(25, Unit.PIXELS);
-        closeBtn.setWidth(100, Unit.PERCENTAGE);
-        closeBtn.addClickListener((Button.ClickEvent event) -> {
-            cancel();
-        });
-        btnsContainer.addComponent(closeBtn);
+        upperPanel.addComponent(saveBtn);
+        upperPanel.setComponentAlignment(saveBtn, Alignment.TOP_CENTER);
+//        Button closeBtn = new Button("Close");
+//        closeBtn.setStyleName(ValoTheme.BUTTON_SMALL);
+//        closeBtn.addStyleName(ValoTheme.BUTTON_TINY);
+//        closeBtn.setHeight(25, Unit.PIXELS);
+//        closeBtn.setWidth(100, Unit.PERCENTAGE);
+//        closeBtn.addClickListener((Button.ClickEvent event) -> {
+//            cancel();
+//        });
+//        btnsContainer.addComponent(closeBtn);
 
         this.viewCoordinatorListener = (LayoutEvents.LayoutClickEvent event) -> {
             Component comp = event.getClickedComponent();
             if ((comp instanceof Label)) {
                 Label modificationLabel = (Label) ((VerticalLayout) modificationContainer.getComponent(0)).getComponent(0);
-                Label protFragLabel = (Label) (proteaseFragmentationContainer.getComponent(0, 0));
+                Label protFragLabel = (Label) (((GridLayout) proteaseFragmentationContainer.getContent()).getComponent(0, 0));
                 Label l = (Label) comp;
                 if (l.getData() != null) {
                     Integer i = new Integer(l.getData().toString());
@@ -381,13 +414,22 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
 
     }
 
+    public Map<String, String> getUpdatedModiList() {
+        return updatedModiList;
+    }
+
     /**
      * Initialise the modifications layout
      *
      * @return initialised modification layout
      */
     private PopupWindow inititModificationLayout() {
-        PopupWindow modificationWindow = new PopupWindow("Edit Modifications");
+        PopupWindow modificationWindow = new PopupWindow("Edit Modifications") {
+            @Override
+            public void onClosePopup() {
+            }
+
+        };
         modificationWindow.setClosable(true);
 
         HorizontalLayout popupModificationContainer = new HorizontalLayout();
@@ -474,6 +516,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         popupModificationContainer.setExpandRatio(rightSideLayout, 45);
 
         ComboBox modificationListControl = new ComboBox();
+        modificationListControl.setTextInputAllowed(false);
         modificationListControl.setWidth(100, Unit.PERCENTAGE);
         modificationListControl.setHeight(30, Unit.PIXELS);
         modificationListControl.setStyleName(ValoTheme.COMBOBOX_SMALL);
@@ -501,7 +544,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
                 minMass = PTM.getPTM(ptm).getMass();
             }
         }
-        Map<String, String> updatedModiList = new HashMap<>();
+        updatedModiList.clear();
 
         for (int x = 0; x < allModiList.size(); x++) {
             ColorLabel color = new ColorLabel(PTM.getColor(allModiList.get(x)));
@@ -524,9 +567,9 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         rightSideLayout.setExpandRatio(allModificationsTable, 96);
         allModificationsTable.setVisible(false);
 
-        Horizontal2Label fixedModificationLabel = new Horizontal2Label("Fixed Modifications:", "");
+        Horizontal2Label fixedModificationLabel = new Horizontal2Label("<b>Fixed:</b>", "");
         fixedModificationLabel.addStyleName("breakline");
-        Horizontal2Label variableModificationLabel = new Horizontal2Label("Variable Modifications:", "");
+        Horizontal2Label variableModificationLabel = new Horizontal2Label("<b>Variable:</b>", "");
         variableModificationLabel.addStyleName("breakline");
         modificationLabelsContainer.addComponent(fixedModificationLabel);
         modificationLabelsContainer.addComponent(variableModificationLabel);
@@ -727,28 +770,49 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
      *
      * @return initialised layout
      */
-    private GridLayout inititProteaseFragmentationLayout() {
+    private PopupWindow inititProteaseFragmentationLayout() {
 
-        GridLayout proteaseFragmentationContainer = new GridLayout(2, 6);
-        proteaseFragmentationContainer.setStyleName("panelframe");
-        proteaseFragmentationContainer.setColumnExpandRatio(0, 55);
-        proteaseFragmentationContainer.setColumnExpandRatio(1, 45);
-        proteaseFragmentationContainer.setMargin(new MarginInfo(false, false, true, false));
-        proteaseFragmentationContainer.setWidth(700, Unit.PIXELS);
-        proteaseFragmentationContainer.setHeight(205, Unit.PIXELS);
-        proteaseFragmentationContainer.setSpacing(true);
+        HorizontalLayout popupproteaseFragmentationContainer = new HorizontalLayout();
+        popupproteaseFragmentationContainer.setStyleName("panelframe");
+        popupproteaseFragmentationContainer.setSpacing(true);
+        popupproteaseFragmentationContainer.setMargin(new MarginInfo(true, true, true, true));
+        popupproteaseFragmentationContainer.setWidth(680, Unit.PIXELS);
+        popupproteaseFragmentationContainer.setHeightUndefined();
 
-        Label label = new Label(VaadinIcons.ANGLE_DOUBLE_DOWN.getHtml() + "  Protease & Fragmentation", ContentMode.HTML);
-        label.setSizeFull();
-        label.setData(2);
-        proteaseFragmentationContainer.addComponent(label, 0, 0);
+        VerticalLayout leftSideLayout = new VerticalLayout();
+        leftSideLayout.setWidth(100, Unit.PERCENTAGE);
+        leftSideLayout.setHeightUndefined();
+        leftSideLayout.setSpacing(true);
+        leftSideLayout.setMargin(new MarginInfo(false, false, false, false));
+        popupproteaseFragmentationContainer.addComponent(leftSideLayout);
 
+        Label proteaseFragmentationLabel = new Label("Edit Protease & Fragmentation", ContentMode.HTML);
+        proteaseFragmentationLabel.setSizeFull();
+        leftSideLayout.addComponent(proteaseFragmentationLabel);
+        leftSideLayout.setExpandRatio(proteaseFragmentationLabel, 4);
+        proteaseFragmentationLabel.setData(2);
+        leftSideLayout.setStyleName("nomargin");
+
+//        GridLayout proteaseFragmentationContainer = new GridLayout(2, 6);
+//        proteaseFragmentationContainer.setStyleName("panelframe");
+//        proteaseFragmentationContainer.setColumnExpandRatio(0, 55);
+//        proteaseFragmentationContainer.setColumnExpandRatio(1, 45);
+//        proteaseFragmentationContainer.setMargin(new MarginInfo(false, false, true, false));
+//        proteaseFragmentationContainer.setWidth(700, Unit.PIXELS);
+//        proteaseFragmentationContainer.setHeight(205, Unit.PIXELS);
+//        proteaseFragmentationContainer.setSpacing(true);
+//
+//        Label label = new Label(VaadinIcons.ANGLE_DOUBLE_DOWN.getHtml() + "  Protease & Fragmentation", ContentMode.HTML);
+//        label.setSizeFull();
+//        label.setData(2);
+//        proteaseFragmentationContainer.addComponent(label, 0, 0);
         Set<String> digestionOptionList = new LinkedHashSet<>();
         digestionOptionList.add("Enzyme");
         digestionOptionList.add("Unspecific");
         digestionOptionList.add("Whole Protein");
 
         digestionList = new HorizontalLabelDropDounList("Digestion");
+        digestionList.setHeight(25, Unit.PIXELS);
         digestionList.updateData(digestionOptionList);
         digestionList.addValueChangeListener((Property.ValueChangeEvent event) -> {
             if (digestionList.getSelectedValue().equalsIgnoreCase("Enzyme")) {
@@ -790,12 +854,19 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         ionListII.add("z");
         fragmentIonTypes = new HorizontalLabel2DropdownList("Fragment Ion Types", ionListI, ionListII);
 
-        proteaseFragmentationContainer.addComponent(digestionList, 0, 1);
-        proteaseFragmentationContainer.addComponent(enzymeList, 0, 2);
-        proteaseFragmentationContainer.addComponent(specificityList, 0, 3);
+        leftSideLayout.addComponent(digestionList);
+        leftSideLayout.addComponent(enzymeList);
+        leftSideLayout.addComponent(specificityList);
+        leftSideLayout.addComponent(maxMissCleavages);
+        leftSideLayout.addComponent(fragmentIonTypes);
 
-        proteaseFragmentationContainer.addComponent(maxMissCleavages, 0, 4);
-        proteaseFragmentationContainer.addComponent(fragmentIonTypes, 0, 5);
+        VerticalLayout rightSideLayout = new VerticalLayout();
+        rightSideLayout.setWidth(100, Unit.PERCENTAGE);
+        rightSideLayout.setHeightUndefined();
+        rightSideLayout.setSpacing(true);
+        rightSideLayout.setMargin(new MarginInfo(true, false, false, false));
+        popupproteaseFragmentationContainer.addComponent(rightSideLayout);
+        rightSideLayout.setStyleName("nomargin");
 
         Set<String> mzToleranceList = new LinkedHashSet<>();
         mzToleranceList.add("ppm");
@@ -807,14 +878,32 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
 
         fragmentTolerance.setSelected("Da");
         fragmentTolerance.setTextValue(0.5);
-        proteaseFragmentationContainer.addComponent(precursorTolerance, 1, 1);
-        proteaseFragmentationContainer.addComponent(fragmentTolerance, 1, 2);
+        rightSideLayout.addComponent(precursorTolerance);
+        rightSideLayout.addComponent(fragmentTolerance);
         precursorCharge = new HorizontalLabel2TextField("Precursor Charge", 2, 4, new IntegerRangeValidator("Error ", Integer.MIN_VALUE, Integer.MAX_VALUE));
-        proteaseFragmentationContainer.addComponent(precursorCharge, 1, 3);
+        rightSideLayout.addComponent(precursorCharge);
         isotopes = new HorizontalLabel2TextField("Isotopes", 0, 1, new IntegerRangeValidator("Error", Integer.MIN_VALUE, Integer.MAX_VALUE));
-        proteaseFragmentationContainer.addComponent(isotopes, 1, 4);
+        rightSideLayout.addComponent(isotopes);
 
-        return proteaseFragmentationContainer;
+        proteaseFragmentationLabels = new Label("", ContentMode.HTML);
+        proteaseFragmentationLabels.setSizeFull();
+        proteaseFragmentationLabels.addStyleName("breakline");
+        proteaseFragmentationLabels.addStyleName("multiheaders");
+        proteaseFragmentationLabelsContainer.addComponent(proteaseFragmentationLabels);
+
+        PopupWindow proteaseFragmentationWindow = new PopupWindow("Edit Protease & Fragmentation") {
+            @Override
+            public void onClosePopup() {
+
+                String value = "<center>" + digestionList.fullLabelValue() + "</center><center>" + enzymeList.fullLabelValue() + "</center><center>" + specificityList.fullLabelValue() + " </center><br/><center> " + maxMissCleavages.fullLabelValue() + "</center><center>" + fragmentIonTypes.fullLabelValue().replace("_-_", "&") + "</center><center>" + precursorTolerance.fullLabelValue().replace("_-_", "") + " </center><br/><center> " + fragmentTolerance.fullLabelValue().replace("_-_", "") + "</center><center>" + precursorCharge.fullLabelValue().replace("_-_", "-") + "</center><center>" + isotopes.fullLabelValue().replace("_-_", "-") + "</center>";
+                proteaseFragmentationLabels.setValue(value);
+            }
+
+        };
+        proteaseFragmentationWindow.setClosable(true);
+
+        proteaseFragmentationWindow.setContent(popupproteaseFragmentationContainer);
+        return proteaseFragmentationWindow;
 
     }
 
@@ -937,12 +1026,15 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
             modificationContainer.addLayoutClickListener(viewCoordinatorListener);
             proteaseFragmentationContainer.addLayoutClickListener(viewCoordinatorListener);
             Label modificationLabel = (Label) ((VerticalLayout) modificationContainer.getComponent(0)).getComponent(0);
-            Label protFragLabel = (Label) (proteaseFragmentationContainer.getComponent(0, 0));
+            Label protFragLabel = (Label) (((GridLayout) proteaseFragmentationContainer.getContent()).getComponent(0, 0));
             protFragLabel.setValue(protFragLabel.getValue().replace(VaadinIcons.ANGLE_DOUBLE_DOWN.getHtml(), VaadinIcons.ANGLE_DOUBLE_RIGHT.getHtml()));
             modificationLabel.setValue(modificationLabel.getValue().replace(VaadinIcons.ANGLE_DOUBLE_RIGHT.getHtml(), VaadinIcons.ANGLE_DOUBLE_DOWN.getHtml()));
             modificationContainer.removeStyleName("minimizelayout");
             proteaseFragmentationContainer.addStyleName("minimizelayout");
         }
+
+        String value = "<center>" + digestionList.fullLabelValue() + "</center><center>" + enzymeList.fullLabelValue() + "</center><center>" + specificityList.fullLabelValue() + " </center><br/><center> " + maxMissCleavages.fullLabelValue() + "</center><center>" + fragmentIonTypes.fullLabelValue().replace("_-_", "&") + "</center><center>" + precursorTolerance.fullLabelValue().replace("_-_", "") + " </center><br/><center> " + fragmentTolerance.fullLabelValue().replace("_-_", "") + "</center><center>" + precursorCharge.fullLabelValue().replace("_-_", "-") + "</center><center>" + isotopes.fullLabelValue().replace("_-_", "-") + "</center>";
+        proteaseFragmentationLabels.setValue(value);
 
     }
 

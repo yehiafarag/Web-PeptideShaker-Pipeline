@@ -221,10 +221,10 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
         view.getSmallPresenterControlButton().addLayoutClickListener(PresenterManager.this);
         if (!view.getViewId().equalsIgnoreCase("com.uib.web.peptideshaker.presenter.WelcomePagePresenter")) {
             view.getLargePresenterControlButton().addLayoutClickListener(PresenterManager.this);
-            presenterButtonsContainerLayout.addComponent(view.getLargePresenterControlButton(), column++, rows);
-            if (column == 2) {
-                rows++;
-                column = 0;
+            presenterButtonsContainerLayout.addComponent(view.getLargePresenterControlButton(), column, rows++);
+            if (rows == 2) {
+                column++;
+                rows = 0;
             }
 
         } else {
@@ -279,7 +279,6 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
 
     private void reOrganizePresenterButtons() {
         if (presenterBtnsMap.size() < 4) {
-            System.out.println("no change in presenter btn " + presenterBtnsMap.size() + "  " + FontAwesome.SIGN_OUT.getHtml());
             return;
         }
         int l = 0;
@@ -293,7 +292,6 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
                 t = 45;
             }
         }
-        System.out.println("reorgnize presenter btn");
         //subPresenterButtonsContainer.addComponent(view.getSmallPresenterControlButton());
     }
 

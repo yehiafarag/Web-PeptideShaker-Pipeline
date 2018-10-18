@@ -13,7 +13,7 @@ import com.vaadin.ui.Window;
  *
  * @author Yehia Farag
  */
-public class PopupWindow extends VerticalLayout implements LayoutEvents.LayoutClickListener {
+public abstract class PopupWindow extends VerticalLayout implements LayoutEvents.LayoutClickListener {
 
     private final Window window;
     private Layout windoContent;
@@ -23,7 +23,7 @@ public class PopupWindow extends VerticalLayout implements LayoutEvents.LayoutCl
      * Constructor to initialize the main layout.
      * @param title header for the popup window
      */
-    public PopupWindow(String title) {
+    public  PopupWindow(String title) {
         titleLabel = new Label(title);
         titleLabel.setStyleName("windowtitle");
         PopupWindow.this.addComponent(titleLabel);
@@ -33,6 +33,7 @@ public class PopupWindow extends VerticalLayout implements LayoutEvents.LayoutCl
             @Override
             public void close() {
                 this.setVisible(false);
+                onClosePopup();
             }
 
             @Override
@@ -41,6 +42,7 @@ public class PopupWindow extends VerticalLayout implements LayoutEvents.LayoutCl
                     super.setVisible(visible);
                 } else {
                     super.setVisible(false);
+                    onClosePopup();
                 }
             }
         }; 
@@ -55,6 +57,7 @@ public class PopupWindow extends VerticalLayout implements LayoutEvents.LayoutCl
         window.setVisible(false);
         UI.getCurrent().addWindow(window);
     }
+    
     public void setClosable(boolean closable){
         window.setClosable(closable);
     }
@@ -66,6 +69,9 @@ public class PopupWindow extends VerticalLayout implements LayoutEvents.LayoutCl
     public void setContent(Layout popup) {
         windoContent = popup;
         window.setContent(popup);
+    }
+     public Layout getContent() {
+       return windoContent;
     }
   
 
@@ -84,5 +90,7 @@ public class PopupWindow extends VerticalLayout implements LayoutEvents.LayoutCl
     public void addWindowStyle(String style){
     window.addStyleName(style);
     }
+    
+    public abstract void onClosePopup();
 
 }

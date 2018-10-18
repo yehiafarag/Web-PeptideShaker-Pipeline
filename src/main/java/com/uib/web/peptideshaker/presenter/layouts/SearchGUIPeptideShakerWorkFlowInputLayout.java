@@ -19,6 +19,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import java.io.File;
@@ -49,7 +50,7 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
     /**
      * layout contain project name field and execute button.
      */
-    private final HorizontalLabelTextField projectNameField;
+    private final TextField projectNameField;
     /**
      * Pop-up layout content that has search input available options.
      */
@@ -88,61 +89,21 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
         titleLabel.setStyleName("frametitle");
         content.addComponent(titleLabel);
 
-        projectNameField = new HorizontalLabelTextField("<b>Project Name</b>", "New Project Name", null);
+        projectNameField = new TextField("<b>Project Name</b>");
+        projectNameField.setInputPrompt("New Project Name");
+        projectNameField.setCaptionAsHtml(true);
         projectNameField.setWidth(100, Unit.PERCENTAGE);
         projectNameField.setRequired(false);
         projectNameField.addStyleName("psprojectname");
         content.addComponent(projectNameField);
-        HorizontalLayout btnsFrame = new HorizontalLayout();
-        btnsFrame.setWidthUndefined();
-        btnsFrame.setSpacing(true);
-        btnsFrame.setStyleName("btnbesidetitle");
-        content.addComponent(btnsFrame);
 
         searchSettingsFileList = new DropDownList("Search Settings");
+        searchSettingsFileList.setWidth(400, Unit.PIXELS);
+        searchSettingsFileList.addStyleName("nomargintop");
+        searchSettingsFileList.setReadOnly(true);
         content.addComponent(searchSettingsFileList);
         searchSettingsFileList.setFocous();
 
-        Label addNewSearchSettings = new Label(VaadinIcons.FILE_ADD.getHtml(),ContentMode.HTML);
-        addNewSearchSettings.addStyleName("windowtitle");
-        btnsFrame.addLayoutClickListener(new LayoutEvents.LayoutClickListener() {
-            @Override
-            public void layoutClick(LayoutEvents.LayoutClickEvent event) {
-                Component c = event.getClickedComponent();
-                if (c != null && c instanceof Label && ((Label) c).getValue().equalsIgnoreCase(VaadinIcons.FILE_ADD.getHtml())) {
-                    String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
-                    File file = new File(basepath + "/VAADIN/default_searching.par");
-                    SearchParameters searchParameters;
-                    try {
-                        searchParameters = SearchParameters.getIdentificationParameters(file);
-                        searchParameters.setFastaFile(null);
-                    } catch (IOException | ClassNotFoundException ex) {
-
-                        ex.printStackTrace();
-                        return;
-                    }
-                    searchParameters.setDefaultAdvancedSettings();
-                    searchSettingsLayout.updateForms(searchParameters, null);
-                    editSearchOption.setPopupVisible(true);
-                } else if (c != null && c instanceof Label && ((Label) c).getValue().equalsIgnoreCase("Edit")) {
-
-                    try {
-                        File file = searchSettingsMap.get(searchSettingsFileList.getSelectedValue()).getFile();
-                        searchParameters = SearchParameters.getIdentificationParameters(file);
-                    } catch (IOException | ClassNotFoundException ex) {
-                        ex.printStackTrace();
-                        return;
-                    }
-                    searchSettingsLayout.updateForms(searchParameters, searchSettingsFileList.getSelectedValue());
-                    editSearchOption.setPopupVisible(true);
-
-                }
-            }
-        });
-        btnsFrame.addComponent(addNewSearchSettings);
-//        Label editSearchSettings = new Label("Edit");
-//        editSearchSettings.addStyleName("windowtitle");
-//        btnsFrame.addComponent(editSearchSettings);
         searchSettingsLayout = new SearchSettingsLayout() {
             @Override
             public void saveSearchingFile(SearchParameters searchParameters, boolean isNew) {
@@ -153,10 +114,16 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
             @Override
             public void cancel() {
                 editSearchOption.setPopupVisible(false);
+                searchSettingsFileList.defultSelect();
             }
 
         };
-        editSearchOption = new PopupWindow("Edit");
+        editSearchOption = new PopupWindow("Edit") {
+            @Override
+            public void onClosePopup() {
+            }
+
+        };
         editSearchOption.setContent(searchSettingsLayout);
         editSearchOption.setSizeFull();
         editSearchOption.addStyleName("centerwindow");
@@ -164,6 +131,7 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
         Label searchSettingInfo = new Label();
         searchSettingInfo.setWidth(400, Unit.PIXELS);
         searchSettingInfo.setHeight(90, Unit.PIXELS);
+        searchSettingInfo.setContentMode(ContentMode.HTML);
         searchSettingInfo.setStyleName("subpanelframe");
         searchSettingInfo.addStyleName("bottomformlayout");
         searchSettingInfo.addStyleName("smallfontlongtext");
@@ -202,23 +170,22 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
         bottomLayout.setSpacing(true);
         content.addComponent(bottomLayout);
 
-        Button executeWorkFlow = new Button("Execute");
-        executeWorkFlow.setStyleName(ValoTheme.BUTTON_SMALL);
-        executeWorkFlow.addStyleName(ValoTheme.BUTTON_TINY);
-        bottomLayout.addComponent(executeWorkFlow);
-        bottomLayout.setComponentAlignment(executeWorkFlow, Alignment.TOP_RIGHT);
-        bottomLayout.setExpandRatio(executeWorkFlow, 30);
+        Button executeWorkFlowBtn = new Button("Execute");
+        executeWorkFlowBtn.setStyleName(ValoTheme.BUTTON_SMALL);
+        executeWorkFlowBtn.addStyleName(ValoTheme.BUTTON_TINY);
+        bottomLayout.addComponent(executeWorkFlowBtn);
+        bottomLayout.setComponentAlignment(executeWorkFlowBtn, Alignment.TOP_CENTER);
 
-        executeWorkFlow.addClickListener((Button.ClickEvent event) -> {
+        executeWorkFlowBtn.addClickListener((Button.ClickEvent event) -> {
             projectNameField.setRequired(true);
             mgfFileList.setRequired(true, "Select at least 1 MGF file");
             searchEngines.setRequired(true, "Select at least 1 search engine");
-            
+
             String fastFileId = searchSettingsLayout.getFastaFileId();
             Set<String> spectrumIds = mgfFileList.getSelectedValue();
             Set<String> searchEnginesIds = searchEngines.getSelectedValue();
-            String projectName = projectNameField.getSelectedValue().replace(" ", "_").replace("-", "_") + "___" + (new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Timestamp(System.currentTimeMillis())));
-            
+            String projectName = projectNameField.getValue().replace(" ", "_").replace("-", "_") + "___" + (new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Timestamp(System.currentTimeMillis())));
+
             if (!projectNameField.isValid() || fastFileId == null || spectrumIds == null || searchEnginesIds == null) {
                 return;
             }
@@ -235,18 +202,45 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
         searchEngines.setEnabled(false);
         projectNameField.setEnabled(false);
 //        editSearchSettings.setEnabled(false);
-        executeWorkFlow.setEnabled(false);
+        executeWorkFlowBtn.setEnabled(false);
         searchSettingsFileList.addValueChangeListener((Property.ValueChangeEvent event) -> {
             if (searchSettingsFileList.getSelectedValue() != null) {
+                if (searchSettingsFileList.getSelectedValue().equalsIgnoreCase("Add new")) {
+                    String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
+                    File file = new File(basepath + "/VAADIN/default_searching.par");
+                    SearchParameters searchParameters;
+                    try {
+                        searchParameters = SearchParameters.getIdentificationParameters(file);
+                        searchParameters.setFastaFile(null);
+                    } catch (IOException | ClassNotFoundException ex) {
+
+                        ex.printStackTrace();
+                        return;
+                    }
+                    searchParameters.setDefaultAdvancedSettings();
+                    searchSettingsLayout.updateForms(searchParameters, null);
+                    editSearchOption.setPopupVisible(true);
+                    searchSettingInfo.setValue("Add new searching parameters");
+
+                    return;
+                }
+
                 mgfFileList.setEnabled(true);
                 searchEngines.setEnabled(true);
                 projectNameField.setEnabled(true);
 //                editSearchSettings.setEnabled(true);
-                executeWorkFlow.setEnabled(true);
+                executeWorkFlowBtn.setEnabled(true);
                 try {
                     File file = searchSettingsMap.get(searchSettingsFileList.getSelectedValue()).getFile();
                     searchParameters = SearchParameters.getIdentificationParameters(file);
                     String descrip = searchParameters.getShortDescription();
+                    for (String mod : searchSettingsLayout.getUpdatedModiList().keySet()) {
+                        if (descrip.contains(mod)) {
+                            descrip = descrip.replace(mod, searchSettingsLayout.getUpdatedModiList().get(mod));
+                        }
+
+                    }
+
                     descrip = descrip.replace(searchParameters.getFastaFile().getName(), searchSettingsLayout.getFastaFileName(searchParameters.getFastaFile().getName().split("__")[0]));
                     searchSettingInfo.setValue(descrip);
                 } catch (IOException | ClassNotFoundException ex) {
@@ -276,8 +270,11 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
             searchSettingsFileIdToNameMap.put(id, searchSettingsMap.get(id).getGalaxyFileObject().getName().replace(".par", ""));
             selectedId = id;
         }
+        searchSettingsFileIdToNameMap.put("Add new", "Add new");
+
         searchSettingsFileList.updateList(searchSettingsFileIdToNameMap);
         searchSettingsFileList.setSelected(selectedId);
+        searchSettingsFileList.setItemIcon("Add new", VaadinIcons.FILE_ADD);
         Map<String, String> mgfFileIdToNameMap = new LinkedHashMap<>();
         mgfFilesMap.keySet().forEach((id) -> {
             mgfFileIdToNameMap.put(id, mgfFilesMap.get(id).getName());
@@ -316,6 +313,8 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
             searchSettingsFileIdToNameMap.put(id, searchSettingsMap.get(id).getGalaxyFileObject().getName().replace(".par", ""));
             objectId = id;
         }
+        searchSettingsFileIdToNameMap.put("Add new", "Add new");
+        searchSettingsFileList.setItemIcon("Add new", VaadinIcons.FILE_ADD);
         searchSettingsFileList.updateList(searchSettingsFileIdToNameMap);
         searchSettingsFileList.setSelected(objectId);
 

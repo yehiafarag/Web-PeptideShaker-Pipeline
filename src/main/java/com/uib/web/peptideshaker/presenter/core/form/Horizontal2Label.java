@@ -1,15 +1,9 @@
 package com.uib.web.peptideshaker.presenter.core.form;
 
-import com.vaadin.data.Validator;
-import com.vaadin.data.validator.IntegerRangeValidator;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.themes.ValoTheme;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * This class represent form component (drop down list with caption on the left

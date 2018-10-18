@@ -3,11 +3,10 @@ package com.uib.web.peptideshaker.presenter;
 //import com.github.jmchilton.blend4j.galaxy.GalaxyInstance;
 //import com.uib.onlinepeptideshaker.managers.RegistrableView;
 //import com.uib.onlinepeptideshaker.presenter.view.SmallSideBtn;
-import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
+import com.uib.web.peptideshaker.IconDesign;
 import com.uib.web.peptideshaker.presenter.core.ButtonWithLabel;
 import com.uib.web.peptideshaker.presenter.core.SmallSideBtn;
 import com.uib.web.peptideshaker.presenter.core.ViewableFrame;
-import com.uib.web.peptideshaker.presenter.core.form.Horizontal2Label;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
@@ -550,6 +549,9 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         busyConnectinWindow.addStyleName("hidewindow");
 
         this.loginAsGuest();
+        
+        
+//        presenterControlButtonsPanel.addComponent(new IconDesign());
 
     }
 

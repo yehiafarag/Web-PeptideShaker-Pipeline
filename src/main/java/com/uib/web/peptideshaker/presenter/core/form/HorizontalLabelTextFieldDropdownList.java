@@ -27,6 +27,7 @@ public class HorizontalLabelTextFieldDropdownList extends HorizontalLayout {
      */
     private final ComboBox list2;
     private final String defaultValue;
+    private final Label cap ;
 
     /**
      * Constructor to initialize the main attributes
@@ -37,7 +38,7 @@ public class HorizontalLabelTextFieldDropdownList extends HorizontalLayout {
     public HorizontalLabelTextFieldDropdownList(String title, Object defaultValue, Set<String> values, Validator validator) {
 
         HorizontalLabelTextFieldDropdownList.this.setSizeFull();
-        Label cap = new Label(title);
+        cap = new Label(title);
         cap.addStyleName(ValoTheme.LABEL_TINY);
         cap.addStyleName(ValoTheme.LABEL_SMALL);
         cap.addStyleName("smallundecorated");
@@ -74,6 +75,7 @@ public class HorizontalLabelTextFieldDropdownList extends HorizontalLayout {
         HorizontalLabelTextFieldDropdownList.this.setExpandRatio(textField, 27.5f);
 
         list2 = new ComboBox();
+        list2.setTextInputAllowed(false);
         list2.setWidth(100, Unit.PERCENTAGE);
         list2.setHeight(25, Unit.PIXELS);
         list2.setStyleName(ValoTheme.COMBOBOX_SMALL);
@@ -125,6 +127,10 @@ public class HorizontalLabelTextFieldDropdownList extends HorizontalLayout {
     }
      public boolean isModified() {
          return (!textField.getValue().equalsIgnoreCase(textField.getData()+"")) || (!list2.getValue().toString().equalsIgnoreCase(list2.getData()+""));
+    
+    }
+     public String fullLabelValue(){
+        return "<b>"+cap.getValue()+": </b>"+textField.getValue()+"_-_"+list2.getValue();
     
     }
 

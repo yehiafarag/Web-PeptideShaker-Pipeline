@@ -1,14 +1,10 @@
 package com.uib.web.peptideshaker.presenter.core.form;
 
 import com.vaadin.data.Validator;
-import com.vaadin.data.validator.IntegerRangeValidator;
-import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.themes.ValoTheme;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * This class represent form component (drop down list with caption on the left
@@ -28,6 +24,7 @@ public class HorizontalLabel2TextField extends HorizontalLayout {
     private final TextField textField2;
     private final String defaultValue1;
     private final String defaultValue2;
+    private final Label cap;
 
     /**
      * Constructor to initialize the main attributes
@@ -38,7 +35,7 @@ public class HorizontalLabel2TextField extends HorizontalLayout {
     public HorizontalLabel2TextField(String title, Object defaultValue1, Object defaultValue2, Validator validator) {
 
         HorizontalLabel2TextField.this.setSizeFull();
-        Label cap = new Label(title);
+        cap = new Label(title);
         cap.addStyleName(ValoTheme.LABEL_TINY);
         cap.addStyleName(ValoTheme.LABEL_SMALL);
         cap.addStyleName("smallundecorated");
@@ -130,6 +127,10 @@ public class HorizontalLabel2TextField extends HorizontalLayout {
     public boolean isModified() {
         return (!textField1.getValue().equalsIgnoreCase(textField1.getData() + "")) || (!textField2.getValue().equalsIgnoreCase(textField2.getData() + ""));
 
+    }
+    public String fullLabelValue(){
+        return "<b>"+cap.getValue()+": </b>"+textField1.getValue()+"_-_"+textField2.getValue();
+    
     }
 
 }

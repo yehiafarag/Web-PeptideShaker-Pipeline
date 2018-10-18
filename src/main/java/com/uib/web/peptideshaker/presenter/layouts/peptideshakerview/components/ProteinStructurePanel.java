@@ -116,6 +116,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
         uniprotLabel.addStyleName("selectchain3dMenue");
 
         pdbChainsSelect = new ComboBox("Chains:");
+        pdbChainsSelect.setTextInputAllowed(false);
         pdbChainsSelect.addStyleName("select3dMenue");
         pdbChainsSelect.addStyleName("selectchain3dMenue");
         pdbChainsSelect.setNullSelectionAllowed(false);
@@ -138,6 +139,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
         });
         pdbChainsSelect.addValueChangeListener(pdbChainsSelectlistener);
         pdbMatchesSelect = new ComboBox("PDB:");
+        pdbMatchesSelect.setTextInputAllowed(false);
         pdbMatchesSelect.addStyleName("select3dMenue");
         pdbMatchesSelect.setNullSelectionAllowed(false);
         pdbMatchesSelect.setCaptionAsHtml(true);

@@ -12,6 +12,7 @@ import com.uib.web.peptideshaker.presenter.core.filtercharts.charts.RegistrableF
 import com.uib.web.peptideshaker.presenter.core.filtercharts.components.SelectableNode;
 import com.uib.web.peptideshaker.presenter.core.form.SparkLine;
 import com.vaadin.event.LayoutEvents;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -134,18 +135,19 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
         DivaMatrixLayoutChartFilter.this.setSizeFull();
         DivaMatrixLayoutChartFilter.this.setStyleName("thumbfilterframe");
         DivaMatrixLayoutChartFilter.this.setSpacing(true);
-
-        topLayoutPanel = new AbsoluteLayout();
-        topLayoutPanel.setSizeFull();
-        DivaMatrixLayoutChartFilter.this.addComponent(topLayoutPanel);
-        DivaMatrixLayoutChartFilter.this.setComponentAlignment(topLayoutPanel, Alignment.TOP_LEFT);
-        DivaMatrixLayoutChartFilter.this.setExpandRatio(topLayoutPanel, 30);
-
         VerticalLayout topLeftCornerLayout = new VerticalLayout();
         topLeftCornerLayout.setWidth(28, Unit.PERCENTAGE);
         topLeftCornerLayout.setHeight(100, Unit.PERCENTAGE);
         topLeftCornerLayout.setMargin(new MarginInfo(false, false, false, false));
-        topLayoutPanel.addComponent(topLeftCornerLayout, "left:0px;top:0px;");
+        topLeftCornerLayout.addStyleName("toppanel");
+        DivaMatrixLayoutChartFilter.this.addComponent(topLeftCornerLayout);
+        DivaMatrixLayoutChartFilter.this.setExpandRatio(topLeftCornerLayout, 5);
+        topLayoutPanel = new AbsoluteLayout();
+        topLayoutPanel.setSizeFull();
+
+        DivaMatrixLayoutChartFilter.this.addComponent(topLayoutPanel);
+        DivaMatrixLayoutChartFilter.this.setComponentAlignment(topLayoutPanel, Alignment.TOP_LEFT);
+        DivaMatrixLayoutChartFilter.this.setExpandRatio(topLayoutPanel, 30);
 
         chartTitle = new Label("<font style='padding-top: 10px;position: absolute;'>" + title + "</font>", ContentMode.HTML);
         chartTitle.setStyleName(ValoTheme.LABEL_BOLD);
@@ -198,7 +200,7 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
         bottomLayoutPanel.setSizeFull();
         DivaMatrixLayoutChartFilter.this.addComponent(bottomLayoutPanel);
         DivaMatrixLayoutChartFilter.this.setComponentAlignment(bottomLayoutPanel, Alignment.TOP_LEFT);
-        DivaMatrixLayoutChartFilter.this.setExpandRatio(bottomLayoutPanel, 70);
+        DivaMatrixLayoutChartFilter.this.setExpandRatio(bottomLayoutPanel, 65);
         bottomLayoutPanel.addStyleName("ignorscrollspace");
         bottomLayoutContainer = new AbsoluteLayout();
         bottomLayoutContainer.setWidth(100, Unit.PERCENTAGE);
@@ -231,7 +233,7 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
 //        topLeftContainer.setComponentAlignment(removeFilterIcon, Alignment.TOP_CENTER);
         DivaMatrixLayoutChartFilter.this.addComponent(removeFilterIcon);
         DivaMatrixLayoutChartFilter.this.setComponentAlignment(removeFilterIcon, Alignment.TOP_RIGHT);
-        DivaMatrixLayoutChartFilter.this.setExpandRatio(removeFilterIcon, 0.1f);
+        DivaMatrixLayoutChartFilter.this.setExpandRatio(removeFilterIcon, 0);
     }
 
     public void initializeFilterData(ModificationMatrix modificationMatrix, Map<String, Color> dataColors, Set<Object> selectedCategories, int totalNumber) {
@@ -288,7 +290,7 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
                 if (!nodesTable.containsKey(columnKey)) {
                     nodesTable.put(columnKey, new ArrayList<>());
                 }
-                for (String rowKey :  rows.keySet()) {
+                for (String rowKey : rows.keySet()) {
                     if (rows.get(rowKey) == 0) {
                         continue;
                     }
@@ -311,8 +313,15 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
                 bar.setHeight(rect.height, Unit.PIXELS);
                 bar.setStyleName("barlayout");
                 bar.setData(columnIndex);
-                
-                bar.setDescription(columns.keySet().toArray()[columnIndex++] + " ("+((int)(double)barChartValues.get(columnIndex-1))+")");
+                String mod = columns.keySet().toArray()[columnIndex++].toString().replace("[", "").replace("]", "<br/>").replace(",", "<br/>") +  "<font style='font-size:10px !important;margin-right:5px'> " + VaadinIcons.HASH.getHtml() + "</font>Proteins" +"" + ((int) (double) barChartValues.get(columnIndex - 1)) + "";
+                for (String key : dataColors.keySet()) {
+                    if (mod.contains(key)) {
+                        Color c = dataColors.get(key);
+                        mod = mod.replace(key, "<font style='color:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ");font-size:10px !important;margin-right:5px'> " + VaadinIcons.CIRCLE.getHtml() + "</font>" + key);
+                    }
+
+                }
+                bar.setDescription(mod);
                 chartBarsContainer.addComponent(bar, "left:" + rect.x + "px; top:" + rect.y + "px;");
                 chartBarsList.put(columnKey, bar);
 
@@ -348,41 +357,41 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
                 int startLineRange = sortedKeysList.indexOf(subArr[0]);
                 int endLineRange = sortedKeysList.indexOf(subArr[subArr.length - 1].trim());
 //                System.out.println("at node selection "  + "  coulmn key  " + columnKey + "  " + rowIndex + "  startLineRange " + startLineRange+"  end "+subArr[subArr.length - 1].trim()+"  sortedKeysList: "+sortedKeysList);
-if (!nodesTable.containsKey(columnKey) || nodesTable.get(columnKey).get(rowIndex) == null) {
-    columnPreIndex++;
-    continue;
-}
-SelectableNode node = nodesTable.get(columnKey).get(rowIndex);
-if (columnIndex == 4) {
-    
-}
-if (columnKey.contains(node.getNodeId())) {
-    node.setSelecatble(true);
-    node.setUpperSelected(true);
-    node.setLowerSelected(true);
-} else {
-    node.setSelecatble(false);
-}
-if (columnKey.split(",").length == 1) {
-    node.setUpperSelected(false);
-    node.setLowerSelected(false);
-} else {
-    int nodeIndex = sortedKeysList.indexOf(node.getNodeId());
-    if (nodeIndex == startLineRange) {
-        node.setUpperSelected(false);
-        node.setLowerSelected(true);
-    } else if (nodeIndex > startLineRange && nodeIndex < endLineRange) {
-        node.setUpperSelected(true);
-        node.setLowerSelected(true);
-    } else if (nodeIndex == endLineRange) {
-        node.setUpperSelected(true);
-        node.setLowerSelected(false);
-    } else {
-        node.setUpperSelected(false);
-        node.setLowerSelected(false);
-    }
-}
-columnPreIndex++;
+                if (!nodesTable.containsKey(columnKey) || nodesTable.get(columnKey).get(rowIndex) == null) {
+                    columnPreIndex++;
+                    continue;
+                }
+                SelectableNode node = nodesTable.get(columnKey).get(rowIndex);
+                if (columnIndex == 4) {
+
+                }
+                if (columnKey.contains(node.getNodeId())) {
+                    node.setSelecatble(true);
+                    node.setUpperSelected(true);
+                    node.setLowerSelected(true);
+                } else {
+                    node.setSelecatble(false);
+                }
+                if (columnKey.split(",").length == 1) {
+                    node.setUpperSelected(false);
+                    node.setLowerSelected(false);
+                } else {
+                    int nodeIndex = sortedKeysList.indexOf(node.getNodeId());
+                    if (nodeIndex == startLineRange) {
+                        node.setUpperSelected(false);
+                        node.setLowerSelected(true);
+                    } else if (nodeIndex > startLineRange && nodeIndex < endLineRange) {
+                        node.setUpperSelected(true);
+                        node.setLowerSelected(true);
+                    } else if (nodeIndex == endLineRange) {
+                        node.setUpperSelected(true);
+                        node.setLowerSelected(false);
+                    } else {
+                        node.setUpperSelected(false);
+                        node.setLowerSelected(false);
+                    }
+                }
+                columnPreIndex++;
             }
             rowIndex++;
         }
@@ -551,7 +560,7 @@ columnPreIndex++;
         NumberAxis rangeAxis = new NumberAxis();
         rangeAxis.setTickLabelFont(labelFont);
         rangeAxis.setTickLabelPaint(Color.GRAY);
-        rangeAxis.setUpperMargin(0.16);
+        rangeAxis.setUpperMargin(0.17);
         rangeAxis.setTickLabelsVisible(false);
         rangeAxis.setTickMarksVisible(false);
         rangeAxis.setVisible(false);
@@ -600,7 +609,7 @@ columnPreIndex++;
         DefaultCategoryDataset dataset = (DefaultCategoryDataset) ((CategoryPlot) chart.getPlot()).getDataset();
         dataset.clear();
         for (double d : barChartData.values()) {
-            dataset.addValue(scaleValues(d, 100, 20), "protData", (counter++) + "");
+            dataset.addValue(Math.log(d), "protData", (counter++) + "");
 
         }
 //        redrawChart();
@@ -624,6 +633,17 @@ columnPreIndex++;
         return logValue;
 
 //        return Math.min(logValue, max);
+    }
+
+    public double lin2log(double z, double y, double x) {
+       
+        double b = Math.log(y / x) / (y - x);
+        double a = y / Math.exp(b * y);
+        double finalAnswer = a * Math.exp(b * z);
+        System.out.println("final answer "+Math.log(z));
+//        double finalAnswer = Math.max(Math.round(tempAnswer) - 1, 0);
+        return Math.log(z);
+
     }
 
     private void setMainAppliedFilter(boolean mainAppliedFilter) {

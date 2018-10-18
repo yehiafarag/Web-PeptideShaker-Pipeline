@@ -508,7 +508,7 @@ public abstract class GalaxyHistoryHandler {
                 memoryUsed = 0;
                 results.stream().filter((map) -> map != null && (!((map.get("purged") + "").equalsIgnoreCase("true") || (!historiesIds.contains(map.get("history_id") + "")) || (map.get("deleted") + "").equalsIgnoreCase("true")))).forEachOrdered((Map<String, Object> map) -> {
                     int size = (int) map.get("file_size");
-                    double sizeinMB = (double)size/ 1000000.0;
+                    double sizeinMB = (double) size / 1000000.0;
                     memoryUsed = memoryUsed + size;
                     if ((map.get("data_type") + "").equalsIgnoreCase("galaxy.datatypes.binary.SearchGuiArchive")) {
                         GalaxyFileObject ds = new GalaxyFileObject();
@@ -544,8 +544,8 @@ public abstract class GalaxyHistoryHandler {
                         ds.setGalaxyId(map.get("id").toString());
                         ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + map.get("id").toString() + "/display?to_ext=" + map.get("file_ext").toString());
                         ds.setStatus(map.get("state") + "");
-                        ds.setSize(sizeinMB);                     
-                         try {
+                        ds.setSize(sizeinMB);
+                        try {
                             ds.setCreate_time(df6.parse((map.get("create_time") + "")));
                         } catch (ParseException ex) {
                             ex.printStackTrace();
@@ -576,7 +576,7 @@ public abstract class GalaxyHistoryHandler {
                         ds.setAvailableOnNels(NeLSFilesMap.containsKey(ds.getNelsKey()));
                         ds.setStatus(map.get("state") + "");
                         ds.setSize(sizeinMB);
-                         try {
+                        try {
                             ds.setCreate_time(df6.parse((map.get("create_time") + "")));
                         } catch (ParseException ex) {
                             ex.printStackTrace();
@@ -595,7 +595,7 @@ public abstract class GalaxyHistoryHandler {
                         this.fastaFilesMap.put(ds.getGalaxyId(), ds);
                         ds.setStatus(map.get("state") + "");
                         ds.setSize(sizeinMB);
-                         try {
+                        try {
                             ds.setCreate_time(df6.parse((map.get("create_time") + "")));
                         } catch (ParseException ex) {
                             ex.printStackTrace();
@@ -612,7 +612,7 @@ public abstract class GalaxyHistoryHandler {
                         ds.setAvailableOnNels(NeLSFilesMap.containsKey(ds.getNelsKey()));
                         this.fastaFilesMap.put(ds.getGalaxyId(), ds);
                         ds.setSize(sizeinMB);
-                         try {
+                        try {
                             ds.setCreate_time(df6.parse((map.get("create_time") + "")));
                         } catch (ParseException ex) {
                             ex.printStackTrace();
@@ -634,7 +634,7 @@ public abstract class GalaxyHistoryHandler {
                         ds.setStatus(map.get("state") + "");
                         ds.setSize(sizeinMB);
                         this.mgfFilesMap.put(ds.getGalaxyId(), ds);
-                         try {
+                        try {
                             ds.setCreate_time(df6.parse((map.get("create_time") + "")));
                         } catch (ParseException ex) {
                             ex.printStackTrace();
@@ -681,7 +681,7 @@ public abstract class GalaxyHistoryHandler {
                         }
                         NeLSFilesMap.remove(ds.getNelsKey());
                         tabMgfFilesMap.put(ds.getName(), ds);
-                         try {
+                        try {
                             ds.setCreate_time(df6.parse((map.get("create_time") + "")));
                         } catch (ParseException ex) {
                             ex.printStackTrace();
@@ -722,7 +722,9 @@ public abstract class GalaxyHistoryHandler {
                 } else {
                     e.printStackTrace();
                     System.out.println("at history are not available");
-                    VaadinSession.getCurrent().getSession().invalidate();
+                    if (VaadinSession.getCurrent()!=null && VaadinSession.getCurrent().getSession() != null) {
+                        VaadinSession.getCurrent().getSession().invalidate();
+                    }
                     Page.getCurrent().reload();
                 }
             }

@@ -72,7 +72,7 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
         InteractivePSPRojectResultsPresenter.this.setSizeFull();
         InteractivePSPRojectResultsPresenter.this.setStyleName("activelayout");
         
-        this.smallControlButton = new SmallSideBtn("img/cluster.svg");
+        this.smallControlButton = new SmallSideBtn(VaadinIcons.CLUSTER);
         this.smallControlButton.setData(InteractivePSPRojectResultsPresenter.this.getViewId());
         
         this.controlButton = new ButtonWithLabel("Results</br><font>Interactive visualization for results</font>",1);

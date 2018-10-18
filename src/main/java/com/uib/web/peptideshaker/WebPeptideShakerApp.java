@@ -186,9 +186,9 @@ public class WebPeptideShakerApp extends VerticalLayout {
         interactivePSPRojectResultsPresenter = new InteractivePSPRojectResultsPresenter();
         presentationManager.registerView(welcomePage);
         presentationManager.viewLayout(welcomePage.getViewId());
-        presentationManager.registerView(fileSystemPresenter);
-        presentationManager.registerView(interactivePSPRojectResultsPresenter);
+        presentationManager.registerView(fileSystemPresenter);        
         presentationManager.registerView(SearchGUI_PeptideShaker_Tool_Presenter);
+        presentationManager.registerView(interactivePSPRojectResultsPresenter);
    
     }
 

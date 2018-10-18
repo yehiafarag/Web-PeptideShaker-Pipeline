@@ -26,7 +26,8 @@ public abstract class FilterButton extends VerticalLayout implements LayoutEvent
         FilterButton.this.setWidth(25, Unit.PIXELS);
         FilterButton.this.setHeight(25, Unit.PIXELS);
         icon = new Image();
-        icon.setSizeFull();
+        icon.setSizeFull(); 
+        icon.setSource(activeBunResource);
 //        icon.setSource(inActiveBunResource);
 FilterButton.this.addStyleName("hide");
         FilterButton.this.addComponent(icon);
@@ -38,7 +39,7 @@ FilterButton.this.addStyleName("hide");
     private void setActiveBtn(boolean active) {
         if (active) {
             this.removeStyleName("hide");
-            icon.setSource(activeBunResource);
+           
             this.addStyleName("pointer");
             this.addStyleName("highlightfilter");
 

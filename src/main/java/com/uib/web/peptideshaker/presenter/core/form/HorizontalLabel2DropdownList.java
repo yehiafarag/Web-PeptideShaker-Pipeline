@@ -26,6 +26,7 @@ public class HorizontalLabel2DropdownList extends HorizontalLayout {
      * Second drop-down list.
      */
     private final ComboBox list2;
+    private final Label cap;
 
     /**
      * Constructor to initialize the main attributes
@@ -36,7 +37,7 @@ public class HorizontalLabel2DropdownList extends HorizontalLayout {
     public HorizontalLabel2DropdownList(String title, Set<String> values, Set<String> values2) {
 
         HorizontalLabel2DropdownList.this.setSizeFull();
-        Label cap = new Label(title);
+         cap = new Label(title);
         cap.addStyleName(ValoTheme.LABEL_TINY);
         cap.addStyleName(ValoTheme.LABEL_SMALL);
         cap.addStyleName("smallundecorated");
@@ -61,6 +62,7 @@ public class HorizontalLabel2DropdownList extends HorizontalLayout {
         list1.setStyleName(ValoTheme.COMBOBOX_SMALL);
         list1.addStyleName(ValoTheme.COMBOBOX_TINY);
         list1.addStyleName(ValoTheme.COMBOBOX_ALIGN_CENTER);
+        list1.setTextInputAllowed(false);
 //        list.addStyleName("inline-label");
         list1.setNullSelectionAllowed(false);
         for (String str : values) {
@@ -72,6 +74,7 @@ public class HorizontalLabel2DropdownList extends HorizontalLayout {
         HorizontalLabel2DropdownList.this.setExpandRatio(list1, 27.5f);
 
         list2 = new ComboBox();
+        list2.setTextInputAllowed(false);
         list2.setWidth(100, Unit.PERCENTAGE);
         list2.setHeight(25, Unit.PIXELS);
         list2.setStyleName(ValoTheme.COMBOBOX_SMALL);
@@ -123,5 +126,9 @@ public class HorizontalLabel2DropdownList extends HorizontalLayout {
     public boolean isModified() {
 
         return (!list1.getValue().toString().equalsIgnoreCase(list1.getData()+"")) || (!list2.getValue().toString().equalsIgnoreCase(list2.getData()+""));
+    }
+    public String fullLabelValue(){
+        return "<b>"+cap.getValue()+": </b>"+list1.getValue()+"_-_"+list2.getValue();
+    
     }
 }

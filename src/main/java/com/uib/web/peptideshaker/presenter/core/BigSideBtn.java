@@ -7,6 +7,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Layout;
 
 /**
  * This class represent the top right small button
@@ -54,12 +55,19 @@ public class BigSideBtn extends HorizontalLayout {
         this.btnId = btnId;
         BigSideBtn.this.addComponent(btnThumbIconImage);
         BigSideBtn.this.setComponentAlignment(btnThumbIconImage, Alignment.MIDDLE_CENTER);
+        BigSideBtn.this.setExpandRatio(btnThumbIconImage,1);
         BigSideBtn.this.addComponent(iconLabel);
         BigSideBtn.this.setComponentAlignment(iconLabel, Alignment.MIDDLE_CENTER);
+        BigSideBtn.this.setExpandRatio(iconLabel,1);
         BigSideBtn.this.setSizeFull();
         BigSideBtn.this.setStyleName("bigmenubtn");
 
-        
+    }
+
+    public void addExtraLayoutLayer(Layout layer) {
+        BigSideBtn.this.addComponent(layer);
+        BigSideBtn.this.setComponentAlignment(layer, Alignment.MIDDLE_CENTER);
+         BigSideBtn.this.setExpandRatio(layer,0);
 
     }
 

@@ -166,7 +166,7 @@ public abstract class DataViewLayout extends Panel {
             statusLabel.setStatus(ds.getStatus());
             ActionLabel downloadLabel = new ActionLabel(VaadinIcons.DOWNLOAD_ALT, "Download File") {
                 @Override
-                public void layoutClick(LayoutEvents.LayoutClickEvent event) {                    
+                public void layoutClick(LayoutEvents.LayoutClickEvent event) {
                     Page.getCurrent().open(ds.getDownloadUrl(), "", false);
                 }
 
@@ -259,7 +259,12 @@ public abstract class DataViewLayout extends Panel {
                 nameLabel.addStyleName("bluecolor");
                 nameLabel.addStyleName("orangecolor");
 
-                infoLabel = new PopupWindow("   ");
+                infoLabel = new PopupWindow("   ") {
+                    @Override
+                    public void onClosePopup() {
+                    }
+
+                };
                 infoLabel.setIcon(VaadinIcons.INFO_CIRCLE_O);
                 DatasetOverviewLayout dsOverview = new DatasetOverviewLayout((PeptideShakerVisualizationDataset) ds) {
                     private final PopupWindow tDsOverview = (PopupWindow) infoLabel;
@@ -289,9 +294,14 @@ public abstract class DataViewLayout extends Panel {
                 rowLayout = initializeRowData(new Component[]{new Label(i + ""), nameLabel, new Label(ds.getType()), infoLabel, getToGalaxyLabel, nelsLabel, downloadLabel, deleteLabel, statusLabel}, false);
                 topDataTable.addComponent(rowLayout);
             } else {
-                infoLabel = new PopupWindow("   ");
+                infoLabel = new PopupWindow("   ") {
+                    @Override
+                    public void onClosePopup() {
+                    }
+
+                };
                 infoLabel.setIcon(VaadinIcons.INFO_CIRCLE_O);
-                 infoLabel.addStyleName("centeredicon");
+                infoLabel.addStyleName("centeredicon");
                 FileOverviewLayout fileOverview = new FileOverviewLayout(ds) {
                     private final PopupWindow tFileOverview = (PopupWindow) infoLabel;
 
@@ -305,7 +315,7 @@ public abstract class DataViewLayout extends Panel {
                 ((PopupWindow) infoLabel).setDescription("View searching settings ");
 
                 nameLabel = new Label(ds.getName());
-                ((Label) nameLabel).setDescription(ds.getName());
+//                ((Label) nameLabel).setDescription(ds.getName());
                 rowLayout = initializeRowData(new Component[]{new Label(i + ""), nameLabel, new Label(ds.getType()), infoLabel, getToGalaxyLabel, nelsLabel, downloadLabel, deleteLabel, statusLabel}, false);
                 bottomDataTable.addComponent(rowLayout);
             }

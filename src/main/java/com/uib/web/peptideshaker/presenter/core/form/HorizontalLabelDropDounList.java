@@ -20,6 +20,7 @@ public class HorizontalLabelDropDounList extends HorizontalLayout {
      * Main drop-down list.
      */
     private final ComboBox list;
+    private final Label cap ;
 
     /**
      * Constructor to initialize the main attributes
@@ -29,7 +30,7 @@ public class HorizontalLabelDropDounList extends HorizontalLayout {
      */
     public HorizontalLabelDropDounList(String caption) {
         HorizontalLabelDropDounList.this.setSizeFull();
-        Label cap = new Label(caption);
+        cap = new Label(caption);
         cap.addStyleName(ValoTheme.LABEL_TINY);
         cap.addStyleName(ValoTheme.LABEL_SMALL);
         cap.addStyleName("smallundecorated");
@@ -37,6 +38,7 @@ public class HorizontalLabelDropDounList extends HorizontalLayout {
         HorizontalLabelDropDounList.this.setExpandRatio(cap, 45);
 
         list = new ComboBox();
+        list.setTextInputAllowed(false);
         list.setWidth(100, Unit.PERCENTAGE);
         list.setHeight(25, Unit.PIXELS);
         list.setStyleName(ValoTheme.COMBOBOX_SMALL);
@@ -86,5 +88,8 @@ public class HorizontalLabelDropDounList extends HorizontalLayout {
     public boolean isModified() {    
         return !list.getValue().toString().equalsIgnoreCase(list.getData()+"");
     }
-
+public String fullLabelValue(){
+        return "<b>"+cap.getValue()+": </b>"+list.getValue();
+    
+    }
 }

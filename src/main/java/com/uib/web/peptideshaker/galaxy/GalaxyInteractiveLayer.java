@@ -107,7 +107,9 @@ public abstract class GalaxyInteractiveLayer {
             userOverViewList.add(toolsHandler.getPeptideShaker_Tool().getVersion());
         } catch (Exception e) {
             System.out.println("exception in galaxy connection cought");
-            VaadinSession.getCurrent().getSession().invalidate();
+            if (VaadinSession.getCurrent().getSession() != null) {
+                VaadinSession.getCurrent().getSession().invalidate();
+            }
             Page.getCurrent().reload();
             return false;
         }

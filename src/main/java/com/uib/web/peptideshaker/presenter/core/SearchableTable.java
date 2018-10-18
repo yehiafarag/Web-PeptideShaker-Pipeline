@@ -39,7 +39,7 @@ public abstract class SearchableTable extends VerticalLayout implements Property
 
     public SearchableTable(String title, String defaultSearchingMessage, TableColumnHeader[] tableHeaders) {
         SearchableTable.this.setSizeFull();
-        SearchableTable.this.setMargin(new MarginInfo(false, false, true, false));
+        SearchableTable.this.setMargin(new MarginInfo(false, false, false, false));
 
         this.tableMainTitle = title;
         this.tableSearchingResults = new TreeMap<>();
@@ -61,8 +61,9 @@ public abstract class SearchableTable extends VerticalLayout implements Property
     private HorizontalLayout initSearchComponentLayout(String defaultSearchingMessage) {
         HorizontalLayout searchContainer = new HorizontalLayout();
         searchContainer.setSpacing(true);
-        HorizontalLabelTextField searchField = new HorizontalLabelTextField("Search", defaultSearchingMessage, null);
+        searchContainer.setStyleName("searchtablecontainer");
         searchContainer.setHeight(25, Unit.PIXELS);
+        HorizontalLabelTextField searchField = new HorizontalLabelTextField("", defaultSearchingMessage, null);
         searchContainer.addComponent(searchField);
 
         searchBtn = new Button(VaadinIcons.SEARCH);
@@ -93,7 +94,7 @@ public abstract class SearchableTable extends VerticalLayout implements Property
 
         searchResultsLabel = new Label("0 of 0");
         searchContainer.addComponent(searchResultsLabel);
-        searchContainer.setStyleName("searchtablecontainer");
+        
 
         searchBtn.addClickListener((Button.ClickEvent event) -> {
             searchforKeyword(searchField.getSelectedValue().trim());
@@ -257,7 +258,7 @@ public abstract class SearchableTable extends VerticalLayout implements Property
     }
 
     public void updateLabel() {
-        mainTable.setCaption("<b>" + tableMainTitle + " ( " + mainTable.getItemIds().size() + " / " + tableData.size() + " )</b>");
+        mainTable.setCaption("<b>" + tableMainTitle + " (" + mainTable.getItemIds().size() + "/" + tableData.size() + ")</b>");
         if (mainTable.getItemIds().size() == 1) {
             mainTable.select(mainTable.getCurrentPageFirstItemId());
         } else {

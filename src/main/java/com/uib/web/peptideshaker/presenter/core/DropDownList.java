@@ -2,6 +2,7 @@ package com.uib.web.peptideshaker.presenter.core;
 
 import com.vaadin.data.Property;
 import com.vaadin.server.Page;
+import com.vaadin.server.Resource;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.VerticalLayout;
@@ -19,6 +20,7 @@ public class DropDownList extends VerticalLayout {
      */
     private final ComboBox list;
     private Property.ValueChangeListener listener;
+    private Object lastSelectedId;
 
     /**
      * Constructor to initialise the main attributes.
@@ -34,9 +36,8 @@ public class DropDownList extends VerticalLayout {
         list.setStyleName("dropdownlist");
         list.setInputPrompt("Please select from the list");
         list.setNullSelectionAllowed(false);
-      
-
         DropDownList.this.addComponent(list);
+        list.setTextInputAllowed(false);
 
     }
 
@@ -80,6 +81,10 @@ public class DropDownList extends VerticalLayout {
         }
     }
 
+    public void setItemIcon(Object itemId, Resource icon) {
+        list.setItemIcon(itemId, icon);
+    }
+
     /**
      * Get selection value
      *
@@ -102,14 +107,25 @@ public class DropDownList extends VerticalLayout {
     public void setSelected(Object objectId) {
         if (objectId == null || (objectId + "").equalsIgnoreCase("") || list == null || !list.getItemIds().contains(objectId)) {
             return;
-        }try{
-        list.select(objectId);
-        list.setData(list.getValue());
-        }catch(Exception e){
-            
+        }
+        try {
+            list.select(objectId);
+            list.setData(list.getValue());
+            lastSelectedId = objectId;
+        } catch (Exception e) {
+
 //        Page.getCurrent().reload();
         }
 
+    }
+
+    public void defultSelect() {
+        list.setNullSelectionAllowed(lastSelectedId == null);
+        list.select(lastSelectedId);
+    }
+
+    public Object getLastSelectedId() {
+        return lastSelectedId;
     }
 
     public void addNewItemHandler(AbstractSelect.NewItemHandler newItemHandler, String message) {

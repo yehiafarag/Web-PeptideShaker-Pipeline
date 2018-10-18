@@ -71,8 +71,9 @@ public abstract class ChromosomesFilter extends VerticalLayout implements Regist
         this.appliedFilters = new LinkedHashSet<>();
         ChromosomesFilter.this.setStyleName("thumbfilterframe");
         ChromosomesFilter.this.addStyleName("reorderlayout");
+        ChromosomesFilter.this.addStyleName("chromosomfilter");
         ChromosomesFilter.this.setSizeFull();
-        ChromosomesFilter.this.setSpacing(true);
+        ChromosomesFilter.this.setSpacing(false);
         ChromosomesFilter.this.setMargin(new MarginInfo(false, false, false, false));
 
         this.selectedCategories = new LinkedHashSet<>();
@@ -81,9 +82,9 @@ public abstract class ChromosomesFilter extends VerticalLayout implements Regist
         topPanelContainer = new HorizontalLayout();
         topPanelContainer.setHeight(30, Unit.PIXELS);
         topPanelContainer.setWidth(100, Unit.PERCENTAGE);
-        topPanelContainer.addStyleName("margintop10");
+        topPanelContainer.addStyleName("toppanel");
         topPanelContainer.setSpacing(true);
-        topPanelContainer.setMargin(new MarginInfo(false, true, false, false));
+        topPanelContainer.setMargin(new MarginInfo(false, false, false, false));
         ChromosomesFilter.this.addComponent(topPanelContainer);
         ChromosomesFilter.this.setExpandRatio(topPanelContainer, 10);
         chartTitle = new Label("<font >" + title + "</font>", ContentMode.HTML);
@@ -94,30 +95,31 @@ public abstract class ChromosomesFilter extends VerticalLayout implements Regist
         topPanelContainer.addComponent(chartTitle);
         topPanelContainer.setComponentAlignment(chartTitle, Alignment.TOP_CENTER);
         topPanelContainer.setExpandRatio(chartTitle, 40);
+        removeFilterIcon = new FilterButton() {
+            @Override
+            public void layoutClick(LayoutEvents.LayoutClickEvent event) {
+                applyFilter(null);
 
-//        removeFilterIcon = new FilterButton() {
-//            @Override
-//            public void layoutClick(LayoutEvents.LayoutClickEvent event) {
-//                applyFilter(null);
-//                
-//            }
-//        };
-//        removeFilterIcon.setWidth(25, Unit.PIXELS);
-//        removeFilterIcon.setHeight(25, Unit.PIXELS);
-//        removeFilterIcon.addStyleName("nomargin");
-//        removeFilterIcon.setVisible(false);
+            }
+        };
+        removeFilterIcon.setWidth(25, Unit.PIXELS);
+        removeFilterIcon.setHeight(25, Unit.PIXELS);
+        removeFilterIcon.setVisible(false);
 //        removeFilterIcon.setActiveBtn(true);
-//        
-//        topPanelContainer.addComponent(removeFilterIcon);
-//        topPanelContainer.setComponentAlignment(removeFilterIcon, Alignment.TOP_LEFT);
-//        topPanelContainer.setExpandRatio(removeFilterIcon,20);
+        removeFilterIcon.addStyleName("btninframe");
+        topPanelContainer.addComponent(removeFilterIcon);
+        topPanelContainer.setComponentAlignment(removeFilterIcon, Alignment.TOP_CENTER);
+        topPanelContainer.setExpandRatio(removeFilterIcon,0);
+
+
         mainFilterPanel = new Panel();
-        mainFilterPanel.setHeight(90, Unit.PERCENTAGE);
+        mainFilterPanel.setHeight(100, Unit.PERCENTAGE);
         mainFilterPanel.setWidth(100, Unit.PERCENTAGE);
         mainFilterPanel.setStyleName(ValoTheme.PANEL_BORDERLESS);
+        mainFilterPanel.addStyleName("floatbottom");
         ChromosomesFilter.this.addComponent(mainFilterPanel);
         ChromosomesFilter.this.setComponentAlignment(mainFilterPanel, Alignment.BOTTOM_LEFT);
-        ChromosomesFilter.this.setExpandRatio(mainFilterPanel, 89);
+        ChromosomesFilter.this.setExpandRatio(mainFilterPanel,90);
 
         chromosomessLabelMap = new LinkedHashMap<>();
         this.filteredData = new LinkedHashMap<>();;
@@ -140,26 +142,15 @@ public abstract class ChromosomesFilter extends VerticalLayout implements Regist
         };
         mainChartContainer = initFilterLayout();
         mainFilterPanel.setContent(mainChartContainer);
-        topPanelContainer.addLayoutClickListener(mainClickListener);
-
-        removeFilterIcon = new FilterButton() {
-            @Override
-            public void layoutClick(LayoutEvents.LayoutClickEvent event) {
-                applyFilter(null);
-
-            }
-        };
-        removeFilterIcon.setWidth(25, Unit.PIXELS);
-        removeFilterIcon.setHeight(25, Unit.PIXELS);
-        removeFilterIcon.setVisible(false);
-//        removeFilterIcon.setActiveBtn(true);
-        removeFilterIcon.addStyleName("btninframe");
+//        topPanelContainer.addLayoutClickListener(mainClickListener);
+//
+        
 
 //        topLeftContainer.addComponent(removeFilterIcon);
 //        topLeftContainer.setComponentAlignment(removeFilterIcon, Alignment.TOP_CENTER);
-        ChromosomesFilter.this.addComponent(removeFilterIcon);
-        ChromosomesFilter.this.setComponentAlignment(removeFilterIcon, Alignment.TOP_RIGHT);
-        ChromosomesFilter.this.setExpandRatio(removeFilterIcon,1f);
+//        ChromosomesFilter.this.addComponent(removeFilterIcon);
+//        ChromosomesFilter.this.setComponentAlignment(removeFilterIcon, Alignment.TOP_RIGHT);
+//        ChromosomesFilter.this.setExpandRatio(removeFilterIcon,0f);
 
     }
 

@@ -62,6 +62,8 @@ public abstract class DivaRangeFilter extends VerticalLayout implements Property
     private final GridLayout filterGridContainer;
     private final FilterButton removeFilterIcon;
     private int imageRepaintCounter = 0;
+    private double maxValue;
+    private double positionIndexFactro;
 
     public DivaRangeFilter(String title, String filterId, SelectionManager Selection_Manager) {
 
@@ -81,17 +83,18 @@ public abstract class DivaRangeFilter extends VerticalLayout implements Property
         chartTitle.setHeight(30, Unit.PIXELS);
         chartTitle.setStyleName(ValoTheme.LABEL_BOLD);
         chartTitle.addStyleName("resizeabletext");
+        chartTitle.addStyleName("toppanel");
         DivaRangeFilter.this.addComponent(chartTitle);
         DivaRangeFilter.this.setExpandRatio(chartTitle, 10);
 
-        filterGridContainer = new GridLayout(3, 2);
+        filterGridContainer = new GridLayout(1, 2);
         filterGridContainer.setSizeFull();
         filterGridContainer.setSpacing(false);
         filterGridContainer.setRowExpandRatio(0, 1.5f);
         filterGridContainer.setRowExpandRatio(1, 0.5f);
-        filterGridContainer.setColumnExpandRatio(0, 10);
-        filterGridContainer.setColumnExpandRatio(1, 80);
-        filterGridContainer.setColumnExpandRatio(2, 10);
+//        filterGridContainer.setColumnExpandRatio(0, 10);
+//        filterGridContainer.setColumnExpandRatio(1, 80);
+//        filterGridContainer.setColumnExpandRatio(2, 10);
 
         DivaRangeFilter.this.addComponent(filterGridContainer);
         DivaRangeFilter.this.setExpandRatio(filterGridContainer, 90);
@@ -125,18 +128,27 @@ public abstract class DivaRangeFilter extends VerticalLayout implements Property
             chartImage.setSource(new ExternalResource(saveToFile(mainChart, chartWidth, chartHeight)));
         });
 
-        filterGridContainer.addComponent(chartContainer, 1, 0);
+        filterGridContainer.addComponent(chartContainer, 0, 0);
         filterGridContainer.setComponentAlignment(chartContainer, Alignment.TOP_LEFT);
-        lowerLableValueComponent = initLabel("");
-        filterGridContainer.addComponent(lowerLableValueComponent, 0, 1);
-        filterGridContainer.setComponentAlignment(lowerLableValueComponent, Alignment.MIDDLE_CENTER);
 
+//        filterGridContainer.addComponent(lowerLableValueComponent, 0, 1);
+//        filterGridContainer.setComponentAlignment(lowerLableValueComponent, Alignment.MIDDLE_CENTER);
         slidersContainer = new AbsoluteLayout();
         slidersContainer.setStyleName("maxhight20");
+        slidersContainer.addStyleName("visibleoverflow");
         slidersContainer.setWidth(100, Unit.PERCENTAGE);
         slidersContainer.setHeight(100, Unit.PERCENTAGE);
-        filterGridContainer.addComponent(slidersContainer, 1, 1);
+        filterGridContainer.addComponent(slidersContainer, 0, 1);
         filterGridContainer.setComponentAlignment(slidersContainer, Alignment.MIDDLE_CENTER);
+
+        lowerLableValueComponent = initLabel("");
+        lowerLableValueComponent.addStyleName("leftrangebarlabel");
+
+        slidersContainer.addComponent(lowerLableValueComponent, "left:0px; top:0px;");
+        upperLabelValueComponent = initLabel("");
+        upperLabelValueComponent.addStyleName("rightrangebarlabel");
+        slidersContainer.addComponent(upperLabelValueComponent, "right:0px; top:0px;");
+
         lowerRangeSlider = new Slider();
         lowerRangeSlider.setWidth(100, Unit.PERCENTAGE);
         lowerRangeSlider.setStyleName("rangeslider");
@@ -151,10 +163,8 @@ public abstract class DivaRangeFilter extends VerticalLayout implements Property
         upperRangeSlider.addValueChangeListener(DivaRangeFilter.this);
         slidersContainer.addComponent(upperRangeSlider, "left:0px; top:50%;");
 
-        upperLabelValueComponent = initLabel("");
-        filterGridContainer.addComponent(upperLabelValueComponent, 2, 1);
-        filterGridContainer.setComponentAlignment(upperLabelValueComponent, Alignment.MIDDLE_CENTER);
-
+//        filterGridContainer.addComponent(upperLabelValueComponent, 2, 1);
+//        filterGridContainer.setComponentAlignment(upperLabelValueComponent, Alignment.MIDDLE_CENTER);
         removeFilterIcon = new FilterButton() {
             @Override
             public void layoutClick(LayoutEvents.LayoutClickEvent event) {
@@ -182,26 +192,30 @@ public abstract class DivaRangeFilter extends VerticalLayout implements Property
             upperRangeSlider.setEnabled(false);
             lowerRangeSlider.setEnabled(false);
             chartContainer.removeAllComponents();
+            
             return;
         }
 
         upperRangeSlider.setEnabled(true);
         lowerRangeSlider.setEnabled(true);
-        double min = Double.valueOf(data.firstKey() + "");
-        double max = Double.valueOf(data.lastKey() + "");
+        double min = 0.0;//Double.valueOf(data.firstKey() + "");
+        maxValue = Double.valueOf(data.lastKey() + "");
+        positionIndexFactro = 100.0 / maxValue;
         upperRangeSlider.removeValueChangeListener(DivaRangeFilter.this);
         lowerRangeSlider.removeValueChangeListener(DivaRangeFilter.this);
         lowerRangeSlider.setMin(min);
-        lowerRangeSlider.setMax(max);
+        lowerRangeSlider.setMax(maxValue);
         lowerRangeSlider.setValue(min);
         upperRangeSlider.setMin(min);
-        upperRangeSlider.setMax(max);
-        upperRangeSlider.setValue(max);
+        upperRangeSlider.setMax(maxValue);
+        upperRangeSlider.setValue(maxValue);
 
         upperRangeSlider.addValueChangeListener(DivaRangeFilter.this);
         lowerRangeSlider.addValueChangeListener(DivaRangeFilter.this);
-        upperLabelValueComponent.setValue("<center>" + (int) max + "</center>");
+        upperLabelValueComponent.setValue("<center>" + (int) maxValue + "</center>");
         lowerLableValueComponent.setValue("<center>" + (int) min + "</center>");
+        slidersContainer.addComponent(lowerLableValueComponent, "left:0px; top:0px;");
+        slidersContainer.addComponent(upperLabelValueComponent, "right:0px; top:0px;");
         activeData.putAll(data);
         updateChartDataset();
         if (this.data == null) {
@@ -309,14 +323,17 @@ public abstract class DivaRangeFilter extends VerticalLayout implements Property
         double max;
 
         if (lowerRangeSlider.getValue() <= upperRangeSlider.getValue() && slidersContainer.getComponentCount() == 0) {
+
             slidersContainer.addComponent(lowerRangeSlider, lowerPos.getCSSString());
             slidersContainer.addComponent(upperRangeSlider, upperPos.getCSSString());
             upperRangeSlider.addStyleName("upper");
             lowerRangeSlider.addStyleName("lower");
-            min = lowerRangeSlider.getValue();
-            max = upperRangeSlider.getValue();
 
+            min = lowerRangeSlider.getValue();
+
+            max = upperRangeSlider.getValue();
         } else {
+
             slidersContainer.addComponent(upperRangeSlider, upperPos.getCSSString());
             slidersContainer.addComponent(lowerRangeSlider, lowerPos.getCSSString());
             lowerRangeSlider.addStyleName("upper");
@@ -326,6 +343,12 @@ public abstract class DivaRangeFilter extends VerticalLayout implements Property
 
         }
 
+        slidersContainer.addComponent(lowerLableValueComponent, "left:" + (min * positionIndexFactro) + "%;top:0px;");
+        if (min != max) {
+            slidersContainer.addComponent(upperLabelValueComponent, "right:" + (100.0 - (max * positionIndexFactro)) + "%;top:0px;");
+        }
+        upperLabelValueComponent.setValue("<center>" + (int) max + "</center>");
+        lowerLableValueComponent.setValue("<center>" + (int) min + "</center>");
         applyFilter(min, max);
 
     }
@@ -402,8 +425,8 @@ public abstract class DivaRangeFilter extends VerticalLayout implements Property
         Label label = new Label("<center>" + labelValue + "</center>", ContentMode.HTML);
         label.setStyleName(ValoTheme.LABEL_TINY);
         label.addStyleName(ValoTheme.LABEL_SMALL);
-        label.setWidth(100, Unit.PERCENTAGE);
-        label.addStyleName("maxhight20");
+        label.setHeight(20, Unit.PIXELS);
+        label.setWidthUndefined();
         return label;
 
     }

@@ -43,7 +43,7 @@ public class VaadinSessionListener implements HttpSessionListener, ServletContex
     @Override
     public void sessionDestroyed(HttpSessionEvent hse) {
         String ApiKey = hse.getSession().getAttribute("ApiKey") + "";
-        if (ApiKey.equalsIgnoreCase(hse.getSession().getAttribute("testUserAPIKey").toString())) {
+        if (ApiKey==null || ApiKey.equalsIgnoreCase(hse.getSession().getAttribute("testUserAPIKey")+"")) {
             return;
         }
         String userDataFolderUrl = hse.getSession().getAttribute("userDataFolderUrl").toString();
