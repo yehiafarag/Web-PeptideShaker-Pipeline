@@ -14,7 +14,7 @@ public class LegendItem extends Label{
 
     public LegendItem(String text,Color color) {
         LegendItem.this.setSizeFull();
-        LegendItem.this.setValue("<font style='color:rgb("+color.getRed()+","+color.getGreen()+","+color.getBlue()+")'>"+FontAwesome.SQUARE.getHtml()+"</font> "+ text);
+        LegendItem.this.setValue("<font style='color:rgb("+color.getRed()+","+color.getGreen()+","+color.getBlue()+")'>"+FontAwesome.SQUARE.getHtml()+"</font> "+ text.replace("Protein", ""));
         LegendItem.this.setStyleName("legenditem");
         LegendItem.this.setContentMode(ContentMode.HTML);
         LegendItem.this.setDescription(text);

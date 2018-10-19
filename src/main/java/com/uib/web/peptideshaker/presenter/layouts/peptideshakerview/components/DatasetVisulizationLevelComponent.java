@@ -223,8 +223,9 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
         }
         mainTable.setSortEnabled(false);
         ModificationMatrix modificationMatrix = peptideShakerVisualizationDataset.getModificationMatrix();
-        if(modificationMatrix.getRows()==null)
+        if (modificationMatrix.getRows() == null) {
             System.out.println("modification matrix has an error ");
+        }
         modificationMatrix.getRows().keySet().forEach((mod) -> {
             if (PTM.containsPTM(mod)) {
                 ModificationColorMap.put(mod, PTMFactory.getDefaultColor(mod));

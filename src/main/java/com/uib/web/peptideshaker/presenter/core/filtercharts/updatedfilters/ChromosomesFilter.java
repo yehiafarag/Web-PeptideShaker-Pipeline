@@ -29,15 +29,12 @@ import java.util.TreeSet;
  *
  * @author Yehia Farag
  */
-public abstract class ChromosomesFilter extends VerticalLayout implements RegistrableFilter {
+public abstract class ChromosomesFilter extends AbsoluteLayout implements RegistrableFilter {
 
     private RangeColorGenerator colorGenerator;
 
-    private final String title;
     private final String filterId;
 
-//    private final VerticalLayout thumbFilterContainer;
-    private final HorizontalLayout topPanelContainer;
     private final Panel mainFilterPanel;
     private final Label chartTitle;
 
@@ -51,8 +48,6 @@ public abstract class ChromosomesFilter extends VerticalLayout implements Regist
     private int totalItemsNumber;
     private final SelectionManager Selection_Manager;
 
-//    private final VerticalLayout thumbLegendContainer;
-//    private final Map<String, Color> colorsMap;
     private final Map<Comparable, Label> chromosomessLabelMap;
     private final Set<Comparable> selectedData;
     private final AbsoluteLayout mainChartContainer;
@@ -64,7 +59,6 @@ public abstract class ChromosomesFilter extends VerticalLayout implements Regist
 
     public ChromosomesFilter(String title, String filterId, SelectionManager Selection_Manager) {
 
-        this.title = title;
         this.filterId = filterId;
         this.Selection_Manager = Selection_Manager;
         selectedData = new LinkedHashSet<>();
@@ -73,28 +67,16 @@ public abstract class ChromosomesFilter extends VerticalLayout implements Regist
         ChromosomesFilter.this.addStyleName("reorderlayout");
         ChromosomesFilter.this.addStyleName("chromosomfilter");
         ChromosomesFilter.this.setSizeFull();
-        ChromosomesFilter.this.setSpacing(false);
-        ChromosomesFilter.this.setMargin(new MarginInfo(false, false, false, false));
 
         this.selectedCategories = new LinkedHashSet<>();
         this.Selection_Manager.RegistrDatasetsFilter(ChromosomesFilter.this);
 
-        topPanelContainer = new HorizontalLayout();
-        topPanelContainer.setHeight(30, Unit.PIXELS);
-        topPanelContainer.setWidth(100, Unit.PERCENTAGE);
-        topPanelContainer.addStyleName("toppanel");
-        topPanelContainer.setSpacing(true);
-        topPanelContainer.setMargin(new MarginInfo(false, false, false, false));
-        ChromosomesFilter.this.addComponent(topPanelContainer);
-        ChromosomesFilter.this.setExpandRatio(topPanelContainer, 10);
         chartTitle = new Label("<font >" + title + "</font>", ContentMode.HTML);
         chartTitle.setStyleName(ValoTheme.LABEL_BOLD);
         chartTitle.setWidth(100, Unit.PERCENTAGE);
-        chartTitle.setHeight(30, Unit.PIXELS);
+        chartTitle.setHeight(78, Unit.PIXELS);
         chartTitle.addStyleName("resizeabletext");
-        topPanelContainer.addComponent(chartTitle);
-        topPanelContainer.setComponentAlignment(chartTitle, Alignment.TOP_CENTER);
-        topPanelContainer.setExpandRatio(chartTitle, 40);
+        ChromosomesFilter.this.addComponent(chartTitle, "left:10px; top:10px;");
         removeFilterIcon = new FilterButton() {
             @Override
             public void layoutClick(LayoutEvents.LayoutClickEvent event) {
@@ -102,24 +84,18 @@ public abstract class ChromosomesFilter extends VerticalLayout implements Regist
 
             }
         };
-        removeFilterIcon.setWidth(25, Unit.PIXELS);
-        removeFilterIcon.setHeight(25, Unit.PIXELS);
+        removeFilterIcon.setWidth(24, Unit.PIXELS);
+        removeFilterIcon.setHeight(24, Unit.PIXELS);
         removeFilterIcon.setVisible(false);
-//        removeFilterIcon.setActiveBtn(true);
         removeFilterIcon.addStyleName("btninframe");
-        topPanelContainer.addComponent(removeFilterIcon);
-        topPanelContainer.setComponentAlignment(removeFilterIcon, Alignment.TOP_CENTER);
-        topPanelContainer.setExpandRatio(removeFilterIcon,0);
-
+        ChromosomesFilter.this.addComponent(removeFilterIcon, "right:23px;top:-1px;");
 
         mainFilterPanel = new Panel();
         mainFilterPanel.setHeight(100, Unit.PERCENTAGE);
         mainFilterPanel.setWidth(100, Unit.PERCENTAGE);
         mainFilterPanel.setStyleName(ValoTheme.PANEL_BORDERLESS);
         mainFilterPanel.addStyleName("floatbottom");
-        ChromosomesFilter.this.addComponent(mainFilterPanel);
-        ChromosomesFilter.this.setComponentAlignment(mainFilterPanel, Alignment.BOTTOM_LEFT);
-        ChromosomesFilter.this.setExpandRatio(mainFilterPanel,90);
+        ChromosomesFilter.this.addComponent(mainFilterPanel, "top: 30px;left: 10px;right: 10px;bottom: 0px;");
 
         chromosomessLabelMap = new LinkedHashMap<>();
         this.filteredData = new LinkedHashMap<>();;
@@ -142,16 +118,6 @@ public abstract class ChromosomesFilter extends VerticalLayout implements Regist
         };
         mainChartContainer = initFilterLayout();
         mainFilterPanel.setContent(mainChartContainer);
-//        topPanelContainer.addLayoutClickListener(mainClickListener);
-//
-        
-
-//        topLeftContainer.addComponent(removeFilterIcon);
-//        topLeftContainer.setComponentAlignment(removeFilterIcon, Alignment.TOP_CENTER);
-//        ChromosomesFilter.this.addComponent(removeFilterIcon);
-//        ChromosomesFilter.this.setComponentAlignment(removeFilterIcon, Alignment.TOP_RIGHT);
-//        ChromosomesFilter.this.setExpandRatio(removeFilterIcon,0f);
-
     }
 
     private AbsoluteLayout initFilterLayout() {
@@ -164,7 +130,7 @@ public abstract class ChromosomesFilter extends VerticalLayout implements Regist
         for (int i = 1; i < 25; i++) {
 
             Label img = new Label("", ContentMode.HTML);
-            img.setHeight(85, Unit.PERCENTAGE);
+            img.setHeight(95, Unit.PERCENTAGE);
             img.setWidth(85, Unit.PERCENTAGE);
             img.setData(i);
             filter.addComponent(img);
@@ -209,21 +175,18 @@ public abstract class ChromosomesFilter extends VerticalLayout implements Regist
         filteredData.putAll(data);
         appliedFilters.clear();
         selectedCategories.clear();
-//        colorsMap.clear();
         TreeSet<Integer> treeSet = new TreeSet<>();
-        data.keySet().stream().map((key) -> data.get(key)).map((set) -> { 
+        data.keySet().stream().map((key) -> data.get(key)).map((set) -> {
             treeSet.add(set.size());
             return set;
         }).forEachOrdered((set) -> {
             totalItemsNumber += set.size();
         });
         if (colorGenerator != null) {
-            topPanelContainer.removeComponent(colorGenerator.getColorScale());
+            ChromosomesFilter.this.removeComponent(colorGenerator.getColorScale());
         }
         colorGenerator = new RangeColorGenerator(treeSet.last());
-        topPanelContainer.addComponent(colorGenerator.getColorScale());
-        topPanelContainer.setComponentAlignment(colorGenerator.getColorScale(), Alignment.TOP_RIGHT);
-        topPanelContainer.setExpandRatio(colorGenerator.getColorScale(), 40);
+        ChromosomesFilter.this.addComponent(colorGenerator.getColorScale(), "top:15;right:20px");
         updateChromosomesLabelsColor();
 
     }
@@ -252,193 +215,26 @@ public abstract class ChromosomesFilter extends VerticalLayout implements Regist
 
                 }
                 if (colorGenerator != null) {
-                    topPanelContainer.removeComponent(colorGenerator.getColorScale());
+                    ChromosomesFilter.this.removeComponent(colorGenerator.getColorScale());
                 }
                 colorGenerator = new RangeColorGenerator(treeSet.last());
-                topPanelContainer.addComponent(colorGenerator.getColorScale());
-                topPanelContainer.setComponentAlignment(colorGenerator.getColorScale(), Alignment.TOP_RIGHT);
-                topPanelContainer.setExpandRatio(colorGenerator.getColorScale(), 40);
+                ChromosomesFilter.this.addComponent(colorGenerator.getColorScale(), "top:15;right:20px");
                 updateChromosomesLabelsColor();
 
             }
         }
         selectCategory(selectedCategories);
         setMainAppliedFilter(topFilter && !selectedCategories.isEmpty());
-
-//        selectAllLabel.setValue("<center>" + selectedItems.size() + "</center>");
     }
 
-//    private AbsoluteLayout initDonutChartFilter(List<Double> data) {
-//
-//        donutConfig = new DonutChartConfig();
-//        donutConfig.data()
-//                //                .labelsAsList(new ArrayList<>(colorsMap.keySet()))//.toArray(new String[colorsMap.size()]))
-//                .addDataset(
-//                        new PieDataset().label("Dataset 1").dataAsList(data).backgroundColor(chartColors.values().toArray(new String[colorsMap.size()])).borderColor(chartBorderColors.values().toArray(new String[colorsMap.size()])).borderWidth(5))
-//                .and();
-//
-//        donutConfig.
-//                options().maintainAspectRatio(false)
-//                .responsive(true)
-//                .hover()
-//                .intersect(true)
-//                .animationDuration(1)
-//                .and()
-//                .title()
-//                .display(false)
-//                .and().legend().display(!legendContainer.isVisible()).position(Position.BOTTOM)
-//                .and().tooltips().displayColors(false).enabled(false).titleFontSize(0).mode(InteractionMode.INDEX).and()
-//                .done();
-//
-//        highLightDonutConfig = new DonutChartConfig();
-//        highLightDonutConfig.data()
-//                //                .labels(colorsMap.keySet().toArray(new String[colorsMap.size()]))
-//                .addDataset(
-//                        new PieDataset().label("Dataset 1").dataAsList(data).backgroundColor("rgba(255, 255, 255,0.0)").borderColor("white").borderWidth(10))
-//                .and();
-//
-//        highLightDonutConfig.
-//                options().maintainAspectRatio(false)
-//                .responsive(true)
-//                .hover()
-//                .intersect(true)
-//                .animationDuration(1)
-//                .and()
-//                .title()
-//                .display(false)
-//                .and().legend().display(!legendContainer.isVisible()).position(Position.BOTTOM)
-//                .and().tooltips().displayColors(false).enabled(false).titleFontSize(0).mode(InteractionMode.INDEX).and()
-//                .done();
-//
-//        highLightchartContainer = new VerticalLayout();
-//        highLightchartContainer.setSizeFull();
-//        highLightchartContainer.addStyleName("highlightchartcontainer");
-//
-//        chartContainer = new VerticalLayout();
-//        chartContainer.addStyleName("chartcontainer");
-//        chartContainer.setSizeFull();
-//
-//        basicChartConfig = new PieChartConfig();
-//        List<String> labelList = new ArrayList<>();
-//        for (String str : colorsMap.keySet()) {
-//            labelList.add(str + " #:1000 | %");
-//
-//        }
-//
-//        basicChartConfig.data()
-//                .labelsAsList(labelList)
-//                .addDataset(
-//                        new PieDataset().label("Dataset 1").dataAsList(data).backgroundColor("rgba(255, 255, 255,0.0)").hoverBackgroundColor("rgba(255, 255, 255,0.0)").hoverBorderColor("rgba(255, 255, 255,0.0)").borderColor("rgba(255, 255, 255,0.0)").borderWidth(10))
-//                //                new PieDataset().label("Dataset 1").dataAsList(data).backgroundColor(chartColors.values().toArray(new String[colorsMap.size()])).borderColor(chartBorderColors.values().toArray(new String[colorsMap.size()])).borderWidth(5))
-//
-//                .and();
-//
-//        basicChartConfig.
-//                options().maintainAspectRatio(false)
-//                .responsive(true)
-//                .hover()
-//                .intersect(true)
-//                .animationDuration(1)
-//                .and()
-//                .title()
-//                .display(false)
-//                .and().legend().display(!legendContainer.isVisible()).position(Position.BOTTOM)
-//                .and().tooltips().titleFontSize(0).bodyFontSize(12).mode(InteractionMode.INDEX).position(Tooltips.PositionMode.NEAREST).displayColors(false).enabled(true).titleFontSize(0).and()
-//                .done();
-//
-//        transparentChartContainer = new VerticalLayout();
-//        transparentChartContainer.setSizeFull();
-//        transparentChartContainer.addStyleName("basicchartcontainer");
-//
-//        AbsoluteLayout container = new AbsoluteLayout();
-//
-//        container.setWidth(100, Unit.PERCENTAGE);
-//        container.setHeight(100, Unit.PERCENTAGE);
-//        container.addComponent(chartContainer);
-//        container.addComponent(highLightchartContainer);
-//        container.addComponent(transparentChartContainer);
-//
-////                ((PieDataset) basicChartConfig.data().getDatasetAtIndex(0)).borderColor("rgba(0,0,0,0)").hoverBorderColor("rgba(0,0,0,0)").backgroundColor("rgba(0,0,0,0)").hoverBackgroundColor("rgba(0,0,0,0)").borderWidth(10);
-////        basicChartConfig.options().legend().display(!legendContainer.isVisible()).and().animation().duration(1).and().done();
-////
-////        
-//        ChartJs chart3 = new ChartJs(basicChartConfig);
-//        chart3.addClickListener((int datasetIndex, int dataIndex) -> {
-//            selectCategory(colorsMap.keySet().toArray()[dataIndex] + "");
-//        });
-//        chart3.setWidth(100, Unit.PERCENTAGE);
-//        chart3.setHeight(100, Unit.PERCENTAGE);
-//        transparentChartContainer.addComponent(chart3);
-//
-//        redrawChart();
-//
-//        return container;
-//    }
     private void unselectAll() {
-        for (Label chromosomImg : chromosomessLabelMap.values()) {
+        chromosomessLabelMap.values().forEach((chromosomImg) -> {
             chromosomImg.removeStyleName("resizableselectedimg");
-
-        }
-
-//        selectedData.clear();
-//        selectedCategories.clear();
-////        for (String cat : colorsMap.keySet()) {
-////            Color c = colorsMap.get(cat);
-////            chartColors.put(cat, String.format("#%02x%02x%02x", c.getRed(), c.getGreen(), c.getBlue()));
-////            selectedData.addAll(filteredData.get(cat));
-////            highLightedChartColors.put(cat, "rgba(0,0,0,0)");
-////            colorsLabelMap.get(cat).removeStyleName("blackborder");
-////
-////        }
-////        donutConfig.options().animation().duration(1);
-//        redrawChart();
-//        updateLabels();
+        });
     }
 
     @Override
     public void redrawChart() {
-
-//        String[] highLightedColorArr = highLightedChartColors.values().toArray(new String[chartColors.size()]);
-//        String[] colorArr = chartColors.values().toArray(new String[chartColors.size()]);
-//        String[] borderColorArr = chartBorderColors.values().toArray(new String[colorsMap.size()]);
-//        ((PieDataset) donutConfig.data().getDatasetAtIndex(0)).borderColor(borderColorArr).hoverBorderColor(borderColorArr).backgroundColor(colorArr).hoverBackgroundColor(colorArr).borderWidth(5);
-//        donutConfig.options().legend().display(!legendContainer.isVisible()).and().animation().duration(1).and().done();
-//        chartContainer.removeAllComponents();
-//        chart = new ChartJs(donutConfig);
-//        chart.addClickListener((int datasetIndex, int dataIndex) -> {
-//            selectCategory(colorsMap.keySet().toArray()[dataIndex] + "");
-//        });
-//        chart.setWidth(80, Unit.PERCENTAGE);
-//        chart.setHeight(80, Unit.PERCENTAGE);
-//
-//        chartContainer.addComponent(chart);
-//        chartContainer.setComponentAlignment(chart, Alignment.MIDDLE_CENTER);
-//        ((PieDataset) highLightDonutConfig.data().getDatasetAtIndex(0)).borderColor("white").hoverBorderColor("white").backgroundColor(highLightedColorArr).hoverBackgroundColor(highLightedColorArr).borderWidth(10);
-//        highLightDonutConfig.options().legend().display(!legendContainer.isVisible()).and().animation().duration(1).and().done();
-//
-//        highLightchartContainer.removeAllComponents();
-//        ChartJs chart2 = new ChartJs(highLightDonutConfig);
-//        chart2.addClickListener((int datasetIndex, int dataIndex) -> {
-//            selectCategory(colorsMap.keySet().toArray()[dataIndex] + "");
-//        });
-//        chart2.setWidth(100, Unit.PERCENTAGE);
-//        chart2.setHeight(100, Unit.PERCENTAGE);
-//        highLightchartContainer.addComponent(chart2);
-//
-//        thumbChartContainer.removeAllComponents();
-//        donutConfig.options().legend().display(false).and().done();
-//        ChartJs thumbChart = new ChartJs(donutConfig);
-//        thumbChart.addClickListener((int datasetIndex, int dataIndex) -> {
-//            selectCategory(colorsMap.keySet().toArray()[dataIndex] + "");
-//            applyFilter(selectedData);
-//        });
-//        thumbChart.setWidth(100, Unit.PERCENTAGE);
-//        thumbChart.setHeight(100, Unit.PERCENTAGE);
-//        thumbChartContainer.addComponent(thumbChart);
-//        thumbChartContainer.setExpandRatio(thumbChart, 80);
-//        thumbChartContainer.addComponent(thumbLegendContainer);
-//        thumbChartContainer.setComponentAlignment(thumbLegendContainer, Alignment.MIDDLE_CENTER);
-//        thumbChartContainer.setExpandRatio(thumbLegendContainer, 20);
     }
 
     @Override
@@ -472,23 +268,7 @@ public abstract class ChromosomesFilter extends VerticalLayout implements Regist
             barChartData.add((double) ((int) (log * 100.0 / counter)));
 
         }
-//        legendContainer.setVisible(true);
-//
-//        HorizontalLayout legend = initLegend(fullData.keySet());
-//        legend.addStyleName("stackedlegend");
-//        legendContainer.removeAllComponents();
-//        legendContainer.addComponent(legend);
-//        legendContainer.setComponentAlignment(legend, Alignment.MIDDLE_CENTER);
-//
-//        HorizontalLayout thumbLegend = initLegend(fullData.keySet());
-//        thumbLegend.addStyleName("stackedlegend");
-//        thumbLegendContainer.removeAllComponents();
-//        thumbLegendContainer.addComponent(thumbLegend);
-//        thumbLegendContainer.setComponentAlignment(thumbLegend, Alignment.MIDDLE_CENTER);
-
-//        donutChartContainerPanel.setContent(initDonutChartFilter(barChartData));
         unselectAll();
-//        updateLabels();
 
     }
 
@@ -496,9 +276,6 @@ public abstract class ChromosomesFilter extends VerticalLayout implements Regist
         if (activeChromosomes == 1) {
             return;
         }
-//        appliedFilters.clear();
-//        appliedFilters.addAll(selectedCategories);
-//        Selection_Manager.setSelection("dataset_filter_selection", selectedDataset, null, filterId);
 
         if (chromosome != null) {
             if (appliedFilters.contains(chromosome)) {

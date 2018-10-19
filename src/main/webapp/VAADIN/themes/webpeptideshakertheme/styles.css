@@ -14714,10 +14714,8 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .thumbfilterframe {
-	border: 2px solid lightgray;
+	border: 1px solid lightgray;
 	border-radius: 5px;
-	padding-left: 10px;
-	padding-right: 10px;
 }
 
 .webpeptideshakertheme .v-caption-thumbfilterframe .Vaadin-Icons {
@@ -15193,16 +15191,21 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .btnlayout {
-	background-color: whitesmoke;
 	padding: 2px;
-	border: 2px solid lightgray;
+	border: 1px solid lightgray;
 	border-radius: 5px;
 	margin-top: 10px;
+	background: white !important;
 }
 
 .webpeptideshakertheme .btnlayout:hover {
 	background-color: lightgray;
 	border-color: gray;
+}
+
+.webpeptideshakertheme .v-absolutelayout-wrapper-btninframe {
+	z-index: 5 !important;
+	position: fixed !important;
 }
 
 .webpeptideshakertheme .nomargin {
@@ -16535,16 +16538,14 @@ div.v-layout.v-horizontal.v-widget {
 	position: relative !important;
 	width: 100% !important;
 	min-width: 100% !important;
-	max-height: 32.15%;
-	margin-right: 0px !important;
+	max-height: 33.3333%;
 	padding: 0px !important;
-	margin-bottom: 1.9%;
 }
 
-.webpeptideshakertheme .cornerfiltercontainerstyle {
-	position: relative;
-	margin: 0px !important;
-	padding: 0px !important;
+.webpeptideshakertheme .v-slot-thumbfilterframe.v-slot-middlefiltercontainerstyle {
+	bottom: 2px;
+	border: 1px solid transparent;
+	position: relative !important;
 }
 
 .webpeptideshakertheme .smallscreenstyle .v-slot-reorderlayout {
@@ -16560,10 +16561,6 @@ div.v-layout.v-horizontal.v-widget {
 	min-height: 100% !important;
 	position: absolute !important;
 	perspective: 1000px !important;
-}
-
-.webpeptideshakertheme .v-horizontallayout-cornerfiltercontainerstyle {
-	overflow: hidden;
 }
 
 .webpeptideshakertheme .smallscreenstyle .v-slot-datasetfilterstyle {
@@ -17476,41 +17473,22 @@ div.v-layout.v-horizontal.v-widget {
 .webpeptideshakertheme .chromosomfilter .v-slot-toppanel {
 	min-height: 15px;
 	padding-top: 10px;
-	margin-left: -25px;
 	line-height: 6px !important;
 }
 
-.webpeptideshakertheme .v-absolutelayout-chromosomefiltercontainerstyle .v-label-resizableimg {
-	bottom: 20px !important;
-	position: absolute;
-}
-
-.webpeptideshakertheme .v-slot-btninframe {
-	right: 19px !important;
-	top: -2px !important;
+.webpeptideshakertheme .btninframe {
 	position: absolute !important;
-}
-
-.webpeptideshakertheme .v-verticallayout-btninframe {
-	position: absolute !important;
-	z-index: 3 !important;
+	z-index: 5 !important;
 	margin: 0px !important;
 	padding: 0px !important;
-	width: 23px !important;
-	height: 23px !important;
-	left: 0px !important;
-	border: 2px solid orange !important;
 	border-top-color: white !important;
-	border-righ-colort: white !important;
+	border-right-color: white !important;
 	border-top-left-radius: 0px !important;
 	border-bottom-right-radius: 0px !important;
 }
 
 .webpeptideshakertheme .btninframe .v-image {
 	padding: 10% !important;
-	border: 1px solid transparent !important;
-	border-radius: 2px;
-	background-color: white !important;
 }
 
 .webpeptideshakertheme .v-slot-toppanel {

@@ -1501,12 +1501,10 @@
         padding-left: 5px;
     }
     .thumbfilterframe {
-        border: 2px solid lightgray;
+        border: 1px solid lightgray;
         border-radius: 5px;
         /*padding-top: 2%;*/
         /*overflow: hidden;*/
-        padding-left:10px;
-        padding-right:10px;
         /*padding-bottom: 6%;*/
     }
     .v-caption-thumbfilterframe .Vaadin-Icons{
@@ -1956,26 +1954,31 @@
     }
 
     .btnlayout{
-        background-color:whitesmoke;
-        padding:2px;
-        border:2px solid lightgray;
-        border-radius:5px;
-        margin-top:10px;
+        padding: 2px;
+        border: 1px solid lightgray;
+        border-radius: 5px;
+        margin-top: 10px;
+        background:white !important;
     }
     .btnlayout:hover{
         background-color:lightgray;
         border-color: gray;
     }
+    .v-absolutelayout-wrapper-btninframe{	
+	z-index:5 !important;
+	position:fixed !important;
+
+}
+
     .nomargin{
         margin: 0 !important;
     }
     .highlightfilter{
-        border-color:orange !important; 
-        animation: shake 0.82s cubic-bezier(.36,.07,.19,.97) both; 
+       	border-color: orange !important;
+        animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
         transform: translate3d(0, 0, 0);
         backface-visibility: hidden;
         perspective: 1000px;
-        /*background-color:#dfebf9*/
     }
     .highlightfilter:hover{
         /*border-color:orange !important;*/ 
@@ -3417,17 +3420,31 @@
         position: relative !important;
         width: 100% !important;
         min-width: 100% !important;
-        max-height: 32.15%;
-        margin-right: 0px !important;
+        max-height: 33.3333%;
         padding: 0px !important;
-        margin-bottom: 1.9%;
+    }
+    /*    .cornerfiltercontainerstyle .v-absolutelayout-thumbfilterframe, .cornerfiltercontainerstyle .v-horizontallayout-thumbfilterframe, .cornerfiltercontainerstyle .v-verticallayout-thumbfilterframe{
+            max-height:97% !important;
+            margin-bottom:3px;
+        }*/
+
+    .v-slot-thumbfilterframe.v-slot-middlefiltercontainerstyle {
+        bottom:2px;
+        border:1px solid transparent;
+        position:relative !important;
+    }
+    /*    .cornerfiltercontainerstyle {
+            position: relative;
+            margin: 0px !important;
+            padding: 0px !important;
+        } 
+        .v-horizontallayout-cornerfiltercontainerstyle {
+            overflow: hidden;
+        }*/
+    .cornerfiltercontainerstyle {
+
     }
 
-    .cornerfiltercontainerstyle {
-        position: relative;
-        margin: 0px !important;
-        padding: 0px !important;
-    }
     .smallscreenstyle .v-slot-reorderlayout {
         max-width:32.15% !important;
         min-height:100% !important;
@@ -3442,10 +3459,7 @@
         perspective: 1000px !important;
 
     }
-    .v-horizontallayout-cornerfiltercontainerstyle {
-        overflow: hidden;
 
-    }
     .smallscreenstyle .v-slot-datasetfilterstyle {
         max-width: 100% !important;
         overflow-x: auto !important;
@@ -4452,37 +4466,21 @@
     
         }*/
 
-    .v-absolutelayout-chromosomefiltercontainerstyle .v-label-resizableimg{
+  
 
-        bottom:20px !important;
-        position:absolute;
 
-    } 
-    .v-slot-btninframe {
-        right: 19px !important;
-        top: -2px !important;
+    .btninframe {
         position: absolute !important;
-    }
-
-    .v-verticallayout-btninframe {
-        position: absolute !important;
-        z-index: 3 !important;
-        margin: 0px !important;
-        padding: 0px !important;
-        width: 23px !important;
-        height: 23px !important;
-        left: 0px !important;
-        border: 2px solid orange !important;
-        border-top-color:white !important;
-        border-righ-colort:white !important;
-        border-top-left-radius:0px !important;
-        border-bottom-right-radius:0px !important;
+	z-index:5 !important;
+	margin: 0px !important;
+	padding: 0px !important;
+	border-top-color: white !important;
+	border-right-color: white !important;
+	border-top-left-radius: 0px !important;
+	border-bottom-right-radius: 0px !important;
     }
     .btninframe .v-image{
         padding:10% !important;
-        border:1px solid transparent  !important;
-        border-radius:2px;
-        background-color:white !important;
 
     }
     .btninframe .v-image:hover{

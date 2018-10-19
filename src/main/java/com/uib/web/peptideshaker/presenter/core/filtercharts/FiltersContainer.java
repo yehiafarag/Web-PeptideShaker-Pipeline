@@ -70,44 +70,35 @@ public class FiltersContainer extends HorizontalLayout {
             }
             colorList.add(c);
         }
-
-        HorizontalLayout filterContainer = new HorizontalLayout();
-        filterContainer.setSizeFull();
-        filterContainer.setSpacing(true);
-        FiltersContainer.this.addComponent(filterContainer);
-
         ProteinInferenceFilter = new DivaPieChartFilter("Protein Inference", "pi_filter", Selection_Manager) {
             @Override
             public void selectionChange(String type) {
                 if (type.equalsIgnoreCase("dataset_filter_selection")) {
-//                    updateFilterSelection(Selection_Manager.getFilteredProteinsSet(), Selection_Manager.getAppliedFilterCategories("pi_filter"), false, false, false);
 
                 }
             }
 
         };
 
-        HorizontalLayout filterLeftPanelContainer = new HorizontalLayout();
-        filterLeftPanelContainer.setSizeFull();
-        filterLeftPanelContainer.setSpacing(false);
+        VerticalLayout filterLeftPanelContainer = new VerticalLayout();
+        filterLeftPanelContainer.setHeight(100,Unit.PERCENTAGE);
+        filterLeftPanelContainer.setWidth(100,Unit.PERCENTAGE);
+        filterLeftPanelContainer.setSpacing(true);
         filterLeftPanelContainer.addStyleName(ValoTheme.LAYOUT_HORIZONTAL_WRAPPING);
         filterLeftPanelContainer.addStyleName("cornerfiltercontainerstyle");
-        filterContainer.addComponent(filterLeftPanelContainer);
-        filterContainer.setExpandRatio(filterLeftPanelContainer, 1);
+        FiltersContainer.this.addComponent(filterLeftPanelContainer);
+        FiltersContainer.this.setExpandRatio(filterLeftPanelContainer, 1);
         filterLeftPanelContainer.addComponent(ProteinInferenceFilter);
         filterLeftPanelContainer.setComponentAlignment(ProteinInferenceFilter, Alignment.TOP_LEFT);
         
 
         validationFilter = new DivaPieChartFilter("Protein Validation", "validation_filter", Selection_Manager) {
-
             @Override
             public void selectionChange(String type) {
                 if (type.equalsIgnoreCase("dataset_filter_selection")) {
-//                    updateFilterSelection(Selection_Manager.getFilteredProteinsSet(), Selection_Manager.getAppliedFilterCategories("validation_filter"),false, false,false);
 
                 }
             }
-
         };
         filterLeftPanelContainer.addComponent(validationFilter);
         filterLeftPanelContainer.setComponentAlignment(validationFilter, Alignment.TOP_LEFT);
@@ -115,22 +106,22 @@ public class FiltersContainer extends HorizontalLayout {
             @Override
             public void selectionChange(String type) {
                 if (type.equalsIgnoreCase("dataset_filter_selection")) {
-//                    updateFilterSelection(Selection_Manager.getFilteredProteinsSet(), Selection_Manager.getAppliedFilterCategories("chromosome_filter"),false,false,false);
-
                 }
             }
-//
-//            @Override
-//            public void updateFilterSelection(Set<Comparable> selection, Set<Comparable> selectedCategories,boolean topFilter, boolean selectOnly,boolean selfAction) {
-////                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//            }
-
         };
-
-//        chromosome_filterContainer = new PopUpFilterContainer("Chromosome", chromosomeFilter, "med");
         filterLeftPanelContainer.addComponent(chromosomeFilter);
         filterLeftPanelContainer.setComponentAlignment(chromosomeFilter, Alignment.TOP_LEFT);
 
+        
+          HorizontalLayout filterMiddlePanelContainer = new HorizontalLayout();
+        filterMiddlePanelContainer.setHeight(100,Unit.PERCENTAGE);
+        filterMiddlePanelContainer.setWidth(100,Unit.PERCENTAGE);
+        filterMiddlePanelContainer.setSpacing(true);
+        filterMiddlePanelContainer.addStyleName("cornerfiltercontainerstyle");
+        FiltersContainer.this.addComponent(filterMiddlePanelContainer);
+        FiltersContainer.this.setComponentAlignment(filterMiddlePanelContainer, Alignment.TOP_LEFT);
+         FiltersContainer.this.setExpandRatio(filterMiddlePanelContainer, 2);
+        
         modificationFilter = new DivaMatrixLayoutChartFilter("Modifications", "modifications_filter", Selection_Manager) {
 
             @Override
@@ -142,36 +133,32 @@ public class FiltersContainer extends HorizontalLayout {
 
         };
         modificationFilter.addStyleName("middlefiltercontainerstyle");
-        filterContainer.addComponent(modificationFilter);
-        filterContainer.setComponentAlignment(modificationFilter, Alignment.TOP_CENTER);
-        filterContainer.setExpandRatio(modificationFilter, 2);
+      filterMiddlePanelContainer.addComponent(modificationFilter);
         modificationFilter.setSizeFull();
 
         HorizontalLayout filterRightPanelContainer = new HorizontalLayout();
-        filterRightPanelContainer.setSizeFull();
+        filterRightPanelContainer.setHeight(100,Unit.PERCENTAGE);
+        filterRightPanelContainer.setWidth(100,Unit.PERCENTAGE);
         filterRightPanelContainer.setSpacing(false);
         filterRightPanelContainer.addStyleName("cornerfiltercontainerstyle");
         filterRightPanelContainer.addStyleName(ValoTheme.LAYOUT_HORIZONTAL_WRAPPING);
-        filterContainer.addComponent(filterRightPanelContainer);
-        filterContainer.setComponentAlignment(filterRightPanelContainer, Alignment.TOP_CENTER);
-        filterContainer.setExpandRatio(filterRightPanelContainer, 1);
+         FiltersContainer.this.addComponent(filterRightPanelContainer);
+         FiltersContainer.this.setComponentAlignment(filterRightPanelContainer, Alignment.TOP_LEFT);
+         FiltersContainer.this.setExpandRatio(filterRightPanelContainer, 1);
 
 //add range filter
         prptidesNumberFilter = new DivaRangeFilter("#Peptides", "peptidesNum_filter", this.Selection_Manager) {
             @Override
             public void selectionChange(String type) {
-//                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
 
         };
-//        prptidesNumberFilter.initializeFilterData(initRangeData(null));
-//        prptidesNumberFilter.updateFilter();
         filterRightPanelContainer.addComponent(prptidesNumberFilter);
+        filterRightPanelContainer.setComponentAlignment(prptidesNumberFilter,Alignment.TOP_CENTER);
 
         psmNumberFilter = new DivaRangeFilter("#PSM", "psmNum_filter", this.Selection_Manager) {
             @Override
             public void selectionChange(String type) {
-//                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
 
         };
@@ -179,13 +166,14 @@ public class FiltersContainer extends HorizontalLayout {
         coverageFilter = new DivaRangeFilter("Coverage (%)", "possibleCoverage_filter", this.Selection_Manager) {
             @Override
             public void selectionChange(String type) {
-//                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
 
         };
         filterRightPanelContainer.addComponent(psmNumberFilter);
+        filterRightPanelContainer.setComponentAlignment(psmNumberFilter,Alignment.MIDDLE_CENTER);
 
         filterRightPanelContainer.addComponent(coverageFilter);
+        filterRightPanelContainer.setComponentAlignment(coverageFilter,Alignment.BOTTOM_CENTER);
     }
     private final Color[] colorsArr = new Color[]{Color.DARK_GRAY, new Color(4, 180, 95), new Color(245, 226, 80), new Color(213, 8, 8), Color.ORANGE};
     private final Color[] colorsArrII = new Color[]{Color.DARK_GRAY, new Color(4, 180, 95),Color.ORANGE, new Color(213, 8, 8)};

@@ -56,7 +56,7 @@ import org.jfree.ui.RectangleInsets;
  *
  * @author Yehia Farag
  */
-public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout implements RegistrableFilter {
+public abstract class DivaMatrixLayoutChartFilter extends AbsoluteLayout implements RegistrableFilter {
 
     /**
      * The width of the chart.
@@ -134,29 +134,20 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
     private void initlayout() {
         DivaMatrixLayoutChartFilter.this.setSizeFull();
         DivaMatrixLayoutChartFilter.this.setStyleName("thumbfilterframe");
-        DivaMatrixLayoutChartFilter.this.setSpacing(true);
-        VerticalLayout topLeftCornerLayout = new VerticalLayout();
-        topLeftCornerLayout.setWidth(28, Unit.PERCENTAGE);
-        topLeftCornerLayout.setHeight(100, Unit.PERCENTAGE);
-        topLeftCornerLayout.setMargin(new MarginInfo(false, false, false, false));
-        topLeftCornerLayout.addStyleName("toppanel");
-        DivaMatrixLayoutChartFilter.this.addComponent(topLeftCornerLayout);
-        DivaMatrixLayoutChartFilter.this.setExpandRatio(topLeftCornerLayout, 5);
-        topLayoutPanel = new AbsoluteLayout();
-        topLayoutPanel.setSizeFull();
+        
+       
 
-        DivaMatrixLayoutChartFilter.this.addComponent(topLayoutPanel);
-        DivaMatrixLayoutChartFilter.this.setComponentAlignment(topLayoutPanel, Alignment.TOP_LEFT);
-        DivaMatrixLayoutChartFilter.this.setExpandRatio(topLayoutPanel, 30);
-
-        chartTitle = new Label("<font style='padding-top: 10px;position: absolute;'>" + title + "</font>", ContentMode.HTML);
+        chartTitle = new Label("<font>" + title + "</font>", ContentMode.HTML);
         chartTitle.setStyleName(ValoTheme.LABEL_BOLD);
-        chartTitle.setWidth(100, Unit.PERCENTAGE);
-        chartTitle.setHeight(300, Unit.PIXELS);
+        chartTitle.setWidth(80, Unit.PIXELS);
+        chartTitle.setHeight(20, Unit.PIXELS);
         chartTitle.addStyleName("resizeabletext");
-        topLeftCornerLayout.addComponent(chartTitle);
-        topLeftCornerLayout.setComponentAlignment(chartTitle, Alignment.TOP_LEFT);
-
+        DivaMatrixLayoutChartFilter.this.addComponent(chartTitle,"left:10px;top:10px;");
+        
+        topLayoutPanel = new AbsoluteLayout();
+        topLayoutPanel.setHeight(150, Unit.PIXELS);
+        topLayoutPanel.setWidth(100, Unit.PERCENTAGE);
+        DivaMatrixLayoutChartFilter.this.addComponent(topLayoutPanel, "left:0px; top:30px;");
         mainChartContainer = new AbsoluteLayout();
         mainChartContainer.setWidth(100, Unit.PERCENTAGE);
         mainChartContainer.setHeight(100, Unit.PERCENTAGE);
@@ -198,9 +189,7 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
          */
         bottomLayoutPanel = new AbsoluteLayout();
         bottomLayoutPanel.setSizeFull();
-        DivaMatrixLayoutChartFilter.this.addComponent(bottomLayoutPanel);
-        DivaMatrixLayoutChartFilter.this.setComponentAlignment(bottomLayoutPanel, Alignment.TOP_LEFT);
-        DivaMatrixLayoutChartFilter.this.setExpandRatio(bottomLayoutPanel, 65);
+        DivaMatrixLayoutChartFilter.this.addComponent(bottomLayoutPanel,"left:0px; top:180px;");
         bottomLayoutPanel.addStyleName("ignorscrollspace");
         bottomLayoutContainer = new AbsoluteLayout();
         bottomLayoutContainer.setWidth(100, Unit.PERCENTAGE);
@@ -218,22 +207,15 @@ public abstract class DivaMatrixLayoutChartFilter extends VerticalLayout impleme
         removeFilterIcon = new FilterButton() {
             @Override
             public void layoutClick(LayoutEvents.LayoutClickEvent event) {
-                System.out.println("at clicked reset");
                 applyFilter(-1);
 
             }
         };
-        removeFilterIcon.setWidth(25, Unit.PIXELS);
-        removeFilterIcon.setHeight(25, Unit.PIXELS);
+        removeFilterIcon.setWidth(24, Unit.PIXELS);
+        removeFilterIcon.setHeight(24, Unit.PIXELS);
         removeFilterIcon.setVisible(false);
-//        removeFilterIcon.setActiveBtn(true);
         removeFilterIcon.addStyleName("btninframe");
-
-//        topLeftContainer.addComponent(removeFilterIcon);
-//        topLeftContainer.setComponentAlignment(removeFilterIcon, Alignment.TOP_CENTER);
-        DivaMatrixLayoutChartFilter.this.addComponent(removeFilterIcon);
-        DivaMatrixLayoutChartFilter.this.setComponentAlignment(removeFilterIcon, Alignment.TOP_RIGHT);
-        DivaMatrixLayoutChartFilter.this.setExpandRatio(removeFilterIcon, 0);
+        DivaMatrixLayoutChartFilter.this.addComponent(removeFilterIcon, "right:23px;top:-1px;");
     }
 
     public void initializeFilterData(ModificationMatrix modificationMatrix, Map<String, Color> dataColors, Set<Object> selectedCategories, int totalNumber) {
