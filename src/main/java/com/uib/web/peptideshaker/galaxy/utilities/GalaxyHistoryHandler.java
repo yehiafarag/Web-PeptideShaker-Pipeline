@@ -85,15 +85,16 @@ public abstract class GalaxyHistoryHandler {
      * the dataset json file.
      */
     private final DateFormat df6 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-
+private Set<String> csf_pr_Accssion_List;
     /**
      * Constructor to initialise the the galaxy history handler, and Connection
      * refresher to keep tracking running jobs on Galaxy Server.
      *
      */
-    public GalaxyHistoryHandler() {
+    public GalaxyHistoryHandler(Set<String> csf_pr_Accssion_List ) {
         REFRESHER = new Refresher();
         ((PeptidShakerUI) UI.getCurrent()).addExtension(REFRESHER);
+        this.csf_pr_Accssion_List=csf_pr_Accssion_List;
 
     }
 
@@ -645,7 +646,7 @@ public abstract class GalaxyHistoryHandler {
                         }
                     } else if ((map.get("name").toString().endsWith("-ZIP")) && (map.get("data_type").toString().equalsIgnoreCase("abc.CompressedArchive") || map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.binary.CompressedZipArchive"))) {
                         String projectId = map.get("name").toString().split("-")[0];
-                        PeptideShakerVisualizationDataset vDs = new PeptideShakerVisualizationDataset(projectId, user_folder, Galaxy_Instance.getGalaxyUrl(), Galaxy_Instance.getApiKey(), galaxyDatasetServingUtil);
+                        PeptideShakerVisualizationDataset vDs = new PeptideShakerVisualizationDataset(projectId, user_folder, Galaxy_Instance.getGalaxyUrl(), Galaxy_Instance.getApiKey(), galaxyDatasetServingUtil,csf_pr_Accssion_List);
                         peptideShakerVisualizationMap.put(projectId, vDs);
                         vDs.setHistoryId(map.get("history_id") + "");
                         vDs.setType("Web Peptide Shaker Dataset");

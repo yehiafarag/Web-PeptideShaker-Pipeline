@@ -8,15 +8,27 @@ import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.server.Extension;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
+import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpSession;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 /**
  * This UI is the application entry point. A UI may either represent a browser
@@ -64,6 +76,7 @@ public class PeptidShakerUI extends UI {
         String galaxyServerUrl = (scx.getInitParameter("galaxyServerUrl"));
         VaadinSession.getCurrent().setAttribute("galaxyServerUrl", galaxyServerUrl);
 
+        updateCSFPRProteinsList();
         if (testUserAPIKey == null || galaxyServerUrl == null) {
             notification = new Notification("Error in Galaxy server address, Contact administrator :-(", Notification.Type.ERROR_MESSAGE);
             notification.setDelayMsec(-1);
@@ -143,6 +156,7 @@ public class PeptidShakerUI extends UI {
         }
 
         Page.getCurrent().setTitle("PeptideShaker");
+        
 
     }
 
@@ -185,4 +199,80 @@ public class PeptidShakerUI extends UI {
     public static class PeptidShakerUIServlet extends VaadinServlet {
     }
 
+    /**
+     * Get the name list of the files exist in the compressed folder
+     *
+     * @return the sub files list of files contained in folder (case of
+     * compressed folder).
+     *
+     */
+    public void updateCSFPRProteinsList() {
+        String updateFileName = "";
+        try {
+            Document doc = Jsoup.connect("http://129.177.231.63/csf-pr/VAADIN/").get();
+            Elements elements = doc.getElementsByTag("body");
+            for (Element elemet : elements) {
+                if ((elemet.text() + "").contains("prot-")) {
+                    for (String fileName : elemet.text().split(" ")) {
+                        if (fileName.contains("prot-") && fileName.trim().endsWith(".txt")) {
+                            updateFileName = fileName.trim();
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+
+        String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
+        VaadinSession.getCurrent().setAttribute("csfprfile", basepath + "/VAADIN/" + updateFileName);
+        File file = new File(basepath + "/VAADIN/" + updateFileName);
+        if (file.exists()) {
+            return;
+        }
+        FileOutputStream fos = null;
+        try {
+            file.createNewFile();
+            URL downloadableFile = new URL("http://129.177.231.63/csf-pr/VAADIN/" + updateFileName);
+            URLConnection conn = downloadableFile.openConnection();
+            conn.addRequestProperty("Connection", "keep-alive");
+            conn.setDoInput(true);
+            InputStream in = conn.getInputStream();
+            try (ReadableByteChannel rbc = Channels.newChannel(in)) {
+                fos = new FileOutputStream(file);
+                fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+                fos.close();
+                rbc.close();
+                in.close();
+            } catch (MalformedURLException ex) {
+                ex.printStackTrace();
+            } finally {
+                if (fos != null) {
+                    try {
+                        fos.close();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+
+            }
+
+        } catch (MalformedURLException ex) {
+            ex.printStackTrace();
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        } finally {
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+
+        }
+
+    }
 }

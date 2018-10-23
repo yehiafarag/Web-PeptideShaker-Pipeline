@@ -25,7 +25,7 @@ import java.util.Set;
  */
 public class DatasetVisulizationLevelContainer extends HorizontalLayout {
 
-    private final VerticalLayout container;
+    private final AbsoluteLayout container;
     private final PopupWindow headerLabel;
     private final DatasetVisulizationLevelComponent datasetVisulizationLevelComponent;
 //    private final ThemeResource defaultThemeIcon;
@@ -47,16 +47,14 @@ public class DatasetVisulizationLevelContainer extends HorizontalLayout {
 //        defaultThemeIcon = new ThemeResource("img/cluster.svg");//new ThemeResource("img/ds_filters_icon.png");
 //        activeThemeIcon = new ThemeResource("img/cluster.svg");
         datasetsOverviewBtn.updateIcon(VaadinIcons.CLUSTER.getHtml());
-        container = new VerticalLayout();
+        container = new AbsoluteLayout();
         container.setSizeFull();
-        container.setSpacing(true);
         DatasetVisulizationLevelContainer.this.addComponent(container);
 
         HorizontalLayout topLabelContainer = new HorizontalLayout();
         topLabelContainer.setSizeFull();
         topLabelContainer.addStyleName("minhight30");
         container.addComponent(topLabelContainer);
-        container.setExpandRatio(topLabelContainer, 1);
 
         HorizontalLayout topLeftLabelContainer = new HorizontalLayout();
         topLeftLabelContainer.setWidthUndefined();
@@ -99,8 +97,7 @@ public class DatasetVisulizationLevelContainer extends HorizontalLayout {
                 }
             }
         };
-        container.addComponent(datasetVisulizationLevelComponent);
-        container.setExpandRatio(datasetVisulizationLevelComponent, 99);
+        container.addComponent(datasetVisulizationLevelComponent,"left:0px;top:40px;");
 
     }
 

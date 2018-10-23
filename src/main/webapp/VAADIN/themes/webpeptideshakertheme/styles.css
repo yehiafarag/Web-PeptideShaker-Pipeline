@@ -14288,6 +14288,8 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .v-label-small.v-label-inframe {
 	font-size: 12px !important;
+	position: relative !important;
+	padding-top: 3px;
 }
 
 .webpeptideshakertheme .v-verticallayout-proteinnode.v-verticallayout-greenbackground.selectednode, .webpeptideshakertheme .v-verticallayout-proteinnode.v-verticallayout-greenbackground :hover {
@@ -15229,12 +15231,11 @@ div.v-layout.v-horizontal.v-widget {
 .webpeptideshakertheme .inframe {
 	background-color: white;
 	border: 1px solid lightgray;
-	font-size: 0.8vmax !important;
 	border-radius: 5px;
 	overflow: visible !important;
 	padding-left: 5px;
 	padding-right: 5px;
-	line-height: 20px;
+	line-height: 15px;
 	z-index: 3 !important;
 	height: 25px !important;
 	font-weight: normal !important;
@@ -15246,9 +15247,9 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .inframe .v-button-link {
 	text-decoration: none;
-	text-decoration: none;
 	font-size: 12px !important;
-	margin-top: -3px !important;
+	max-height: 25px !important;
+	font-weight: 400 !important;
 }
 
 .webpeptideshakertheme .inframe .v-button-link:hover {
@@ -15256,10 +15257,11 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .v-verticallayout-inframe .v-select-optiongroup {
-	font-size: 0.8vmax !important;
-	margin-top: -5px !important;
-	z-index: 2 !important;
-	position: relative !important;
+	margin-top: -4px;
+}
+
+.webpeptideshakertheme .v-verticallayout-inframe .v-select-optiongroup label {
+	line-height: 15px !important;
 }
 
 .webpeptideshakertheme :root .v-verticallayout-inframe .v-select-optiongroup-small .v-radiobutton > input ~ label:before {
@@ -15616,12 +15618,13 @@ div.v-layout.v-horizontal.v-widget {
 	text-align: center;
 	z-index: 5 !important;
 	position: fixed !important;
-	margin-top: -3px;
 	border: 1px solid lightgray;
 	font-size: 12px;
 	-webkit-box-shadow: none !important;
 	box-shadow: none !important;
 	text-shadow: none !important;
+	margin-top: -5px;
+	line-height: 25px;
 }
 
 .webpeptideshakertheme .v-button-poweron {
@@ -15745,6 +15748,7 @@ div.v-layout.v-horizontal.v-widget {
 	border-radius: 5px;
 	border-top-right-radius: 0px;
 	border-bottom-right-radius: 0px;
+	border-top-left-radius: 5px !important;
 	border-right-color: white !important;
 	padding-top: 0px !important;
 	padding-left: 5px;
@@ -15761,7 +15765,7 @@ div.v-layout.v-horizontal.v-widget {
 	font-variant-ligatures: normal !important;
 	font-variant-numeric: normal !important;
 	font-variation-settings: normal !important;
-	font-weight: 800 !important;
+	font-weight: 400 !important;
 }
 
 .webpeptideshakertheme .v-filterselect.select3dMenue.v-filterselect-select3dMenue {
@@ -15790,6 +15794,7 @@ div.v-layout.v-horizontal.v-widget {
 .webpeptideshakertheme .v-filterselect-select3dMenue .v-filterselect-input {
 	color: #3d84dc !important;
 	font-size: 12px !important;
+	background: transparent !important;
 	border: none !important;
 	box-shadow: none !important;
 	font-family: "Open Sans", sans-serif !important;
@@ -15802,7 +15807,7 @@ div.v-layout.v-horizontal.v-widget {
 	font-variant-ligatures: normal !important;
 	font-variant-numeric: normal !important;
 	font-variation-settings: normal !important;
-	font-weight: 800 !important;
+	font-weight: 400 !important;
 	padding-left: 0px !important;
 	padding-right: 0px !important;
 	width: 100% !important;
@@ -15844,7 +15849,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .v-absolutelayout-wrapper-select3dMenue {
-	bottom: 12.5px !important;
+	bottom: 13px !important;
 	background-color: white !important;
 }
 
@@ -15920,7 +15925,7 @@ div.v-layout.v-horizontal.v-widget {
 	font-variant-ligatures: normal !important;
 	font-variant-numeric: normal !important;
 	font-variation-settings: normal !important;
-	font-weight: 800 !important;
+	font-weight: 400 !important;
 }
 
 .webpeptideshakertheme .v-Notification.system.v-Notification-system.v-position-top.v-position-center {
@@ -16229,6 +16234,19 @@ div.v-layout.v-horizontal.v-widget {
 	margin: 0px !important;
 	float: right;
 	position: relative !important;
+}
+
+.webpeptideshakertheme .v-link-imgonly img {
+	margin: 0px !important;
+	left: 0px !important;
+	position: relative !important;
+	padding: 0px !important;
+	max-height: 15px;
+}
+
+.webpeptideshakertheme .v-selected .v-link-imgonly img {
+	background-color: white;
+	border-radius: 2px;
 }
 
 .webpeptideshakertheme .smallscreenstyle .hidelowerpanel .v-slot-integratedframe {

@@ -14,7 +14,7 @@ import java.util.Set;
  * @author Yehia Farag
  */
 public class ProteinGroupObject extends Protein {
-
+private boolean availableOn_CSF_PR;
     /**
      * UniProt accession number.
      */
@@ -763,6 +763,14 @@ public class ProteinGroupObject extends Protein {
      */
     public void setIndex(int index) {
         this.index = index;
+    }
+
+    public boolean isAvailableOn_CSF_PR() {
+        return availableOn_CSF_PR;
+    }
+
+    public void setAvailableOn_CSF_PR(boolean availableOn_CSF_PR) {
+        this.availableOn_CSF_PR = availableOn_CSF_PR;
     }
 
 }

@@ -14,6 +14,7 @@ import com.vaadin.event.dd.acceptcriteria.AcceptAll;
 import com.vaadin.event.dd.acceptcriteria.AcceptCriterion;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.AbsoluteLayout.ComponentPosition;
 import com.vaadin.ui.Alignment;
@@ -163,6 +164,7 @@ public abstract class GraphComponent extends VerticalLayout {
 //        rightBottomPanel.setStyleName("inframe");
 
         graphInfo = new Label();
+        graphInfo.setContentMode(ContentMode.HTML);
         graphInfo.setStyleName(ValoTheme.LABEL_LIGHT);
         graphInfo.addStyleName(ValoTheme.LABEL_SMALL);
         graphInfo.addStyleName(ValoTheme.LABEL_TINY);
@@ -331,10 +333,10 @@ public abstract class GraphComponent extends VerticalLayout {
         wrapper.setMargin(new MarginInfo(true, true, true, true));
         wrapper.addComponent(edgesImage);
         mainContainer.addComponent(wrapper, "left: 0px; top: 0px");
-        mainContainer.addComponent(bottomRightPanel, "right: " + 10 + "px; bottom: " + -15 + "px");
-        mainContainer.addComponent(lefTtopPanel, "left: " + 10 + "px; top: " + -15 + "px");
-        mainContainer.addComponent(rightBottomPanel, "right: " + 10 + "px; top: " + -15 + "px");
-        mainContainer.addComponent(leftBottomPanel, "left: " + 10 + "px; bottom: " + -15 + "px");
+        mainContainer.addComponent(bottomRightPanel, "right: " + 10 + "px; bottom: " + -12 + "px");
+        mainContainer.addComponent(lefTtopPanel, "left: " + 10 + "px; top: " + -12 + "px");
+        mainContainer.addComponent(rightBottomPanel, "right: " + 10 + "px; top: " + 10+ "px");
+        mainContainer.addComponent(leftBottomPanel, "left: " + 10 + "px; bottom: " + -12 + "px");
         wrapper = new VerticalLayout();
         wrapper.setSizeFull();
         wrapper.setMargin(new MarginInfo(true, true, true, true));
@@ -379,7 +381,7 @@ public abstract class GraphComponent extends VerticalLayout {
 //        canvas.clear();
         //calculate graph
         if (selectedProtein == null) {
-            graphInfo.setValue("#Proteins: 0  || #Peptides: 0");
+            graphInfo.setValue("#Proteins: 0<br/>#Peptides: 0");
             return;
         }
         this.proteinNodes = proteinNodes;
@@ -754,7 +756,7 @@ public abstract class GraphComponent extends VerticalLayout {
             }
         }
         drawEdges();
-        graphInfo.setValue("#Proteins: " + selectedProteins.size() + "  || #Peptides: " + selectedPeptides.size() + "");
+        graphInfo.setValue("#Proteins: " + selectedProteins.size() + "<br/>#Peptides: " + selectedPeptides.size() + "");
     }
 
     public Set<Object> getSelectedProteins() {

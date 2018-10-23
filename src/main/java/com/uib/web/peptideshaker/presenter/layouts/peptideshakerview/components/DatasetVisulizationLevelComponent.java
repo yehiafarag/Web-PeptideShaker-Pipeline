@@ -3,7 +3,9 @@ package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components
 import com.compomics.util.experiment.biology.PTMFactory;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.ProteinGroupObject;
+import com.uib.web.peptideshaker.model.core.AlphanumComparator;
 import com.uib.web.peptideshaker.model.core.ModificationMatrix;
+import com.uib.web.peptideshaker.presenter.core.CSFPRLabel;
 import com.uib.web.peptideshaker.presenter.core.ColorLabel;
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.SelectionManager;
 import com.uib.web.peptideshaker.presenter.core.SearchableTable;
@@ -64,19 +66,20 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
         TableColumnHeader header1 = new TableColumnHeader("index", Integer.class, null, "", null, Table.Align.RIGHT);
         TableColumnHeader header2 = new TableColumnHeader("proteinInference", ColorLabel.class, null, "PI", null, Table.Align.CENTER);
         TableColumnHeader header3 = new TableColumnHeader("Accession", Link.class, null, "Accession", null, Table.Align.CENTER);
-        TableColumnHeader header4 = new TableColumnHeader("Name", String.class, null, "Description", null, Table.Align.LEFT);
-        TableColumnHeader header5 = new TableColumnHeader("protein_group", String.class, null, "Protein Group", null, Table.Align.LEFT);
-        TableColumnHeader header6 = new TableColumnHeader("geneName", String.class, null, "Gene Name", null, Table.Align.CENTER);
-        TableColumnHeader header7 = new TableColumnHeader("chromosom", String.class, null, "Chr", null, Table.Align.CENTER);
-        TableColumnHeader header8 = new TableColumnHeader("coverage", SparkLineLabel.class, null, "Coverage", null, Table.Align.LEFT);
-        TableColumnHeader header9 = new TableColumnHeader("peptides_number", SparkLineLabel.class, null, "#Peptides", null, Table.Align.LEFT);
-        TableColumnHeader header10 = new TableColumnHeader("psm_number", SparkLineLabel.class, null, "#PSM", null, Table.Align.LEFT);
-        TableColumnHeader header11 = new TableColumnHeader("ms2Quant", SparkLineLabel.class, null, "MS2 Quant", null, Table.Align.LEFT);
-        TableColumnHeader header12 = new TableColumnHeader("mwkDa", SparkLineLabel.class, null, "MW (kDa)", null, Table.Align.LEFT);
-        TableColumnHeader header13 = new TableColumnHeader("confidence", SparkLineLabel.class, null, "Confidence", null, Table.Align.LEFT);
-        TableColumnHeader header14 = new TableColumnHeader("validation", ValidationLabel.class, null, "", null, Table.Align.CENTER);
+        TableColumnHeader header4 = new TableColumnHeader("csf", CSFPRLabel.class, null, "CSF", null, Table.Align.CENTER);
+        TableColumnHeader header5 = new TableColumnHeader("Name", String.class, null, "Description", null, Table.Align.LEFT);
+        TableColumnHeader header6 = new TableColumnHeader("protein_group", String.class, null, "Protein Group", null, Table.Align.LEFT);
+        TableColumnHeader header7 = new TableColumnHeader("geneName", String.class, null, "Gene Name", null, Table.Align.CENTER);
+        TableColumnHeader header8 = new TableColumnHeader("chromosom", AlphanumComparator.class, null, "Chr", null, Table.Align.CENTER);
+        TableColumnHeader header9 = new TableColumnHeader("coverage", SparkLineLabel.class, null, "Coverage", null, Table.Align.LEFT);
+        TableColumnHeader header10 = new TableColumnHeader("peptides_number", SparkLineLabel.class, null, "#Peptides", null, Table.Align.LEFT);
+        TableColumnHeader header11 = new TableColumnHeader("psm_number", SparkLineLabel.class, null, "#PSM", null, Table.Align.LEFT);
+        TableColumnHeader header12 = new TableColumnHeader("ms2Quant", SparkLineLabel.class, null, "MS2 Quant", null, Table.Align.LEFT);
+        TableColumnHeader header13 = new TableColumnHeader("mwkDa", SparkLineLabel.class, null, "MW (kDa)", null, Table.Align.LEFT);
+        TableColumnHeader header14 = new TableColumnHeader("confidence", SparkLineLabel.class, null, "Confidence", null, Table.Align.LEFT);
+        TableColumnHeader header15 = new TableColumnHeader("validation", ValidationLabel.class, null, "", null, Table.Align.CENTER);
 
-        TableColumnHeader[] tableHeaders = new TableColumnHeader[]{header1, header2, header3, header4, header5, header6, header7, header8, header9, header10, header11, header12, header13, header14};
+        TableColumnHeader[] tableHeaders = new TableColumnHeader[]{header1, header2, header3, header4, header5, header6, header7, header8, header9, header10, header11, header12, header13, header14,header15};
         this.proteinTableContainer = new SearchableTable("Proteins", "Accssion or protein name", tableHeaders) {
             private final Set<Comparable> selectedIds = new LinkedHashSet<>();
 
@@ -138,6 +141,7 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
             mainTable.setColumnWidth("index", 50);
             mainTable.setColumnWidth("proteinInference", 37);
             mainTable.setColumnWidth("Accession", 100);
+            mainTable.setColumnWidth("csf", 50);
             mainTable.setColumnWidth("coverage", 150);
             mainTable.setColumnWidth("peptides_number", 150);
             mainTable.setColumnWidth("psm_number", 150);
@@ -210,8 +214,9 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
             validation.setData(protein.getProteinGroupKey());
             validation.addLayoutClickListener(selectionListener);
 
+            CSFPRLabel csfprLink = new CSFPRLabel(protein.getAccession(),protein.isAvailableOn_CSF_PR());
             String searchKey = protein.getAccession() + "_" + protein.getDescription() + "_" + protein.getProteinGroup().replace(",", "_");
-            proteinTableContainer.addTableItem(protein.getProteinGroupKey(), new Object[]{protein.getIndex(), piLabel, proteinAccLink, protein.getDescription(), protein.getProteinGroup(), protein.getGeneName(), protein.getChromosome(), coverageLabel, peptidesNumberLabelLabel, psmNumberLabelLabel, ms2QuantLabelLabel, mwLabel, confidentLabel, validation}, searchKey);
+            proteinTableContainer.addTableItem(protein.getProteinGroupKey(), new Object[]{protein.getIndex(), piLabel, proteinAccLink,csfprLink, protein.getDescription(), protein.getProteinGroup(), protein.getGeneName(), new AlphanumComparator(protein.getChromosome()), coverageLabel, peptidesNumberLabelLabel, psmNumberLabelLabel, ms2QuantLabelLabel, mwLabel, confidentLabel, validation}, searchKey);
         });
         this.proteinTableContainer.activateValueChangeListener();
         this.proteinTableContainer.updateLabel();

@@ -110,7 +110,7 @@ public abstract class InteractiveGalaxyLayer {
                         };
 
                         System.out.println("at galaxy II ");
-                        historyHandler = new GalaxyHistoryHandler() {
+                        historyHandler = new GalaxyHistoryHandler(null) {
                             @Override
                             public void synchronizeDataWithGalaxyServer( Map<String, GalaxyFileObject> historyFilesMap,boolean busy,boolean update) {
                                 //update history in the system 

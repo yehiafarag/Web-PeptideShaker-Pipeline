@@ -1,5 +1,6 @@
 package com.uib.web.peptideshaker.galaxy;
 
+import static com.byteowls.vaadin.chartjs.data.PointStyle.line;
 import com.uib.web.peptideshaker.galaxy.utilities.GalaxyHistoryHandler;
 import com.uib.web.peptideshaker.galaxy.utilities.GalaxyToolsHandler;
 import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
@@ -12,10 +13,15 @@ import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyFile
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinSession;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,18 +61,25 @@ public abstract class GalaxyInteractiveLayer {
      */
     private final DecimalFormat dsFormater = new DecimalFormat("#.##");
 
+    private Set<String> csf_pr_Accssion_List;
+
     /**
      * Constructor to initialise the main Galaxy history handler.
      */
     public GalaxyInteractiveLayer() {
         this.userOverViewList = new ArrayList<>();
-        this.historyHandler = new GalaxyHistoryHandler() {
+         if (csf_pr_Accssion_List == null) {
+            csf_pr_Accssion_List = initialiseCSFList();
+        }      
+        
+        this.historyHandler = new GalaxyHistoryHandler(csf_pr_Accssion_List) {
             @Override
             public void synchronizeDataWithGalaxyServer(Map<String, GalaxyFileObject> historyFilesMap, boolean jobsInProgress, boolean updatePresenterView) {
                 //update history in the system                 
                 GalaxyInteractiveLayer.this.synchronizeDataWithGalaxyServer(historyFilesMap, jobsInProgress, updatePresenterView);
             }
         };
+
     }
 
     /**
@@ -79,6 +92,7 @@ public abstract class GalaxyInteractiveLayer {
      */
     public boolean connectToGalaxyServer(String galaxyServerUrl, String userAPI, String userDataFolderUrl) {
         try {
+
             userOverViewList.clear();
             Galaxy_Instance = GalaxyInstanceFactory.get(galaxyServerUrl, userAPI);
             Galaxy_Instance.getHistoriesClient().getHistories();
@@ -113,6 +127,7 @@ public abstract class GalaxyInteractiveLayer {
             Page.getCurrent().reload();
             return false;
         }
+       
         return true;
     }
 
@@ -227,6 +242,33 @@ public abstract class GalaxyInteractiveLayer {
         } else {
             toolsHandler.deleteDataset(Galaxy_Instance.getGalaxyUrl(), fileObject.getHistoryId(), fileObject.getGalaxyId(), true);
         }
+    }
+
+    private Set<String> initialiseCSFList() {
+        Set<String> csfprAccList = new HashSet<>();
+        String csfprfilepath = (String) VaadinSession.getCurrent().getAttribute("csfprfile");
+        if (csfprfilepath == null) {
+            return null;
+        }
+        try {
+            File file = new File(csfprfilepath);//Galaxy-Workflow-Web-Peptide-Shaker-Multi-MGF-2018.ga
+            FileReader fileReader = new FileReader(file);
+            String line;
+            try ( // Always wrap FileReader in BufferedReader.
+                    BufferedReader bufferedReader = new BufferedReader(fileReader)) {
+                while ((line = bufferedReader.readLine()) != null) {
+                    csfprAccList.add(line.split("\\(")[0].trim());
+                }
+                // Always close files.
+            }
+        } catch (FileNotFoundException ex) {
+            System.out.println(
+                    "Unable to open file '" + "'");
+        } catch (IOException ex) {
+            System.out.println("Error reading file '" + "'");
+        }
+        return csfprAccList;
+
     }
 
     /**

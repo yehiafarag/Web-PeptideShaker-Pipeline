@@ -65,6 +65,7 @@ public class WebPeptideShakerApp extends VerticalLayout {
             public void synchronizeDataWithGalaxyServer(Map<String, GalaxyFileObject> historyFilesMap, boolean jobsInProgress, boolean updatePresenterView) {
                 fileSystemPresenter.updateSystemData(historyFilesMap, jobsInProgress);
                 if (updatePresenterView && initialised) {
+                    
                     presentationManager.viewLayout(fileSystemPresenter.getViewId());
                 }
                 initialised = true;

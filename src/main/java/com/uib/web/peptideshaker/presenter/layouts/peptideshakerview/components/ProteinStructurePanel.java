@@ -187,7 +187,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
                 pdbBlockMap.remove("All");
                 pdbChainsSelect.removeItem("All");
             }
-
+            pdbMatchesSelect.setDescription(pdbMatchesSelect.getItemCaption(pdbMatchesSelect.getValue()));
             pdbChainsSelect.addValueChangeListener(pdbChainsSelectlistener);
             pdbChainsSelect.setValue(pdbChainsSelect.getItemIds().iterator().next());
 
@@ -238,6 +238,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
             pdbMachSet.keySet().forEach((str) -> {
                 pdbMatchesSelect.addItem(str);
                 pdbMatchesSelect.setItemCaption(str, str.toUpperCase() + " - " + pdbMachSet.get(str).getDescription());
+                
             });
             if (pdbMatchesSelect.getItemIds() == null) {
                 Notification.show("No visulization available ", Notification.Type.TRAY_NOTIFICATION);

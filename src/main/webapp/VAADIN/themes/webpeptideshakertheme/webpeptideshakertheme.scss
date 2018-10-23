@@ -1044,6 +1044,9 @@
     }
     .v-label-small.v-label-inframe {
         font-size:12px !important;
+        position:relative !important;
+        padding-top:3px;
+        height: 38px !important;
     }
 
 
@@ -1993,12 +1996,11 @@
     .inframe{
         background-color: white;
         border: 1px solid lightgray;
-        font-size: 0.8vmax !important;
         border-radius: 5px;
         overflow: visible !important;
         padding-left: 5px;
         padding-right: 5px;
-        line-height: 20px;
+        line-height: 15px;
         z-index: 3 !important;
         height: 25px !important;
         font-weight: normal !important;
@@ -2009,19 +2011,22 @@
     }
     .inframe .v-button-link{
         text-decoration: none;
-        text-decoration: none;
         font-size: 12px !important;
-        margin-top: -3px !important
+        max-height:25px !important;
+        font-weight:400 !important;
+
     }
     .inframe .v-button-link:hover{
         text-decoration:underline ;
 
     }
-    .v-verticallayout-inframe .v-select-optiongroup{
-        font-size: 0.8vmax !important;
-        margin-top:-5px !important;
-        z-index: 2 !important;
-        position:relative !important;
+    .v-verticallayout-inframe .v-select-optiongroup {
+        margin-top:-4px;
+    }
+
+    .v-verticallayout-inframe .v-select-optiongroup  label{
+        line-height:15px !important;	
+
 
     }
     :root  .v-verticallayout-inframe  .v-select-optiongroup-small .v-radiobutton > input ~ label:before {
@@ -2439,20 +2444,20 @@
         background:white !important;
         color: #3d84dc !important;
         border-radius: 5px;
-        font-weight:400 !important;
+        font-weight: 400 !important;
         cursor: pointer;
         height: 25px;
         text-align: center;
-
         z-index: 5 !important;
         position: fixed !important;
-        margin-top: -3px;
         border: 1px solid lightgray;
-        font-size:12px;  
-
+        font-size: 12px;
         -webkit-box-shadow: none !important;
         box-shadow: none !important;
         text-shadow: none !important;
+        margin-top:-5px;
+        line-height:25px;
+
     }
 
 
@@ -2590,6 +2595,7 @@
         border-radius: 5px;
         border-top-right-radius: 0px;
         border-bottom-right-radius: 0px;
+        border-top-left-radius: 5px !important;
         border-right-color: white !important;
         padding-top: 0px !important;
         padding-left: 5px;
@@ -2606,7 +2612,7 @@
         font-variant-ligatures: normal !important;
         font-variant-numeric: normal !important;
         font-variation-settings: normal !important;
-        font-weight: 800 !important;
+        font-weight: 400 !important;
     }
 
     .v-filterselect.select3dMenue.v-filterselect-select3dMenue {
@@ -2637,6 +2643,7 @@
     .v-filterselect-select3dMenue .v-filterselect-input{
         color: #3d84dc !important;	
         font-size: 12px !important;
+        background: transparent !important;
         border: none !important;
         box-shadow: none !important;
         font-family: "Open Sans", sans-serif !important;
@@ -2649,7 +2656,7 @@
         font-variant-ligatures: normal !important;
         font-variant-numeric: normal !important;
         font-variation-settings: normal !important;
-        font-weight: 800 !important;
+        font-weight: 400 !important;
         padding-left: 0px !important;
         padding-right: 0px !important;
         width: 100% !important;	
@@ -2691,7 +2698,7 @@
         content: "" !important;
     }
     .v-absolutelayout-wrapper-select3dMenue{
-        bottom:12.5px !important;
+        bottom:13px !important;
         background-color:white !important;
 
     }
@@ -2706,6 +2713,19 @@
         margin-right: -2px;
         border: 1px solid lightgray;
         border-radius: 5px;
+        font-size:12px;
+        overflow:hidden !important;
+        text-overflow:ellipsis;
+        right:20px !important;
+        max-width:540px;
+    }
+    .v-filterselect-suggestpopup-select3dMenue span{
+        margin-right: -2px;	
+        max-width:520px;
+        font-size:12px;
+        overflow:hidden !important;
+        text-overflow:ellipsis;
+        right:20px !important;
     }
     .v-filterselect-select3dMenue.v-filterselect [class*="input"]:focus {
         border-color: lightgray !important;
@@ -2765,7 +2785,7 @@
         font-variant-ligatures: normal !important;
         font-variant-numeric: normal !important;
         font-variation-settings: normal !important;
-        font-weight: 800 !important;
+        font-weight: 400 !important;
     }
     .v-Notification.system.v-Notification-system.v-position-top.v-position-center{
         z-index:5 !important;
@@ -3068,6 +3088,17 @@
         float:right;
         position:relative !important;
     }
+    .v-link-imgonly img{
+        margin:0px !important;
+        left:0px !important;
+        position:relative !important;
+        padding:0px !important;
+        max-height:15px;
+    }
+    .v-selected  .v-link-imgonly img{
+        background-color:white;
+        border-radius:2px; 
+    }
     /****small screen css**/
     .smallscreenstyle .hidelowerpanel .v-slot-integratedframe {
         width: 99% !important;
@@ -3369,13 +3400,13 @@
         right:0px !important;
     }
     .v-align-center .v-absolutelayout-wrapper-innerborderframe {
-	top: 2.5px !important;
-	bottom:2.5px !important;
-}
- .bottomfilter .v-absolutelayout-wrapper-innerborderframe {
-	top: 5px !important;
-	bottom: 0px !important;
-}
+        top: 2.5px !important;
+        bottom:2.5px !important;
+    }
+    .bottomfilter .v-absolutelayout-wrapper-innerborderframe {
+        top: 5px !important;
+        bottom: 0px !important;
+    }
 
 
     /**mobile screen style***/
@@ -3446,9 +3477,9 @@
         }*/
 
     .v-slot-thumbfilterframe.v-slot-middlefiltercontainerstyle {
-       border: 1px solid transparent;
-	position: relative !important;
-	top:-1px!important;
+        border: 1px solid transparent;
+        position: relative !important;
+        top:-1px!important;
     }
     /*    .cornerfiltercontainerstyle {
             position: relative;

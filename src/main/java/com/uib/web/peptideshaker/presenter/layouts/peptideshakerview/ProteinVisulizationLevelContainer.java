@@ -10,6 +10,7 @@ import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.charts.RegistrableFilter;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -27,7 +28,7 @@ import java.util.Set;
  */
 public class ProteinVisulizationLevelContainer extends HorizontalLayout implements RegistrableFilter {
 
-    private final VerticalLayout container;
+    private final AbsoluteLayout container;
     private final Label headerLabel;
     private final ProteinsPeptidesGraphComponent selectedProteinGraph;
     private final SelectionManager Selection_Manager;
@@ -49,41 +50,47 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
         this.Selection_Manager = Selection_Manager;
         this.proteinoverviewBtn = proteinoverviewBtn;
 
-        container = new VerticalLayout();
+        container = new AbsoluteLayout();
         container.setSizeFull();
-        container.setSpacing(false);
         ProteinVisulizationLevelContainer.this.addComponent(container);
 
         HorizontalLayout topLabelContainer = new HorizontalLayout();
-        topLabelContainer.setSizeFull();
-        topLabelContainer.addStyleName("minhight30");
+        topLabelContainer.setHeight(30,Unit.PIXELS);
+        topLabelContainer.setWidth(100,Unit.PERCENTAGE);
         container.addComponent(topLabelContainer);
-        container.setExpandRatio(topLabelContainer, 5);
 
         HorizontalLayout topLeftLabelContainer = new HorizontalLayout();
         topLeftLabelContainer.setWidthUndefined();
         topLeftLabelContainer.setHeight(100, Unit.PERCENTAGE);
         topLabelContainer.addComponent(topLeftLabelContainer);
         headerLabel = new Label();
-        headerLabel.setValue("Proteins overview");
+        headerLabel.setValue("Protein overview");
         headerLabel.addStyleName("largetitle");
         headerLabel.setWidthUndefined();
         topLeftLabelContainer.setSpacing(true);
         topLeftLabelContainer.addComponent(headerLabel);
 
-        Label commentLabel = new Label("<i style='padding-right: 50px;'>* Click in the graph to select proteins and peptides</i>", ContentMode.HTML);
+        Label commentLabel = new Label("<i style='padding-right: 50px;top: 3px !important;position: relative;'>* Click in the graph to select proteins and peptides</i>", ContentMode.HTML);
         commentLabel.setWidthUndefined();
         commentLabel.setStyleName("resizeabletext");
         commentLabel.addStyleName("margintop10");
         topLabelContainer.addComponent(commentLabel);
         topLabelContainer.setComponentAlignment(commentLabel, Alignment.TOP_RIGHT);
 
+        
+        
+        VerticalLayout subContainer = new VerticalLayout();
+        subContainer.setSizeFull();
+        subContainer.setSpacing(true);
+        container.addComponent(subContainer,"left:0px; top:30px;");
+        
         HorizontalLayout middleContainer = new HorizontalLayout();
         middleContainer.addStyleName("extendwidthstyle");
-        middleContainer.setSizeFull();
+        middleContainer.setHeight(100,Unit.PERCENTAGE);
+        middleContainer.setWidth(100,Unit.PERCENTAGE);
+        
         middleContainer.setSpacing(true);
-        container.addComponent(middleContainer);
-        container.setExpandRatio(middleContainer, 49);
+        subContainer.addComponent(middleContainer);
 
         selectedProteinGraph = new ProteinsPeptidesGraphComponent() {
             @Override
@@ -146,8 +153,7 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
 
         };
         proteinCoverageContainer.setSizeFull();
-        container.addComponent(proteinCoverageContainer);
-        container.setExpandRatio(proteinCoverageContainer, 49);
+        subContainer.addComponent(proteinCoverageContainer);
 
     }
 
