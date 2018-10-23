@@ -68,9 +68,14 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
         this.Selection_Manager = Selection_Manager;
         this.activeData = new TreeMap<>();
         DivaRangeFilter.this.setSizeFull();
-        DivaRangeFilter.this.setStyleName("thumbfilterframe");
-        DivaRangeFilter.this.addStyleName("reorderlayout");
 
+        AbsoluteLayout frame = new AbsoluteLayout();
+        frame.setSizeFull();
+        frame.setStyleName("innerborderframe");
+        frame.addStyleName("thumbfilterframe");
+        frame.addStyleName("reorderlayout");
+        DivaRangeFilter.this.addComponent(frame);
+        
         Label chartTitle = new Label("<font>" + title + "</font>", ContentMode.HTML);
 
         chartTitle.setWidth(100, Unit.PERCENTAGE);
@@ -78,7 +83,7 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
         chartTitle.setStyleName(ValoTheme.LABEL_BOLD);
         chartTitle.addStyleName("resizeabletext");
         chartTitle.addStyleName("toppanel");
-        DivaRangeFilter.this.addComponent(chartTitle,"left:10px;top:10px;");
+       frame.addComponent(chartTitle,"left:10px;top:10px;");
 
         this.Selection_Manager.RegistrDatasetsFilter(DivaRangeFilter.this);
 
@@ -105,13 +110,13 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
             chartImage.setSource(new ExternalResource(saveToFile(mainChart, chartWidth, chartHeight)));
         });
 
-        DivaRangeFilter.this.addComponent(chartContainer,"left:10px;bottom:30px;right:10px;top:30px;");
+       frame.addComponent(chartContainer,"top: 30px;left: 10px;right: 10px;bottom: 30px;");
         slidersContainer = new AbsoluteLayout();
         slidersContainer.setStyleName("maxhight20");
         slidersContainer.addStyleName("visibleoverflow");
         slidersContainer.setWidth(100, Unit.PERCENTAGE);
         slidersContainer.setHeight(20, Unit.PIXELS);
-         DivaRangeFilter.this.addComponent(slidersContainer, "left:10px;bottom:0px; ;right:10px");
+        frame.addComponent(slidersContainer, "left:10px;bottom:0px; ;right:10px");
 
         lowerLableValueComponent = initLabel("");
         lowerLableValueComponent.addStyleName("leftrangebarlabel");

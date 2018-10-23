@@ -15212,7 +15212,7 @@ div.v-layout.v-horizontal.v-widget {
 	margin: 0 !important;
 }
 
-.webpeptideshakertheme .highlightfilter {
+.webpeptideshakertheme .highlightfilter, .webpeptideshakertheme .highlightfilter .v-absolutelayout {
 	border-color: orange !important;
 	animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
 	transform: translate3d(0, 0, 0);
@@ -16473,6 +16473,28 @@ div.v-layout.v-horizontal.v-widget {
 	margin-top: -25px;
 }
 
+.webpeptideshakertheme .v-slot-cornerfiltercontainerstyle {
+	min-width: 300px;
+	min-height: 350px;
+}
+
+.webpeptideshakertheme .v-absolutelayout-wrapper-innerborderframe {
+	top: 0px !important;
+	bottom: 5px !important;
+	left: 0px !important;
+	right: 0px !important;
+}
+
+.webpeptideshakertheme .v-align-center .v-absolutelayout-wrapper-innerborderframe {
+	top: 2.5px !important;
+	bottom: 2.5px !important;
+}
+
+.webpeptideshakertheme .bottomfilter .v-absolutelayout-wrapper-innerborderframe {
+	top: 5px !important;
+	bottom: 0px !important;
+}
+
 .webpeptideshakertheme .smallscreenstyle.mobilestyle .logocontainer img {
 	height: 150px !important;
 	overflow: visible;
@@ -16543,9 +16565,9 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .v-slot-thumbfilterframe.v-slot-middlefiltercontainerstyle {
-	bottom: 2px;
 	border: 1px solid transparent;
 	position: relative !important;
+	top: -1px !important;
 }
 
 .webpeptideshakertheme .smallscreenstyle .v-slot-reorderlayout {

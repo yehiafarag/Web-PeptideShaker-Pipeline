@@ -51,7 +51,7 @@ public class PeptidShakerUI extends UI {
         notification.setDelayMsec(10000);
         notification.setStyleName("mobilealertnotification");
         /**
-         * Initialise the context parameters and store them in Vaadin session.
+         * Initialise the context parameters and store them in VaadinSession.
          *
          */
         ServletContext scx = VaadinServlet.getCurrent().getServletContext();
@@ -95,7 +95,7 @@ public class PeptidShakerUI extends UI {
             webPeptideShakerApp.removeStyleName("mobilestyle");
             VaadinSession.getCurrent().setAttribute("smallscreenstyle", false);
         }
-        if ((Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight()) || (Page.getCurrent().getBrowserWindowWidth() < 650) || (Page.getCurrent().getBrowserWindowHeight() < 600)) {
+        if ((Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight()) || (Page.getCurrent().getBrowserWindowWidth() < 1422) || (Page.getCurrent().getBrowserWindowHeight() < 754)) {
             webPeptideShakerApp.addStyleName("smallscreenstyle");
             VaadinSession.getCurrent().setAttribute("smallscreenstyle", true);
         } else {
@@ -114,7 +114,7 @@ public class PeptidShakerUI extends UI {
             } else if (Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile") && (Page.getCurrent().getBrowserWindowWidth() >= Page.getCurrent().getBrowserWindowHeight())) {
                 webPeptideShakerApp.removeStyleName("hidemode");
 
-            } else if ((Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight()) || (Page.getCurrent().getBrowserWindowWidth() < 650) || (Page.getCurrent().getBrowserWindowHeight() < 600)) {
+            } else if ((Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight()) || (Page.getCurrent().getBrowserWindowWidth() < 1422) || (Page.getCurrent().getBrowserWindowHeight() < 754)) {
                 webPeptideShakerApp.addStyleName("smallscreenstyle");
                 VaadinSession.getCurrent().setAttribute("smallscreenstyle", true);
             } else {
@@ -141,7 +141,7 @@ public class PeptidShakerUI extends UI {
         if (isNelsGalaxyConnection || (VaadinSession.getCurrent().getAttribute("ApiKey") != null && VaadinSession.getCurrent().getAttribute("galaxyUrl") != null)) {
             webPeptideShakerApp.reConnectToGalaxyServer(VaadinSession.getCurrent().getAttribute("ApiKey") + "", VaadinSession.getCurrent().getAttribute("galaxyUrl") + "");
         }
-        
+
         Page.getCurrent().setTitle("PeptideShaker");
 
     }

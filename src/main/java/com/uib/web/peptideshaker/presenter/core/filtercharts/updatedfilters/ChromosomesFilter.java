@@ -38,12 +38,14 @@ public abstract class ChromosomesFilter extends AbsoluteLayout implements Regist
     private final Panel mainFilterPanel;
     private final Label chartTitle;
 
-    private final FilterButton removeFilterIcon;
+    private final FilterButton removeFilterBtn;
 
     private final Set<Object> selectedCategories;
     private final Set<Comparable> appliedFilters;
     private Map<Integer, Set<Comparable>> fullData;
     private final Map<Integer, Set<Comparable>> filteredData;
+    
+    private final AbsoluteLayout frame ;
 
     private int totalItemsNumber;
     private final SelectionManager Selection_Manager;
@@ -63,10 +65,16 @@ public abstract class ChromosomesFilter extends AbsoluteLayout implements Regist
         this.Selection_Manager = Selection_Manager;
         selectedData = new LinkedHashSet<>();
         this.appliedFilters = new LinkedHashSet<>();
-        ChromosomesFilter.this.setStyleName("thumbfilterframe");
-        ChromosomesFilter.this.addStyleName("reorderlayout");
-        ChromosomesFilter.this.addStyleName("chromosomfilter");
         ChromosomesFilter.this.setSizeFull();
+        
+        frame = new AbsoluteLayout();
+        frame.setSizeFull();
+        frame.setStyleName("innerborderframe");
+        frame.addStyleName("thumbfilterframe");
+        frame.addStyleName("reorderlayout");
+        frame.addStyleName("chromosomfilter");
+        ChromosomesFilter.this.addComponent(frame);
+        
 
         this.selectedCategories = new LinkedHashSet<>();
         this.Selection_Manager.RegistrDatasetsFilter(ChromosomesFilter.this);
@@ -76,26 +84,26 @@ public abstract class ChromosomesFilter extends AbsoluteLayout implements Regist
         chartTitle.setWidth(100, Unit.PERCENTAGE);
         chartTitle.setHeight(78, Unit.PIXELS);
         chartTitle.addStyleName("resizeabletext");
-        ChromosomesFilter.this.addComponent(chartTitle, "left:10px; top:10px;");
-        removeFilterIcon = new FilterButton() {
+        frame.addComponent(chartTitle, "left:10px; top:10px;");
+        removeFilterBtn = new FilterButton() {
             @Override
             public void layoutClick(LayoutEvents.LayoutClickEvent event) {
                 applyFilter(null);
 
             }
         };
-        removeFilterIcon.setWidth(24, Unit.PIXELS);
-        removeFilterIcon.setHeight(24, Unit.PIXELS);
-        removeFilterIcon.setVisible(false);
-        removeFilterIcon.addStyleName("btninframe");
-        ChromosomesFilter.this.addComponent(removeFilterIcon, "right:23px;top:-1px;");
+        removeFilterBtn.setWidth(24, Unit.PIXELS);
+        removeFilterBtn.setHeight(24, Unit.PIXELS);
+        removeFilterBtn.setVisible(false);
+        removeFilterBtn.addStyleName("btninframe");
+        ChromosomesFilter.this.addComponent(removeFilterBtn, "right:23px;top:-1px;");
 
         mainFilterPanel = new Panel();
         mainFilterPanel.setHeight(100, Unit.PERCENTAGE);
         mainFilterPanel.setWidth(100, Unit.PERCENTAGE);
         mainFilterPanel.setStyleName(ValoTheme.PANEL_BORDERLESS);
         mainFilterPanel.addStyleName("floatbottom");
-        ChromosomesFilter.this.addComponent(mainFilterPanel, "top: 30px;left: 10px;right: 10px;bottom: 0px;");
+        frame.addComponent(mainFilterPanel, "top: 30px;left: 10px;right: 10px;bottom: 0px;");
 
         chromosomessLabelMap = new LinkedHashMap<>();
         this.filteredData = new LinkedHashMap<>();;
@@ -186,7 +194,7 @@ public abstract class ChromosomesFilter extends AbsoluteLayout implements Regist
             ChromosomesFilter.this.removeComponent(colorGenerator.getColorScale());
         }
         colorGenerator = new RangeColorGenerator(treeSet.last());
-        ChromosomesFilter.this.addComponent(colorGenerator.getColorScale(), "top:15;right:20px");
+        frame.addComponent(colorGenerator.getColorScale(), "top:15;right:20px");
         updateChromosomesLabelsColor();
 
     }
@@ -215,10 +223,10 @@ public abstract class ChromosomesFilter extends AbsoluteLayout implements Regist
 
                 }
                 if (colorGenerator != null) {
-                    ChromosomesFilter.this.removeComponent(colorGenerator.getColorScale());
+                    frame.removeComponent(colorGenerator.getColorScale());
                 }
                 colorGenerator = new RangeColorGenerator(treeSet.last());
-                ChromosomesFilter.this.addComponent(colorGenerator.getColorScale(), "top:15;right:20px");
+                frame.addComponent(colorGenerator.getColorScale(), "top:15;right:20px");
                 updateChromosomesLabelsColor();
 
             }
@@ -320,7 +328,7 @@ public abstract class ChromosomesFilter extends AbsoluteLayout implements Regist
     }
 
     private void setMainAppliedFilter(boolean mainAppliedFilter) {
-        removeFilterIcon.setVisible(mainAppliedFilter);
+        removeFilterBtn.setVisible(mainAppliedFilter);
         if (mainAppliedFilter) {
             this.addStyleName("highlightfilter");
         } else {

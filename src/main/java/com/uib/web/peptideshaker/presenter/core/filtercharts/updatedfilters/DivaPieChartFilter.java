@@ -124,32 +124,37 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
 
     private void initlayout() {
         DivaPieChartFilter.this.setSizeFull();
-        DivaPieChartFilter.this.setStyleName("thumbfilterframe");
-        DivaPieChartFilter.this.addStyleName("reorderlayout");
-       
+//        DivaPieChartFilter.this.setStyleName("thumbfilterframe");
+//        DivaPieChartFilter.this.addStyleName("reorderlayout");
+
+        AbsoluteLayout frame = new AbsoluteLayout();
+        frame.setSizeFull();
+        frame.setStyleName("innerborderframe");
+        frame.addStyleName("thumbfilterframe");
+        frame.addStyleName("reorderlayout");
+        DivaPieChartFilter.this.addComponent(frame);
 
         chartTitle = new Label("<font>" + title + "</font>", ContentMode.HTML);
         chartTitle.setStyleName(ValoTheme.LABEL_BOLD);
         chartTitle.setWidth(60, Unit.PIXELS);
         chartTitle.setHeight(100, Unit.PERCENTAGE);
         chartTitle.addStyleName("resizeabletext");
-        DivaPieChartFilter.this.addComponent(chartTitle, "left:10px; top:10px;");
+        frame.addComponent(chartTitle, "left:10px; top:10px;");
 //        topLeftContainer.setExpandRatio(chartTitle, 15);
-/**
+        /**
          * ******************right panel*********************
          */
         rightLayout = new VerticalLayout();
         rightLayout.setWidth(70, Unit.PIXELS);
         rightLayout.setHeight(100, Unit.PERCENTAGE);
         rightLayout.addStyleName("autooverflow");
-        DivaPieChartFilter.this.addComponent(rightLayout, "top: 10px; right: 10px; bottom: 0px;");
-
+        frame.addComponent(rightLayout, "top: 10px; right: 10px; bottom: 0px;");
 
         mainChartContainer = new AbsoluteLayout();
         mainChartContainer.setWidth(100, Unit.PERCENTAGE);
         mainChartContainer.setHeight(100, Unit.PERCENTAGE);
         mainChartContainer.addStyleName("divapiechartcontainerstyle");
-        DivaPieChartFilter.this.addComponent(mainChartContainer,"left:70px; top:10px;right:70px;bottom:0px");
+        frame.addComponent(mainChartContainer, "left:70px; top:10px;right:70px;bottom:0px");
         mainChartContainer.addLayoutClickListener(dountChartListener);
 
         middleDountLayout = new VerticalLayout();
@@ -171,8 +176,6 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
         mainChartImg.setHeight(100, Unit.PERCENTAGE);
         mainChartImg.setWidth(100, Unit.PERCENTAGE);
         mainChartContainer.addComponent(mainChartImg);
-
-        
 
         SizeReporter mainSizeReporter = new SizeReporter(mainChartContainer);
         mainSizeReporter.addResizeListener((ComponentResizeEvent event) -> {

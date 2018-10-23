@@ -4,6 +4,9 @@
     <listener>
         <listener-class>com.uib.web.peptideshaker.listeners.VaadinSessionListener</listener-class>
     </listener>
+     <listener>
+        <listener-class>com.uib.web.peptideshaker.listeners.VaadinContextListener</listener-class>
+    </listener>
     <context-param>
         <description>Test user API key for galaxy   </description>
         <param-name>galaxyServerUrl</param-name>

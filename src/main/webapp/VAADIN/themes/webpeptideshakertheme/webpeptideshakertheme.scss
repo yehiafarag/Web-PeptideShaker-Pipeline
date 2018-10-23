@@ -1965,15 +1965,15 @@
         border-color: gray;
     }
     .v-absolutelayout-wrapper-btninframe{	
-	z-index:5 !important;
-	position:fixed !important;
+        z-index:5 !important;
+        position:fixed !important;
 
-}
+    }
 
     .nomargin{
         margin: 0 !important;
     }
-    .highlightfilter{
+    .highlightfilter ,.highlightfilter .v-absolutelayout{
        	border-color: orange !important;
         animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
         transform: translate3d(0, 0, 0);
@@ -3358,7 +3358,24 @@
             height: 29px;
             margin-top: -10px;
         }*/
-
+    .v-slot-cornerfiltercontainerstyle{
+        min-width:300px;
+        min-height:350px;
+    }
+    .v-absolutelayout-wrapper-innerborderframe{	
+        top:0px !important;
+        bottom:5px !important;
+        left:0px !important;
+        right:0px !important;
+    }
+    .v-align-center .v-absolutelayout-wrapper-innerborderframe {
+	top: 2.5px !important;
+	bottom:2.5px !important;
+}
+ .bottomfilter .v-absolutelayout-wrapper-innerborderframe {
+	top: 5px !important;
+	bottom: 0px !important;
+}
 
 
     /**mobile screen style***/
@@ -3429,9 +3446,9 @@
         }*/
 
     .v-slot-thumbfilterframe.v-slot-middlefiltercontainerstyle {
-        bottom:2px;
-        border:1px solid transparent;
-        position:relative !important;
+       border: 1px solid transparent;
+	position: relative !important;
+	top:-1px!important;
     }
     /*    .cornerfiltercontainerstyle {
             position: relative;
@@ -4466,18 +4483,18 @@
     
         }*/
 
-  
+
 
 
     .btninframe {
         position: absolute !important;
-	z-index:5 !important;
-	margin: 0px !important;
-	padding: 0px !important;
-	border-top-color: white !important;
-	border-right-color: white !important;
-	border-top-left-radius: 0px !important;
-	border-bottom-right-radius: 0px !important;
+        z-index:5 !important;
+        margin: 0px !important;
+        padding: 0px !important;
+        border-top-color: white !important;
+        border-right-color: white !important;
+        border-top-left-radius: 0px !important;
+        border-bottom-right-radius: 0px !important;
     }
     .btninframe .v-image{
         padding:10% !important;

@@ -83,7 +83,7 @@ public class FiltersContainer extends HorizontalLayout {
         VerticalLayout filterLeftPanelContainer = new VerticalLayout();
         filterLeftPanelContainer.setHeight(100,Unit.PERCENTAGE);
         filterLeftPanelContainer.setWidth(100,Unit.PERCENTAGE);
-        filterLeftPanelContainer.setSpacing(true);
+        filterLeftPanelContainer.setSpacing(false);
         filterLeftPanelContainer.addStyleName(ValoTheme.LAYOUT_HORIZONTAL_WRAPPING);
         filterLeftPanelContainer.addStyleName("cornerfiltercontainerstyle");
         FiltersContainer.this.addComponent(filterLeftPanelContainer);
@@ -101,7 +101,7 @@ public class FiltersContainer extends HorizontalLayout {
             }
         };
         filterLeftPanelContainer.addComponent(validationFilter);
-        filterLeftPanelContainer.setComponentAlignment(validationFilter, Alignment.TOP_LEFT);
+        filterLeftPanelContainer.setComponentAlignment(validationFilter, Alignment.TOP_CENTER);
         chromosomeFilter = new ChromosomesFilter("Chromosome", "chromosome_filter", Selection_Manager) {
             @Override
             public void selectionChange(String type) {
@@ -110,8 +110,8 @@ public class FiltersContainer extends HorizontalLayout {
             }
         };
         filterLeftPanelContainer.addComponent(chromosomeFilter);
-        filterLeftPanelContainer.setComponentAlignment(chromosomeFilter, Alignment.TOP_LEFT);
-
+        filterLeftPanelContainer.setComponentAlignment(chromosomeFilter, Alignment.TOP_RIGHT);
+        chromosomeFilter.addStyleName("bottomfilter");
         
           HorizontalLayout filterMiddlePanelContainer = new HorizontalLayout();
         filterMiddlePanelContainer.setHeight(100,Unit.PERCENTAGE);
@@ -136,7 +136,7 @@ public class FiltersContainer extends HorizontalLayout {
       filterMiddlePanelContainer.addComponent(modificationFilter);
         modificationFilter.setSizeFull();
 
-        HorizontalLayout filterRightPanelContainer = new HorizontalLayout();
+        VerticalLayout filterRightPanelContainer = new VerticalLayout();
         filterRightPanelContainer.setHeight(100,Unit.PERCENTAGE);
         filterRightPanelContainer.setWidth(100,Unit.PERCENTAGE);
         filterRightPanelContainer.setSpacing(false);
@@ -154,7 +154,7 @@ public class FiltersContainer extends HorizontalLayout {
 
         };
         filterRightPanelContainer.addComponent(prptidesNumberFilter);
-        filterRightPanelContainer.setComponentAlignment(prptidesNumberFilter,Alignment.TOP_CENTER);
+        filterRightPanelContainer.setComponentAlignment(prptidesNumberFilter,Alignment.TOP_LEFT);
 
         psmNumberFilter = new DivaRangeFilter("#PSM", "psmNum_filter", this.Selection_Manager) {
             @Override
@@ -170,10 +170,11 @@ public class FiltersContainer extends HorizontalLayout {
 
         };
         filterRightPanelContainer.addComponent(psmNumberFilter);
-        filterRightPanelContainer.setComponentAlignment(psmNumberFilter,Alignment.MIDDLE_CENTER);
+        filterRightPanelContainer.setComponentAlignment(psmNumberFilter,Alignment.TOP_CENTER);
 
         filterRightPanelContainer.addComponent(coverageFilter);
-        filterRightPanelContainer.setComponentAlignment(coverageFilter,Alignment.BOTTOM_CENTER);
+        coverageFilter.addStyleName("bottomfilter");
+        filterRightPanelContainer.setComponentAlignment(coverageFilter,Alignment.TOP_RIGHT);
     }
     private final Color[] colorsArr = new Color[]{Color.DARK_GRAY, new Color(4, 180, 95), new Color(245, 226, 80), new Color(213, 8, 8), Color.ORANGE};
     private final Color[] colorsArrII = new Color[]{Color.DARK_GRAY, new Color(4, 180, 95),Color.ORANGE, new Color(213, 8, 8)};

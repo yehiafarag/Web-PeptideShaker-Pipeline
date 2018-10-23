@@ -145,9 +145,10 @@ public abstract class DivaMatrixLayoutChartFilter extends AbsoluteLayout impleme
         DivaMatrixLayoutChartFilter.this.addComponent(chartTitle,"left:10px;top:10px;");
         
         topLayoutPanel = new AbsoluteLayout();
-        topLayoutPanel.setHeight(150, Unit.PIXELS);
+        topLayoutPanel.setHeight(100, Unit.PERCENTAGE);
         topLayoutPanel.setWidth(100, Unit.PERCENTAGE);
-        DivaMatrixLayoutChartFilter.this.addComponent(topLayoutPanel, "left:0px; top:30px;");
+        DivaMatrixLayoutChartFilter.this.addComponent(topLayoutPanel, "left:0px; top:30px;bottom:60%;");
+        System.out.println("DivaMatrixLayoutChartFilter.this "+DivaMatrixLayoutChartFilter.this.getPosition(topLayoutPanel).getTopValue()+"  "+DivaMatrixLayoutChartFilter.this.getPosition(topLayoutPanel).getTopUnits());
         mainChartContainer = new AbsoluteLayout();
         mainChartContainer.setWidth(100, Unit.PERCENTAGE);
         mainChartContainer.setHeight(100, Unit.PERCENTAGE);
@@ -189,7 +190,7 @@ public abstract class DivaMatrixLayoutChartFilter extends AbsoluteLayout impleme
          */
         bottomLayoutPanel = new AbsoluteLayout();
         bottomLayoutPanel.setSizeFull();
-        DivaMatrixLayoutChartFilter.this.addComponent(bottomLayoutPanel,"left:0px; top:180px;");
+        DivaMatrixLayoutChartFilter.this.addComponent(bottomLayoutPanel,"left:0px; bottom:0px; top:40%;");
         bottomLayoutPanel.addStyleName("ignorscrollspace");
         bottomLayoutContainer = new AbsoluteLayout();
         bottomLayoutContainer.setWidth(100, Unit.PERCENTAGE);
