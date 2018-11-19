@@ -75,7 +75,7 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
         this.smallControlButton = new SmallSideBtn(VaadinIcons.CLUSTER);
         this.smallControlButton.setData(InteractivePSPRojectResultsPresenter.this.getViewId());
         
-        this.controlButton = new ButtonWithLabel("Results</br><font>Interactive visualization for results</font>",1);
+        this.controlButton = new ButtonWithLabel("Results</br><font>Interactive results visualization</font>",1);
         this.controlButton.setData(InteractivePSPRojectResultsPresenter.this.getViewId());
         this.controlButton.updateIcon(VaadinIcons.CLUSTER.getHtml());
          this.controlButton.setDescription("View selected projects");
@@ -103,6 +103,7 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
 
         BigSideBtn datasetsOverviewBtn = new BigSideBtn("Dataset overview", 1);
         datasetsOverviewBtn.setData("datasetoverview");
+        datasetsOverviewBtn.setDescription("Dataset Overview");
         viewControlButtonContainer.addComponent(datasetsOverviewBtn);
         viewControlButtonContainer.setComponentAlignment(datasetsOverviewBtn, Alignment.MIDDLE_CENTER);
         datasetsOverviewBtn.addLayoutClickListener(InteractivePSPRojectResultsPresenter.this);
@@ -112,6 +113,7 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
         Selection_Manager.addBtnLayout(datasetsOverviewBtn, datasetVisulizationLevelContainer);
 
         BigSideBtn proteinoverviewBtn = new BigSideBtn("Protein Overview", 2);
+        proteinoverviewBtn.setDescription("Protein Overview");
         proteinoverviewBtn.updateIconResource(null);
         proteinoverviewBtn.setData("proteinoverview");
         viewControlButtonContainer.addComponent(proteinoverviewBtn);
@@ -123,6 +125,7 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
 
         BigSideBtn psmoverviewBtn = new BigSideBtn("PSM Overview", 3);
         psmoverviewBtn.updateIconResource(null);
+        psmoverviewBtn.setDescription("Peptide Spectrum Matches");
         psmoverviewBtn.setData("psmoverview");
         viewControlButtonContainer.addComponent(psmoverviewBtn);
         viewControlButtonContainer.setComponentAlignment(psmoverviewBtn, Alignment.MIDDLE_CENTER);

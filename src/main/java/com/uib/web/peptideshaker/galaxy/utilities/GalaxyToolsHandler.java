@@ -400,18 +400,19 @@ public abstract class GalaxyToolsHandler {
             File file;
             WorkflowInputs.WorkflowInput input2;
             if (mgfIdsList.size() > 1) {
-                file = new File(basepath + "/VAADIN/Galaxy-Workflow-Web-Peptide-Shaker-Multi-MGF-2018.ga");//Galaxy-Workflow-Web-Peptide-Shaker-Multi-MGF-2018.ga
+                file = new File(basepath + "/VAADIN/Galaxy-Workflow-Web-Peptide-Shaker-Multi-MGF-2018-updated.ga");//Galaxy-Workflow-Web-Peptide-Shaker-Multi-MGF-2018.ga
                 input2 = prepareWorkflowCollectionList(WorkflowInputs.InputSourceType.HDCA, mgfIdsList.keySet(), historyId);
             } else {
-                file = new File(basepath + "/VAADIN/Galaxy-Workflow-Web-Peptide-Shaker-Single-MGF-2018.ga");
+                file = new File(basepath + "/VAADIN/Galaxy-Workflow-Web-Peptide-Shaker-Single-MGF-2018-updated.ga");
                 input2 = new WorkflowInputs.WorkflowInput(mgfIdsList.keySet().iterator().next(), WorkflowInputs.InputSourceType.HDA);
             }
             String json = readWorkflowFile(file);
             /**
              * @todo: find better way to override the search parameters ?
              */
-            json = json.replace("3.2.24.0", search_GUI_Tool.getVersion()); 
-            json = json.replace("3.3.3.0", search_GUI_Tool.getVersion()); //for multi mgf workflow
+            System.out.println("at searchgui ---"+search_GUI_Tool.getVersion()+"---");
+            json = json.replace("3.3.5", search_GUI_Tool.getVersion().trim()); 
+//            json = json.replace("3.3.3.0", search_GUI_Tool.getVersion().trim()); //for multi mgf workflow
             json = json.replace("SearchGUI_Label", projectName + "-SearchGUI Results").replace("ZIP_Label", projectName + "-ZIP");
             String createDecoy = searchParameters.getFastaFile().getName().split("__")[2];
             json = json.replace("\\\\\\\"create_decoy\\\\\\\": \\\\\\\"true\\\\\\\"", "\\\\\\\"create_decoy\\\\\\\": \\\\\\\"" + createDecoy + "\\\\\\\"");
@@ -466,8 +467,8 @@ public abstract class GalaxyToolsHandler {
              */
             String updated = "\"{\\\\\\\"forward_ion\\\\\\\": \\\\\\\"" + ions.get(searchParameters.getForwardIons().get(0)) + "\\\\\\\", \\\\\\\"max_charge\\\\\\\": \\\\\\\"" + searchParameters.getMaxChargeSearched().value + "\\\\\\\", \\\\\\\"fragment_tol_units\\\\\\\": \\\\\\\"" + (searchParameters.getFragmentAccuracyType().ordinal() - 1) + "\\\\\\\", \\\\\\\"max_isotope\\\\\\\": \\\\\\\"" + (searchParameters.getMaxIsotopicCorrection()) + "\\\\\\\", \\\\\\\"precursor_ion_tol_units\\\\\\\": \\\\\\\"" + (searchParameters.getPrecursorAccuracyType().ordinal() + 1) + "\\\\\\\", \\\\\\\"min_isotope\\\\\\\": \\\\\\\"" + searchParameters.getMinIsotopicCorrection() + "\\\\\\\", \\\\\\\"fragment_tol\\\\\\\": \\\\\\\"" + searchParameters.getFragmentIonAccuracyInDaltons() + "\\\\\\\", \\\\\\\"min_charge\\\\\\\": \\\\\\\"" + searchParameters.getMinChargeSearched().value + "\\\\\\\", \\\\\\\"reverse_ion\\\\\\\": \\\\\\\"" + ions.get(searchParameters.getRewindIons().get(0)) + "\\\\\\\", \\\\\\\"precursor_ion_tol\\\\\\\": \\\\\\\"" + searchParameters.getPrecursorAccuracy() + "\\\\\\\"}\\\",";
             json = json.replace("\"{\\\\\\\"forward_ion\\\\\\\": \\\\\\\"b\\\\\\\", \\\\\\\"max_charge\\\\\\\": \\\\\\\"4\\\\\\\", \\\\\\\"fragment_tol_units\\\\\\\": \\\\\\\"0\\\\\\\", \\\\\\\"max_isotope\\\\\\\": \\\\\\\"1\\\\\\\", \\\\\\\"precursor_ion_tol_units\\\\\\\": \\\\\\\"1\\\\\\\", \\\\\\\"min_isotope\\\\\\\": \\\\\\\"0\\\\\\\", \\\\\\\"fragment_tol\\\\\\\": \\\\\\\"0.5\\\\\\\", \\\\\\\"min_charge\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"reverse_ion\\\\\\\": \\\\\\\"y\\\\\\\", \\\\\\\"precursor_ion_tol\\\\\\\": \\\\\\\"10.0\\\\\\\"}\\\",", updated);
-            json = json.replace("1.16.20", peptideShaker_Tool.getVersion());
-            json = json.replace("1.16.4", peptideShaker_Tool.getVersion());
+            json = json.replace("1.16.31", peptideShaker_Tool.getVersion());
+//            json = json.replace("1.16.4", peptideShaker_Tool.getVersion());
             selectedWf = galaxyWorkFlowClient.importWorkflow(json);
             WorkflowInputs workflowInputs = new WorkflowInputs();
             workflowInputs.setWorkflowId(selectedWf.getId());
@@ -493,7 +494,7 @@ public abstract class GalaxyToolsHandler {
             });
             t1.start();
 
-//            galaxyWorkFlowClient.deleteWorkflowRequest(selectedWf.getId());
+            galaxyWorkFlowClient.deleteWorkflowRequest(selectedWf.getId());
             while (t.isAlive()) {
                 try {
                     Thread.sleep(500);
@@ -505,7 +506,7 @@ public abstract class GalaxyToolsHandler {
         } catch (Exception e) {
             e.printStackTrace();
             if (selectedWf != null) {
-//                galaxyWorkFlowClient.deleteWorkflowRequest(selectedWf.getId());
+                galaxyWorkFlowClient.deleteWorkflowRequest(selectedWf.getId());
             }
             return null;
         }

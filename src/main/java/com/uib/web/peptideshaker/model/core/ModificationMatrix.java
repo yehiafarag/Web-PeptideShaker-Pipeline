@@ -1,6 +1,7 @@
 package com.uib.web.peptideshaker.model.core;
 
 import com.google.common.collect.Sets;
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,6 +33,8 @@ public class ModificationMatrix {
      * Set of keys to sort.
      */
     private final Set<String> keySorter;
+    
+    private boolean useVenn = true;
 
     /**
      * Constructor to initialise the main data structure and the matrix
@@ -174,7 +177,28 @@ public class ModificationMatrix {
         sortingKeyColumnsMap.values().forEach((key) -> {
             tempMatrixData.put(key, matrixData.get(key));
         });
+        int index = 0;
+//        for (String key : tempMatrixData.keySet()) {
+//            if (key.contains("[")) {
+//                String[] intersections = key.replace("[", "").replace("]", "").split(",");
+//                if (index>4) {
+//                   useVenn=false;
+//                   break;
+//                }
+//                if (intersections.length > 2) {
+//                    index++;
+//                }
+//            }
+//
+//        };
+        
+        
+        
         return tempMatrixData;
+    }
+
+    public boolean isUseVenn() {
+        return useVenn;
     }
 
 }

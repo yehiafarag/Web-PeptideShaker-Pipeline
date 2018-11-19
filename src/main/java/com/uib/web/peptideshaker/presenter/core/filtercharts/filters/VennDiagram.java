@@ -1,0 +1,347 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.uib.web.peptideshaker.presenter.core.filtercharts.filters;
+
+import com.ejt.vaadin.sizereporter.ComponentResizeEvent;
+import com.ejt.vaadin.sizereporter.ComponentResizeListener;
+import com.ejt.vaadin.sizereporter.SizeReporter;
+import com.google.common.collect.Sets;
+import com.uib.web.peptideshaker.model.core.ModificationMatrix;
+import com.vaadin.event.LayoutEvents;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
+import d3diagrams.VennDiagramComponent;
+import java.awt.Color;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
+
+/**
+ *
+ * @author Yehia Farag
+ */
+public abstract class VennDiagram extends AbsoluteLayout {
+
+    private final VennDiagramComponent vennDiagramComponent;
+    private final HorizontalLayout legendContainer;
+    private final Map<String, String> indexMap;
+    private ModificationMatrix modificationMatrix;
+    private Map<String, Color> dataColors;
+
+    private JSONArray dataset;
+    private JSONArray selectedDatasetColors;
+    private JSONArray unselectedDatasetColors;
+    private final SizeReporter legendSizeReported;
+    private final Set<Integer> selectedIndexes;
+
+    private final String alphabet = "abcdefghijklmnopqrstuvwxyz".toUpperCase();
+
+    private final Map<String, String> nameToCharMap;
+
+    public VennDiagram() {
+        VennDiagram.this.setSizeFull();
+        this.indexMap = new HashMap<>();
+        this.nameToCharMap = new HashMap<>();
+        this.selectedIndexes = new LinkedHashSet<>();
+        dataset = new JSONArray();
+        selectedDatasetColors = new JSONArray();
+        unselectedDatasetColors = new JSONArray();
+
+        vennDiagramComponent = new VennDiagramComponent() {
+            @Override
+            public void SelectionPerformed(String value) {
+
+                if (value.contains("error_in_loading")) {
+                    compleateLoading(false);
+
+                } else if (value.contains("loading_is_done")) {
+                    compleateLoading(true);
+                } else {
+
+                    if (value.trim().equalsIgnoreCase("")) {
+                        //unselectall
+                        selectedIndexes.clear();
+                    } else {
+                        Notification.show("click back is working " + indexMap.get(value.split(",")[0].trim()));
+                        String[] valueArr = value.split(",");
+                        selectedIndexes.clear();
+                        for (String valueArr1 : valueArr) {
+                            selectedIndexes.add(Integer.parseInt(valueArr1.trim()));
+                        }
+                    }
+
+                    updateLegendSelectionStyle();
+                    applyFilter(selectedIndexes);
+                }
+                System.out.println("at answer is called " + value);
+
+            }
+        };
+        vennDiagramComponent.addStyleName("vinndiagramcomponent");
+        legendContainer = new HorizontalLayout();
+        legendContainer.addStyleName(ValoTheme.LAYOUT_HORIZONTAL_WRAPPING);
+        legendContainer.setHeightUndefined();
+        legendContainer.addStyleName("vennlegendcontainer");
+        VennDiagram.this.addComponent(legendContainer, "bottom: 5px; left: 20px;");
+        legendSizeReported = new SizeReporter(legendContainer);
+        legendSizeReported.addResizeListener((ComponentResizeEvent event) -> {
+            if (vennDiagramComponent != null) {
+                VennDiagram.this.removeComponent(vennDiagramComponent);
+                VennDiagram.this.addComponent(vennDiagramComponent, "left:20px; bottom:" + (event.getHeight() + 5) + "px; right:20px; top:30px;");
+            }
+        });
+        legendContainer.addLayoutClickListener((LayoutEvents.LayoutClickEvent event) -> {
+            Label selection = (Label) event.getClickedComponent();
+            int index = legendContainer.getComponentIndex(selection);
+            if (index == -1) {
+                return;
+            }
+            if (selectedIndexes.contains(index)) {
+                selectedIndexes.remove(index);
+            } else {
+                selectedIndexes.add(index);
+            }
+            updateLegendSelectionStyle();
+
+            //updatevenn diagram
+            updateVennDiagramSelectionStyle();
+            applyFilter(selectedIndexes);
+        });
+
+    }
+
+    public void resetFilter() {
+        selectedIndexes.clear();
+        updateLegendSelectionStyle();
+        updateVennDiagramSelectionStyle();
+
+    }
+
+    public ModificationMatrix getModificationMatrix() {
+        return modificationMatrix;
+    }
+
+    public void initializeFilterData(ModificationMatrix modificationMatrix, Map<String, Color> dataColors, Set<Object> selectedCategories, int totalNumber) {
+//        
+        nameToCharMap.clear();
+        this.modificationMatrix = modificationMatrix;
+        this.dataColors = dataColors;
+        updateDiagramData(modificationMatrix.getCalculatedColumns(), modificationMatrix.getRows());
+
+    }
+
+    private void updateDiagramData(Map<String, Set<Comparable>> columns, Map<String, Integer> rows) {
+        dataset = new JSONArray();
+        selectedDatasetColors = new JSONArray();
+        unselectedDatasetColors = new JSONArray();
+        indexMap.clear();
+        legendContainer.removeAllComponents();
+        int index = 0;
+        int dsIndex = 0;
+        for (String key : columns.keySet()) {
+            if (columns.get(key).isEmpty()) {
+                continue;
+            }
+            if (!key.contains("[")) {
+                if (!nameToCharMap.containsKey(key)) {
+                    nameToCharMap.put(key, alphabet.charAt(index++) + "");
+                }
+                int logSize = rows.get(key);//((int) (Math.log(rows.get(key)) * 10)) + 1;
+                dataset.put(initDatasetObject(new String[]{nameToCharMap.get(key)}, logSize));
+                indexMap.put((dsIndex++) + "", key);
+                Color c = dataColors.get(key);
+                String colorStr = "rgba(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ",1.0)";
+                selectedDatasetColors.put(colorStr);
+                legendContainer.addComponent(initLegendItem(key, nameToCharMap.get(key), colorStr, columns.get(key).size()));
+                colorStr = "rgba(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ",0.3)";
+                unselectedDatasetColors.put(colorStr);
+
+            } else {
+                String[] intersections = key.replace("[", "").replace("]", "").split(",");
+                String[] updatedIntersection = new String[intersections.length];
+                Map<String, String> charToColorMap = new LinkedHashMap<>();
+                int z = 0;
+                Color[] colorsToMix = new Color[intersections.length];
+                for (String cer : intersections) {
+                    cer = cer.trim();
+                    if (!nameToCharMap.containsKey(cer)) {
+                        nameToCharMap.put(cer, alphabet.charAt(index++) + "");
+                    }
+                    Color c = dataColors.get(cer);
+                    colorsToMix[z] = c;
+                    updatedIntersection[z++] = nameToCharMap.get(cer);
+                    String colorStr = "rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")";
+                    charToColorMap.put(nameToCharMap.get(cer), colorStr);
+                }
+                int logSize = columns.get(key).size();//((int) (Math.log(columns.get(key).size()) * 10)) + 1;
+                dataset.put(initDatasetObject(updatedIntersection, logSize));
+                indexMap.put((dsIndex++) + "", key);
+                Color c = mixColors(colorsToMix).darker();
+                String colorStr = "rgba(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ",1.0)";
+                selectedDatasetColors.put(colorStr);
+                c = c.brighter();
+                colorStr = "rgba(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ",1)";
+                unselectedDatasetColors.put(colorStr);
+                legendContainer.addComponent(initLegendItem(charToColorMap, columns.get(key).size()));
+            }
+
+        };
+
+        vennDiagramComponent.setValue(dataset.toString() + ";" + selectedDatasetColors.toString() + ";" + unselectedDatasetColors.toString());
+
+    }
+
+    private void updateLegendSelectionStyle() {
+        if (selectedIndexes.size() == legendContainer.getComponentCount()) {
+            selectedIndexes.clear();
+        }
+        for (int i = 0; i < legendContainer.getComponentCount(); i++) {
+            legendContainer.getComponent(i).removeStyleName("selectedvennlegend");
+        }
+        if (selectedIndexes.isEmpty()) {
+            return;
+        }
+        selectedIndexes.forEach((i) -> {
+            legendContainer.getComponent(i).addStyleName("selectedvennlegend");
+        });
+
+    }
+
+    private void updateVennDiagramSelectionStyle() {
+        JSONArray selection = new JSONArray();
+        selectedIndexes.forEach((i) -> {
+            selection.put(i);
+        });
+        vennDiagramComponent.setValue(":selection:" + selection.toString());
+
+    }
+
+    public void updateFilterSelection(Set<Comparable> selectedItems, Set<Comparable> selectedCategories, boolean topFilter, boolean singleProteinsFilter, boolean selfAction) {
+        if (!selfAction) {
+//            intersectionMap.clear();
+            nameToCharMap.clear();
+            if (singleProteinsFilter && !selfAction && !selectedCategories.isEmpty()) {
+                updateDiagramData(modificationMatrix.getCalculatedColumns(), modificationMatrix.getRows());
+
+            } else {
+                Map<String, Set<Comparable>> tbarChartValues = new LinkedHashMap<>();
+                Map<String, Integer> updatedRows = new HashMap<>();
+                for (String key : modificationMatrix.getCalculatedColumns().keySet()) {
+                    key = key.trim();
+                    tbarChartValues.put(key, Sets.intersection(modificationMatrix.getCalculatedColumns().get(key), selectedItems));
+                    if (!key.contains("[")) {
+                        if (!updatedRows.containsKey(key)) {
+                            updatedRows.put(key, 0);
+                        }
+                        updatedRows.replace(key, updatedRows.get(key) + tbarChartValues.get(key).size());
+
+                    } else {
+                        String[] intersections = key.replace("[", "").replace("]", "").split(",");
+                        for (String subKey : intersections) {
+                            subKey = subKey.trim();
+                            if (!updatedRows.containsKey(subKey)) {
+                                updatedRows.put(subKey, 0);
+                            }
+                            updatedRows.replace(subKey, updatedRows.get(subKey) + tbarChartValues.get(key).size());
+                        }
+
+                    }
+                }
+                updateDiagramData(tbarChartValues, updatedRows);
+            }
+
+        }
+//        setMainAppliedFilter(topFilter && !selectedCategories.isEmpty());
+//        selectColumn(selectedCategories);
+    }
+
+    private JSONObject initDatasetObject(String[] ids, int size) {
+        try {
+            JSONObject dataObject = new JSONObject();
+            JSONArray sublist = new JSONArray();
+            for (String id : ids) {
+                sublist.put(id.trim());
+            }
+            dataObject.put("sets", sublist);
+            dataObject.put("size", size);
+
+            return dataObject;
+        } catch (JSONException ex) {
+            ex.printStackTrace();
+        }
+        return null;
+
+    }
+
+    @Override
+    public void setVisible(boolean visible) {
+        if (visible) {
+            this.removeStyleName("hidevenn");
+        } else {
+            this.addStyleName("hidevenn");
+        }
+    }
+
+    private Component initLegendItem(String title, String charRep, String color, int size) {
+        Label legendItem = new Label("<div style='background:" + color + ";'>" + charRep + "</div>" + title + "<font>(" + size + ")</font>");
+        legendItem.setWidth(100, Unit.PERCENTAGE);
+        legendItem.setContentMode(ContentMode.HTML);
+        legendItem.setStyleName("venndiagramlegend");
+        return legendItem;
+
+    }
+
+    private Component initLegendItem(Map<String, String> charToColorMap, int size) {
+        String labelContent = "";// VaadinIcons.CIRCLE.getHtml();
+        labelContent = charToColorMap.keySet().stream().map((charKey) -> "<div style='background:" + charToColorMap.get(charKey) + ";    margin-right: 0px !important;'>" + charKey + "</div>").reduce(labelContent, String::concat);
+        labelContent += "<font>(" + size + ")</font>";
+        Label legendItem = new Label(labelContent);
+        legendItem.setWidth(100, Unit.PERCENTAGE);
+        legendItem.setContentMode(ContentMode.HTML);
+        legendItem.setStyleName("venndiagramlegend");
+        return legendItem;
+
+    }
+
+    private Color mixColors(Color[] colors) {
+        int r = 0;
+        for (Color c : colors) {
+            r += c.getRed();
+        }
+        r = r / colors.length;
+        int g = 0;
+        for (Color c : colors) {
+            g += c.getGreen();
+        }
+        g = g / colors.length;
+
+        int b = 0;
+        for (Color c : colors) {
+            b += c.getBlue();
+        }
+        b = b / colors.length;
+
+        return new Color(r, g, b);
+
+    }
+
+    public abstract void compleateLoading(boolean done);
+
+    public abstract void applyFilter(Set<Integer> columnIndexs);
+
+}

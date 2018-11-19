@@ -1,11 +1,12 @@
 package com.uib.web.peptideshaker.presenter.core.filtercharts;
 
 import com.uib.web.peptideshaker.model.core.ModificationMatrix;
-import com.uib.web.peptideshaker.presenter.core.filtercharts.updatedfilters.ChromosomesFilter;
-import com.uib.web.peptideshaker.presenter.core.filtercharts.updatedfilters.DivaMatrixLayoutChartFilter;
+import com.uib.web.peptideshaker.presenter.core.filtercharts.filters.ChromosomesFilter;
+import com.uib.web.peptideshaker.presenter.core.filtercharts.filters.MatrixDiagram;
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.SelectionManager;
-import com.uib.web.peptideshaker.presenter.core.filtercharts.updatedfilters.DivaPieChartFilter;
-import com.uib.web.peptideshaker.presenter.core.filtercharts.updatedfilters.DivaRangeFilter;
+import com.uib.web.peptideshaker.presenter.core.filtercharts.filters.DivaPieChartFilter;
+import com.uib.web.peptideshaker.presenter.core.filtercharts.filters.DivaRangeFilter;
+import com.uib.web.peptideshaker.presenter.core.filtercharts.filters.ModificationsFilter;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
@@ -27,7 +28,7 @@ import java.util.TreeMap;
  */
 public class FiltersContainer extends HorizontalLayout {
 
-    private final DivaMatrixLayoutChartFilter modificationFilter;
+    private final ModificationsFilter modificationFilter;
 
     private final DivaPieChartFilter validationFilter;
 
@@ -81,8 +82,8 @@ public class FiltersContainer extends HorizontalLayout {
         };
 
         VerticalLayout filterLeftPanelContainer = new VerticalLayout();
-        filterLeftPanelContainer.setHeight(100,Unit.PERCENTAGE);
-        filterLeftPanelContainer.setWidth(100,Unit.PERCENTAGE);
+        filterLeftPanelContainer.setHeight(100, Unit.PERCENTAGE);
+        filterLeftPanelContainer.setWidth(100, Unit.PERCENTAGE);
         filterLeftPanelContainer.setSpacing(false);
         filterLeftPanelContainer.addStyleName(ValoTheme.LAYOUT_HORIZONTAL_WRAPPING);
         filterLeftPanelContainer.addStyleName("cornerfiltercontainerstyle");
@@ -90,7 +91,6 @@ public class FiltersContainer extends HorizontalLayout {
         FiltersContainer.this.setExpandRatio(filterLeftPanelContainer, 1);
         filterLeftPanelContainer.addComponent(ProteinInferenceFilter);
         filterLeftPanelContainer.setComponentAlignment(ProteinInferenceFilter, Alignment.TOP_LEFT);
-        
 
         validationFilter = new DivaPieChartFilter("Protein Validation", "validation_filter", Selection_Manager) {
             @Override
@@ -112,17 +112,17 @@ public class FiltersContainer extends HorizontalLayout {
         filterLeftPanelContainer.addComponent(chromosomeFilter);
         filterLeftPanelContainer.setComponentAlignment(chromosomeFilter, Alignment.TOP_RIGHT);
         chromosomeFilter.addStyleName("bottomfilter");
-        
-          HorizontalLayout filterMiddlePanelContainer = new HorizontalLayout();
-        filterMiddlePanelContainer.setHeight(100,Unit.PERCENTAGE);
-        filterMiddlePanelContainer.setWidth(100,Unit.PERCENTAGE);
+
+        HorizontalLayout filterMiddlePanelContainer = new HorizontalLayout();
+        filterMiddlePanelContainer.setHeight(100, Unit.PERCENTAGE);
+        filterMiddlePanelContainer.setWidth(100, Unit.PERCENTAGE);
         filterMiddlePanelContainer.setSpacing(true);
         filterMiddlePanelContainer.addStyleName("cornerfiltercontainerstyle");
         FiltersContainer.this.addComponent(filterMiddlePanelContainer);
         FiltersContainer.this.setComponentAlignment(filterMiddlePanelContainer, Alignment.TOP_LEFT);
-         FiltersContainer.this.setExpandRatio(filterMiddlePanelContainer, 2);
-        
-        modificationFilter = new DivaMatrixLayoutChartFilter("Modifications", "modifications_filter", Selection_Manager) {
+        FiltersContainer.this.setExpandRatio(filterMiddlePanelContainer, 2);
+
+        modificationFilter = new ModificationsFilter("Modifications", "modifications_filter", Selection_Manager) {
 
             @Override
             public void selectionChange(String type) {
@@ -133,18 +133,18 @@ public class FiltersContainer extends HorizontalLayout {
 
         };
         modificationFilter.addStyleName("middlefiltercontainerstyle");
-      filterMiddlePanelContainer.addComponent(modificationFilter);
+        filterMiddlePanelContainer.addComponent(modificationFilter);
         modificationFilter.setSizeFull();
 
         VerticalLayout filterRightPanelContainer = new VerticalLayout();
-        filterRightPanelContainer.setHeight(100,Unit.PERCENTAGE);
-        filterRightPanelContainer.setWidth(100,Unit.PERCENTAGE);
+        filterRightPanelContainer.setHeight(100, Unit.PERCENTAGE);
+        filterRightPanelContainer.setWidth(100, Unit.PERCENTAGE);
         filterRightPanelContainer.setSpacing(false);
         filterRightPanelContainer.addStyleName("cornerfiltercontainerstyle");
         filterRightPanelContainer.addStyleName(ValoTheme.LAYOUT_HORIZONTAL_WRAPPING);
-         FiltersContainer.this.addComponent(filterRightPanelContainer);
-         FiltersContainer.this.setComponentAlignment(filterRightPanelContainer, Alignment.TOP_LEFT);
-         FiltersContainer.this.setExpandRatio(filterRightPanelContainer, 1);
+        FiltersContainer.this.addComponent(filterRightPanelContainer);
+        FiltersContainer.this.setComponentAlignment(filterRightPanelContainer, Alignment.TOP_LEFT);
+        FiltersContainer.this.setExpandRatio(filterRightPanelContainer, 1);
 
 //add range filter
         prptidesNumberFilter = new DivaRangeFilter("#Peptides", "peptidesNum_filter", this.Selection_Manager) {
@@ -154,7 +154,7 @@ public class FiltersContainer extends HorizontalLayout {
 
         };
         filterRightPanelContainer.addComponent(prptidesNumberFilter);
-        filterRightPanelContainer.setComponentAlignment(prptidesNumberFilter,Alignment.TOP_LEFT);
+        filterRightPanelContainer.setComponentAlignment(prptidesNumberFilter, Alignment.TOP_LEFT);
 
         psmNumberFilter = new DivaRangeFilter("#PSM", "psmNum_filter", this.Selection_Manager) {
             @Override
@@ -170,14 +170,14 @@ public class FiltersContainer extends HorizontalLayout {
 
         };
         filterRightPanelContainer.addComponent(psmNumberFilter);
-        filterRightPanelContainer.setComponentAlignment(psmNumberFilter,Alignment.TOP_CENTER);
+        filterRightPanelContainer.setComponentAlignment(psmNumberFilter, Alignment.TOP_CENTER);
 
         filterRightPanelContainer.addComponent(coverageFilter);
         coverageFilter.addStyleName("bottomfilter");
-        filterRightPanelContainer.setComponentAlignment(coverageFilter,Alignment.TOP_RIGHT);
+        filterRightPanelContainer.setComponentAlignment(coverageFilter, Alignment.TOP_RIGHT);
     }
     private final Color[] colorsArr = new Color[]{Color.DARK_GRAY, new Color(4, 180, 95), new Color(245, 226, 80), new Color(213, 8, 8), Color.ORANGE};
-    private final Color[] colorsArrII = new Color[]{Color.DARK_GRAY, new Color(4, 180, 95),Color.ORANGE, new Color(213, 8, 8)};
+    private final Color[] colorsArrII = new Color[]{Color.DARK_GRAY, new Color(4, 180, 95), Color.ORANGE, new Color(213, 8, 8)};
 
     public void updateFiltersData(ModificationMatrix modificationMatrix, Map<String, Color> modificationsColorMap, Map<Integer, Set<Comparable>> chromosomeMap, Map<String, Set<Comparable>> piMap, Map<String, Set<Comparable>> proteinValidationMap, TreeMap<Comparable, Set<Comparable>> proteinPeptidesNumberMap, TreeMap<Comparable, Set<Comparable>> proteinPSMNumberMap, TreeMap<Comparable, Set<Comparable>> proteinCoverageMap) {
         Selection_Manager.reset();

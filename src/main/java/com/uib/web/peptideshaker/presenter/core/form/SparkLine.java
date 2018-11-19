@@ -1,15 +1,11 @@
 package com.uib.web.peptideshaker.presenter.core.form;
 
-import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
 import java.awt.Color;
 import java.text.DecimalFormat;
-import org.jfree.chart.ChartColor;
 
 /**
  * This class represent sparkLine
@@ -80,13 +76,13 @@ public class SparkLine extends HorizontalLayout {
     }
 
     /**
-     * Constructor to initialize the spark-line class
+     * Constructor to initialise the spark-line class
      */
     public SparkLine(String text, double value, double min, double max, Color color) {
 
         SparkLine.this.setWidth(100, Unit.PERCENTAGE);
         SparkLine.this.setHeight(20, Unit.PIXELS);
-        SparkLine.this.setStyleName("margintop-4");
+        SparkLine.this.setStyleName("margintop-5");
         textLabel = new Label(text);
         textLabel.setWidth(100, Unit.PERCENTAGE);
         textLabel.setHeight(100, Unit.PERCENTAGE);
@@ -115,9 +111,10 @@ public class SparkLine extends HorizontalLayout {
         }
 
         spark = new ColorLabel(color);
-        spark.setHeight(4, Unit.PIXELS);
+        spark.setHeight(5, Unit.PIXELS);
 //        spark.addStyleName("margintop5");
         spark.setWidth(Math.min(Math.max(Math.round(value), 5), 100), Unit.PERCENTAGE);
+        spark.addStyleName("maxwidth150");
 
 //        Label colorLegend = new Label("<div style='margin-left: 0px;width: 10px;height: 10px;margin-top: 0px;border: 1px solid lightgray;background: rgb(" + color.getRed() + "," + color.getGreen() + "," + color.getBlue() + ");'></div>",ContentMode.HTML);
         if (max == -100000) {

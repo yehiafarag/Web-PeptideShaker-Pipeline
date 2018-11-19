@@ -1070,7 +1070,7 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
         if (processPeptidesTask.getProtein_peptide_Map().containsKey(proteinKey)) {
             return processPeptidesTask.getProtein_peptide_Map().get(proteinKey);
         }
-        return null;
+        return new HashSet<>();
 
     }
 

@@ -1,4 +1,4 @@
-package com.uib.web.peptideshaker.presenter.core.filtercharts.updatedfilters;
+package com.uib.web.peptideshaker.presenter.core.filtercharts.filters;
 
 import com.ejt.vaadin.sizereporter.ComponentResizeEvent;
 import com.ejt.vaadin.sizereporter.SizeReporter;
@@ -56,7 +56,7 @@ import org.jfree.ui.RectangleInsets;
  *
  * @author Yehia Farag
  */
-public abstract class DivaMatrixLayoutChartFilter extends AbsoluteLayout implements RegistrableFilter {
+public abstract class DivaMatrixLayoutChartFilter1 extends AbsoluteLayout implements RegistrableFilter {
 
     /**
      * The width of the chart.
@@ -102,15 +102,14 @@ public abstract class DivaMatrixLayoutChartFilter extends AbsoluteLayout impleme
     private final Map<String, SparkLine> rowLabelsMap;
     private Map<String, Color> dataColors;
 
-    public DivaMatrixLayoutChartFilter(String title, String filterId, SelectionManager Selection_Manager) {
+    public DivaMatrixLayoutChartFilter1(String title, String filterId, SelectionManager Selection_Manager) {
         this.mainWidth = 300;
         this.mainHeight = 300;
         this.title = title;
         this.filterId = filterId;
         this.Selection_Manager = Selection_Manager;
         this.rowLabelsMap = new LinkedHashMap<>();
-//        this.selectedDataSet = new LinkedHashSet<>();
-        this.Selection_Manager.RegistrDatasetsFilter(DivaMatrixLayoutChartFilter.this);
+        this.Selection_Manager.RegistrDatasetsFilter(DivaMatrixLayoutChartFilter1.this);
         this.nodesTable = new LinkedHashMap<>();
         this.chartBarsList = new HashMap<>();
         this.barChartValues = new LinkedHashMap<>();
@@ -132,22 +131,19 @@ public abstract class DivaMatrixLayoutChartFilter extends AbsoluteLayout impleme
     }
 
     private void initlayout() {
-        DivaMatrixLayoutChartFilter.this.setSizeFull();
-        DivaMatrixLayoutChartFilter.this.setStyleName("thumbfilterframe");
-        
-       
-
+        DivaMatrixLayoutChartFilter1.this.setSizeFull();
+        DivaMatrixLayoutChartFilter1.this.setStyleName("thumbfilterframe");
         chartTitle = new Label("<font>" + title + "</font>", ContentMode.HTML);
         chartTitle.setStyleName(ValoTheme.LABEL_BOLD);
         chartTitle.setWidth(80, Unit.PIXELS);
         chartTitle.setHeight(20, Unit.PIXELS);
         chartTitle.addStyleName("resizeabletext");
-        DivaMatrixLayoutChartFilter.this.addComponent(chartTitle,"left:10px;top:10px;");
-        
+        DivaMatrixLayoutChartFilter1.this.addComponent(chartTitle, "left:10px;top:10px;");
+
         topLayoutPanel = new AbsoluteLayout();
         topLayoutPanel.setHeight(100, Unit.PERCENTAGE);
         topLayoutPanel.setWidth(100, Unit.PERCENTAGE);
-        DivaMatrixLayoutChartFilter.this.addComponent(topLayoutPanel, "left:0px; top:30px;bottom:60%;");
+        DivaMatrixLayoutChartFilter1.this.addComponent(topLayoutPanel, "left:0px; top:30px;bottom:60%;");
         mainChartContainer = new AbsoluteLayout();
         mainChartContainer.setWidth(100, Unit.PERCENTAGE);
         mainChartContainer.setHeight(100, Unit.PERCENTAGE);
@@ -168,8 +164,6 @@ public abstract class DivaMatrixLayoutChartFilter extends AbsoluteLayout impleme
 
         SizeReporter mainSizeReporter = new SizeReporter(mainChartContainer);
         mainSizeReporter.addResizeListener((ComponentResizeEvent event) -> {
-
-//           
             int tChartWidth = event.getWidth();
             int tChartHeight = event.getHeight();
             if (tChartWidth <= 0 || tChartHeight <= 0) {
@@ -189,7 +183,7 @@ public abstract class DivaMatrixLayoutChartFilter extends AbsoluteLayout impleme
          */
         bottomLayoutPanel = new AbsoluteLayout();
         bottomLayoutPanel.setSizeFull();
-        DivaMatrixLayoutChartFilter.this.addComponent(bottomLayoutPanel,"left:0px; bottom:0px; top:40%;");
+        DivaMatrixLayoutChartFilter1.this.addComponent(bottomLayoutPanel, "left:0px; bottom:0px; top:40%;");
         bottomLayoutPanel.addStyleName("ignorscrollspace");
         bottomLayoutContainer = new AbsoluteLayout();
         bottomLayoutContainer.setWidth(100, Unit.PERCENTAGE);
@@ -215,7 +209,7 @@ public abstract class DivaMatrixLayoutChartFilter extends AbsoluteLayout impleme
         removeFilterIcon.setHeight(24, Unit.PIXELS);
         removeFilterIcon.setVisible(false);
         removeFilterIcon.addStyleName("btninframe");
-        DivaMatrixLayoutChartFilter.this.addComponent(removeFilterIcon, "right:23px;top:-1px;");
+        DivaMatrixLayoutChartFilter1.this.addComponent(removeFilterIcon, "right:23px;top:-1px;");
     }
 
     public void initializeFilterData(ModificationMatrix modificationMatrix, Map<String, Color> dataColors, Set<Object> selectedCategories, int totalNumber) {
@@ -295,7 +289,7 @@ public abstract class DivaMatrixLayoutChartFilter extends AbsoluteLayout impleme
                 bar.setHeight(rect.height, Unit.PIXELS);
                 bar.setStyleName("barlayout");
                 bar.setData(columnIndex);
-                String mod = columns.keySet().toArray()[columnIndex++].toString().replace("[", "").replace("]", "<br/>").replace(",", "<br/>") +  "<font style='font-size:10px !important;margin-right:5px'> " + VaadinIcons.HASH.getHtml() + "</font>Proteins" +"" + ((int) (double) barChartValues.get(columnIndex - 1)) + "";
+                String mod = columns.keySet().toArray()[columnIndex++].toString().replace("[", "").replace("]", "<br/>").replace(",", "<br/>") + "<font style='font-size:10px !important;margin-right:5px'> " + VaadinIcons.HASH.getHtml() + "</font>Proteins" + "" + ((int) (double) barChartValues.get(columnIndex - 1)) + "";
                 for (String key : dataColors.keySet()) {
                     if (mod.contains(key)) {
                         Color c = dataColors.get(key);
@@ -338,7 +332,6 @@ public abstract class DivaMatrixLayoutChartFilter extends AbsoluteLayout impleme
                 String[] subArr = columnKey.replace("]", "").replace("[", "").trim().split(",");
                 int startLineRange = sortedKeysList.indexOf(subArr[0]);
                 int endLineRange = sortedKeysList.indexOf(subArr[subArr.length - 1].trim());
-//                System.out.println("at node selection "  + "  coulmn key  " + columnKey + "  " + rowIndex + "  startLineRange " + startLineRange+"  end "+subArr[subArr.length - 1].trim()+"  sortedKeysList: "+sortedKeysList);
                 if (!nodesTable.containsKey(columnKey) || nodesTable.get(columnKey).get(rowIndex) == null) {
                     columnPreIndex++;
                     continue;
@@ -447,9 +440,6 @@ public abstract class DivaMatrixLayoutChartFilter extends AbsoluteLayout impleme
                     barChartValues.put(coulmnIndex, d);
                     coulmnIndex++;
                 }
-//                updateChartDataset(barChartValues);
-//                redrawChart();
-
             } else {
                 Map<Integer, Double> tbarChartValues = new LinkedHashMap<>();
                 int coulmnIndex = 0;
@@ -618,11 +608,11 @@ public abstract class DivaMatrixLayoutChartFilter extends AbsoluteLayout impleme
     }
 
     public double lin2log(double z, double y, double x) {
-       
+
         double b = Math.log(y / x) / (y - x);
         double a = y / Math.exp(b * y);
         double finalAnswer = a * Math.exp(b * z);
-        System.out.println("final answer "+Math.log(z));
+        System.out.println("final answer " + Math.log(z));
 //        double finalAnswer = Math.max(Math.round(tempAnswer) - 1, 0);
         return Math.log(z);
 

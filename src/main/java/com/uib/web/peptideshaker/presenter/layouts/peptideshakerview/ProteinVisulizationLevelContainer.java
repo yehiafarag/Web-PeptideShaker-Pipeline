@@ -3,11 +3,12 @@ package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideObject;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.ProteinGroupObject;
-import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components.ProteinCoverageContainer;
+import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components.ProteinCoverageTable;
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components.ProteinStructurePanel;
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components.ProteinsPeptidesGraphComponent;
 import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.charts.RegistrableFilter;
+import com.uib.web.peptideshaker.presenter.core.filtercharts.components.RangeColorGenerator;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbsoluteLayout;
@@ -33,9 +34,10 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
     private final ProteinsPeptidesGraphComponent selectedProteinGraph;
     private final SelectionManager Selection_Manager;
     private final BigSideBtn proteinoverviewBtn;
-    private final ProteinCoverageContainer proteinCoverageContainer;
+    private final ProteinCoverageTable proteinCoverageContainer;
     private final ProteinStructurePanel proteinStructurePanel;
     private Map<String, PeptideObject> proteinPeptides;
+    private RangeColorGenerator colorScale;
 
     /**
      * Constructor to initialise the main layout and variables.
@@ -70,7 +72,7 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
         topLeftLabelContainer.setSpacing(true);
         topLeftLabelContainer.addComponent(headerLabel);
 
-        Label commentLabel = new Label("<i style='padding-right: 50px;top: 3px !important;position: relative;'>* Click in the graph to select proteins and peptides</i>", ContentMode.HTML);
+        Label commentLabel = new Label("<i style='padding-right: 50px;top: 3px !important;position: relative;'>* Click in the graph or table to select proteins and peptides</i>", ContentMode.HTML);
         commentLabel.setWidthUndefined();
         commentLabel.setStyleName("resizeabletext");
         commentLabel.addStyleName("margintop10");
@@ -102,6 +104,7 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
                     this.getPeptidesNodes().values().stream().filter((peptide) -> (peptide.getProteinsSet().contains(protein.getAccession()))).forEachOrdered((peptide) -> {
                         proteinPeptides.put(peptide.getModifiedSequence(), peptide);
                     });
+                    
                     proteinStructurePanel.updatePanel(protein.getAccession(), protein.getSequence(), proteinPeptides.values());
                 } else {
                     proteinStructurePanel.reset();
@@ -143,7 +146,7 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
 
         Selection_Manager.RegistrProteinInformationComponent(ProteinVisulizationLevelContainer.this);
 
-        proteinCoverageContainer = new ProteinCoverageContainer(proteinStructurePanel.getChainCoverageLayout()) {
+        proteinCoverageContainer = new ProteinCoverageTable(proteinStructurePanel.getChainCoverageLayout()) {
             @Override
             public void selectPeptide(Object proteinId, Object peptideId) {
                 selectedProteinGraph.selectPeptide(proteinId, peptideId);
@@ -176,8 +179,8 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
         if (type.equalsIgnoreCase("protein_selection")) {
             String proteinsId = Selection_Manager.getSelectedProteinId();
             String imgUrl = selectedProteinGraph.updateGraphData(proteinsId);
-
-            proteinCoverageContainer.selectDataset(selectedProteinGraph.getProteinNodes(), selectedProteinGraph.getPeptidesNodes(), selectedProteinGraph.getSelectedProteins(), selectedProteinGraph.getSelectedPeptides());
+            this.colorScale=selectedProteinGraph.getColorScale();
+            proteinCoverageContainer.selectDataset(selectedProteinGraph.getProteinNodes(), selectedProteinGraph.getPeptidesNodes(), selectedProteinGraph.getSelectedProteins(), selectedProteinGraph.getSelectedPeptides(),colorScale);
             if (imgUrl != null) {
                 this.proteinoverviewBtn.updateIconResource(new ExternalResource(imgUrl));
             } else {

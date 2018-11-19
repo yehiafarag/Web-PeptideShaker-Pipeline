@@ -2,9 +2,11 @@ package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components
 
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideObject;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.ProteinGroupObject;
+import com.uib.web.peptideshaker.presenter.core.filtercharts.components.RangeColorGenerator;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import java.awt.Color;
 import java.util.Collections;
@@ -28,10 +30,9 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
     private final AbsoluteLayout chainCoverage3dLayout;
     private final Set<PeptideLayout> peptideDistMap;
     private final Set<PeptideObject> peptideObjectsSet;
-
     Map<String, Color> ModificationColorMap;
 
-    public ProteinCoverageComponent(ProteinGroupObject protein, Map<String, PeptideObject> peptidesNodes) {
+    public ProteinCoverageComponent(ProteinGroupObject protein, Map<String, PeptideObject> peptidesNodes,RangeColorGenerator colorScale) {
         ProteinCoverageComponent.this.setWidth(100, Unit.PERCENTAGE);
         HashMap<String, String> styles = new HashMap<>();
         styles.put("Confident", "greenbackground");
@@ -92,8 +93,14 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
 
         };
         
+        
 
         proteinCoverageLayout = new ProteinCoverageLayout(styles.get(protein.getValidation()), styles.get(protein.getProteinEvidence()));
+        peptideDistMap = new TreeSet<>(Collections.reverseOrder());
+        proteinCoverageLayout.addLayoutClickListener((LayoutEvents.LayoutClickEvent event) -> {
+
+            selectPeptide(protein.getAccession(), null);
+        });
 
         peptideDistributionLayout = new AbsoluteLayout();
         peptideDistributionLayout.setWidth(100, Unit.PERCENTAGE);
@@ -101,13 +108,20 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
         peptideDistributionLayout.addStyleName("peptidecoverage");
 
         LayoutEvents.LayoutClickListener peptidesListener = (LayoutEvents.LayoutClickEvent event) -> {
-            PeptideLayout genPeptid = (PeptideLayout) event.getComponent();
-            selectPeptide(protein.getAccession(), genPeptid.getPeptideId());
+            Component clickedComp = event.getClickedComponent();
+            if (clickedComp!=null && clickedComp.getStyleName().contains("peptidelayout")) {
+                PeptideLayout genPeptid = (PeptideLayout) clickedComp;
+                selectPeptide(protein.getAccession(), genPeptid.getPeptideId());
+            } else if(clickedComp instanceof Label){                
+                selectPeptide(protein.getAccession(), ((Label)clickedComp).getData());
+
+            }
         };
-       
+
+        peptideDistributionLayout.addLayoutClickListener(peptidesListener);
+
         float factor = 100f / Float.valueOf(protein.getSequence().length());
         int[] distArr = new int[protein.getSequence().length()];
-        peptideDistMap = new TreeSet<>(Collections.reverseOrder());
 
         peptidesNodes.values().forEach((peptide) -> {
             if (protein.getSequence().contains(peptide.getSequence())) {
@@ -136,8 +150,8 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
 //                        distArr[index] = topLevel;
 //                        index++;
 //                    }
-                    PeptideLayout genPeptide = new PeptideLayout(peptide, width, startIndex, left, styles.get(peptide.getValidation()), styles.get("Not Applicable"), protein.isEnymaticPeptide(peptide.getModifiedSequence()));
-                    genPeptide.addLayoutClickListener(peptidesListener);
+                    PeptideLayout genPeptide = new PeptideLayout(peptide, width, startIndex, left, styles.get(peptide.getValidation()), styles.get("Not Applicable"), protein.isEnymaticPeptide(peptide.getModifiedSequence()),colorScale.getColor(peptide.getPSMsNumber()));
+//                    genPeptide.addLayoutClickListener(peptidesListener);
                     peptideDistMap.add(genPeptide);
                     peptideObjectsSet.add(peptide);
 
@@ -171,8 +185,8 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
 //                        index++;
 //                    }
 
-                    PeptideLayout genPeptide = new PeptideLayout(peptide, width, startIndex, left, styles.get(peptide.getValidation()), styles.get("Not Applicable"), protein.isEnymaticPeptide(peptide.getModifiedSequence()));
-                    genPeptide.addLayoutClickListener(peptidesListener);
+                    PeptideLayout genPeptide = new PeptideLayout(peptide, width, startIndex, left, styles.get(peptide.getValidation()), styles.get("Not Applicable"), protein.isEnymaticPeptide(peptide.getModifiedSequence()),colorScale.getColor(peptide.getPSMsNumber()));
+//                    genPeptide.addLayoutClickListener(peptidesListener);
                     peptideDistMap.add(genPeptide);
                     peptideObjectsSet.add(peptide);
 
@@ -221,7 +235,7 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
         }
         levelNum = 25 + (levelNum * 20) + 5;
         ProteinCoverageComponent.this.setHeight(levelNum, Unit.PIXELS);
-        chainCoverage3dLayout.setVisible(false);      
+        chainCoverage3dLayout.setVisible(false);
     }
 
     public void selectPeptides(Set<Object> peptidesId) {
@@ -235,8 +249,9 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
     }
 
     public void selectPeptides(Object peptideId) {
+        final boolean selectAll = peptideId == null;
         peptideDistMap.forEach((peptide) -> {
-            peptide.setSelected(peptideId.equals(peptide.getPeptideId()));
+            peptide.setSelected(selectAll || peptideId.equals(peptide.getPeptideId()));
         });
     }
 

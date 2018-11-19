@@ -1,4 +1,4 @@
-package com.uib.web.peptideshaker.presenter.core.filtercharts.updatedfilters;
+package com.uib.web.peptideshaker.presenter.core.filtercharts.filters;
 
 import com.uib.web.peptideshaker.presenter.core.filtercharts.charts.*;
 import com.google.common.collect.Sets;
@@ -6,15 +6,12 @@ import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.SelectionMa
 import com.uib.web.peptideshaker.presenter.core.FilterButton;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.components.RangeColorGenerator;
 import com.vaadin.event.LayoutEvents;
-import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -96,7 +93,8 @@ public abstract class ChromosomesFilter extends AbsoluteLayout implements Regist
         removeFilterBtn.setHeight(24, Unit.PIXELS);
         removeFilterBtn.setVisible(false);
         removeFilterBtn.addStyleName("btninframe");
-        ChromosomesFilter.this.addComponent(removeFilterBtn, "right:23px;top:-1px;");
+        ChromosomesFilter.this.addComponent(removeFilterBtn, "right:23px;top:5px;");
+        
 
         mainFilterPanel = new Panel();
         mainFilterPanel.setHeight(100, Unit.PERCENTAGE);
@@ -194,7 +192,7 @@ public abstract class ChromosomesFilter extends AbsoluteLayout implements Regist
             ChromosomesFilter.this.removeComponent(colorGenerator.getColorScale());
         }
         colorGenerator = new RangeColorGenerator(treeSet.last());
-        frame.addComponent(colorGenerator.getColorScale(), "top:15;right:20px");
+        frame.addComponent(colorGenerator.getColorScale(), "top:20;right:30px");
         updateChromosomesLabelsColor();
 
     }
@@ -226,7 +224,7 @@ public abstract class ChromosomesFilter extends AbsoluteLayout implements Regist
                     frame.removeComponent(colorGenerator.getColorScale());
                 }
                 colorGenerator = new RangeColorGenerator(treeSet.last());
-                frame.addComponent(colorGenerator.getColorScale(), "top:15;right:20px");
+                frame.addComponent(colorGenerator.getColorScale(), "top:15;right:30px");
                 updateChromosomesLabelsColor();
 
             }

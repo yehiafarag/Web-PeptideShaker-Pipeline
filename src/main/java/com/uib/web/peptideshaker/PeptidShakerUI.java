@@ -24,7 +24,6 @@ import java.net.URLConnection;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpSession;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -58,7 +57,7 @@ public class PeptidShakerUI extends UI {
     @Override
     protected void init(VaadinRequest vaadinRequest) {
 
-        PeptidShakerUI.this.setSizeFull();
+         try { PeptidShakerUI.this.setSizeFull();
         notification = new Notification("Use the device in landscape mode :-)", Notification.Type.ERROR_MESSAGE);
         notification.setDelayMsec(10000);
         notification.setStyleName("mobilealertnotification");
@@ -66,33 +65,34 @@ public class PeptidShakerUI extends UI {
          * Initialise the context parameters and store them in VaadinSession.
          *
          */
-        ServletContext scx = VaadinServlet.getCurrent().getServletContext();
-        String localFileSystemFolderPath = (scx.getInitParameter("filesURL"));
-        VaadinSession.getCurrent().setAttribute("userDataFolderUrl", localFileSystemFolderPath);
-        VaadinSession.getCurrent().getSession().setAttribute("userDataFolderUrl", localFileSystemFolderPath);
-        VaadinSession.getCurrent().setAttribute("ctxPath", vaadinRequest.getContextPath());
-        String testUserAPIKey = (scx.getInitParameter("testUserAPIKey"));
-        VaadinSession.getCurrent().setAttribute("testUserAPIKey", testUserAPIKey);
-        String galaxyServerUrl = (scx.getInitParameter("galaxyServerUrl"));
-        VaadinSession.getCurrent().setAttribute("galaxyServerUrl", galaxyServerUrl);
+      
+            ServletContext scx = VaadinServlet.getCurrent().getServletContext();
+            String localFileSystemFolderPath = (scx.getInitParameter("filesURL"));
+            VaadinSession.getCurrent().setAttribute("userDataFolderUrl", localFileSystemFolderPath);
+            VaadinSession.getCurrent().getSession().setAttribute("userDataFolderUrl", localFileSystemFolderPath);
+            VaadinSession.getCurrent().setAttribute("ctxPath", vaadinRequest.getContextPath());
+            String testUserAPIKey = (scx.getInitParameter("testUserAPIKey"));
+            VaadinSession.getCurrent().setAttribute("testUserAPIKey", testUserAPIKey);
+            String galaxyServerUrl = (scx.getInitParameter("galaxyServerUrl"));
+            VaadinSession.getCurrent().setAttribute("galaxyServerUrl", galaxyServerUrl);
 
-        updateCSFPRProteinsList();
-        if (testUserAPIKey == null || galaxyServerUrl == null) {
-            notification = new Notification("Error in Galaxy server address, Contact administrator :-(", Notification.Type.ERROR_MESSAGE);
-            notification.setDelayMsec(-1);
-            notification.show(Page.getCurrent());
-            return;
-        }
-        if (!checkConnectionToGalaxy(galaxyServerUrl)) {
-            notification = new Notification("Error, Galaxy server is not available , Contact administrator :-(", Notification.Type.ERROR_MESSAGE);
-            notification.setDelayMsec(-1);
-            notification.show(Page.getCurrent());
-            return;
-        }
-
+            updateCSFPRProteinsList();
+            if (testUserAPIKey == null || galaxyServerUrl == null) {
+                notification = new Notification("Error in Galaxy server address, Contact administrator :-(", Notification.Type.ERROR_MESSAGE);
+                notification.setDelayMsec(-1);
+                notification.show(Page.getCurrent());
+                return;
+            }
+            if (!checkConnectionToGalaxy(galaxyServerUrl)) {
+                notification = new Notification("Error, Galaxy server is not available , Contact administrator :-(", Notification.Type.ERROR_MESSAGE);
+                notification.setDelayMsec(-1);
+                notification.show(Page.getCurrent());
+                return;
+            }
+        
         WebPeptideShakerApp webPeptideShakerApp = new WebPeptideShakerApp();
         PeptidShakerUI.this.setContent(webPeptideShakerApp);
-
+       
         /**
          * Check the visualisation mode based on screen size small screen for
          * mobile browser or tablet.
@@ -154,10 +154,12 @@ public class PeptidShakerUI extends UI {
         if (isNelsGalaxyConnection || (VaadinSession.getCurrent().getAttribute("ApiKey") != null && VaadinSession.getCurrent().getAttribute("galaxyUrl") != null)) {
             webPeptideShakerApp.reConnectToGalaxyServer(VaadinSession.getCurrent().getAttribute("ApiKey") + "", VaadinSession.getCurrent().getAttribute("galaxyUrl") + "");
         }
-
         Page.getCurrent().setTitle("PeptideShaker");
-        
+    } catch (Exception e) {
+             System.out.println("---------------------------error---------------------------");
+            e.printStackTrace();
 
+        }
     }
 
     /**
@@ -275,4 +277,5 @@ public class PeptidShakerUI extends UI {
         }
 
     }
+
 }

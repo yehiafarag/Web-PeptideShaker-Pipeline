@@ -48,8 +48,8 @@ public abstract class SelectableNode extends AbsoluteLayout implements LayoutEve
         this.nodeId = nodeId;
         this.columnIndex = columnIndex;
         this.nodeColor = nodeColor;
-        SelectableNode.this.setWidth(100, Unit.PERCENTAGE);
-        SelectableNode.this.setHeight(100, Unit.PERCENTAGE);
+        SelectableNode.this.setWidth(15, Unit.PIXELS);
+        SelectableNode.this.setHeight(25, Unit.PIXELS);
         SelectableNode.this.setStyleName("selectablenode");
         VerticalLayout lineContainers = new VerticalLayout();
         lineContainers.setWidth(100, Unit.PERCENTAGE);
@@ -57,8 +57,7 @@ public abstract class SelectableNode extends AbsoluteLayout implements LayoutEve
         SelectableNode.this.addComponent(lineContainers);
 
         nodeContainer = new VerticalLayout();
-        nodeContainer.setWidth(100, Unit.PERCENTAGE);
-        nodeContainer.setHeight(100, Unit.PERCENTAGE);
+        nodeContainer.setSizeFull();
         SelectableNode.this.addComponent(nodeContainer);
 
         nodeCircle = new Label();

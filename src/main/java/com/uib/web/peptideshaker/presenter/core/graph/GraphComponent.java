@@ -5,6 +5,7 @@ import com.ejt.vaadin.sizereporter.SizeReporter;
 import com.itextpdf.text.pdf.codec.Base64;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideObject;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.ProteinGroupObject;
+import com.uib.web.peptideshaker.presenter.core.filtercharts.components.RangeColorGenerator;
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components.coverage.Legend;
 import com.vaadin.data.Property;
 import com.vaadin.event.LayoutEvents;
@@ -235,6 +236,8 @@ public abstract class GraphComponent extends VerticalLayout {
         proteinsControl.addItem("Validation Status");
         proteinsControl.addItem("Modification  Status");
         proteinsControl.addItem("Protein Evidence");
+        proteinsControl.addItem("PSMNumber");
+        proteinsControl.setItemCaption("PSMNumber", "#PSM");
         proteinsControl.addItem("Molecule Type");
 
         proteinsControl.setValue("Molecule Type");
@@ -335,7 +338,7 @@ public abstract class GraphComponent extends VerticalLayout {
         mainContainer.addComponent(wrapper, "left: 0px; top: 0px");
         mainContainer.addComponent(bottomRightPanel, "right: " + 10 + "px; bottom: " + -12 + "px");
         mainContainer.addComponent(lefTtopPanel, "left: " + 10 + "px; top: " + -12 + "px");
-        mainContainer.addComponent(rightBottomPanel, "right: " + 10 + "px; top: " + 10+ "px");
+        mainContainer.addComponent(rightBottomPanel, "right: " + 10 + "px; top: " + 10 + "px");
         mainContainer.addComponent(leftBottomPanel, "left: " + 10 + "px; bottom: " + -12 + "px");
         wrapper = new VerticalLayout();
         wrapper.setSizeFull();
@@ -370,7 +373,7 @@ public abstract class GraphComponent extends VerticalLayout {
 
     }
 
-    public void updateGraphData(ProteinGroupObject selectedProtein, Map<String, ProteinGroupObject> proteinNodes, Map<String, PeptideObject> peptidesNodes, HashMap<String, ArrayList<String>> edges) {
+    public void updateGraphData(ProteinGroupObject selectedProtein, Map<String, ProteinGroupObject> proteinNodes, Map<String, PeptideObject> peptidesNodes, HashMap<String, ArrayList<String>> edges,RangeColorGenerator colorScale) {
         uniqueOnly = nodeControl.getValue().equals("Unique Only");
         canvas.removeAllComponents();
         nodesMap.clear();
@@ -381,23 +384,32 @@ public abstract class GraphComponent extends VerticalLayout {
 //        canvas.clear();
         //calculate graph
         if (selectedProtein == null) {
-            graphInfo.setValue("#Proteins: 0<br/>#Peptides: 0");
+            graphInfo.setValue("#Proteins: <font style='float:right'>0</font><br/>#Peptides: <font style='float:right'>0</font>");
             return;
         }
         this.proteinNodes = proteinNodes;
         this.peptidesNodes = peptidesNodes;
-
+        
         this.edges = edges;
         setUpGraph();
+        
+        
+        
+        
         for (String node : graph.getVertices()) {
             String modifications = "";
             String sequence = "";
+            int psmNumber = 0;
 
             if (peptidesNodes.containsKey(node)) {
                 modifications = peptidesNodes.get(node).getVariableModifications();
-                sequence=peptidesNodes.get(node).getSequence();
+                sequence = peptidesNodes.get(node).getSequence();
+                 psmNumber = peptidesNodes.get(node).getPSMsNumber();
             }
-            Node n = new Node(node, modifications,sequence) {
+            else{
+               psmNumber =-1;
+            }
+            Node n = new Node(node, modifications, sequence,psmNumber,colorScale.getColor(psmNumber)) {
                 @Override
                 public void selected(String id) {
                     selectNodes(new Object[]{id});
@@ -722,6 +734,12 @@ public abstract class GraphComponent extends VerticalLayout {
 
     }
 
+    public void selectParentItem(Object parentId) {
+
+        redrawSelection(new Object[]{parentId}, true);
+
+    }
+
     private void redrawSelection(Object[] ids, boolean selectRelatedNodes) {
         edgesImage.addStyleName("hide");
         nodesMap.values().forEach((node) -> {
@@ -756,7 +774,7 @@ public abstract class GraphComponent extends VerticalLayout {
             }
         }
         drawEdges();
-        graphInfo.setValue("#Proteins: " + selectedProteins.size() + "<br/>#Peptides: " + selectedPeptides.size() + "");
+        graphInfo.setValue("#Proteins: <font style='float:right'>" + selectedProteins.size() + "</font><br/>#Peptides: <font style='float:right'>" + selectedPeptides.size() + "</font>");
     }
 
     public Set<Object> getSelectedProteins() {

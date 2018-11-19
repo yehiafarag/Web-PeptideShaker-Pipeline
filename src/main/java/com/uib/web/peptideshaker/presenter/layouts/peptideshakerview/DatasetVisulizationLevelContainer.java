@@ -8,13 +8,11 @@ import com.uib.web.peptideshaker.presenter.core.FilterButton;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
 import java.util.Set;
 
 /**

@@ -1,9 +1,8 @@
-package com.uib.web.peptideshaker.presenter.core.filtercharts.updatedfilters;
+package com.uib.web.peptideshaker.presenter.core.filtercharts.filters;
 
 import com.ejt.vaadin.sizereporter.ComponentResizeEvent;
 import com.ejt.vaadin.sizereporter.SizeReporter;
 import com.google.common.collect.Sets;
-import com.itextpdf.text.pdf.codec.Base64;
 
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.SelectionManager;
 import com.uib.web.peptideshaker.presenter.core.FilterButton;
@@ -15,7 +14,6 @@ import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
@@ -23,16 +21,15 @@ import com.vaadin.ui.themes.ValoTheme;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
-import java.io.IOException;
+import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Timer;
+import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.jfree.chart.ChartRenderingInfo;
-import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.block.BlockBorder;
 import org.jfree.chart.entity.ChartEntity;
@@ -63,7 +60,7 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
     private final SelectionManager Selection_Manager;
     private final Set<Comparable> appliedFilter;
     private Label chartTitle;
-    private Image mainChartImg;
+    private Label mainChartImg;
     private boolean activateFilter = false;
     /**
      * A wite layout that has the label and turn pie-chart into donut chart.
@@ -87,7 +84,7 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
      * contain all the chart information.
      */
     private final ChartRenderingInfo mainChartRenderingInfo = new ChartRenderingInfo();
-    private FilterButton removeFilterIcon;
+    private FilterButton resetFilterBtn;
     private VerticalLayout rightLayout;
     private int imageRepaintCounter;
     private final List<ComponentResizeEvent> eventList = new ArrayList<>();
@@ -108,7 +105,8 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
         this.appliedFilter = new LinkedHashSet<>();
         this.dountChartListener = (LayoutEvents.LayoutClickEvent event) -> {
             Component clickedComponent = event.getClickedComponent();
-            if (clickedComponent instanceof Image) {
+            if (clickedComponent instanceof Label && clickedComponent.getId()!=null && clickedComponent.getId().equalsIgnoreCase("chart") ) {
+                
                 ChartEntity ent = mainChartRenderingInfo.getEntityCollection().getEntity(event.getRelativeX(), event.getRelativeY());
                 if (ent instanceof PieSectionEntity) {
                     applyFilter(((PieSectionEntity) ent).getSectionKey() + "");
@@ -148,7 +146,7 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
         rightLayout.setWidth(70, Unit.PIXELS);
         rightLayout.setHeight(100, Unit.PERCENTAGE);
         rightLayout.addStyleName("autooverflow");
-        frame.addComponent(rightLayout, "top: 10px; right: 10px; bottom: 0px;");
+        frame.addComponent(rightLayout, "top: 10px; right: 20px; bottom: 0px;");
 
         mainChartContainer = new AbsoluteLayout();
         mainChartContainer.setWidth(100, Unit.PERCENTAGE);
@@ -170,9 +168,12 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
         middleDountLayout.addComponent(selectAllLabel);
         middleDountLayout.setComponentAlignment(selectAllLabel, Alignment.MIDDLE_CENTER);
 
-        mainChartImg = new Image();
+        mainChartImg = new Label("",ContentMode.HTML);
         mainChartImg.setVisible(false);
+        mainChartImg.setId("chart");
         mainChartImg.setStyleName("pointer");
+        mainChartImg.addStyleName("showslow");
+        mainChartImg.addStyleName("slowdrawingimg");
         mainChartImg.setHeight(100, Unit.PERCENTAGE);
         mainChartImg.setWidth(100, Unit.PERCENTAGE);
         mainChartContainer.addComponent(mainChartImg);
@@ -196,9 +197,9 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
                 mainWidth = tChartWidth;
                 mainHeight = tChartHeight;
                 redrawChart();
-                mainChartImg.setVisible(true);
-                middleDountLayout.setVisible(true);
 
+                middleDountLayout.setVisible(true);
+                mainChartImg.setVisible(true);
             } catch (Exception ex) {
                 System.out.println("at error " + this.getClass().getName() + "  " + ex);
             }
@@ -206,7 +207,7 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
 
         initChart();
 
-        removeFilterIcon = new FilterButton() {
+        resetFilterBtn = new FilterButton() {
             @Override
             public void layoutClick(LayoutEvents.LayoutClickEvent event) {
                 appliedFilter.clear();
@@ -214,11 +215,11 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
 
             }
         };
-        removeFilterIcon.setWidth(24, Unit.PIXELS);
-        removeFilterIcon.setHeight(24, Unit.PIXELS);
-        removeFilterIcon.setVisible(false);
-        removeFilterIcon.addStyleName("btninframe");
-        DivaPieChartFilter.this.addComponent(removeFilterIcon, "right:23px;top:-1px;");
+        resetFilterBtn.setWidth(24, Unit.PIXELS);
+        resetFilterBtn.setHeight(24, Unit.PIXELS);
+        resetFilterBtn.setVisible(false);
+        resetFilterBtn.addStyleName("btninframe");
+        DivaPieChartFilter.this.addComponent(resetFilterBtn, "right:23px;top:0px;");
     }
 
     public void initializeFilterData(Map<String, Set<Comparable>> fullData, List<Color> colorsArr) {
@@ -265,9 +266,12 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
         if (mainWidth < 1 || mainHeight < 1 || !activateFilter) {
             return;
         }
-
-        mainChartImg.setSource(new ExternalResource(saveToFile(chart, mainChartRenderingInfo, mainWidth, mainHeight)));
         reDrawLayout();
+        String genImgUrl = saveToFile(chart, mainChartRenderingInfo, mainWidth, mainHeight);
+        mainChartImg.setValue(genImgUrl);
+//        mainChartImg.setSource(new ExternalResource(genImgUrl));
+        
+
     }
 
     @Override
@@ -342,18 +346,24 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
      */
     private String saveToFile(final JFreeChart chart, ChartRenderingInfo chartRenderingInfo, int width, int height) {
 
-        byte imageData[];
-        try {
+//        byte imageData[];
+//        try {
             chart.getLegend().setVisible(false);
-            imageData = ChartUtilities.encodeAsPNG(chart.createBufferedImage(width, height, chartRenderingInfo));
-            String base64 = Base64.encodeBytes(imageData);
-            base64 = "data:image/png;base64," + base64;
-            selectAllLabel.setVisible(rightLayout.getComponentCount() != 0);
-            return base64;
-        } catch (IOException e) {
-            System.err.println("at error " + e.getMessage());
-        }
-        return "";
+            chart.fireChartChanged();
+            SVGGraphics2D g2 = new SVGGraphics2D(width, height);
+            Rectangle r = new Rectangle(0, 0,width,height);
+            chart.draw(g2, r,chartRenderingInfo);            
+            return g2.getSVGElement();
+            
+//            imageData = ChartUtilities.encodeAsPNG(chart.createBufferedImage(width, height, chartRenderingInfo));
+//            String base64 = Base64.encodeBytes(imageData);
+//            base64 = "data:image/png;base64," + base64;
+//            selectAllLabel.setVisible(rightLayout.getComponentCount() != 0);
+//            return base64;
+//        } catch (IOException e) {
+//            System.err.println("at error " + e.getMessage());
+//        }
+//        return "";
     }
 
     /**
@@ -430,7 +440,7 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
     }
 
     private void setMainAppliedFilter(boolean mainAppliedFilter) {
-        removeFilterIcon.setVisible(mainAppliedFilter);
+        resetFilterBtn.setVisible(mainAppliedFilter);
         if (mainAppliedFilter) {
             this.addStyleName("highlightfilter");
         } else {

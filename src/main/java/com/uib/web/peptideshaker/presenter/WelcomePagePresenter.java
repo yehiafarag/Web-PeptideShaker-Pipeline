@@ -167,7 +167,6 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
 //
 //        connectionCommentLayout.setComponentAlignment(loginLabel, Alignment.TOP_LEFT);
 //        connectionCommentLayout.setStyleName("clickableimg");
-
         HorizontalLayout mainMiddlePanel = new HorizontalLayout();
         mainMiddlePanel.setSizeFull();
         mainMiddlePanel.setSpacing(true);
@@ -197,22 +196,22 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         overviewLabel.addStyleName(ValoTheme.LABEL_H2);
         userOverviewLayout.addComponent(overviewLabel);
 
-        Label userLabel = initLeftSideInfoLabel(VaadinIcons.USER.getHtml()+" User: ", "<i>Offline</i>");
+        Label userLabel = initLeftSideInfoLabel(VaadinIcons.USER.getHtml() + " User ", "<i>Offline</i>");
         userOverviewLayout.addComponent(userLabel);
 
-        Label dsNumberLabel = initLeftSideInfoLabel(VaadinIcons.CLUSTER.getHtml()+" Results: ", "<i></i>");
+        Label dsNumberLabel = initLeftSideInfoLabel(VaadinIcons.CLUSTER.getHtml() + " Results ", "<i></i>");
         userOverviewLayout.addComponent(dsNumberLabel);
 
-        Label filesNumberLabel = initLeftSideInfoLabel(VaadinIcons.FILE_TEXT_O.getHtml()+" Files: ", "<i></i>");
+        Label filesNumberLabel = initLeftSideInfoLabel(VaadinIcons.FILE_TEXT_O.getHtml() + " Files ", "<i></i>");
         userOverviewLayout.addComponent(filesNumberLabel);
 
-        Label usedMemory = initLeftSideInfoLabel(VaadinIcons.CLOUD_O.getHtml()+" Storage: ", "<i></i>");
+        Label usedMemory = initLeftSideInfoLabel(VaadinIcons.CLOUD_O.getHtml() + " Storage ", "<i></i>");
         userOverviewLayout.addComponent(usedMemory);
-        
-        Label searchGUI = initLeftSideInfoLabel("<img src='VAADIN/themes/webpeptideshakertheme/img/searchgui-medium-shadow.png' alt style='width: 25px;height: auto;margin-left: -11px;'>"+" SearchGUI ", "<i></i>");
+
+        Label searchGUI = initLeftSideInfoLabel("<img src='VAADIN/themes/webpeptideshakertheme/img/sgiconHRNSgray21.png' alt style='width: auto;height:15px;margin-left:-2px;    margin-right: 4px;'>" + " SearchGUI ", "<i></i>");
         userOverviewLayout.addComponent(searchGUI);
-        
-         Label peptideShaker = initLeftSideInfoLabel("<img src='VAADIN/themes/webpeptideshakertheme/img/peptideshaker.png' alt style='width: 20px'>"+" PeptideShaker ", "<i></i>");
+
+        Label peptideShaker = initLeftSideInfoLabel("<img src='VAADIN/themes/webpeptideshakertheme/img/psiconHRNSgray21.png' alt style='width: auto;height:15px;margin-left:-2px;    margin-right: 4px;'>" + " PeptideShaker ", "<i></i>");
         userOverviewLayout.addComponent(peptideShaker);
 
         /**
@@ -280,12 +279,12 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         userConnectionPanel.setMargin(new MarginInfo(true, true, true, true));
         userConnectionPanel.setSpacing(true);
 
-        connectingLabel = new Label("<h1 class='animation'>Connecting to galaxy....</h1>");
+        connectingLabel = new Label("<h1 class='animation'>Connecting to galaxy, Please wait...</h1>");
         connectingLabel.setVisible(false);
         connectingLabel.setCaptionAsHtml(true);
         connectingLabel.setContentMode(ContentMode.HTML);
         connectingLabel.setHeight(25, Sizeable.Unit.PIXELS);
-        connectingLabel.setWidth(160, Sizeable.Unit.PIXELS);
+        connectingLabel.setWidth(200, Sizeable.Unit.PIXELS);
         connectingLabel.setStyleName(ValoTheme.LABEL_SMALL);
         connectingLabel.addStyleName(ValoTheme.LABEL_BOLD);
         connectingLabel.addStyleName(ValoTheme.LABEL_TINY);
@@ -314,11 +313,13 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         connectinoWindow.setClosable(true);
 
         connectinoWindow.setResizable(false);
-        connectinoWindow.setStyleName("windowcontainer");
+        connectinoWindow.setStyleName("connectionwindow");
         connectinoWindow.center();
         connectinoWindow.setWindowMode(WindowMode.NORMAL);
         UI.getCurrent().addWindow(connectinoWindow);
-        connectinoWindow.setVisible(false);
+        connectinoWindow.setVisible(false);       
+        
+        
 
         presenterControlButtonsPanel.addLayoutClickListener((LayoutEvents.LayoutClickEvent event) -> {
             AbstractComponent comp = (AbstractComponent) event.getClickedComponent();
@@ -334,6 +335,8 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         galaxyLloginBtn.addLayoutClickListener((LayoutEvents.LayoutClickEvent event) -> {
             viewId = this.getViewId();
             if (galaxyLloginBtn.getData() == null) {
+                connectinoWindow.removeStyleName("connectionwindow");
+                connectinoWindow.setStyleName("windowcontainer");
                 connectinoWindow.setVisible(true);
             } else {
                 VaadinSession.getCurrent().getSession().invalidate();
@@ -377,7 +380,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
 //        serviceButtonContainer.setExpandRatio(galaxyConnectionText, 0.65f);
         connectionBtnLabel = new ButtonWithLabel("<font style='width: 100%;height: 100%;font-size: 14px;font-weight: 600;text-align: justify;line-height: 70px;'>Login to Galaxy Server using your API Key</font>", 1);
         connectionBtnLabel.updateIconResource(new ThemeResource("img/galaxyLogo.png"));
-        
+
         connectionBtnLabel.addStyleName("smaller");
         serviceButtonContainer.addComponent(connectionBtnLabel);
 
@@ -423,8 +426,8 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         galaxyServiceBtns.setExpandRatio(regLink, 0.1f);
 
         Link userAPI = new Link("Get User API", new ExternalResource("http://129.177.231.63:8081/galaxy/user/api_key"));
-        userAPI.setStyleName("newlink");       
-        userAPI.setTargetName("_blank");   
+        userAPI.setStyleName("newlink");
+        userAPI.setTargetName("_blank");
         galaxyServiceBtns.addComponent(userAPI);
         galaxyServiceBtns.setExpandRatio(userAPI, 0.4f);
 //
@@ -456,7 +459,10 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
                 connectinoWindow.setClosable(false);
                 connectionBtnLabel.setVisible(false);
                 galaxyLoginLayout.setVisible(false);
-                Runnable task = () -> {
+                Runnable task = () -> { 
+                    connectinoWindow.removeStyleName("windowcontainer");
+                    connectinoWindow.setStyleName("connectionwindow");
+       
                     List<String> userOverviewData = connectToGalaxy(userAPIFeald.getValue(), viewId);
                     connectedToGalaxy(userOverviewData);
                 };
@@ -497,44 +503,39 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         mainBottomPanel.setStyleName("bluelayout");
         mainBottomPanel.setHeight(65, Unit.PIXELS);
         mainBottomPanel.setWidth(100, Unit.PERCENTAGE);
-        container.addComponent(mainBottomPanel,"left:0px;bottom:10px");
-        
+        container.addComponent(mainBottomPanel, "left:0px;bottom:10px");
+
         HorizontalLayout sponserContainer = new HorizontalLayout();
-        sponserContainer.setHeight(100,Unit.PERCENTAGE);
+        sponserContainer.setHeight(100, Unit.PERCENTAGE);
         sponserContainer.setSpacing(true);
         sponserContainer.setWidthUndefined();
         mainBottomPanel.addComponent(sponserContainer);
         mainBottomPanel.setComponentAlignment(sponserContainer, Alignment.TOP_CENTER);
-        
-        Label developmentText = new Label("<font>PeptideShaker<i> (Online version)</i>  is being developed by <a href=''>Barsnes group</a> at The Computational Biology Unit (CBU) at the University of Bergen, Norway, in close collaboration with The Proteomics Unit at the University of Bergen (PROBE), Bergen, Norway.</font>", ContentMode.HTML);
+
+        Label developmentText = new Label("<font>The web version of PeptideShaker is being developed by <a href='http://www.cbu.uib.no/barsnes/' target='_blank'>Barsnes Group</a> at the Computational Biology Unit (CBU) at the University of Bergen, Norway, in close collaboration with the Proteomics Unit at the University of Bergen (PROBE), Bergen, Norway.</font>", ContentMode.HTML);
         developmentText.setStyleName("refrencetext");
         sponserContainer.addComponent(developmentText);
-        
-        
+
         Link probeLink = new Link("<img src='VAADIN/themes/webpeptideshakertheme/img/probe-updated.png' alt style='height: 65px;margin-top: -20px;cursor:pointer !important;'>", new ExternalResource("https://www.uib.no/rg/probe"));
         probeLink.setCaptionAsHtml(true);
-        probeLink.setHeight(100,Unit.PERCENTAGE);
-        probeLink.setWidth(200,Unit.PIXELS);
-        probeLink.setTargetName("_blank"); 
+        probeLink.setHeight(100, Unit.PERCENTAGE);
+        probeLink.setWidth(200, Unit.PIXELS);
+        probeLink.setTargetName("_blank");
         sponserContainer.addComponent(probeLink);
-           Link uibLink = new Link("<img src='VAADIN/themes/webpeptideshakertheme/img/uib-logo.svg' alt style='height: 85px;margin-top: -30px;margin-left: -20px;cursor:pointer !important;'>", new ExternalResource("https://www.uib.no/"));
+        Link uibLink = new Link("<img src='VAADIN/themes/webpeptideshakertheme/img/uib-logo.svg' alt style='height: 85px;margin-top: -30px;margin-left: -20px;cursor:pointer !important;'>", new ExternalResource("https://www.uib.no/"));
         uibLink.setCaptionAsHtml(true);
-        uibLink.setHeight(100,Unit.PERCENTAGE);
-        uibLink.setWidth(65,Unit.PIXELS);
-        uibLink.setTargetName("_blank"); 
-         sponserContainer.addComponent(uibLink);
-         Link cbuLink = new Link("<img src='VAADIN/themes/webpeptideshakertheme/img/cbu_logo_lightBlue_transparent.png' alt style='height: 55px;margin-top: -10px;cursor:pointer !important;'>", new ExternalResource("http://www.cbu.uib.no/"));
+        uibLink.setHeight(100, Unit.PERCENTAGE);
+        uibLink.setWidth(65, Unit.PIXELS);
+        uibLink.setTargetName("_blank");
+        sponserContainer.addComponent(uibLink);
+        Link cbuLink = new Link("<img src='VAADIN/themes/webpeptideshakertheme/img/cbu_logo_lightBlue_transparent.png' alt style='height: 55px;margin-top: -10px;cursor:pointer !important;'>", new ExternalResource("http://www.cbu.uib.no/"));
         cbuLink.setCaptionAsHtml(true);
-        cbuLink.setHeight(100,Unit.PERCENTAGE);
-        cbuLink.setWidth(112,Unit.PIXELS);
-        cbuLink.setTargetName("_blank"); 
+        cbuLink.setHeight(100, Unit.PERCENTAGE);
+        cbuLink.setWidth(112, Unit.PIXELS);
+        cbuLink.setTargetName("_blank");
         sponserContainer.addComponent(cbuLink);
-         
-         
-      
-        
-//        container.setExpandRatio(mainBottomPanel, 20);
 
+//        container.setExpandRatio(mainBottomPanel, 20);
         VerticalLayout windowContent = new VerticalLayout();
         windowContent.setWidth(500, Unit.PIXELS);
         this.busyConnectinWindow = new Window(null, windowContent);
@@ -549,10 +550,8 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         busyConnectinWindow.addStyleName("hidewindow");
 
         this.loginAsGuest();
-        
-        
-//        presenterControlButtonsPanel.addComponent(new IconDesign());
 
+//        presenterControlButtonsPanel.addComponent(new IconDesign());
     }
 
     private void loginAsGuest() {
@@ -563,6 +562,9 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         connectingLabel.setCaption("<b style=\"color:#cd6e1d !important\">Guest User <i>(public data)</i></b>");
         connectingLabel.setVisible(true);
         Runnable task = () -> {
+            connectinoWindow.removeStyleName("windowcontainer");
+            connectinoWindow.setStyleName("connectionwindow");
+        
             List<String> userOverviewData = connectToGalaxy(testUserLogin, viewId);
             connectedToGalaxy(userOverviewData);
         };
@@ -611,19 +613,20 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
 //            loginLabel.setData(null);
 //            loginLabel.setVisible(false);
         }
-        updateUserOverviewPanel(userOverviewData);     
+        updateUserOverviewPanel(userOverviewData);
         connectingLabel.setVisible(false);
 
     }
-    public void updateUserOverviewPanel(List<String> userOverviewData){
-    if (userOverviewData != null && !userOverviewData.isEmpty()) {
-            Label l1 = initLeftSideInfoLabel(VaadinIcons.USER.getHtml()+" <b style='color:#cd6e1d !important'>" + userOverviewData.get(0) + "</b>", "");
+
+    public void updateUserOverviewPanel(List<String> userOverviewData) {
+        if (userOverviewData != null && !userOverviewData.isEmpty()) {
+            Label l1 = initLeftSideInfoLabel(VaadinIcons.USER.getHtml() + " <b style='color:#cd6e1d !important'>" + userOverviewData.get(0) + "</b>", "");
             userOverviewLayout.replaceComponent(userOverviewLayout.getComponent(1), l1);
             for (int i = 2; i < userOverviewLayout.getComponentCount(); i++) {
                 Label l = (Label) userOverviewLayout.getComponent(i);
                 updateLeftSideInfoLabel(l, userOverviewData.get(i - 1));
             }
-     }
+        }
     }
 
     /**
@@ -705,13 +708,13 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
 
     private void updateLeftSideInfoLabel(Label label, String value) {
         String org = label.getValue().split("</font>")[0];
-        label.setValue(org + "</font><font style='width:60px; text-align: right !important;font-size: 14px;float: right !important;  color:#cd6e1d'>  " + value + " </font>");      
+        label.setValue(org + "</font><font style='width:60px; text-align: right !important;font-size: 14px;float: right !important;  color:#cd6e1d; margin-top:2px'>  " + value + " </font>");
 
     }
 
     @Override
     public ButtonWithLabel getLargePresenterControlButton() {
-        return null ;
+        return null;
     }
 
     public void setPresenterControlButtonContainer(GridLayout presenterBtnsContainer) {

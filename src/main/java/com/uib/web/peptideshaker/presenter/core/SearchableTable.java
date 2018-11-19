@@ -7,8 +7,10 @@ import com.vaadin.event.ShortcutAction;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.MultiSelectMode;
+import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
@@ -60,7 +62,7 @@ public abstract class SearchableTable extends VerticalLayout implements Property
 
     private HorizontalLayout initSearchComponentLayout(String defaultSearchingMessage) {
         HorizontalLayout searchContainer = new HorizontalLayout();
-        searchContainer.setSpacing(true);
+        searchContainer.setSpacing(false);
         searchContainer.setStyleName("searchtablecontainer");
         searchContainer.setHeight(25, Unit.PIXELS);
         HorizontalLabelTextField searchField = new HorizontalLabelTextField("", defaultSearchingMessage, null);
@@ -206,6 +208,7 @@ public abstract class SearchableTable extends VerticalLayout implements Property
         table.addHeaderClickListener((Table.HeaderClickEvent event) -> {
             sortTable(event.getPropertyId());
         });
+      
 
         return table;
     }
@@ -372,7 +375,7 @@ public abstract class SearchableTable extends VerticalLayout implements Property
             });
 
         }
-        mainTable.setCaption("<b>" + tableMainTitle + " ( " + mainTable.getItemIds().size() + " / " + tableData.size() + " )</b>");
+        mainTable.setCaption("<b>" + tableMainTitle + " (" + mainTable.getItemIds().size() + "/" + tableData.size() + ")</b>");
         mainTable.addValueChangeListener(SearchableTable.this);
         if (mainTable.getItemIds().size() == 1) {
             mainTable.select(mainTable.getCurrentPageFirstItemId());

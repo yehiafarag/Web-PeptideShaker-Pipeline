@@ -125,7 +125,7 @@ public abstract class Legend extends VerticalLayout {
     }
 
     private Node generateNode(String defaultStyleName) {
-        Node node = new Node("prot","","") {
+        Node node = new Node("prot","","",-1,"") {
             @Override
             public void selected(String id) {
 

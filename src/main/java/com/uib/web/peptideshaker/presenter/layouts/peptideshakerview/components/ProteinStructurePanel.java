@@ -237,7 +237,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
         if (pdbMachSet != null && !pdbMachSet.isEmpty()) {
             pdbMachSet.keySet().forEach((str) -> {
                 pdbMatchesSelect.addItem(str);
-                pdbMatchesSelect.setItemCaption(str, str.toUpperCase() + " - " + pdbMachSet.get(str).getDescription());
+                pdbMatchesSelect.setItemCaption(str, str.toUpperCase() + " " + pdbMachSet.get(str).getDescription());
                 
             });
             if (pdbMatchesSelect.getItemIds() == null) {

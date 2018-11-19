@@ -1,9 +1,11 @@
 package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components;
 
+import com.google.common.collect.Range;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideObject;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.ProteinGroupObject;
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components.coverage.ProteinCoverageComponent;
 import com.uib.web.peptideshaker.presenter.core.ActionLabel;
+import com.uib.web.peptideshaker.presenter.core.filtercharts.components.RangeColorGenerator;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ExternalResource;
@@ -21,14 +23,15 @@ import org.apache.commons.collections15.map.LinkedMap;
  *
  * @author Yehia Farag
  */
-public abstract class ProteinCoverageContainer extends VerticalLayout {
+public abstract class ProteinCoverageTable extends VerticalLayout {
 
     private final Table proteinCoverageTable;
     private final Map<Object, Object[]> tableData;
     private final AbsoluteLayout chainCoverageLayout;
+    private int reIndex;
 
-    public ProteinCoverageContainer(AbsoluteLayout chainCoverageLayout) {
-        ProteinCoverageContainer.this.setSizeFull();
+    public ProteinCoverageTable(AbsoluteLayout chainCoverageLayout) {
+        ProteinCoverageTable.this.setSizeFull();
         this.chainCoverageLayout = chainCoverageLayout;
         tableData = new LinkedMap<>();
         proteinCoverageTable = new Table(" ");
@@ -40,14 +43,14 @@ public abstract class ProteinCoverageContainer extends VerticalLayout {
         proteinCoverageTable.setSelectable(false);
         proteinCoverageTable.setWidth(100, Unit.PERCENTAGE);
         proteinCoverageTable.setHeight(95, Unit.PERCENTAGE);
-        proteinCoverageTable.addContainerProperty("info", ActionLabel.class, null, "", null, Table.Align.LEFT);
-        proteinCoverageTable.addContainerProperty("acc", Link.class, null, "Accession", null, Table.Align.CENTER);
-        proteinCoverageTable.addContainerProperty("name", ActionLabel.class, null, "Name", null, Table.Align.LEFT);
-        proteinCoverageTable.addContainerProperty("coverage", ProteinCoverageComponent.class, null, "Coverage", null, Table.Align.LEFT);
-        proteinCoverageTable.setColumnWidth("info", 37);
+        proteinCoverageTable.addContainerProperty("index", Integer.class, null, "", null, Table.Align.LEFT);
+        proteinCoverageTable.addContainerProperty("acc", Link.class, null, generateCaptionWithTooltio("Accession", "Protein accession"), null, Table.Align.CENTER);
+        proteinCoverageTable.addContainerProperty("name", String.class, null, generateCaptionWithTooltio("Name", "Protein name"), null, Table.Align.LEFT);
+        proteinCoverageTable.addContainerProperty("coverage", ProteinCoverageComponent.class, null, generateCaptionWithTooltio("Coverage", "Protein sequence coverage"), null, Table.Align.LEFT);
+        proteinCoverageTable.setColumnWidth("index", 37);
         proteinCoverageTable.setColumnWidth("acc", 100);
         proteinCoverageTable.setColumnWidth("name", 300);
-        ProteinCoverageContainer.this.addComponent(proteinCoverageTable);
+        ProteinCoverageTable.this.addComponent(proteinCoverageTable);
         proteinCoverageTable.addColumnResizeListener((Table.ColumnResizeEvent event) -> {
             proteinCoverageTable.setColumnWidth(event.getPropertyId(), event.getPreviousWidth());
         });
@@ -59,7 +62,9 @@ public abstract class ProteinCoverageContainer extends VerticalLayout {
             return;
         }
         this.proteinCoverageTable.removeAllItems();
+        reIndex = 1;
         selectedProteinsItems.stream().map((id) -> {
+            tableData.get(id)[0] = reIndex++;
             this.proteinCoverageTable.addItem(tableData.get(id), id);
             return id;
         }).map((id) -> ((ProteinCoverageComponent) tableData.get(id)[3])).map((pcov) -> {
@@ -89,15 +94,18 @@ public abstract class ProteinCoverageContainer extends VerticalLayout {
     public Map<Object, Object[]> getTableData() {
         return tableData;
     }
+    private int rowIndex = 1;
 
-    public void selectDataset(Map<String, ProteinGroupObject> proteinNodes, Map<String, PeptideObject> peptidesNodes, Set<Object> defaultSelectedProteinsItems, Set<Object> defaultSelectedPeptidesItems) {
+    ;
+    public void selectDataset(Map<String, ProteinGroupObject> proteinNodes, Map<String, PeptideObject> peptidesNodes, Set<Object> defaultSelectedProteinsItems, Set<Object> defaultSelectedPeptidesItems,RangeColorGenerator colorScale) {
         tableData.clear();
+        rowIndex = 1;
         proteinNodes.values().forEach((protein) -> {
-            
-            ProteinCoverageComponent proteinLayout = new ProteinCoverageComponent(protein, peptidesNodes) {
+
+            ProteinCoverageComponent proteinLayout = new ProteinCoverageComponent(protein, peptidesNodes, colorScale) {
                 @Override
                 public void selectPeptide(Object proteinId, Object peptideId) {
-                    ProteinCoverageContainer.this.selectPeptide(proteinId, peptideId);
+                    ProteinCoverageTable.this.selectPeptide(proteinId, peptideId);
                     tableData.keySet().forEach((id) -> {
                         if (id.equals(proteinId)) {
                             ((ProteinCoverageComponent) tableData.get(id)[3]).selectPeptides(peptideId);
@@ -117,20 +125,25 @@ public abstract class ProteinCoverageContainer extends VerticalLayout {
             Link proteinAccLink = new Link(protein.getAccession(), new ExternalResource("http://www.uniprot.org/uniprot/" + protein.getAccession()));
             proteinAccLink.setTargetName("_blank");
             proteinAccLink.setStyleName("tablelink");
+//
+//            ActionLabel proteinDescription = new ActionLabel(protein.getDescription()) {
+//                @Override
+//                public void layoutClick(LayoutEvents.LayoutClickEvent event) {
+//                }
+//            };
+//            proteinDescription.setData(protein.getAccession());
 
-            ActionLabel proteinDescription = new ActionLabel(protein.getDescription()) {
-                @Override
-                public void layoutClick(LayoutEvents.LayoutClickEvent event) {
-                }
-            };
-            proteinDescription.setData(protein.getAccession());
-            tableData.put(protein.getAccession(), new Object[]{info, proteinAccLink, proteinDescription, proteinLayout});
+            tableData.put(protein.getAccession(), new Object[]{rowIndex++, proteinAccLink, protein.getDescription(), proteinLayout});
         });
         setSelectedItems(defaultSelectedProteinsItems, defaultSelectedPeptidesItems);
+    }
+
+    private String generateCaptionWithTooltio(String caption, String tooltip) {
+
+        return "<div class='tooltip'>" + caption + "<span class='tooltiptext'>" + tooltip + "</span></div>";
+
     }
 
     public abstract void selectPeptide(Object proteinId, Object peptideId);
 
 }
-
-

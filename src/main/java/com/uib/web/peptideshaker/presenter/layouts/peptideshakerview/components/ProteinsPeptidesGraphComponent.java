@@ -3,6 +3,7 @@ package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideObject;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.ProteinGroupObject;
+import com.uib.web.peptideshaker.presenter.core.filtercharts.components.RangeColorGenerator;
 import com.uib.web.peptideshaker.presenter.core.graph.GraphComponent;
 import com.vaadin.ui.VerticalLayout;
 import java.util.ArrayList;
@@ -28,6 +29,12 @@ public abstract class ProteinsPeptidesGraphComponent extends VerticalLayout {
     private final HashMap<String, ArrayList<String>> edges;
     private PeptideShakerVisualizationDataset peptideShakerVisualizationDataset;
     private String thumbURL;
+    private  int maxPsms;
+    private RangeColorGenerator colorScale;
+
+    public RangeColorGenerator getColorScale() {
+        return colorScale;
+    }
 
     public ProteinsPeptidesGraphComponent() {
 
@@ -65,7 +72,12 @@ public abstract class ProteinsPeptidesGraphComponent extends VerticalLayout {
     }
 
     public void selectPeptide(Object proteinId, Object peptideId) {
-        graphComponent.selectChildItem(proteinId, peptideId);
+        if (peptideId == null) {
+
+            graphComponent.selectParentItem(proteinId);
+        } else {
+            graphComponent.selectChildItem(proteinId, peptideId);
+        }
     }
 
     public String updateGraphData(String selectedProteinId) {
@@ -77,7 +89,7 @@ public abstract class ProteinsPeptidesGraphComponent extends VerticalLayout {
         edges.clear();
         if (peptideShakerVisualizationDataset == null || selectedProteinId == null || selectedProteinId.trim().equalsIgnoreCase("null") || peptideShakerVisualizationDataset.getProtein(selectedProteinId) == null) {
 //            selectedProtiensLabel.setCaption("");
-            graphComponent.updateGraphData(null, null, null, null);
+            graphComponent.updateGraphData(null, null, null, null,null);
             thumbURL = null;
             return thumbURL;
         }
@@ -93,8 +105,10 @@ public abstract class ProteinsPeptidesGraphComponent extends VerticalLayout {
         });
 
         Set<String> tunrelatedProt = new LinkedHashSet<>();
+        maxPsms = 0;
         peptides.stream().map((peptide) -> {
             peptidesNodes.put(peptide.getModifiedSequence(), peptide);
+            maxPsms = Math.max(maxPsms, peptide.getPSMsNumber());
             return peptide;
         }).forEachOrdered((peptide) -> {
             ArrayList<String> tEd = new ArrayList<>();
@@ -116,8 +130,8 @@ public abstract class ProteinsPeptidesGraphComponent extends VerticalLayout {
         tempProteinNodes.keySet().forEach((accession) -> {
             proteinNodes.replace(accession, peptideShakerVisualizationDataset.updateProteinInformation(tempProteinNodes.get(accession), accession));
         });
-
-        graphComponent.updateGraphData(protein, proteinNodes, peptidesNodes, edges);
+        colorScale = new RangeColorGenerator(maxPsms);
+        graphComponent.updateGraphData(protein, proteinNodes, peptidesNodes, edges,colorScale);
         thumbURL = graphComponent.getThumbImgeUrl();
         return thumbURL;
 

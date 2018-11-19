@@ -1,4 +1,4 @@
-package com.uib.web.peptideshaker.presenter.core.filtercharts.updatedfilters;
+package com.uib.web.peptideshaker.presenter.core.filtercharts.filters;
 
 import com.uib.web.peptideshaker.presenter.core.filtercharts.charts.*;
 import com.ejt.vaadin.sizereporter.ComponentResizeEvent;
@@ -9,6 +9,7 @@ import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.SelectionMa
 import com.uib.web.peptideshaker.presenter.core.FilterButton;
 import com.vaadin.data.Property;
 import com.vaadin.event.LayoutEvents;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -21,6 +22,7 @@ import com.vaadin.ui.Slider;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import java.awt.Color;
+import java.awt.Rectangle;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -34,6 +36,7 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYAreaRenderer;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.jfree.ui.RectangleInsets;
 
 /**
@@ -47,24 +50,33 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
     private final SelectionManager Selection_Manager;
 
     private final VerticalLayout chartContainer;
-    private final Image chartImage;
+    private final Label chartImage;
     private final Slider upperRangeSlider;
     private final Slider lowerRangeSlider;
     private final AbsoluteLayout slidersContainer;
     private TreeMap<Comparable, Set<Comparable>> data;
     private final TreeMap<Comparable, Set<Comparable>> activeData;
-    private final Label upperLabelValueComponent;
-    private final Label lowerLableValueComponent;
+    private final Label chartTitle;
     private int chartWidth;
     private int chartHeight;
     private final JFreeChart mainChart;
-    private final FilterButton removeFilterIcon;
+    private final FilterButton resetFilterBtn;
     private double maxValue;
     private double positionIndexFactro;
+    private final String title;
+    private final String sign;
 
     public DivaRangeFilter(String title, String filterId, SelectionManager Selection_Manager) {
 
         this.filterId = filterId;
+        if (title.contains("(")) {
+            this.title = title.split("\\(")[0];
+            this.sign = title.split("\\(")[1].replace(")", "");
+        } else {
+            this.title = title;
+            this.sign = "";
+        }
+
         this.Selection_Manager = Selection_Manager;
         this.activeData = new TreeMap<>();
         DivaRangeFilter.this.setSizeFull();
@@ -75,15 +87,14 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
         frame.addStyleName("thumbfilterframe");
         frame.addStyleName("reorderlayout");
         DivaRangeFilter.this.addComponent(frame);
-        
-        Label chartTitle = new Label("<font>" + title + "</font>", ContentMode.HTML);
 
+        chartTitle = new Label("<font>" + title + "</font>", ContentMode.HTML);
         chartTitle.setWidth(100, Unit.PERCENTAGE);
         chartTitle.setHeight(20, Unit.PIXELS);
         chartTitle.setStyleName(ValoTheme.LABEL_BOLD);
         chartTitle.addStyleName("resizeabletext");
         chartTitle.addStyleName("toppanel");
-       frame.addComponent(chartTitle,"left:10px;top:10px;");
+        frame.addComponent(chartTitle, "left:10px;top:10px;");
 
         this.Selection_Manager.RegistrDatasetsFilter(DivaRangeFilter.this);
 
@@ -91,7 +102,7 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
         chartContainer.setWidth(100, Unit.PERCENTAGE);
         chartContainer.setHeight(100, Unit.PERCENTAGE);
         chartContainer.setMargin(new MarginInfo(false, false, false, false));
-        chartImage = new Image();
+        chartImage = new Label("",ContentMode.HTML);
         chartImage.setSizeFull();
         chartContainer.addComponent(chartImage);
         SizeReporter reporter = new SizeReporter(chartContainer);
@@ -107,25 +118,25 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
             }
             chartWidth = tChartWidth;
             chartHeight = tChartHeight;
-            chartImage.setSource(new ExternalResource(saveToFile(mainChart, chartWidth, chartHeight)));
+            chartImage.setValue(saveToFile(mainChart, chartWidth, chartHeight));
         });
 
-       frame.addComponent(chartContainer,"top: 30px;left: 10px;right: 10px;bottom: 30px;");
+        frame.addComponent(chartContainer, "top: 30px;left: 10px;right: 10px;bottom: 30px;");
         slidersContainer = new AbsoluteLayout();
         slidersContainer.setStyleName("maxhight20");
         slidersContainer.addStyleName("visibleoverflow");
+        slidersContainer.addStyleName("marginleft-5");
         slidersContainer.setWidth(100, Unit.PERCENTAGE);
         slidersContainer.setHeight(20, Unit.PIXELS);
-        frame.addComponent(slidersContainer, "left:10px;bottom:0px; ;right:10px");
+        frame.addComponent(slidersContainer, "left:10px;bottom:0px; ;right:15px");
 
-        lowerLableValueComponent = initLabel("");
-        lowerLableValueComponent.addStyleName("leftrangebarlabel");
-
-        slidersContainer.addComponent(lowerLableValueComponent, "left:0px; top:0px;");
-        upperLabelValueComponent = initLabel("");
-        upperLabelValueComponent.addStyleName("rightrangebarlabel");
-        slidersContainer.addComponent(upperLabelValueComponent, "right:0px; top:0px;");
-
+//        lowerLableValueComponent = initLabel("");
+//        lowerLableValueComponent.addStyleName("leftrangebarlabel");
+//
+//        slidersContainer.addComponent(lowerLableValueComponent, "left:0px; top:0px;");
+//        selectedRangeValueLabelComponent = initLabel("");
+//        selectedRangeValueLabelComponent.addStyleName("rightrangebarlabel");
+//        slidersContainer.addComponent(selectedRangeValueLabelComponent, "right:0px; top:0px;");
         lowerRangeSlider = new Slider();
         lowerRangeSlider.setWidth(100, Unit.PERCENTAGE);
         lowerRangeSlider.setStyleName("rangeslider");
@@ -139,18 +150,18 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
         upperRangeSlider.setWidth(100, Unit.PERCENTAGE);
         upperRangeSlider.addValueChangeListener(DivaRangeFilter.this);
         slidersContainer.addComponent(upperRangeSlider, "left:0px; top:50%;");
-        removeFilterIcon = new FilterButton() {
+        resetFilterBtn = new FilterButton() {
             @Override
             public void layoutClick(LayoutEvents.LayoutClickEvent event) {
                 applyFilter(lowerRangeSlider.getMin(), lowerRangeSlider.getMax());
 
             }
         };
-        removeFilterIcon.setWidth(24, Unit.PIXELS);
-        removeFilterIcon.setHeight(24, Unit.PIXELS);
-        removeFilterIcon.setVisible(false);
-        removeFilterIcon.addStyleName("btninframe");
-        DivaRangeFilter.this.addComponent(removeFilterIcon, "right:23px;top:-1px;");
+        resetFilterBtn.setWidth(24, Unit.PIXELS);
+        resetFilterBtn.setHeight(24, Unit.PIXELS);
+        resetFilterBtn.setVisible(false);
+        resetFilterBtn.addStyleName("btninframe");
+        DivaRangeFilter.this.addComponent(resetFilterBtn, "right:23px;top:0px;");
 
     }
 
@@ -160,7 +171,7 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
             upperRangeSlider.setEnabled(false);
             lowerRangeSlider.setEnabled(false);
             chartContainer.removeAllComponents();
-            
+
             return;
         }
 
@@ -180,10 +191,11 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
 
         upperRangeSlider.addValueChangeListener(DivaRangeFilter.this);
         lowerRangeSlider.addValueChangeListener(DivaRangeFilter.this);
-        upperLabelValueComponent.setValue("<center>" + (int) maxValue + "</center>");
-        lowerLableValueComponent.setValue("<center>" + (int) min + "</center>");
-        slidersContainer.addComponent(lowerLableValueComponent, "left:0px; top:0px;");
-        slidersContainer.addComponent(upperLabelValueComponent, "right:0px; top:0px;");
+//        selectedRangeValueLabelComponent.setValue("<center>" + (int) maxValue + "</center>");
+//        lowerLableValueComponent.setValue("<center>" + (int) min + "</center>");
+//        slidersContainer.addComponent(lowerLableValueComponent, "left:0px; top:0px;");
+//        slidersContainer.addComponent(selectedRangeValueLabelComponent, "right:0px; top:0px;");
+        chartTitle.setValue("<font>" + title + "</font> [" + (int) min + " " + VaadinIcons.ARROWS_LONG_H.getHtml() + " " + (int) maxValue + "] " + sign);
         activeData.putAll(data);
         updateChartDataset();
         if (this.data == null) {
@@ -261,17 +273,24 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
      * @param height Image height.
      */
     private String saveToFile(final JFreeChart chart, int width, int height) {
-        byte imageData[];
-        try {
-            chart.getLegend().setVisible(false);
-            imageData = ChartUtilities.encodeAsPNG(chart.createBufferedImage(width, height));
-            String base64 = Base64.encodeBytes(imageData);
-            base64 = "data:image/png;base64," + base64;
-            return base64;
-        } catch (IOException e) {
-            System.err.println("at error " + e.getMessage());
-        }
-        return "";
+
+        chart.getLegend().setVisible(false);
+        chart.fireChartChanged();
+        SVGGraphics2D g2 = new SVGGraphics2D(width, height);
+        Rectangle r = new Rectangle(0, 0, width, height);
+        chart.draw(g2, r);
+        return g2.getSVGElement();
+//        byte imageData[];
+//        try {
+//            chart.getLegend().setVisible(false);
+//            imageData = ChartUtilities.encodeAsPNG(chart.createBufferedImage(width, height));
+//            String base64 = Base64.encodeBytes(imageData);
+//            base64 = "data:image/png;base64," + base64;
+//            return base64;
+//        } catch (IOException e) {
+//            System.err.println("at error " + e.getMessage());
+//        }
+//        return "";
     }
 
     public void valueChange() {
@@ -306,12 +325,13 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
 
         }
 
-        slidersContainer.addComponent(lowerLableValueComponent, "left:" + (min * positionIndexFactro) + "%;top:0px;");
-        if (min != max) {
-            slidersContainer.addComponent(upperLabelValueComponent, "right:" + (100.0 - (max * positionIndexFactro)) + "%;top:0px;");
-        }
-        upperLabelValueComponent.setValue("<center>" + (int) max + "</center>");
-        lowerLableValueComponent.setValue("<center>" + (int) min + "</center>");
+//        slidersContainer.addComponent(lowerLableValueComponent, "left:" + (min * positionIndexFactro) + "%;top:0px;");
+//        if (min != max) {
+//            slidersContainer.addComponent(selectedRangeValueLabelComponent, "right:" + (100.0 - (max * positionIndexFactro)) + "%;top:0px;");
+//        }
+//        selectedRangeValueLabelComponent.setValue("<center>" + (int) max + "</center>");
+//        lowerLableValueComponent.setValue("<center>" + (int) min + "</center>");
+        chartTitle.setValue("<font>" + title + "</font> [" + (int) min + " " + VaadinIcons.ARROWS_LONG_H.getHtml() + " " + (int) max + "] " + sign);
         applyFilter(min, max);
 
     }
@@ -332,10 +352,11 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
 //                filterGridContainer.setVisible(false);
                 System.out.println("its empty selection ");
                 return;
-            } 
+            }
 
-            if (singleProteinsFilter && !selfAction && !selectedCategories.isEmpty()) {
+            if (singleProteinsFilter && !selectedCategories.isEmpty()) {
                 //reset filter value to oreginal 
+                System.out.println("resre range filter ");
                 initializeFilterData(this.data);
             } else {
                 TreeMap<Comparable, Set<Comparable>> tPieChartValues = new TreeMap<>();
@@ -360,7 +381,7 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
             XYAreaRenderer renderer = (XYAreaRenderer) ((XYPlot) mainChart.getPlot()).getRenderer();
 
             renderer.setSeriesPaint(0, new Color(211, 211, 211), true);
-            chartImage.setSource(new ExternalResource(saveToFile(mainChart, chartWidth, chartHeight)));
+            chartImage.setValue(saveToFile(mainChart, chartWidth, chartHeight));
             setMainAppliedFilter(false);
             return;
         }
@@ -433,7 +454,7 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
             return;
         }
         chartImage.setVisible(true);
-        chartImage.setSource(new ExternalResource(saveToFile(mainChart, chartWidth, chartHeight)));
+        chartImage.setValue(saveToFile(mainChart, chartWidth, chartHeight));
     }
 
     @Override
@@ -473,7 +494,7 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
     }
 
     private void setMainAppliedFilter(boolean mainAppliedFilter) {
-        removeFilterIcon.setVisible(mainAppliedFilter);
+        resetFilterBtn.setVisible(mainAppliedFilter);
         if (mainAppliedFilter) {
             this.addStyleName("highlightfilter");
         } else {

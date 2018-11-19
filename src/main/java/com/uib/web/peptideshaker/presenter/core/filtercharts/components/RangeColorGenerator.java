@@ -37,7 +37,7 @@ public class RangeColorGenerator {
         colorScale.setWidth(130, Unit.PIXELS);
         colorScale.setStyleName("stacked");
         colorScale.addStyleName("colorscale");
-        Label l = new Label("<center style= 'margin-left:-10px;font-size:10px;width:15px !important; height:15px !important;'>0</center>", ContentMode.HTML);
+        Label l = new Label("<center style= 'margin-left:-10px;font-size:10px;width:15px !important; height:15px !important;line-height: 6px'>0</center>", ContentMode.HTML);
         l.setSizeFull();
         colorScale.addComponent(l);
         for (double x = 0; x < 50; x++) {
@@ -49,7 +49,7 @@ public class RangeColorGenerator {
             colorScale.setComponentAlignment(l, Alignment.TOP_CENTER);
 
         }
-        l = new Label("<center style= 'font-size:10px;width:20px !important; height:15px !important;'>" + (int) max + "</center>", ContentMode.HTML);
+        l = new Label("<center style= 'font-size:10px;width:20px !important; height:15px !important;line-height: 6px'>" + (int) max + "</center>", ContentMode.HTML);
         l.setSizeFull();
         colorScale.addComponent(l);
 
@@ -66,18 +66,13 @@ public class RangeColorGenerator {
      * @return HTML hashed color for the input value
      */
     public String getColor(double value) {
-        if (value == 0) {
+        if (value < 1) {
             return "RGB(" + 255 + "," + 255 + "," + 255 + ")";
         }
         double n = (value) / max;
         double R1 = lowerColor.getRed() * n + upperColor.getRed() * (1 - n);
         double G1 = lowerColor.getGreen() * n + upperColor.getGreen() * (1 - n);
         double B1 = lowerColor.getBlue() * n + upperColor.getBlue() * (1 - n);
-
-//        int R = 49;// (int) (49.0 + (146.0 - (146.0 * n)));//
-//        int G = (int) (46.0 + (146.0 - (146.0 * n)));
-//        int B = 229;
-//        System.out.println("RGB(" +(int) R1 + "," + (int)G1 + "," + (int)B1 + ")"+value+"   "+max);
         return "RGB(" + (int) R1 + "," + (int) G1 + "," + (int) B1 + ")";
     }
 }

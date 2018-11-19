@@ -23,6 +23,7 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
 
     private final String nodeId;
     private final VerticalLayout modificationLayout;
+    private final VerticalLayout psmNumberLayout;
     private boolean selected;
     private String defaultStyleName;
     private String validationStatuesStyle;
@@ -35,7 +36,7 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
      */
     private final PTMFactory PTM = PTMFactory.getInstance();
 
-    public Node(String id, String modifications, String sequence) {
+    public Node(String id, String modifications, String sequence, int psmNumber, String PSMNumberColor) {
 
         Node.this.setWidth(20, Unit.PIXELS);
         Node.this.setHeight(20, Unit.PIXELS);
@@ -45,6 +46,7 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
         this.modificationLayout = new VerticalLayout();
         this.modificationLayout.setSizeFull();
         Node.this.addComponent(modificationLayout);
+
         String subTooltip = "";
         Map<String, String> modificationsTooltip = new HashMap<>();
         for (String mod : modifications.split("\\),")) {
@@ -79,7 +81,23 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
         }
         tooltip += subTooltip;
         modificationLayout.setVisible(false);
-        Node.this.setDescription(tooltip);
+      
+
+        this.psmNumberLayout = new VerticalLayout();
+        this.psmNumberLayout.setSizeFull();
+        Node.this.addComponent(psmNumberLayout);
+        String tooltipExt="</br>#PSM ("+psmNumber+")";
+        if(psmNumber==-1){
+        PSMNumberColor="lightgray";
+        tooltipExt="";
+        }
+        Label psmsColorLabel = new Label("<div  style='background:" + PSMNumberColor + ";border-radius:100%;width: 100%;height: 100%;opacity:0.2;'></div>", ContentMode.HTML);
+        psmsColorLabel.setSizeFull();
+        psmNumberLayout.addComponent(psmsColorLabel);
+        psmNumberLayout.setVisible(false);
+        tooltip+=tooltipExt;
+          Node.this.setDescription(tooltip);
+
     }
 
     public String getNodeId() {
@@ -117,6 +135,9 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
         } else if (statues.equalsIgnoreCase("Modification  Status")) {
             modificationLayout.setVisible(true);
             this.addStyleName(modificationStyleName);
+        } else if (statues.equalsIgnoreCase("PSMNumber")) {
+            this.psmNumberLayout.setVisible(true);
+            this.addStyleName(modificationStyleName);
         }
 
     }
@@ -143,6 +164,7 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
         this.setStyleName(defaultStyleName);
         this.setSelected(selected);
         this.modificationLayout.setVisible(false);
+        this.psmNumberLayout.setVisible(false);
     }
 
     public void setType(int type) {

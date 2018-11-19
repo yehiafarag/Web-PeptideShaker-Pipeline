@@ -295,15 +295,29 @@ public class SelectionManager {
             onlyFilter++;
         }
         if (filterId.equalsIgnoreCase("modifications_filter") && !selectedCategories.isEmpty()) {
-            selectedCategories.stream().map((str) -> {
-                tempProtenSet.addAll(Sets.difference(filteredProtenSet, this.modificationMatrix.getCalculatedColumns().get(str.toString())));
-                return str;
-            }).map((_item) -> {
-                filteredProtenSet.removeAll(tempProtenSet);
-                return _item;
-            }).forEachOrdered((_item) -> {
-                tempProtenSet.clear();
+            
+//            selectedCategories.stream().map((str) -> {
+//                tempProtenSet.addAll(Sets.difference(filteredProtenSet, this.modificationMatrix.getCalculatedColumns().get(str.toString())));
+//                return str;
+//            }).map((_item) -> {
+//                filteredProtenSet.removeAll(tempProtenSet);
+//                return _item;
+//            }).forEachOrdered((_item) -> {
+//                tempProtenSet.clear();
+//            });
+            
+            
+            
+            Set<Comparable> selectedData = new LinkedHashSet<>();
+            selectedCategories.stream().filter((str) -> !(str == null)).forEachOrdered((str) -> {
+                selectedData.addAll(Sets.intersection(filteredProtenSet, this.modificationMatrix.getCalculatedColumns().get(str.toString())));
             });
+            tempProtenSet.addAll(Sets.difference(filteredProtenSet, selectedData));
+            filteredProtenSet.removeAll(tempProtenSet);
+            tempProtenSet.clear();
+
+            
+            
         } else if (filterId.equalsIgnoreCase("chromosome_filter") && !selectedCategories.isEmpty()) {
             Set<Comparable> selectedData = new LinkedHashSet<>();
             selectedCategories.stream().filter((cat) -> !(cat == null)).forEachOrdered((cat) -> {

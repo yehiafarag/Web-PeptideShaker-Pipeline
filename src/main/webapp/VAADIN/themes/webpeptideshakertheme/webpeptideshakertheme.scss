@@ -384,7 +384,7 @@
 
 
     .bigmenubtn :hover {
-        background-color: whitesmoke;
+        background-color: whitesmoke !important;
     }
 
     .selectedbiglbtn .bigbtnText {
@@ -603,6 +603,7 @@
     .v-horizontallayout-bottomformlayout{
         border-top:1px solid lightgray;
         padding-top:10px;
+        min-height: 40px;
     }
     .error {
         color:red;
@@ -869,6 +870,10 @@
         background-color:rgba(255,255,255,0) !important;
         border:none !important;
     }
+    .psmtable.v-table .v-table-body{
+	overflow-x:hidden;
+}
+
     .psmtable.v-table [class*="-row"].v-selected {
         background-color: white !important;
         background-image: -webkit-linear-gradient(top, #ffffff 2%, #ffffff 98%)!important;
@@ -892,8 +897,6 @@
     .buttoncontainerstyle{
         padding:5px;
         margin-top:5px;
-        border:1px solid lightgray;
-        background-color:whitesmoke;
         border-radius:5px;
         min-height:35px;
         z-index:2 !important;
@@ -904,6 +907,7 @@
         font-size:14px !important;
         padding:0px !important;
         margin-top:0px!important;
+        background-color: white;
     }
     .buttoncontainerstyle .v-button-tiny.selectedBtn{
         border-color:transparent;
@@ -1238,10 +1242,12 @@
         width: 140px !important;
         text-overflow: ellipsis !important;
         overflow: hidden !important;
-        border-width: 2px;
-        margin-right: 5px;        
+        border-width: 2px;     
         z-index:3 !important;
         position:relative !important;
+    }
+    .v-horizontallayout-searchtablecontainer .v-label{
+        margin-left:3px;
     }
     .searchtablecontainer .v-button{
         margin-left: 5px !important;
@@ -1374,11 +1380,12 @@
     }
     .sparklabel {
         margin-left: 5px !important;
-        font-size: 12px !important;
-        line-height: 1vmax !important;
+        font-size: 11px !important;
+        line-height: 20px;
         width:100% !important;
         max-width:100%;
         text-align:middle;
+        letter-spacing: 0.5px;
     }
     .selected{
         font-weight:bold;
@@ -1661,8 +1668,8 @@
     }
     .visibleoverflow,.visibleoverflow .v-absolutelayout-margin{
         overflow: visible !important;
-        margin-left:-5px;
     }
+
     .v-label-leftrangebarlabel {
         background: whitesmoke !important;
         color: gray;
@@ -1901,21 +1908,23 @@
     .barlayout:hover{
         background-color:gray;
     }
-    .selectedbarlayout{
-        background-color:#bad5f2 !important;
+    .selectedbarlayout .v-verticallayout-barlayout{
+        background-color: #bad5f2 !important;
+    }
+    .selectedbarlayout .v-label{
+        font-weight:800 !important;
     }
     .selectedbubble{
         background-color: #bad5f2 !important;
     }
 
-    .selectedbarlayout:hover {
-        background-color: #bad5f2 !important;
-    }
+
     .bordermarker{
         border: 1px solid white;
     }
     .selectablenode div{
         overflow: hidden !important;
+        cursor: pointer;
     }
     .selectablenode .Vaadin-Icons{
         min-width:10px !important;
@@ -1928,16 +1937,22 @@
     }
     .selectablenode center {
 
-        font-size: 10px !important;
+        font-size: 9px !important;
         z-index: 3 !important;
         position: relative;
-        text-shadow: 0 0 3px #000000, 0 0 3px #000000;
-        line-height: 400% !important;
+        text-shadow: 0 0 2px #000000, 0 0 2px #000000;
+        line-height: 30px!important;
         text-align: center;
 
     }
     .margintop-4{
         margin-top: -4px !important;
+    }
+    .margintop-5{
+        margin-top: -5px !important;
+    }
+    .marginleft-5{
+        margin-left: -5px !important;
     }
     .resizeabletext{
         font-size: 12px;
@@ -2022,6 +2037,8 @@
     }
     .v-verticallayout-inframe .v-select-optiongroup {
         margin-top:-4px;
+        z-index:2 !important;
+	position:relative !important;
     }
 
     .v-verticallayout-inframe .v-select-optiongroup  label{
@@ -2052,6 +2069,7 @@
     .proteincoverage {
         background-color: whitesmoke;
         border: 1px solid  #cc9e9e;
+        cursor: pointer;
     }
     .v-absolutelayout-wrapper-proteincoverage{
         padding-left:25px !important;
@@ -2064,6 +2082,7 @@
     .peptidecoverage{
         border: 1px solid rgba(255, 255, 255, 0);
         border-radius: 5px;
+        cursor: pointer;
     }
     .v-absolutelayout-wrapper-peptidecoverage {
         padding-left: 25px !important;
@@ -2455,7 +2474,7 @@
         -webkit-box-shadow: none !important;
         box-shadow: none !important;
         text-shadow: none !important;
-        margin-top:-5px;
+        margin-top:-2px;
         line-height:25px;
 
     }
@@ -2669,8 +2688,24 @@
 
     .v-filterselect-select3dMenue.v-filterselect [class*="input"] {
         padding-left: 5px !important;
-        padding-right: 20px !important;
-        background-color:rgba(0,0,0,0);
+        padding-right: 5px !important;
+        background-color: transparent;
+        word-spacing:100px !important;
+        text-overflow:clip !important;
+        overflow:hidden !important;
+        font-family: "Open Sans", sans-serif !important;
+        font-feature-settings: normal !important;
+        font-kerning: auto !important;
+        font-stretch: 100% !important;
+        font-style: initial !important;
+        font-variant-caps: normal !important;
+        font-variant-east-asian: normal !important;
+        font-variant-ligatures: normal !important;
+        font-variant-numeric: normal !important;
+        font-variation-settings: normal !important;
+        font-weight: 400 !important;
+        letter-spacing: 1.2px;
+        text-transform:uppercase;
 
     }
 
@@ -2935,7 +2970,7 @@
         border:1px solid white !important;
     }
     .sparklinecontainer {
-        background-color: lightgray;
+        background-color: transparent;
         height: 12px !important;
     }
 
@@ -2986,7 +3021,7 @@
         background-color: white;
         width: 94% !important;
         height: auto !important;
-        border: 2px solid lightgray;
+        border: 2px solid transparent;
         border-radius: 5px;
         cursor: pointer;	
         position: relative;
@@ -3643,16 +3678,27 @@
     .selectedbiglbtn .presenterbtn .v-icon{
         border:none !important;
         font-size: 20px !important;
-        line-height:30px;
+        line-height:160%;
 
     }
 
     .bigmenubtn .selectedpresenterbtn {
         border-color:orange !important;// rgba(131, 188, 255, 0.96) !important;
     }
+    .v-slot-bigmenubtn{
+        margin-bottom:5px;
+    }
 
-
-
+    .useroverviewpanelstyle .v-icon{
+        margin-left:-2px;
+        margin-right:5px;
+    }
+    .useroverviewpanelstyle font{
+        height:19px !important;
+        line-height:19px !important;
+        font-size:14px !important;
+        font-weight:400 !important;
+    }
 
 
     .welcomepagstyle {
@@ -4590,6 +4636,290 @@
             padding:0px !important;
     
         }*/
+    .v-popupview-popupasmenueitem{
+        color: rgb(25, 125, 225) !important;
+        cursor: pointer;
+        display: inline;
+        font-family: "Open Sans", sans-serif !important;
+        font-size: 14px;
+        font-stretch: 100%;
+        font-style: normal;
+        font-variant-caps: normal;
+        font-variant-east-asian: normal;
+        font-variant-ligatures: normal;
+        font-variant-numeric: normal;
+        font-weight: 400 !important;
+        height: auto;
+        line-height: 29px;
+        text-align: center;
+        text-shadow: none;
+        text-size-adjust: 100%;
+        user-select: none;
+        white-space: nowrap;
+        width: auto;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        text-decoration:none !important
+    }
+    .v-popupview-popup-popupasmenueitem {
+        border:1px solid gray;
+        background-color:whitesmoke !important;
+        margin-top:-20px !important;
+        position:absolute !important;
+        color:black !important;
 
 
+    }
+    .v-popupview-popup-popupasmenueitem .v-captiontext center{
+        font-weight:800 !important;
+    }
+    .v-slider-borderslider.v-slider-vertical .v-slider-handle:before, .v-slider-borderslider.v-slider-vertical.v-slider-handle:after , .v-slider-borderslider .v-slider-handle:before, .v-slider-borderslider  .v-slider-handle:after{
+
+        margin-top:0px !important;
+    }
+    .tinydot,.otinydot{
+        width: 4px !important;
+        height: 4px !important;
+        background: #197de1 !important;
+        display:inline-block !important;
+        border-radius:100%;
+        border:3px solid white;
+        z-index:3 !important;
+        position:absolute;
+        left:5px;
+        top:2px;
+    }
+
+    .otinydot{
+        background-color:orange !important;
+    }
+
+    .lossin,.lossout{
+        display:inline-block !important;
+    }
+    .lossin{
+        font-size:11px !important;;
+        position:absolute;
+        z-index:2;
+        top:7px;
+        left:-1px;
+        background:white !important;
+        width:9px !important;
+        height:9px !important;
+        line-height:10px;
+        padding-left:4px;
+        padding-top:2px;
+        border-radius:20px;
+
+    }
+
+    .v-slot-borderslider{
+        width:50px !important;
+        margin-bottom:20px !important;
+        position:absolute;
+        bottom:5px !important;
+    }
+    .v-caption.v-caption-borderslider{
+        text-align:center;
+        font-size:10px !important;
+        font-weight:800;
+        padding-top:5px;
+        height:30px !important;
+
+    }
+    .v-slider-borderslider{
+        min-width:48px;
+        max-height:150px;
+
+    }
+    .borderslider .v-slider-base{
+        margin-left:21px !important;
+        max-height:150px;
+
+    }
+    .borderslider .v-slider-base:before {   
+        border-bottom: 1px solid transparent !important;
+        max-height:150px;
+    }
+
+
+    .venntooltip {
+        position: absolute;
+        text-align: center;
+        width: auto;
+        height: 25px;
+        background: #333;
+        color: #ddd;
+        padding: 5px;
+        border: 0px;
+        border-radius: 5px;
+        opacity: 0;
+    }
+    .v-absolutelayout-wrapper-hidevenn{
+        display: none;
+        opacity: 0;
+    }
+    .hidevenn{	
+        display:none;
+        opacity:0.0;
+    }
+    .v-panel-content-floatbottom{
+        overflow:hidden !important;
+    }
+
+    .v-absolutelayout-wrapper-vennlegendcontainer{
+
+        font-size:12px;
+        z-index:2 !important;
+        border-radius:5px;
+        overflow:visible !important;
+    }
+    .vennlegendcontainer{
+        background-color:white;
+        min-width:210px;
+        padding-top:5px;
+        padding-left:5px !important;	
+        padding-bottom:5px;
+        padding-right:5px;
+        border-radius:5px;
+    }
+    .venndiagramlegend div{
+        display:inline-block;
+        width:15px !important;
+        height:15px !important;
+        border-radius:2px;
+        text-align:center;
+        font-size:12px;
+        line-height:15px;
+        font-weight:800;
+        color:white;
+        margin-right:5px;
+
+    }
+    .venndiagramlegend font{
+        margin-left:5px;
+        font-weight:800;
+
+    }
+    .v-label-venndiagramlegend .v-icon{
+        margin-right:5px;
+        opacity:0;
+        font-size:10px;
+        background-color:orange;
+        border-radius:100%;
+        text-align:center;
+        width:12.5px !important;
+        height:12.5px !important;
+        margin-left:15px;
+    }
+    .v-slot-selectedvennlegend .v-icon{
+        opacity:1;
+        color:gray;
+    }
+    .v-label-selectedvennlegend,.v-slot-selectedvennlegend .venndiagramlegend font{
+        color:black;
+        text-decoration:underline !important;
+        text-decoration-color:orange !important;
+    }
+
+    .v-label-venndiagramlegend{
+        font-weight:bold!important;
+        text-align:justify !important;
+        font-size:11px;
+        cursor:pointer;
+    }
+    .v-slot-venndiagramlegend{
+        margin-right:15px;
+    }
+    .v-label-selectedvennlegend div{
+        border:1px solid orange;
+    }
+
+    .connectionwindow ,.connectionwindow .v-window-contents :before,.connectionwindow .v-window-contents,.connectionwindow popupContent{
+        border-color:transparent !important;
+        background-color:transparent !important;
+
+    }
+    .connectionwindow{
+
+        background-color:whitesmoke !important;
+
+    }
+    .connectionwindow .popupContent div{
+        max-height:100px;
+        max-width:350px;
+
+
+
+    }
+    .v-window-contents .popupContent{
+        border:1px solid orange !important;
+        background-color:white !important;
+    }
+    .connectionwindow .v-window-outerheader:after{
+        border-color:transparent !important;
+    }
+    .connectionwindow .popupContent  .v-caption{
+        text-align:center;
+
+    }
+    .connectionwindow .popupContent  h1{
+        line-height:16px;
+        font-size:16px !important;
+
+
+    }
+
+    /* Tooltip container */
+    .tooltip {
+        position: relative;
+        display: inline-block;
+    }
+
+    /* Tooltip text */
+    .tooltip .tooltiptext {
+        visibility: hidden;
+
+
+        /* Position the tooltip text - see examples below! */
+        position: fixed !important;
+        z-index: 2 !important;
+        background-color: #323232;
+        background-color: rgba(50, 50, 50, 0.9);
+        -webkit-box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+        color: white;
+        padding: 5px 9px;
+        border-radius: 3px;
+        max-width: 35em;
+        overflow: hidden !important;
+        font-size: 14px;
+    }
+
+    /* Show the tooltip text when you mouse over the tooltip container */
+    .tooltip:hover .tooltiptext {
+        visibility: visible;
+    }
+
+    .barwlabel .v-label{
+        color: rgb(70, 70, 70);
+        cursor: default;
+        display: inline-block;
+        font-family: "Open Sans", sans-serif;
+        font-size: 11px;
+        font-weight: 300;
+        height: 12px;
+        padding: 0 !important;
+        margin: 0 !important;
+        position: absolute;
+
+        -webkit-transform: rotate(-90deg);
+        -moz-transform: rotate(-90deg);
+        -o-transform: rotate(-90deg);
+        float:right;
+        text-align:left;
+        margin-left:-4px !important;
+    }
+    .v-align-center .btninframe {
+        top:2px !important
+    }
 }

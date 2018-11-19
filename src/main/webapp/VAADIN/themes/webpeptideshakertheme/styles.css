@@ -13594,7 +13594,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .bigmenubtn :hover {
-	background-color: whitesmoke;
+	background-color: whitesmoke !important;
 }
 
 .webpeptideshakertheme .selectedbiglbtn .bigbtnText {
@@ -13831,6 +13831,7 @@ div.v-layout.v-horizontal.v-widget {
 .webpeptideshakertheme .v-horizontallayout-bottomformlayout {
 	border-top: 1px solid lightgray;
 	padding-top: 10px;
+	min-height: 40px;
 }
 
 .webpeptideshakertheme .error {
@@ -14108,6 +14109,9 @@ div.v-layout.v-horizontal.v-widget {
 	background-color: rgba(255, 255, 255, 0) !important;
 	border: none !important;
 }
+.psmtable.v-table .v-table-body{
+	overflow-x:hidden;
+}
 
 .webpeptideshakertheme .psmtable.v-table [class*="-row"].v-selected {
 	background-color: white !important;
@@ -14132,8 +14136,6 @@ div.v-layout.v-horizontal.v-widget {
 .webpeptideshakertheme .buttoncontainerstyle {
 	padding: 5px;
 	margin-top: 5px;
-	border: 1px solid lightgray;
-	background-color: whitesmoke;
 	border-radius: 5px;
 	min-height: 35px;
 	z-index: 2 !important;
@@ -14144,6 +14146,7 @@ div.v-layout.v-horizontal.v-widget {
 	font-size: 14px !important;
 	padding: 0px !important;
 	margin-top: 0px !important;
+	background-color: white;
 }
 
 .webpeptideshakertheme .buttoncontainerstyle .v-button-tiny.selectedBtn {
@@ -14290,6 +14293,7 @@ div.v-layout.v-horizontal.v-widget {
 	font-size: 12px !important;
 	position: relative !important;
 	padding-top: 3px;
+	height: 38px !important;
 }
 
 .webpeptideshakertheme .v-verticallayout-proteinnode.v-verticallayout-greenbackground.selectednode, .webpeptideshakertheme .v-verticallayout-proteinnode.v-verticallayout-greenbackground :hover {
@@ -14470,9 +14474,12 @@ div.v-layout.v-horizontal.v-widget {
 	text-overflow: ellipsis !important;
 	overflow: hidden !important;
 	border-width: 2px;
-	margin-right: 5px;
 	z-index: 3 !important;
 	position: relative !important;
+}
+
+.webpeptideshakertheme .v-horizontallayout-searchtablecontainer .v-label {
+	margin-left: 3px;
 }
 
 .webpeptideshakertheme .searchtablecontainer .v-button {
@@ -14616,11 +14623,12 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .sparklabel {
 	margin-left: 5px !important;
-	font-size: 12px !important;
-	line-height: 1vmax !important;
+	font-size: 11px !important;
+	line-height: 20px;
 	width: 100% !important;
 	max-width: 100%;
 	text-align: middle;
+	letter-spacing: 0.5px;
 }
 
 .webpeptideshakertheme .selected {
@@ -14876,7 +14884,6 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .visibleoverflow, .webpeptideshakertheme .visibleoverflow .v-absolutelayout-margin {
 	overflow: visible !important;
-	margin-left: -5px;
 }
 
 .webpeptideshakertheme .v-label-leftrangebarlabel {
@@ -15128,15 +15135,15 @@ div.v-layout.v-horizontal.v-widget {
 	background-color: gray;
 }
 
-.webpeptideshakertheme .selectedbarlayout {
+.webpeptideshakertheme .selectedbarlayout .v-verticallayout-barlayout {
 	background-color: #bad5f2 !important;
+}
+
+.webpeptideshakertheme .selectedbarlayout .v-label {
+	font-weight: 800 !important;
 }
 
 .webpeptideshakertheme .selectedbubble {
-	background-color: #bad5f2 !important;
-}
-
-.webpeptideshakertheme .selectedbarlayout:hover {
 	background-color: #bad5f2 !important;
 }
 
@@ -15146,6 +15153,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .selectablenode div {
 	overflow: hidden !important;
+	cursor: pointer;
 }
 
 .webpeptideshakertheme .selectablenode .Vaadin-Icons {
@@ -15160,16 +15168,24 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .selectablenode center {
-	font-size: 10px !important;
+	font-size: 9px !important;
 	z-index: 3 !important;
 	position: relative;
-	text-shadow: 0 0 3px #000000, 0 0 3px #000000;
-	line-height: 400% !important;
+	text-shadow: 0 0 2px #000000, 0 0 2px #000000;
+	line-height: 30px !important;
 	text-align: center;
 }
 
 .webpeptideshakertheme .margintop-4 {
 	margin-top: -4px !important;
+}
+
+.webpeptideshakertheme .margintop-5 {
+	margin-top: -5px !important;
+}
+
+.webpeptideshakertheme .marginleft-5 {
+	margin-left: -5px !important;
 }
 
 .webpeptideshakertheme .resizeabletext {
@@ -15258,6 +15274,8 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .v-verticallayout-inframe .v-select-optiongroup {
 	margin-top: -4px;
+        z-index:2 !important;
+	position:relative !important;
 }
 
 .webpeptideshakertheme .v-verticallayout-inframe .v-select-optiongroup label {
@@ -15289,6 +15307,7 @@ div.v-layout.v-horizontal.v-widget {
 .webpeptideshakertheme .proteincoverage {
 	background-color: whitesmoke;
 	border: 1px solid #cc9e9e;
+	cursor: pointer;
 }
 
 .webpeptideshakertheme .v-absolutelayout-wrapper-proteincoverage {
@@ -15302,6 +15321,7 @@ div.v-layout.v-horizontal.v-widget {
 .webpeptideshakertheme .peptidecoverage {
 	border: 1px solid rgba(255, 255, 255, 0);
 	border-radius: 5px;
+	cursor: pointer;
 }
 
 .webpeptideshakertheme .v-absolutelayout-wrapper-peptidecoverage {
@@ -15623,7 +15643,7 @@ div.v-layout.v-horizontal.v-widget {
 	-webkit-box-shadow: none !important;
 	box-shadow: none !important;
 	text-shadow: none !important;
-	margin-top: -5px;
+	margin-top: -2px;
 	line-height: 25px;
 }
 
@@ -15820,8 +15840,24 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .v-filterselect-select3dMenue.v-filterselect [class*="input"] {
 	padding-left: 5px !important;
-	padding-right: 20px !important;
+	padding-right: 5px !important;
 	background-color: transparent;
+	word-spacing: 100px !important;
+	text-overflow: clip !important;
+	overflow: hidden !important;
+	font-family: "Open Sans", sans-serif !important;
+	font-feature-settings: normal !important;
+	font-kerning: auto !important;
+	font-stretch: 100% !important;
+	font-style: initial !important;
+	font-variant-caps: normal !important;
+	font-variant-east-asian: normal !important;
+	font-variant-ligatures: normal !important;
+	font-variant-numeric: normal !important;
+	font-variation-settings: normal !important;
+	font-weight: 400 !important;
+	letter-spacing: 1.2px;
+	text-transform: uppercase;
 }
 
 .webpeptideshakertheme .v-filterselect.v-filterselect-select3dMenue span {
@@ -15865,6 +15901,20 @@ div.v-layout.v-horizontal.v-widget {
 	margin-right: -2px;
 	border: 1px solid lightgray;
 	border-radius: 5px;
+	font-size: 12px;
+	overflow: hidden !important;
+	text-overflow: ellipsis;
+	right: 20px !important;
+	max-width: 540px;
+}
+
+.webpeptideshakertheme .v-filterselect-suggestpopup-select3dMenue span {
+	margin-right: -2px;
+	max-width: 520px;
+	font-size: 12px;
+	overflow: hidden !important;
+	text-overflow: ellipsis;
+	right: 20px !important;
 }
 
 .webpeptideshakertheme .v-filterselect-select3dMenue.v-filterselect [class*="input"]:focus {
@@ -16074,7 +16124,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .sparklinecontainer {
-	background-color: lightgray;
+	background-color: transparent;
 	height: 12px !important;
 }
 
@@ -16125,7 +16175,7 @@ div.v-layout.v-horizontal.v-widget {
 	background-color: white;
 	width: 94% !important;
 	height: auto !important;
-	border: 2px solid lightgray;
+	border: 2px solid transparent;
 	border-radius: 5px;
 	cursor: pointer;
 	position: relative;
@@ -16736,11 +16786,27 @@ div.v-layout.v-horizontal.v-widget {
 .webpeptideshakertheme .selectedbiglbtn .presenterbtn .v-icon {
 	border: none !important;
 	font-size: 20px !important;
-	line-height: 30px;
+	line-height: 160%;
 }
 
 .webpeptideshakertheme .bigmenubtn .selectedpresenterbtn {
 	border-color: orange !important;
+}
+
+.webpeptideshakertheme .v-slot-bigmenubtn {
+	margin-bottom: 5px;
+}
+
+.webpeptideshakertheme .useroverviewpanelstyle .v-icon {
+	margin-left: -2px;
+	margin-right: 5px;
+}
+
+.webpeptideshakertheme .useroverviewpanelstyle font {
+	height: 19px !important;
+	line-height: 19px !important;
+	font-size: 14px !important;
+	font-weight: 400 !important;
 }
 
 .webpeptideshakertheme .welcomepagstyle {
@@ -17533,4 +17599,291 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .v-slot-toppanel {
 	min-height: 20px;
+}
+
+.webpeptideshakertheme .v-popupview-popupasmenueitem {
+	color: #197de1 !important;
+	cursor: pointer;
+	display: inline;
+	font-family: "Open Sans", sans-serif !important;
+	font-size: 14px;
+	font-stretch: 100%;
+	font-style: normal;
+	font-variant-caps: normal;
+	font-variant-east-asian: normal;
+	font-variant-ligatures: normal;
+	font-variant-numeric: normal;
+	font-weight: 400 !important;
+	height: auto;
+	line-height: 29px;
+	text-align: center;
+	text-shadow: none;
+	text-size-adjust: 100%;
+	user-select: none;
+	white-space: nowrap;
+	width: auto;
+	-webkit-tap-highlight-color: transparent;
+	text-decoration: none !important;
+}
+
+.webpeptideshakertheme .v-popupview-popup-popupasmenueitem {
+	border: 1px solid gray;
+	background-color: whitesmoke !important;
+	margin-top: -20px !important;
+	position: absolute !important;
+	color: black !important;
+}
+
+.webpeptideshakertheme .v-popupview-popup-popupasmenueitem .v-captiontext center {
+	font-weight: 800 !important;
+}
+
+.webpeptideshakertheme .v-slider-borderslider.v-slider-vertical .v-slider-handle:before, .webpeptideshakertheme .v-slider-borderslider.v-slider-vertical.v-slider-handle:after, .webpeptideshakertheme .v-slider-borderslider .v-slider-handle:before, .webpeptideshakertheme .v-slider-borderslider .v-slider-handle:after {
+	margin-top: 0px !important;
+}
+
+.webpeptideshakertheme .tinydot, .webpeptideshakertheme .otinydot {
+	width: 4px !important;
+	height: 4px !important;
+	background: #197de1 !important;
+	display: inline-block !important;
+	border-radius: 100%;
+	border: 3px solid white;
+	z-index: 3 !important;
+	position: absolute;
+	left: 5px;
+	top: 2px;
+}
+
+.webpeptideshakertheme .otinydot {
+	background-color: orange !important;
+}
+
+.webpeptideshakertheme .lossin, .webpeptideshakertheme .lossout {
+	display: inline-block !important;
+}
+
+.webpeptideshakertheme .lossin {
+	font-size: 11px !important;
+	position: absolute;
+	z-index: 2;
+	top: 7px;
+	left: -1px;
+	background: white !important;
+	width: 9px !important;
+	height: 9px !important;
+	line-height: 10px;
+	padding-left: 4px;
+	padding-top: 2px;
+	border-radius: 20px;
+}
+
+.webpeptideshakertheme .v-slot-borderslider {
+	width: 50px !important;
+	margin-bottom: 20px !important;
+	position: absolute;
+	bottom: 5px !important;
+}
+
+.webpeptideshakertheme .v-caption.v-caption-borderslider {
+	text-align: center;
+	font-size: 10px !important;
+	font-weight: 800;
+	padding-top: 5px;
+	height: 30px !important;
+}
+
+.webpeptideshakertheme .v-slider-borderslider {
+	min-width: 48px;
+	max-height: 150px;
+}
+
+.webpeptideshakertheme .borderslider .v-slider-base {
+	margin-left: 21px !important;
+	max-height: 150px;
+}
+
+.webpeptideshakertheme .borderslider .v-slider-base:before {
+	border-bottom: 1px solid transparent !important;
+	max-height: 150px;
+}
+
+.webpeptideshakertheme .venntooltip {
+	position: absolute;
+	text-align: center;
+	width: auto;
+	height: 25px;
+	background: #333;
+	color: #ddd;
+	padding: 5px;
+	border: 0px;
+	border-radius: 5px;
+	opacity: 0;
+}
+
+.webpeptideshakertheme .v-absolutelayout-wrapper-hidevenn {
+	display: none;
+	opacity: 0;
+}
+
+.webpeptideshakertheme .hidevenn {
+	display: none;
+	opacity: 0;
+}
+
+.webpeptideshakertheme .v-panel-content-floatbottom {
+	overflow: hidden !important;
+}
+
+.webpeptideshakertheme .v-absolutelayout-wrapper-vennlegendcontainer {
+	font-size: 12px;
+	z-index: 2 !important;
+	border-radius: 5px;
+	overflow: visible !important;
+}
+
+.webpeptideshakertheme .vennlegendcontainer {
+	background-color: white;
+	min-width: 210px;
+	padding-top: 5px;
+	padding-left: 5px !important;
+	padding-bottom: 5px;
+	padding-right: 5px;
+	border-radius: 5px;
+}
+
+.webpeptideshakertheme .venndiagramlegend div {
+	display: inline-block;
+	width: 15px !important;
+	height: 15px !important;
+	border-radius: 2px;
+	text-align: center;
+	font-size: 12px;
+	line-height: 15px;
+	font-weight: 800;
+	color: white;
+	margin-right: 5px;
+}
+
+.webpeptideshakertheme .venndiagramlegend font {
+	margin-left: 5px;
+	font-weight: 800;
+}
+
+.webpeptideshakertheme .v-label-venndiagramlegend .v-icon {
+	margin-right: 5px;
+	opacity: 0;
+	font-size: 10px;
+	background-color: orange;
+	border-radius: 100%;
+	text-align: center;
+	width: 12.5px !important;
+	height: 12.5px !important;
+	margin-left: 15px;
+}
+
+.webpeptideshakertheme .v-slot-selectedvennlegend .v-icon {
+	opacity: 1;
+	color: gray;
+}
+
+.webpeptideshakertheme .v-label-selectedvennlegend, .webpeptideshakertheme .v-slot-selectedvennlegend .venndiagramlegend font {
+	color: black;
+	text-decoration: underline !important;
+	text-decoration-color: orange !important;
+}
+
+.webpeptideshakertheme .v-label-venndiagramlegend {
+	font-weight: bold !important;
+	text-align: justify !important;
+	font-size: 11px;
+	cursor: pointer;
+}
+
+.webpeptideshakertheme .v-slot-venndiagramlegend {
+	margin-right: 15px;
+}
+
+.webpeptideshakertheme .v-label-selectedvennlegend div {
+	border: 1px solid orange;
+}
+
+.webpeptideshakertheme .connectionwindow, .webpeptideshakertheme .connectionwindow .v-window-contents :before, .webpeptideshakertheme .connectionwindow .v-window-contents, .webpeptideshakertheme .connectionwindow popupContent {
+	border-color: transparent !important;
+	background-color: transparent !important;
+}
+
+.webpeptideshakertheme .connectionwindow {
+	background-color: whitesmoke !important;
+}
+
+.webpeptideshakertheme .connectionwindow .popupContent div {
+	max-height: 100px;
+	max-width: 350px;
+}
+
+.webpeptideshakertheme .v-window-contents .popupContent {
+	border: 1px solid orange !important;
+	background-color: white !important;
+}
+
+.webpeptideshakertheme .connectionwindow .v-window-outerheader:after {
+	border-color: transparent !important;
+}
+
+.webpeptideshakertheme .connectionwindow .popupContent .v-caption {
+	text-align: center;
+}
+
+.webpeptideshakertheme .connectionwindow .popupContent h1 {
+	line-height: 16px;
+	font-size: 16px !important;
+}
+
+.webpeptideshakertheme .tooltip {
+	position: relative;
+	display: inline-block;
+}
+
+.webpeptideshakertheme .tooltip .tooltiptext {
+	visibility: hidden;
+	position: fixed !important;
+	z-index: 2 !important;
+	background-color: #323232;
+	background-color: rgba(50, 50, 50, 0.9);
+	-webkit-box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+	color: white;
+	padding: 5px 9px;
+	border-radius: 3px;
+	max-width: 35em;
+	overflow: hidden !important;
+	font-size: 14px;
+}
+
+.webpeptideshakertheme .tooltip:hover .tooltiptext {
+	visibility: visible;
+}
+
+.webpeptideshakertheme .barwlabel .v-label {
+	color: #464646;
+	cursor: default;
+	display: inline-block;
+	font-family: "Open Sans", sans-serif;
+	font-size: 11px;
+	font-weight: 300;
+	height: 12px;
+	padding: 0 !important;
+	margin: 0 !important;
+	position: absolute;
+	-webkit-transform: rotate(-90deg);
+	-moz-transform: rotate(-90deg);
+	-o-transform: rotate(-90deg);
+	float: right;
+	text-align: left;
+	margin-left: -4px !important;
+}
+
+.webpeptideshakertheme .v-align-center .btninframe {
+	top: 2px !important;
 }

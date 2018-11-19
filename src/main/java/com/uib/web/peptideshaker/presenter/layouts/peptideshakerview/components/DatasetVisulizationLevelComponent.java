@@ -64,20 +64,20 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
         this.inferenceMap.put("Related & Unrelated", 3);
         this.inferenceMap.put("Unrelated", 4);
         TableColumnHeader header1 = new TableColumnHeader("index", Integer.class, null, "", null, Table.Align.RIGHT);
-        TableColumnHeader header2 = new TableColumnHeader("proteinInference", ColorLabel.class, null, "PI", null, Table.Align.CENTER);
-        TableColumnHeader header3 = new TableColumnHeader("Accession", Link.class, null, "Accession", null, Table.Align.CENTER);
-        TableColumnHeader header4 = new TableColumnHeader("csf", CSFPRLabel.class, null, "CSF", null, Table.Align.CENTER);
-        TableColumnHeader header5 = new TableColumnHeader("Name", String.class, null, "Description", null, Table.Align.LEFT);
-        TableColumnHeader header6 = new TableColumnHeader("protein_group", String.class, null, "Protein Group", null, Table.Align.LEFT);
-        TableColumnHeader header7 = new TableColumnHeader("geneName", String.class, null, "Gene Name", null, Table.Align.CENTER);
-        TableColumnHeader header8 = new TableColumnHeader("chromosom", AlphanumComparator.class, null, "Chr", null, Table.Align.CENTER);
-        TableColumnHeader header9 = new TableColumnHeader("coverage", SparkLineLabel.class, null, "Coverage", null, Table.Align.LEFT);
-        TableColumnHeader header10 = new TableColumnHeader("peptides_number", SparkLineLabel.class, null, "#Peptides", null, Table.Align.LEFT);
-        TableColumnHeader header11 = new TableColumnHeader("psm_number", SparkLineLabel.class, null, "#PSM", null, Table.Align.LEFT);
-        TableColumnHeader header12 = new TableColumnHeader("ms2Quant", SparkLineLabel.class, null, "MS2 Quant", null, Table.Align.LEFT);
-        TableColumnHeader header13 = new TableColumnHeader("mwkDa", SparkLineLabel.class, null, "MW (kDa)", null, Table.Align.LEFT);
-        TableColumnHeader header14 = new TableColumnHeader("confidence", SparkLineLabel.class, null, "Confidence", null, Table.Align.LEFT);
-        TableColumnHeader header15 = new TableColumnHeader("validation", ValidationLabel.class, null, "", null, Table.Align.CENTER);
+        TableColumnHeader header2 = new TableColumnHeader("proteinInference", ColorLabel.class, null, generateCaptionWithTooltio("PI","Protein inference"), null, Table.Align.CENTER);
+        TableColumnHeader header3 = new TableColumnHeader("Accession", Link.class, null,generateCaptionWithTooltio("Accession","Protein accession"), null, Table.Align.CENTER);
+        TableColumnHeader header4 = new TableColumnHeader("csf", CSFPRLabel.class, null, generateCaptionWithTooltio("CSF","View in CSF-PR"), null, Table.Align.CENTER);
+        TableColumnHeader header5 = new TableColumnHeader("Name", String.class, null, generateCaptionWithTooltio("Name","Protein name"), null, Table.Align.LEFT);
+        TableColumnHeader header6 = new TableColumnHeader("protein_group", String.class, null,generateCaptionWithTooltio("Protein Group","Proteins accessions in the same group"), null, Table.Align.LEFT);
+        TableColumnHeader header7 = new TableColumnHeader("geneName", String.class, null, generateCaptionWithTooltio("Gene","Gene Name"), null, Table.Align.CENTER);
+        TableColumnHeader header8 = new TableColumnHeader("chromosom", AlphanumComparator.class, null, generateCaptionWithTooltio("Chr","Chromosome"), null, Table.Align.CENTER);
+        TableColumnHeader header9 = new TableColumnHeader("coverage", SparkLineLabel.class, null, generateCaptionWithTooltio("Coverage","Protein sequence coverage"), null, Table.Align.LEFT);
+        TableColumnHeader header10 = new TableColumnHeader("peptides_number", SparkLineLabel.class, null, generateCaptionWithTooltio("#Peptides","Number of validated peptides"), null, Table.Align.LEFT);
+        TableColumnHeader header11 = new TableColumnHeader("psm_number", SparkLineLabel.class, null, generateCaptionWithTooltio("#PSM","Number of Peptide-Spectrum Matches"), null, Table.Align.LEFT);
+        TableColumnHeader header12 = new TableColumnHeader("ms2Quant", SparkLineLabel.class, null, generateCaptionWithTooltio("MS2 Quant","MS2 for protein quantitation"), null, Table.Align.LEFT);
+        TableColumnHeader header13 = new TableColumnHeader("mwkDa", SparkLineLabel.class, null, generateCaptionWithTooltio("MW (kDa)","molecular weight in kilodalton"), null, Table.Align.LEFT);
+        TableColumnHeader header14 = new TableColumnHeader("confidence", SparkLineLabel.class, null, generateCaptionWithTooltio("Confidence","Confidence level"), null, Table.Align.LEFT);
+        TableColumnHeader header15 = new TableColumnHeader("validation", ValidationLabel.class, null, generateCaptionWithTooltio("","Protein validation"), null, Table.Align.CENTER);
 
         TableColumnHeader[] tableHeaders = new TableColumnHeader[]{header1, header2, header3, header4, header5, header6, header7, header8, header9, header10, header11, header12, header13, header14,header15};
         this.proteinTableContainer = new SearchableTable("Proteins", "Accssion or protein name", tableHeaders) {
@@ -278,6 +278,12 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
 
     @Override
     public void suspendFilter(boolean suspend) {
+    }
+    
+    private String generateCaptionWithTooltio(String caption,String tooltip){
+    
+    return "<div class='tooltip'>"+caption+"<span class='tooltiptext'>"+tooltip+"</span></div>";
+    
     }
 
 }

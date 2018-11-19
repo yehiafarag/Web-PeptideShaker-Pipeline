@@ -132,12 +132,12 @@
 
     <button title="Show/Hide water, balls & sticks" class="lm-btn lm-btn-link lm-btn-link-toggle-off" style="
             right: 110px !important;
-            top:13px !important;
+            top:14px !important;
             background:rgba(0,0,0,0) !important;                                                                     
             position: absolute;
             z-index: 900000000;
             padding-top:0px !important;
-            font-size: 100%;                                                                      
+            font-size: 18px;                                                                      
 
             " onclick="hideWater()"><span class="lm-icon">&#127778;</span></button>
 

@@ -722,11 +722,12 @@ private Set<String> csf_pr_Accssion_List;
                     Notification.show("Service Temporarily Unavailable", Notification.Type.ERROR_MESSAGE);
                 } else {
                     e.printStackTrace();
-                    System.out.println("at history are not available");
+                    System.out.println("at history are not available"); 
+                    Page.getCurrent().reload();
                     if (VaadinSession.getCurrent()!=null && VaadinSession.getCurrent().getSession() != null) {
                         VaadinSession.getCurrent().getSession().invalidate();
                     }
-                    Page.getCurrent().reload();
+                   
                 }
             }
             memoryUsed = memoryUsed / 1000000000.0;

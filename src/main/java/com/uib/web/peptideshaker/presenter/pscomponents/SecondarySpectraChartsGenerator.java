@@ -15,6 +15,7 @@ import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.VerticalLayout;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.geom.Ellipse2D;
@@ -135,6 +136,11 @@ public class SecondarySpectraChartsGenerator {
             XYPlot plot = (XYPlot) errorPlot.getChartPanel().getChart().getPlot();
             plot.getDomainAxis().setVisible(false);
             plot.getRangeAxis().setVisible(false);
+            plot.setRangeGridlinesVisible(false);
+            plot.setRangeZeroBaselineVisible(true);
+            plot.setRangeZeroBaselinePaint(Color.LIGHT_GRAY);
+            plot.setRangeZeroBaselineStroke(new BasicStroke(1.0f,BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[] {10.0f}, 0.0f));
+           
             DefaultXYItemRenderer renderer = (DefaultXYItemRenderer) plot.getRenderer();
             for (int i = 0; i < plot.getSeriesCount(); i++) {
                 renderer.setSeriesShape(i, new Ellipse2D.Double(-2.0, -2.0, 4.0, 4.0));

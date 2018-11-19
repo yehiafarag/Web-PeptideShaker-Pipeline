@@ -26,14 +26,18 @@ import com.ejt.vaadin.sizereporter.ComponentResizeEvent;
 import com.ejt.vaadin.sizereporter.SizeReporter;
 import com.itextpdf.text.pdf.codec.Base64;
 import com.vaadin.data.Property;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ExternalResource;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 import com.vaadin.shared.ui.slider.SliderOrientation;
 import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
+import com.vaadin.ui.PopupView;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.themes.ValoTheme;
 import java.awt.Color;
@@ -143,11 +147,10 @@ public class SpectrumPlot extends AbsoluteLayout {
         annotationAccuracySlider.setStyleName("borderslider");
         annotationAccuracySlider.setHeight(100, Unit.PIXELS);
         annotationAccuracySlider.setCaptionAsHtml(true);
-        annotationAccuracySlider.setCaption("<center>0.02 Da</center>");
+        annotationAccuracySlider.setCaption("Accuracy</br>0.02 Da");
         annotationAccuracySlider.setDescription("Annotation accuracy : 0.02 Da");
 //        annotationAccuracySlider.setResolution(3);
         annotationAccuracySlider.setOrientation(SliderOrientation.VERTICAL);
-        SpectrumPlot.this.addComponent(annotationAccuracySlider, "right:10px;top:10%");
 
         levelSlider = new Slider();
         levelSlider.setMax(100);
@@ -155,11 +158,10 @@ public class SpectrumPlot extends AbsoluteLayout {
         levelSlider.setStyleName("borderslider");
         levelSlider.setHeight(100, Unit.PIXELS);
         levelSlider.setCaptionAsHtml(true);
-        levelSlider.setCaption("<center>Level<br/>");
+        levelSlider.setCaption("Level");
         levelSlider.setOrientation(SliderOrientation.VERTICAL);
-        SpectrumPlot.this.addComponent(levelSlider, "right:10px;bottom:10%");
         HorizontalLayout controlsLayout = new HorizontalLayout();
-        controlsLayout.setWidth(100, Unit.PERCENTAGE);
+        controlsLayout.setWidthUndefined();//100, Unit.PERCENTAGE);
         controlsLayout.setHeight(40, Unit.PIXELS);
         SpectrumPlot.this.addComponent(controlsLayout, "left:0px;bottom:0px");
         MenuBar menue = new MenuBar();
@@ -167,12 +169,18 @@ public class SpectrumPlot extends AbsoluteLayout {
         menue.addStyleName(ValoTheme.MENUBAR_SMALL);
         menue.setSizeFull();
         menue.setAutoOpen(false);
+        menue.setHtmlContentAllowed(true);
         controlsLayout.addComponent(menue);
+        
 
         //initialise ions tab
-        ionsItem = menue.addItem("Ions", null, null);
-        lossItem = menue.addItem("Loss", null, null);
-        resetAnnoItem = menue.addItem("Reset Annotations", null, (MenuItem selectedItem) -> {
+        ionsItem = menue.addItem("<div class='tinydot'></div>"+VaadinIcons.DOT_CIRCLE.getHtml()+"Ions", null, null);
+        otherItem = menue.addItem("<div class='otinydot'></div>"+VaadinIcons.DOT_CIRCLE.getHtml()+"Other", null, null);
+        
+        lossItem = menue.addItem(VaadinIcons.MINUS_CIRCLE_O.getHtml()+"Loss", null, null);//"<div class='lossin'>"+VaadinIcons.MINUS_CIRCLE_O.getHtml()+"</div><div class='lossout'>"+VaadinIcons.BAR_CHART.getHtml() +"</div>
+        
+        chargeItem = menue.addItem("Charge", VaadinIcons.PLUS, null);
+        resetAnnoItem = menue.addItem("Reset Annotations", VaadinIcons.RETWEET, (MenuItem selectedItem) -> {
             selectedItem.setVisible(false);
             resetAnnotations();
             updateAnnotationPreferences();
@@ -186,10 +194,9 @@ public class SpectrumPlot extends AbsoluteLayout {
                 NH3Item.setEnabled(!selectedItem.isChecked());
             }
             updateAnnotationPreferences();
-            resetAnnoItem.setVisible(true);
+            resetAnnoItem.setEnabled(true);
         };
         initIonsItem(ionsItem, annotationsItemsCommand);
-        otherItem = menue.addItem("Other", null, null);
         initOtherItem(otherItem, annotationsItemsCommand);
 
         MenuItem H2OItem = lossItem.addItem("H2O", annotationsItemsCommand);
@@ -204,8 +211,8 @@ public class SpectrumPlot extends AbsoluteLayout {
         adaptItem.setCheckable(true);
         adaptItem.setChecked(true);
         lossItem.addSeparatorBefore(adaptItem);
-        chargeItem = menue.addItem("Charge", null, null);
-        deNovoItem = menue.addItem("De Novo", null, null);
+
+        deNovoItem = menue.addItem("De Novo", VaadinIcons.BAR_CHART_H, null);
         MenuBar.Command deNovoItemItemsCommand = (MenuItem selectedItem) -> {
             if (selectedItem.getText().contains("Single Charge")) {
                 deNovoItem.getChildren().get(4).setChecked(false);
@@ -229,7 +236,7 @@ public class SpectrumPlot extends AbsoluteLayout {
         doubleChargeItem.setCheckable(true);
         doubleChargeItem.setChecked(false);
 
-        settingsItem = menue.addItem("Settings", null, null);
+        settingsItem = menue.addItem("Settings", VaadinIcons.COGS, null);
         MenuItem showAllPeaksItem = settingsItem.addItem("Show All Peaks", deNovoItemItemsCommand);
         showAllPeaksItem.setCheckable(true);
         showAllPeaksItem.setChecked(false);
@@ -241,8 +248,8 @@ public class SpectrumPlot extends AbsoluteLayout {
         automaticAnnotationItem.setCheckable(true);
         automaticAnnotationItem.setChecked(true);
 
-        MenuItem exportItem = menue.addItem("Export", null, null);
-        MenuItem helpItem = menue.addItem("Help", null, null);
+        MenuItem exportItem = menue.addItem("Export", VaadinIcons.DOWNLOAD_ALT, null);
+        MenuItem helpItem = menue.addItem("Help", VaadinIcons.QUESTION_CIRCLE_O, null);
 
         mainSizeReporter = new SizeReporter(SpectrumPlot.this);
         mainSizeReporter.addResizeListener((ComponentResizeEvent event) -> {
@@ -260,17 +267,32 @@ public class SpectrumPlot extends AbsoluteLayout {
             }
             updateImage(spectrumPanel);
         };
-        menue.addItem("Show Peak Details", null, showPeakDetailsCommand);
+        menue.addItem("Show Peak Details", VaadinIcons.TAGS, showPeakDetailsCommand);
 
-        resetAnnoItem.setVisible(false);
+        resetAnnoItem.setEnabled(false);
         disableSizeReporter = false;
+
+        HorizontalLayout spectrumSliderContainer = new HorizontalLayout();
+        spectrumSliderContainer.setHeight(200, Unit.PIXELS);
+        spectrumSliderContainer.setWidth(112, Unit.PIXELS);
+        spectrumSliderContainer.setSpacing(true);
+        spectrumSliderContainer.addComponent(annotationAccuracySlider);
+        spectrumSliderContainer.setComponentAlignment(annotationAccuracySlider, Alignment.TOP_CENTER);
+        spectrumSliderContainer.addComponent(levelSlider);
+        spectrumSliderContainer.setComponentAlignment(levelSlider, Alignment.TOP_CENTER);
+        PopupView spectrumSlidersPopup = new PopupView(VaadinIcons.SLIDERS.getHtml() + " Spectrum Sliders", spectrumSliderContainer);
+//        spectrumSlidersPopup.setIcon(VaadinIcons.SLIDERS);
+        spectrumSlidersPopup.setCaptionAsHtml(true);
+        spectrumSlidersPopup.setStyleName("popupasmenueitem");
+        spectrumSlidersPopup.setHideOnMouseOut(false);
+        spectrumSlidersPopup.setDescription("Show annotation accuracy  and  intensity level sliders");
+        controlsLayout.addComponent(spectrumSlidersPopup);
 
     }
 
     private void updateImage(JPanel jpanel) {
 //        ExecutorService executorService = Executors.newSingleThreadExecutor();
 //        executorService.submit(() -> {
-        System.out.println("call table update");
         plot.setSource(new ExternalResource(drawImage(jpanel)));
 //        });
 //        executorService.shutdown();
@@ -373,10 +395,10 @@ public class SpectrumPlot extends AbsoluteLayout {
      */
     public void updateAnnotationPreferences() {
         try {
-            levelSlider.setCaption("<center>" + ((int) ((double) levelSlider.getValue())) + " %<center>");
-            levelSlider.setDescription("Level : " + ((int) ((double) levelSlider.getValue())) + " %");
+            levelSlider.setCaption("Intensity <br/>" + ((int) ((double) levelSlider.getValue())) + " %");
+            levelSlider.setDescription("Intensity level : " + ((int) ((double) levelSlider.getValue())) + " %");
             double accuracy = (annotationAccuracySlider.getValue() / 100.0) * fragmentIonAccuracy;
-            annotationAccuracySlider.setCaption("<center>" + String.format("%.2f", accuracy) + " Da</center>");
+            annotationAccuracySlider.setCaption("Accuracy<br/>" + String.format("%.2f", accuracy) + " Da");
             annotationAccuracySlider.setDescription("Annotation accuracy : " + accuracy + " Da");
             PeptideAssumption peptideAssumption = spectrumMatch.getBestPeptideAssumption();
             currentPeptide = peptideAssumption.getPeptide();

@@ -8,6 +8,8 @@ import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components.
 import com.uib.web.peptideshaker.presenter.pscomponents.SpectrumInformation;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -60,7 +62,7 @@ public class PeptideVisulizationLevelContainer extends HorizontalLayout implemen
         container.setExpandRatio(topLabelContainer, 0.01f);
 
         HorizontalLayout topLeftLabelContainer = new HorizontalLayout();
-        topLeftLabelContainer.setWidthUndefined();
+        topLeftLabelContainer.setWidth(100,Unit.PERCENTAGE);
         topLeftLabelContainer.setHeight(100, Unit.PERCENTAGE);
         topLabelContainer.addComponent(topLeftLabelContainer);
         headerLabel = new Label();
@@ -74,6 +76,8 @@ public class PeptideVisulizationLevelContainer extends HorizontalLayout implemen
         topControllerBtnContainer.setWidth(100, Unit.PIXELS);
         topControllerBtnContainer.setHeight(100, Unit.PERCENTAGE);
         topLeftLabelContainer.addComponent(topControllerBtnContainer);
+        topLeftLabelContainer.setComponentAlignment(topControllerBtnContainer, Alignment.TOP_RIGHT);
+        topControllerBtnContainer.setMargin(new MarginInfo(false, false, false, false));
         topControllerBtnContainer.setSpacing(true);
         topControllerBtnContainer.setStyleName("buttoncontainerstyle");
 
@@ -169,7 +173,7 @@ public class PeptideVisulizationLevelContainer extends HorizontalLayout implemen
     public void selectionChange(String type) {
         if (type.equalsIgnoreCase("peptide_selection")) {
             if (Selection_Manager.getSelectedPeptide() != null) {
-                headerLabel.setValue("Peptide Spectrum Matches ( " + Selection_Manager.getSelectedPeptide().getModifiedSequence() + " )");
+                headerLabel.setValue("Peptide Spectrum Matches (" + Selection_Manager.getSelectedPeptide().getModifiedSequence() + ")");
                 this.psmViewComponent.updateView(peptideShakerVisualizationDataset.getPSM(Selection_Manager.getSelectedPeptide().getModifiedSequence()), Selection_Manager.getSelectedPeptide().getTooltip(), Selection_Manager.getSelectedPeptide().getModifiedSequence().length());
 //                this.psmViewBtn.updateIconResource(new ThemeResource("img/spectra_1.png"));
             } else {

@@ -104,23 +104,23 @@ public abstract class GalaxyInteractiveLayer {
                 @Override
                 public void synchronizeDataWithGalaxyServer(boolean updatePresenterView) {
                     historyHandler.updateHistory(updatePresenterView);
-                    userOverViewList.set(2, historyHandler.getDatasetsNumber() + "");
-                    userOverViewList.set(3, historyHandler.getFilesNumber() + "");
-                    userOverViewList.set(4, dsFormater.format(historyHandler.getMemoryUsage()) + " GB");
+                    userOverViewList.set(1, historyHandler.getDatasetsNumber() + "");
+                    userOverViewList.set(2, historyHandler.getFilesNumber() + "");
+                    userOverViewList.set(3, dsFormater.format(historyHandler.getMemoryUsage()) + " GB");
                 }
             };
             VaadinSession.getCurrent().setAttribute("ApiKey", Galaxy_Instance.getApiKey());
 
             UsersClient userClient = Galaxy_Instance.getUsersClient();
             User user = userClient.getUsers().get(0);
-            userOverViewList.add(user.getUsername().replace("guest_user", "Guest User <i>(public data)</i>"));
+            userOverViewList.add(user.getUsername().replace("guest_user", "Guest User <i style='font-size: 10px;'>(public data)</i>"));
             userOverViewList.add(historyHandler.getDatasetsNumber() + "");
             userOverViewList.add(historyHandler.getFilesNumber() + "");
             userOverViewList.add(dsFormater.format(historyHandler.getMemoryUsage()) + " GB");
             userOverViewList.add(toolsHandler.getSearch_GUI_Tool().getVersion());
             userOverViewList.add(toolsHandler.getPeptideShaker_Tool().getVersion());
         } catch (Exception e) {
-            System.out.println("exception in galaxy connection cought");
+            System.out.println("exception in galaxy connection cought "+e.getMessage());
             if (VaadinSession.getCurrent().getSession() != null) {
                 VaadinSession.getCurrent().getSession().invalidate();
             }
