@@ -180,7 +180,7 @@ public abstract class Legend extends VerticalLayout {
         }
         currentModifications += modifications + ";";
 
-        Node node = new Node("prot", modifications, "", -1, "red") {
+        Node node = new Node("prot", modifications, null, -1, "red") {
             @Override
             public void selected(String id) {
 
