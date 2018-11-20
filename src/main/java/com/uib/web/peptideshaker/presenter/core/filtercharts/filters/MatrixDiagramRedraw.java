@@ -330,8 +330,6 @@ public abstract class MatrixDiagramRedraw extends VerticalLayout {
         minWidth = finalwidth + 20;
         container.setWidth(minWidth, Unit.PIXELS);
         container.setHeight(finalheight + 30, Unit.PIXELS);
-
-        System.out.println("initial drawing is done");
         allowRedraw = true;
 
     }

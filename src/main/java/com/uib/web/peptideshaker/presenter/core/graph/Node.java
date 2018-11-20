@@ -61,10 +61,13 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
             String[] indexArr = tmod[1].replace(")", "").replace(" ", "").split(",");
             for (String indexStr : indexArr) {
                 int i = Integer.valueOf(indexStr) - 1;
-                modificationsTooltip.put(sequence.charAt(i) + "<" + PTM.getPTM(tmod[0].trim()).getShortName() + ">", "<font style='background-color:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")'>" + sequence.charAt(i) + "</font>");
+                if (sequence != null) {
+                    modificationsTooltip.put(sequence.charAt(i) + "<" + PTM.getPTM(tmod[0].trim()).getShortName() + ">", "<font style='background-color:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")'>" + sequence.charAt(i) + "</font>");
+                
 
                 if (!subTooltip.contains("</br><span style='width:20px;height:10px;background-color:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")'>" + sequence.charAt(i) + "</span> - " + mod)) {
                     subTooltip += "</br><span style='width:20px;height:10px;background-color:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")'>" + sequence.charAt(i) + "</span> - " + mod;
+                }
                 }
             }
 
@@ -81,22 +84,21 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
         }
         tooltip += subTooltip;
         modificationLayout.setVisible(false);
-      
 
         this.psmNumberLayout = new VerticalLayout();
         this.psmNumberLayout.setSizeFull();
         Node.this.addComponent(psmNumberLayout);
-        String tooltipExt="</br>#PSM ("+psmNumber+")";
-        if(psmNumber==-1){
-        PSMNumberColor="lightgray";
-        tooltipExt="";
+        String tooltipExt = "</br>#PSM (" + psmNumber + ")";
+        if (psmNumber == -1) {
+            PSMNumberColor = "lightgray";
+            tooltipExt = "";
         }
         Label psmsColorLabel = new Label("<div  style='background:" + PSMNumberColor + ";border-radius:100%;width: 100%;height: 100%;opacity:0.2;'></div>", ContentMode.HTML);
         psmsColorLabel.setSizeFull();
         psmNumberLayout.addComponent(psmsColorLabel);
         psmNumberLayout.setVisible(false);
-        tooltip+=tooltipExt;
-          Node.this.setDescription(tooltip);
+        tooltip += tooltipExt;
+        Node.this.setDescription(tooltip);
 
     }
 

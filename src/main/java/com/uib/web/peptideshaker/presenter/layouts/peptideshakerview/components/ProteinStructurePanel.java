@@ -44,7 +44,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
     private final ComboBox pdbChainsSelect;
     private final Property.ValueChangeListener pdbMatchSelectlistener;
     private final Property.ValueChangeListener pdbChainsSelectlistener;
-    private final Button playBtn;
+//    private final Button playBtn;
     private ChainCoverageComponent lastSelectedChainCoverage;
     private Object lastSelectedAccession;
     private String lastSelectedProteinSequence;
@@ -96,21 +96,22 @@ public class ProteinStructurePanel extends AbsoluteLayout {
         chainCoverageLayout.setSizeFull();
         LiteMolPanel.addComponent(liteMOL3DComponent);
         ProteinStructurePanel.this.addComponent(LiteMolPanel);
-        playBtn = new Button("Enable 3D", VaadinIcons.POWER_OFF);
-        playBtn.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
-        playBtn.addStyleName(ValoTheme.BUTTON_LINK);
-        ProteinStructurePanel.this.addComponent(playBtn, "left: 10px; top:-10px");
-
-        playBtn.setDescription("Click to start protein 3D structure");
-        playBtn.addClickListener((Button.ClickEvent event) -> {
-            if (playBtn.getCaption().contains("Enable 3D")) {
-                playBtn.setCaption("Disable 3D");
-                loadData(lastSelectedAccession, lastSelectedProteinSequence);
-            } else {
-                playBtn.setCaption("Enable 3D");
-                reset();
-            }
-        });
+//        playBtn = new Button("Enable 3D", VaadinIcons.POWER_OFF);
+//        playBtn.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
+//        playBtn.addStyleName(ValoTheme.BUTTON_LINK);
+//        ProteinStructurePanel.this.addComponent(playBtn, "left: 10px; top:-10px");
+//
+//        playBtn.setDescription("Click to start protein 3D structure");
+//        playBtn.addClickListener((Button.ClickEvent event) -> {
+//            if (playBtn.getCaption().contains("Enable 3D")) {
+//                playBtn.setCaption("Disable 3D");
+//                loadData(lastSelectedAccession, lastSelectedProteinSequence);
+//            } else {
+//                playBtn.setCaption("Enable 3D");
+//                reset();
+//                playBtn.setEnabled(true);
+//            }
+//        });
 
         uniprotLabel = new Label("UniProt: P11021");
         uniprotLabel.addStyleName("selectchain3dMenue");
@@ -138,7 +139,14 @@ public class ProteinStructurePanel extends AbsoluteLayout {
             }
         });
         pdbChainsSelect.addValueChangeListener(pdbChainsSelectlistener);
-        pdbMatchesSelect = new ComboBox("PDB:");
+        pdbMatchesSelect = new ComboBox("PDB:") {
+            @Override
+            public void setVisible(boolean visible) {
+                uniprotLabel.setVisible(visible);
+                super.setVisible(visible);
+            }
+
+        };
         pdbMatchesSelect.setTextInputAllowed(false);
         pdbMatchesSelect.addStyleName("select3dMenue");
         pdbMatchesSelect.setNullSelectionAllowed(false);
@@ -196,30 +204,37 @@ public class ProteinStructurePanel extends AbsoluteLayout {
     }
 
     public void reset() {
+//        playBtn.setEnabled(false);
         liteMOL3DComponent.reset3DView();
         pdbMatchesSelect.setVisible(false);
         pdbChainsSelect.setVisible(false);
         chainCoverageLayout.setVisible(false);
+        uniprotLabel.setVisible(false);
         lastSelectedPeptideKey = null;
-        playBtn.setCaption("Enable 3D");
+//        playBtn.setCaption("Enable 3D");
     }
 
     public void activate3DProteinView() {
+        if (pdbMatchesSelect.isVisible()) {
+            return;
+        }
         pdbMatchesSelect.setVisible(true);
         pdbChainsSelect.setVisible(true);
         chainCoverageLayout.setVisible(true);
-        playBtn.setCaption("Disable 3D");
+        uniprotLabel.setVisible(true);
+//        playBtn.setCaption("Disable 3D");
         loadData(lastSelectedAccession, lastSelectedProteinSequence);
     }
 
     public void updatePanel(Object accession, String proteinSequence, Collection<PeptideObject> proteinPeptides) {
+//        playBtn.setEnabled(true);
         this.lastSelectedAccession = accession;
         this.lastSelectedProteinSequence = proteinSequence;
         this.uniprotLabel.setValue("UniProt: " + lastSelectedAccession);
         this.proteinPeptides = proteinPeptides;
-        if (playBtn.getCaption().equalsIgnoreCase("Enable 3D")) {
-            return;
-        }
+//        if (playBtn.getCaption().equalsIgnoreCase("Enable 3D")) {
+//            return;
+//        }
         loadData(lastSelectedAccession, lastSelectedProteinSequence);
 
     }
@@ -238,7 +253,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
             pdbMachSet.keySet().forEach((str) -> {
                 pdbMatchesSelect.addItem(str);
                 pdbMatchesSelect.setItemCaption(str, str.toUpperCase() + " " + pdbMachSet.get(str).getDescription());
-                
+
             });
             if (pdbMatchesSelect.getItemIds() == null) {
                 Notification.show("No visulization available ", Notification.Type.TRAY_NOTIFICATION);
@@ -251,7 +266,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
             pdbMatchesSelect.addValueChangeListener(pdbMatchSelectlistener);
             String pdbMachSelectValue = pdbMatchesSelect.getItemIds().toArray()[0] + "";
             pdbMatchesSelect.setValue(pdbMachSelectValue);
-            playBtn.addStyleName("poweron");
+//            playBtn.addStyleName("poweron");
 
         } else {
             Notification.show("No visulization available ", Notification.Type.TRAY_NOTIFICATION);
@@ -403,11 +418,11 @@ public class ProteinStructurePanel extends AbsoluteLayout {
                             if (peptide.get("modifications").toString().split(",").length == 1) {
                                 c = PTM.getColor(peptide.get("modifications").toString().trim());
                             }
-                            
+
                             if (peptideKey == null) {
                                 peptide.put("color", initColorMap(c));
                             } else {
-                                
+
                                 if (c.brighter().toString().equalsIgnoreCase(c.toString())) {
                                     c = new Color(Math.max(c.getRed(), 100), Math.max(c.getGreen(), 100), Math.max(c.getBlue(), 100));
                                     peptide.put("color", initColorMap(c));
@@ -461,7 +476,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
     }
 
     public void selectPeptide(String peptideKey) {
-        if (LiteMolPanel.isVisible()) {
+        if (pdbMatchesSelect.isVisible()) {
             selectPeptides(peptideKey);
         }
     }

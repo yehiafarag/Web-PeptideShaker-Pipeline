@@ -1,7 +1,9 @@
 package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components.coverage;
 
+import com.compomics.util.experiment.biology.PTMFactory;
 import com.uib.web.peptideshaker.presenter.core.graph.Node;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -9,6 +11,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import java.awt.Color;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -19,7 +22,7 @@ import java.util.Map;
  */
 public abstract class Legend extends VerticalLayout {
 
-    private final Map<String, Component> layoutMap;
+    private final Map<String, VerticalLayout> layoutMap;
 
     public Legend() {
         Legend.this.setSpacing(true);
@@ -83,6 +86,8 @@ public abstract class Legend extends VerticalLayout {
         proteinEvidenceContainer.setHeight(240, Unit.PIXELS);
         proteinEvidenceContainer.setCaption("<b>Protein Evidence</b>");
         proteinEvidenceContainer.setCaptionAsHtml(true);
+        proteinEvidenceContainer.setVisible(false);
+        layoutMap.put("Protein Evidence", proteinEvidenceContainer);
         lowerContainer.addComponent(proteinEvidenceContainer);
         Node protein = generateNode("proteinnode");
         protein.addStyleName("greenbackground");
@@ -107,6 +112,8 @@ public abstract class Legend extends VerticalLayout {
         proteinValidationContainer.setHeight(170, Unit.PIXELS);
         proteinValidationContainer.setCaption("<b>Validation Status</b>");
         proteinValidationContainer.setCaptionAsHtml(true);
+        proteinValidationContainer.setVisible(false);
+        layoutMap.put("Validation Status", proteinValidationContainer);
         lowerContainer.addComponent(proteinValidationContainer);
         Node confedent = generateNode("proteinnode");
         confedent.addStyleName("greenbackground");
@@ -122,10 +129,26 @@ public abstract class Legend extends VerticalLayout {
         notAvailable2.addStyleName("graybackground");
         proteinValidationContainer.addComponent(generateLabel(notAvailable2, "Not Available"));
 
+        VerticalLayout psmNumberContainer = new VerticalLayout();
+        psmNumberContainer.setHeight(170, Unit.PIXELS);
+        psmNumberContainer.setVisible(false);
+        psmNumberContainer.setCaption("<b>#PSM</b>");
+        psmNumberContainer.setCaptionAsHtml(true);
+        layoutMap.put("PSMNumber", psmNumberContainer);
+        lowerContainer.addComponent(psmNumberContainer);
+
+        VerticalLayout proteinModificationContainer = new VerticalLayout();
+        proteinModificationContainer.setHeight(170, Unit.PIXELS);
+        proteinModificationContainer.setVisible(false);
+        proteinModificationContainer.setCaption("<b>Modifications</b>");
+        proteinModificationContainer.setCaptionAsHtml(true);
+        layoutMap.put("Modification  Status", proteinModificationContainer);
+        lowerContainer.addComponent(proteinModificationContainer);
+
     }
 
     private Node generateNode(String defaultStyleName) {
-        Node node = new Node("prot","","",-1,"") {
+        Node node = new Node("prot", "", "", -1, "") {
             @Override
             public void selected(String id) {
 
@@ -138,6 +161,43 @@ public abstract class Legend extends VerticalLayout {
     }
 
     public void updateLegend(String mode) {
+        layoutMap.values().forEach((c) -> {
+            c.setVisible(false);
+        });
+        if (mode.equals("Molecule Type")) {
+            return;
+        }
+
+        layoutMap.get(mode).setVisible(true);
+
+    }
+
+    String currentModifications = "";
+
+    public void updateModificationLayout(String modifications) {
+        if (currentModifications.contains(modifications)) {
+            return;
+        }
+        currentModifications += modifications + ";";
+
+        Node node = new Node("prot", modifications, "", -1, "red") {
+            @Override
+            public void selected(String id) {
+
+            }
+        };
+        node.setDefaultStyleName("peptidenode");
+        node.setSelected(true);
+        node.addStyleName("defaultcursor");
+        node.setNodeStatues("Modification  Status");
+        node.setDescription(modifications);
+        layoutMap.get("Modification  Status").addComponent(generateLabel(node, modifications));
+
+    }
+
+    public void updatePSMNumberLayout(Component range) {
+        layoutMap.get("PSMNumber").removeAllComponents();
+        layoutMap.get("PSMNumber").addComponent(range);
 
     }
 
@@ -191,6 +251,7 @@ public abstract class Legend extends VerticalLayout {
         return row;
 
     }
+
     public abstract void close();
 
 }

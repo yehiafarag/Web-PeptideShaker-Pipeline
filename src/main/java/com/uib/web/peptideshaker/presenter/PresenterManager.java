@@ -270,7 +270,6 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
         } else {
             selectedBtnData = ((ButtonWithLabel) com).getData().toString();
         }
-        System.out.println("at selected data " + selectedBtnData);
         if (selectedBtnData.equalsIgnoreCase("controlBtnsAction")) {
             return;
         }

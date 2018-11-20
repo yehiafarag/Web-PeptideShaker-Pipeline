@@ -1,8 +1,8 @@
 package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components;
 
-import com.ejt.vaadin.sizereporter.SizeReporter;
 import com.itextpdf.text.pdf.codec.Base64;
 import com.uib.web.peptideshaker.presenter.core.Protein3DStructureCoverage;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -25,13 +25,10 @@ import org.jfree.chart.encoders.ImageFormat;
 public class ChainCoverageComponent {
 
     private final int proteinSequenceLength;
-    private final Map<String, Rectangle> chainsBlocks;
-    private int compWidth = 260;
-    private int comHeight = 30;
-    private double imgCorrectFactor;
+    private final Map<String, Rectangle> chainsBlocks;    
     private final double iconCorrectFactor;
 
-    private double layoutToPercentageFactor;
+    private final double layoutToPercentageFactor;
     private final int[] coverageArr;
 //    private final Image chainCoverageWebComponent;
     private final Protein3DStructureCoverage chainCoverageWebComponent;
@@ -44,8 +41,7 @@ public class ChainCoverageComponent {
 
     public ChainCoverageComponent(int proteinSequenceLength) {
         this.proteinSequenceLength = proteinSequenceLength;
-        this.iconCorrectFactor = (double) (200) / (double) this.proteinSequenceLength;
-        this.imgCorrectFactor = iconCorrectFactor;
+        this.iconCorrectFactor = (double) (360) / (double) this.proteinSequenceLength;
         this.layoutToPercentageFactor = 100.0 / (double) this.proteinSequenceLength;
 
         this.chainsBlocks = new LinkedHashMap<>();
@@ -54,7 +50,7 @@ public class ChainCoverageComponent {
         this.chainCoverageWebComponent = new Protein3DStructureCoverage();
         this.chainCoverageWebComponent.setSizeFull();
 //        
-        SizeReporter imageSizeReporter = new SizeReporter(chainCoverageWebComponent);
+//        SizeReporter imageSizeReporter = new SizeReporter(chainCoverageWebComponent);
 //        imageSizeReporter.addResizeListener((ComponentResizeEvent event) -> {
 //            if (event.getWidth() <= 200) {
 //                try {
@@ -102,23 +98,15 @@ public class ChainCoverageComponent {
         this.chainCoverageWebComponent.setRightLabelValue(chainId);
         this.chainCoverageWebComponent.reset();
 
-//        BufferedImage image = new BufferedImage(compWidth, comHeight, BufferedImage.TYPE_INT_ARGB);
-//        Graphics2D g2 = image.createGraphics();
-        BufferedImage icon = new BufferedImage(260, 30, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D icong2 = icon.createGraphics();
+        BufferedImage icon = new BufferedImage(415, 30, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2d = icon.createGraphics();
 
-        //draw sequence line
-//        g2.setColor(Color.LIGHT_GRAY);
-//        g2.fillRect(25, 14, (compWidth - 52), 3);
-        icong2.setColor(Color.GRAY);
-        icong2.fillRect(5, 14, (200), 3);
+        g2d.setColor(Color.GRAY);
+        g2d.fillRect(5, 14, (360), 3);
 
         //chaine border
-//        g2.setStroke(new BasicStroke(2));
-//        icong2.setStroke(new BasicStroke(2));
         chaincolor = new Color(226, 226, 226);
         bordercolor = Color.GRAY;
-
         for (int i = 0; i < coverageArr.length; i++) {
             if (coverageArr[i] > 0) {
                 //start draw
@@ -128,16 +116,12 @@ public class ChainCoverageComponent {
                     end++;
                     i = y;
                 }
-//                g2.setColor(bordercolor);
-//                g2.drawRect(25 + (int) ((double) start * imgCorrectFactor), 10, (int) ((end - start) * imgCorrectFactor), 10);
-//                g2.setColor(chaincolor);
-//                g2.fillRect(25 + (int) ((double) start * imgCorrectFactor), 10, (int) ((end - start) * imgCorrectFactor), 10);
 
                 this.chainCoverageWebComponent.addCoverageComponent((((double) start) * layoutToPercentageFactor), (((double) (end - start)) * layoutToPercentageFactor), false);
-                icong2.setColor(bordercolor);
-                icong2.drawRect(5 + (int) ((double) start * iconCorrectFactor), 10, (int) ((end - start) * imgCorrectFactor), 10);
-                icong2.setColor(chaincolor);
-                icong2.fillRect(5 + (int) ((double) start * iconCorrectFactor), 10, (int) ((end - start) * imgCorrectFactor), 10);
+                g2d.setColor(bordercolor);
+                g2d.drawRect(5 + (int) ((double) start * iconCorrectFactor), 10, (int) ((end - start) * iconCorrectFactor), 10);
+                g2d.setColor(chaincolor);
+                g2d.fillRect(5 + (int) ((double) start * iconCorrectFactor), 10, (int) ((end - start) * iconCorrectFactor), 10);
 
             }
         }
@@ -147,16 +131,12 @@ public class ChainCoverageComponent {
             counter = 0;
             chainsBlocks.keySet().forEach((c) -> {
                 if (c.contains(chainId)) {
-//                    g2.setColor(Color.GRAY);
-//                    g2.drawRect(25 + (int) ((double) chainsBlocks.get(c).x * imgCorrectFactor), chainsBlocks.get(c).y, (int) ((double) chainsBlocks.get(c).width * imgCorrectFactor), chainsBlocks.get(c).height);
-//                    g2.setColor(new Color(200, 200, 200));
-//                    g2.fillRect(25 + (int) ((double) chainsBlocks.get(c).x * imgCorrectFactor), chainsBlocks.get(c).y, (int) ((double) chainsBlocks.get(c).width * imgCorrectFactor), chainsBlocks.get(c).height);
-
+//                   
                     this.chainCoverageWebComponent.addCoverageComponent(((double) (chainsBlocks.get(c).x) * layoutToPercentageFactor), (((double) chainsBlocks.get(c).width) * layoutToPercentageFactor), true);
-                    icong2.setColor(Color.GRAY);
-                    icong2.drawRect(5 + (int) ((double) chainsBlocks.get(c).x * iconCorrectFactor), chainsBlocks.get(c).y, (int) ((double) chainsBlocks.get(c).width * iconCorrectFactor), chainsBlocks.get(c).height);
-                    icong2.setColor(new Color(200, 200, 200));
-                    icong2.fillRect(5 + (int) ((double) chainsBlocks.get(c).x * iconCorrectFactor), chainsBlocks.get(c).y, (int) ((double) chainsBlocks.get(c).width * iconCorrectFactor), chainsBlocks.get(c).height);
+                    g2d.setColor(Color.GRAY);
+                    g2d.drawRect(5 + (int) ((double) chainsBlocks.get(c).x * iconCorrectFactor), chainsBlocks.get(c).y, (int) ((double) chainsBlocks.get(c).width * iconCorrectFactor), chainsBlocks.get(c).height);
+                    g2d.setColor(new Color(200, 200, 200));
+                    g2d.fillRect(5 + (int) ((double) chainsBlocks.get(c).x * iconCorrectFactor), chainsBlocks.get(c).y, (int) ((double) chainsBlocks.get(c).width * iconCorrectFactor), chainsBlocks.get(c).height);
                     counter += (chainsBlocks.get(c).width - 1);
 
                 }
@@ -167,26 +147,14 @@ public class ChainCoverageComponent {
             v = df.format(d);
         }
         //total chain coverage
-////     
-//        g2.setColor(Color.GRAY);
-//        g2.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 14));
-//        g2.drawString("3D", (2), (comHeight / 2) + 6);
-//        g2.drawString(chainId, (compWidth - 20), (comHeight / 2) + 6);
-//        g2.dispose();
-
-        icong2.setColor(Color.BLACK);
-        icong2.setFont(new Font("sans-serif", Font.PLAIN, 14));
-        icong2.drawString(v + "%", (220), (comHeight / 2) + 6);
-        icong2.dispose();
+        g2d.setColor(Color.BLACK);
+        g2d.setFont(new Font("sans-serif", Font.PLAIN, 14));
+        g2d.drawString(v + "%", (365), (15) + 6);
+        g2d.dispose();
 
         byte[] iconImageData = null;
-        byte[] imageData;
         try {
             ImageEncoder in = ImageEncoderFactory.newInstance(ImageFormat.PNG, 1);
-//            imageData = in.encode(image);
-//            String base64_1 = Base64.encodeBytes(imageData);
-//            base64_1 = "data:image/png;base64," + base64_1;
-//            chainCoverageWebComponent.setSource(new ExternalResource(base64_1));
             iconImageData = in.encode(icon);
         } catch (IOException e) {
             System.out.println(e.getLocalizedMessage());
@@ -200,15 +168,9 @@ public class ChainCoverageComponent {
         return base64;
     }
 
-    public void setCompWidth(int compWidth) {
-        this.compWidth = compWidth;
-        this.imgCorrectFactor = (double) this.proteinSequenceLength / ((double) compWidth - 52.0);
-        drawImage(lasteSelectedChain);
-    }
+  
 
-    public void setComHeight(int comHeight) {
-        this.comHeight = comHeight;
-    }
+   
 
     public Protein3DStructureCoverage getChainCoverageWebComponent() {
         return chainCoverageWebComponent;

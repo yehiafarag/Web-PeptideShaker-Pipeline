@@ -110,6 +110,7 @@ public abstract class GraphComponent extends VerticalLayout {
     private final Set<Object> selectedPeptides;
 
     private final PopupView legendLayout;
+    private final Legend informationLegend;
 
     private String thumbImgeUrl;
 
@@ -187,7 +188,7 @@ public abstract class GraphComponent extends VerticalLayout {
             selectAll();
         });
 
-        Legend informationLegend = new Legend() {
+         informationLegend = new Legend() {
             @Override
             public void close() {
                 legendLayout.setPopupVisible(false);
@@ -244,7 +245,9 @@ public abstract class GraphComponent extends VerticalLayout {
         lefTtopPanel.addComponent(proteinsControl);
 
         proteinsControlListener = (Property.ValueChangeEvent event) -> {
+             informationLegend.updateLegend(proteinsControl.getValue() + "");
             updateNodeColourType(proteinsControl.getValue() + "");
+            
         };
         proteinsControl.addValueChangeListener(proteinsControlListener);
 
@@ -263,6 +266,7 @@ public abstract class GraphComponent extends VerticalLayout {
         nodeControl.addValueChangeListener((Property.ValueChangeEvent event) -> {
             uniqueOnly = nodeControl.getValue().equals("Unique Only");
             selectNodes(selectedProteins.toArray());
+           
         });
         leftBottomPanel.addComponent(nodeControl);
 
@@ -416,6 +420,7 @@ public abstract class GraphComponent extends VerticalLayout {
 
                 }
             };
+            informationLegend.updateModificationLayout(modifications);
             n.setX(graphLayout.getX(node));
             n.setY(graphLayout.getY(node));
             nodesMap.put(node, n);
@@ -449,6 +454,7 @@ public abstract class GraphComponent extends VerticalLayout {
             wrapper.setData(node);
             wrapper.setDescription(n.getDescription());
             canvas.addComponent(wrapper, "left: " + n.getX() + "px; top: " + n.getY() + "px");
+            
         }
         edges.keySet().forEach((key) -> {
             ArrayList<String> edg = edges.get(key);
@@ -468,6 +474,7 @@ public abstract class GraphComponent extends VerticalLayout {
         proteinsControl.setValue("Molecule Type");
         proteinsControl.addValueChangeListener(proteinsControlListener);
         thumbImgeUrl = generateThumbImg();
+        informationLegend.updatePSMNumberLayout(colorScale.getColorScale());
 //        updateGraphLayout();
 
     }

@@ -108,7 +108,7 @@ public class PeptidShakerUI extends UI {
             webPeptideShakerApp.removeStyleName("mobilestyle");
             VaadinSession.getCurrent().setAttribute("smallscreenstyle", false);
         }
-        if ((Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight()) || (Page.getCurrent().getBrowserWindowWidth() < 1422) || (Page.getCurrent().getBrowserWindowHeight() < 754)) {
+        if ((Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight()) || (Page.getCurrent().getBrowserWindowWidth() < 500) || (Page.getCurrent().getBrowserWindowHeight() < 500)) {
             webPeptideShakerApp.addStyleName("smallscreenstyle");
             VaadinSession.getCurrent().setAttribute("smallscreenstyle", true);
         } else {
@@ -127,7 +127,7 @@ public class PeptidShakerUI extends UI {
             } else if (Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile") && (Page.getCurrent().getBrowserWindowWidth() >= Page.getCurrent().getBrowserWindowHeight())) {
                 webPeptideShakerApp.removeStyleName("hidemode");
 
-            } else if ((Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight()) || (Page.getCurrent().getBrowserWindowWidth() < 1422) || (Page.getCurrent().getBrowserWindowHeight() < 754)) {
+            } else if ((Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight()) || (Page.getCurrent().getBrowserWindowWidth() < 500) || (Page.getCurrent().getBrowserWindowHeight() < 500)) {
                 webPeptideShakerApp.addStyleName("smallscreenstyle");
                 VaadinSession.getCurrent().setAttribute("smallscreenstyle", true);
             } else {
