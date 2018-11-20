@@ -871,8 +871,8 @@
         border:none !important;
     }
     .psmtable.v-table .v-table-body{
-	overflow-x:hidden;
-}
+        overflow-x:hidden;
+    }
 
     .psmtable.v-table [class*="-row"].v-selected {
         background-color: white !important;
@@ -2038,7 +2038,7 @@
     .v-verticallayout-inframe .v-select-optiongroup {
         margin-top:-4px;
         z-index:2 !important;
-	position:relative !important;
+        position:relative !important;
     }
 
     .v-verticallayout-inframe .v-select-optiongroup  label{
@@ -2074,9 +2074,9 @@
     .v-absolutelayout-wrapper-proteincoverage{
         padding-left:25px !important;
         padding-right:25px !important;
-        background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='15px' width='25px'><text  style='font-family:sans-serif;' x='0' y='12' fill='gray' font-size='15px'>N  </text></svg>"),url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='15px' width='25px'><text style='font-family:sans-serif;' x='10' y='12' fill='gray' font-size='15px'>C</text></svg>");
-        background-repeat:no-repeat;
-        background-position:5px 50%, right 0px top 50%;
+       background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='15px' width='25px'><text  style='font-family:sans-serif;' x='8.5' y='12' fill='gray' font-size='12px'>N</text></svg>"), url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='15px' width='25px'><text style='font-family:sans-serif;' x='8.5' y='12' fill='gray' font-size='12px'>C</text></svg>");
+	background-repeat: no-repeat;
+	background-position: 0px 50%, right 0px top 50%;
 
     }
     .peptidecoverage{
@@ -4922,4 +4922,27 @@
     .v-align-center .btninframe {
         top:2px !important
     }
+    .protein3dstructurecoverage .v-label {
+text-align:center;
+line-height:30px;
+font-family:sans-serif;
+font-size:12px !important;
+color:gray;
+text-transform:uppercase;
+}
+.graymiddleline{
+	background-color:gray;
+	margin-top:-1px;
+}
+.coveragecompoenent {
+	background-color:whitesmoke;
+	border:1px solid lightgray;
+	margin-top:7px;
+	margin-bottom:5px;
+	max-height:15px;
+}
+.heighlightcoverage{
+	background-color:lightgray;
+	border-color:gray;
+}
 }
