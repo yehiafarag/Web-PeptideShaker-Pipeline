@@ -3,7 +3,6 @@ package com.uib.web.peptideshaker.presenter;
 //import com.github.jmchilton.blend4j.galaxy.GalaxyInstance;
 //import com.uib.onlinepeptideshaker.managers.RegistrableView;
 //import com.uib.onlinepeptideshaker.presenter.view.SmallSideBtn;
-import com.uib.web.peptideshaker.IconDesign;
 import com.uib.web.peptideshaker.presenter.core.ButtonWithLabel;
 import com.uib.web.peptideshaker.presenter.core.SmallSideBtn;
 import com.uib.web.peptideshaker.presenter.core.ViewableFrame;
@@ -150,7 +149,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
 //        mainHeaderPanel.addComponent(connectionCommentLayout);
 //        mainHeaderPanel.setComponentAlignment(connectionCommentLayout, Alignment.TOP_RIGHT);
         galaxyLloginBtn = new ButtonWithLabel("Galaxy Login<br/><font>Login using API key</font>", 0);
-        galaxyLloginBtn.updateIconResource(new ThemeResource("img/galaxyLogo_2.png"));
+        galaxyLloginBtn.updateIconResource(new ThemeResource("img/galaxyLogo.png"));//galaxyLogo_2.png
         galaxyLloginBtn.addStyleName("galaxylabel");
         galaxyLloginBtn.setDescription("Login to Galaxy - API key required");
 

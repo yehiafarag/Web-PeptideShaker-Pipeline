@@ -6,16 +6,13 @@ import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyTran
 import com.uib.web.peptideshaker.presenter.core.DropDownList;
 import com.uib.web.peptideshaker.presenter.core.MultiSelectOptionGroup;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
-import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelTextField;
 import com.vaadin.data.Property;
-import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.server.VaadinService;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
@@ -104,7 +101,7 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
         content.addComponent(searchSettingsFileList);
         searchSettingsFileList.setFocous();
 
-        searchSettingsLayout = new SearchSettingsLayout() {
+        searchSettingsLayout = new SearchSettingsLayout(false) {
             @Override
             public void saveSearchingFile(SearchParameters searchParameters, boolean isNew) {
                 checkAndSaveSearchSettingsFile(searchParameters, isNew);

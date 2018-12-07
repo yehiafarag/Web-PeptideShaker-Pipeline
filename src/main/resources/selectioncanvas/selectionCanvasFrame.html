@@ -59,8 +59,10 @@ and open the template in the editor.
 
                 function line(cnvs) {
                     cnvs.beginPath();
-                    cnvs.moveTo(startPos.x, startPos.y);
-                    cnvs.lineTo(finalPos.x, finalPos.y);
+                   // cnvs.moveTo(startPos.x, startPos.y);
+                   cnvs.fillStyle = "rgba(184, 207, 224,0.1)";
+                    cnvs.rect(startPos.x, startPos.y,(finalPos.x-startPos.x), (height-startPos.y));
+                    ctx.fillRect(startPos.x, startPos.y,(finalPos.x-startPos.x), (height-startPos.y));
                     cnvs.stroke();
                 }
 

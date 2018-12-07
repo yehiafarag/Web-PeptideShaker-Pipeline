@@ -8,6 +8,7 @@ import com.compomics.util.experiment.identification.identification_parameters.Se
 import com.compomics.util.experiment.massspectrometry.Charge;
 import com.compomics.util.preferences.DigestionPreferences;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyFileObject;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
 import com.uib.web.peptideshaker.presenter.core.DropDownList;
 import com.uib.web.peptideshaker.presenter.core.MultiSelectOptionGroup;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
@@ -19,7 +20,6 @@ import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelDropDounList
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelTextField;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelTextFieldDropdownList;
 import com.uib.web.peptideshaker.presenter.core.form.SparkLine;
-import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.validator.DoubleRangeValidator;
 import com.vaadin.data.validator.IntegerRangeValidator;
@@ -128,6 +128,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
      * Search parameter file name input field.
      */
     private final HorizontalLabelTextField searchParametersFileNameInputField;
+    private final HorizontalLayout searchsettingsContainer;
     /**
      * Selected parameter file .par file galaxy id.
      */
@@ -194,10 +195,18 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
     private final PopupWindow proteaseFragmentationContainer;
     DecimalFormat df = new DecimalFormat("0.00E00");//new DecimalFormat("#.##");
 
+    private String enzyme;
+    private final Label titleLabel;
+    private final Button modificationsBtn;
+    private final Button proteaseFragmentationBtn;
+    private final Button saveBtn;
+    private final boolean overviewDataset;
+
     /**
      * Constructor to initialise the main setting parameters.
      */
-    public SearchSettingsLayout() {
+    public SearchSettingsLayout(boolean overviewDataset) {
+        this.overviewDataset=overviewDataset;
         SearchSettingsLayout.this.setMargin(true);
         SearchSettingsLayout.this.setHeightUndefined();
         SearchSettingsLayout.this.setWidth(630, Unit.PIXELS);
@@ -216,10 +225,10 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         commonModificationIds.addAll(Arrays.asList(mod.split("//")));
 
         upperPanel.addComponent(titleLayout);
-        Label setteingsLabel = new Label("Search Settings");
-        setteingsLabel.addStyleName(ValoTheme.LABEL_BOLD);
-        titleLayout.addComponent(setteingsLabel);
-        titleLayout.setExpandRatio(setteingsLabel, 20);
+        titleLabel = new Label("Search Settings", ContentMode.HTML);
+        titleLabel.addStyleName(ValoTheme.LABEL_BOLD);
+        titleLayout.addComponent(titleLabel);
+        titleLayout.setExpandRatio(titleLabel, 20);
 
 //        PopupWindow advancedSearchOption = new PopupWindow("(Advanced Settings)");
 //        advancedSearchOption.setContent(initAdvancedSearchOption());
@@ -245,7 +254,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         titleLayout.addComponent(closeIconBtn);
         titleLayout.setComponentAlignment(closeIconBtn, Alignment.TOP_RIGHT);
 
-        HorizontalLayout searchsettingsContainer = new HorizontalLayout();
+        searchsettingsContainer = new HorizontalLayout();
         searchsettingsContainer.setWidth(100, Unit.PERCENTAGE);
         searchsettingsContainer.setHeight(25, Unit.PIXELS);
         searchsettingsContainer.setSpacing(true);
@@ -266,9 +275,9 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         fastaFileList = new DropDownList("Protein Database (FASTA)") {
             @Override
             public boolean isValid() {
-                fastaFileList.setRequired(true,"No FASTA FILE AVAILABLE");
+                fastaFileList.setRequired(true, "No FASTA FILE AVAILABLE");
                 boolean check = super.isValid();
-                fastaFileList.setRequired(!check,"No FASTA FILE AVAILABLE");
+                fastaFileList.setRequired(!check, "No FASTA FILE AVAILABLE");
                 return check;
 
             }
@@ -291,7 +300,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         createDecoyDatabaseOptionList.setSelectedValue("create_decoy");
         createDecoyDatabaseOptionList.setViewList(true);
 
-        Button modificationsBtn = new Button("Modification");
+        modificationsBtn = new Button("Modification");
         modificationsBtn.setIcon(VaadinIcons.PENCIL);
         modificationsBtn.setStyleName(ValoTheme.BUTTON_LINK);
         modificationsBtn.addStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
@@ -305,10 +314,13 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         upperPanel.addComponent(modificationLabelsContainer);
         modificationContainer = inititModificationLayout();
         modificationsBtn.addClickListener((Button.ClickEvent event) -> {
+            if (overviewDataset) {
+                return;
+            }
             modificationContainer.setPopupVisible(true);
         });
 
-        Button proteaseFragmentationBtn = new Button("Protease & Fragmentation");
+        proteaseFragmentationBtn = new Button("Protease & Fragmentation");
         proteaseFragmentationBtn.setIcon(VaadinIcons.PENCIL);
         proteaseFragmentationBtn.setStyleName(ValoTheme.BUTTON_LINK);
         proteaseFragmentationBtn.addStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
@@ -324,6 +336,9 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
 //        SearchSettingsLayout.this.addComponent(modificationContainer);
         proteaseFragmentationContainer = inititProteaseFragmentationLayout();
         proteaseFragmentationBtn.addClickListener((Button.ClickEvent event) -> {
+            if (overviewDataset) {
+                return;
+            }
             proteaseFragmentationContainer.setPopupVisible(true);
         });
 
@@ -336,7 +351,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
 //        btnsContainer.setWidth(55, Unit.PERCENTAGE);
 //        actionButtonsLayout.addComponent(btnsContainer);
 //        actionButtonsLayout.setComponentAlignment(btnsContainer, Alignment.MIDDLE_CENTER);
-        Button saveBtn = new Button("Save");
+        saveBtn = new Button("Save");
         saveBtn.setIcon(FontAwesome.SAVE);
         saveBtn.setStyleName(ValoTheme.BUTTON_SMALL);
         saveBtn.addStyleName(ValoTheme.BUTTON_TINY);
@@ -404,6 +419,39 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
     }
 
     /**
+     * Constructor to initialise the main setting parameters.
+     *
+     * @param dataset PeptideShakerVisulization dataset object
+     */
+    public SearchSettingsLayout(PeptideShakerVisualizationDataset dataset) {
+        this(true);
+        dataset.getFixedModification();
+       dataset.getVariableModification();
+        SearchSettingsLayout.this.addStyleName("dsoverview");
+        SearchSettingsLayout.this.updateForms(dataset.getSearchingParameters().getSearchParameters(), null);
+        titleLabel.setValue(dataset.getName().split("___")[0] + " <i style='color: gray;font-size: 12px;'>(" + dataset.getCreateTime() + ")</i>");
+        searchsettingsContainer.setVisible(false);
+        fastaFileList.addStyleName("dropdowntolabel");
+//        fastaFileList.setEnabled(false);
+        if (createDecoyDatabaseOptionList.getSelectedValue() != null && !createDecoyDatabaseOptionList.getSelectedValue().isEmpty()) {
+            createDecoyDatabaseOptionList.setEnabled(false);
+        } else {
+            createDecoyDatabaseOptionList.setVisible(false);
+        }
+        modificationsBtn.setResponsive(false);
+        proteaseFragmentationBtn.setResponsive(false);
+        saveBtn.setVisible(false);
+        fastaFileIdToNameMap = new LinkedHashMap<>();
+        fastaFileIdToNameMap.put(dataset.getFastaFileName(), dataset.getFastaFileName());
+        fastaFileList.updateList(fastaFileIdToNameMap);
+        fastaFileList.setSelected(dataset.getFastaFileName());
+        fastaFileList.setEnabled(false);
+       dataset.getFixedModification();
+       dataset.getVariableModification();
+
+    }
+
+    /**
      * Initialise the layout for search advanced setting
      *
      * @todo: to be implemented
@@ -412,6 +460,10 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
     private VerticalLayout initAdvancedSearchOption() {
         return new VerticalLayout();
 
+    }
+
+    public String getEnzyme() {
+        return enzyme;
     }
 
     public Map<String, String> getUpdatedModiList() {
@@ -897,9 +949,11 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
 
                 String value = "<center>" + digestionList.fullLabelValue() + "</center><center>" + enzymeList.fullLabelValue() + "</center><center>" + specificityList.fullLabelValue() + " </center><br/><center> " + maxMissCleavages.fullLabelValue() + "</center><center>" + fragmentIonTypes.fullLabelValue().replace("_-_", "&") + "</center><center>" + precursorTolerance.fullLabelValue().replace("_-_", "") + " </center><br/><center> " + fragmentTolerance.fullLabelValue().replace("_-_", "") + "</center><center>" + precursorCharge.fullLabelValue().replace("_-_", "-") + "</center><center>" + isotopes.fullLabelValue().replace("_-_", "-") + "</center>";
                 proteaseFragmentationLabels.setValue(value);
+
             }
 
         };
+        enzyme = enzymeList.getSelectedValue();
         proteaseFragmentationWindow.setClosable(true);
 
         proteaseFragmentationWindow.setContent(popupproteaseFragmentationContainer);
@@ -943,26 +997,27 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
      */
     public void updateForms(SearchParameters searchParameters, String paramFileId) {
         this.searchParameters = searchParameters;
-        if (searchParameters.getFastaFile() != null) {
-            isNew = false;
-            this.parameterFileId = paramFileId;
-            String[] fileInfo = searchParameters.getFastaFile().getName().split("__");
-            if (fileInfo.length == 4) {
-                searchParametersFileNameInputField.setSelectedValue(fileInfo[1]);
-                if (Boolean.valueOf(fileInfo[2])) {
-                    createDecoyDatabaseOptionList.setSelectedValue("create_decoy");
-                } else {
-                    createDecoyDatabaseOptionList.setSelectedValue(new HashSet<>());
+        if (paramFileId != null) {
+            if (searchParameters.getFastaFile() != null) {
+                isNew = false;
+                this.parameterFileId = paramFileId;
+                String[] fileInfo = searchParameters.getFastaFile().getName().split("__");
+                if (fileInfo.length == 4) {
+                    searchParametersFileNameInputField.setSelectedValue(fileInfo[1]);
+                    if (Boolean.valueOf(fileInfo[2])) {
+                        createDecoyDatabaseOptionList.setSelectedValue("create_decoy");
+                    } else {
+                        createDecoyDatabaseOptionList.setSelectedValue(new HashSet<>());
+                    }
                 }
+            } else {
+                isNew = true;
+                this.parameterFileId = "New_File";
+                searchParametersFileNameInputField.setSelectedValue(null);
+                createDecoyDatabaseOptionList.setSelectedValue("create_decoy");
+
             }
-        } else {
-            isNew = true;
-            this.parameterFileId = "New_File";
-            searchParametersFileNameInputField.setSelectedValue(null);
-            createDecoyDatabaseOptionList.setSelectedValue("create_decoy");
-
         }
-
         if (searchParameters.getDigestionPreferences() != null) {
             digestionList.setSelected(searchParameters.getDigestionPreferences().getCleavagePreference().toString());
             enzymeList.setSelected(searchParameters.getDigestionPreferences().getEnzymes().get(0).getName());
@@ -1021,7 +1076,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         mostUsedModificationsTable.setCaption("(" + mostUsedModificationsTable.getItemIds().size() + ")");
         allModificationsTable.setCaption("(" + allModificationsTable.getItemIds().size() + ")");
 
-        if (((boolean) VaadinSession.getCurrent().getAttribute("smallscreenstyle"))) {
+        if (((boolean) VaadinSession.getCurrent().getAttribute("smallscreenstyle")) && !overviewDataset) {
             modificationContainer.setHeight(270, Unit.PIXELS);
             modificationContainer.addLayoutClickListener(viewCoordinatorListener);
             proteaseFragmentationContainer.addLayoutClickListener(viewCoordinatorListener);

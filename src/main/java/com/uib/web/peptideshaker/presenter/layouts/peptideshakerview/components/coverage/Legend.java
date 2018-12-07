@@ -1,9 +1,7 @@
 package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components.coverage;
 
-import com.compomics.util.experiment.biology.PTMFactory;
 import com.uib.web.peptideshaker.presenter.core.graph.Node;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -11,7 +9,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-import java.awt.Color;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -27,6 +24,7 @@ public abstract class Legend extends VerticalLayout {
     public Legend() {
         Legend.this.setSpacing(true);
         Legend.this.setStyleName("viewframecontent");
+        Legend.this.addStyleName("whitelayout");
         Legend.this.setWidth(500, Unit.PIXELS);
         this.layoutMap = new LinkedHashMap<>();
 
@@ -130,20 +128,25 @@ public abstract class Legend extends VerticalLayout {
         proteinValidationContainer.addComponent(generateLabel(notAvailable2, "Not Available"));
 
         VerticalLayout psmNumberContainer = new VerticalLayout();
-        psmNumberContainer.setHeight(170, Unit.PIXELS);
+        psmNumberContainer.setHeightUndefined();
         psmNumberContainer.setVisible(false);
+        psmNumberContainer.addStyleName("psmlegendrangeconatainer");
         psmNumberContainer.setCaption("<b>#PSM</b>");
         psmNumberContainer.setCaptionAsHtml(true);
         layoutMap.put("PSMNumber", psmNumberContainer);
         lowerContainer.addComponent(psmNumberContainer);
 
         VerticalLayout proteinModificationContainer = new VerticalLayout();
-        proteinModificationContainer.setHeight(170, Unit.PIXELS);
+        proteinModificationContainer.setHeightUndefined();
+        proteinModificationContainer.setSpacing(true);
         proteinModificationContainer.setVisible(false);
+        proteinModificationContainer.addStyleName("modificationlegendconatiner");
         proteinModificationContainer.setCaption("<b>Modifications</b>");
         proteinModificationContainer.setCaptionAsHtml(true);
-        layoutMap.put("Modification  Status", proteinModificationContainer);
+        layoutMap.put("Modification Status", proteinModificationContainer);
         lowerContainer.addComponent(proteinModificationContainer);
+        Legend.this.updateModificationLayout("No Modifications");
+        Legend.this.updateModificationLayout("Two or More Modifications");
 
     }
 
@@ -175,10 +178,15 @@ public abstract class Legend extends VerticalLayout {
     String currentModifications = "";
 
     public void updateModificationLayout(String modifications) {
-        if (currentModifications.contains(modifications)) {
+//        modifications = modifications.split("\\(")[0];
+        if (modifications.split("\\(")[0].trim().equalsIgnoreCase("") || modifications.split("\\(")[0].contains("Pyrolidone") || modifications.split("\\(")[0].contains("Acetylation of protein N-term")) {
+          return;
+        }
+        if (currentModifications.contains(modifications.split("\\(")[0])) {
             return;
         }
-        currentModifications += modifications + ";";
+
+        currentModifications += modifications.split("\\(")[0] + ";";
 
         Node node = new Node("prot", modifications, null, -1, "red") {
             @Override
@@ -189,9 +197,9 @@ public abstract class Legend extends VerticalLayout {
         node.setDefaultStyleName("peptidenode");
         node.setSelected(true);
         node.addStyleName("defaultcursor");
-        node.setNodeStatues("Modification  Status");
-        node.setDescription(modifications);
-        layoutMap.get("Modification  Status").addComponent(generateLabel(node, modifications));
+        node.setNodeStatues("Modification Status");         
+        node.setDescription(modifications.split("\\(")[0]);
+        layoutMap.get("Modification Status").addComponent(generateLabel(node, modifications.split("\\(")[0]));
 
     }
 

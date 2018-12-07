@@ -14,7 +14,8 @@ import java.util.Set;
  * @author Yehia Farag
  */
 public class ProteinGroupObject extends Protein {
-private boolean availableOn_CSF_PR;
+
+    private boolean availableOn_CSF_PR;
     /**
      * UniProt accession number.
      */
@@ -541,9 +542,11 @@ private boolean availableOn_CSF_PR;
      *
      * @param proteinGroup protein accessions
      */
-    public void setProteinGroup(String proteinGroup) {
+    public void setProteinGroup(String proteinGroup) {        
         this.proteinGroup = proteinGroup;
-        proteinGroupSet.addAll(Arrays.asList(proteinGroup.split(", ")));
+        for (String acc : proteinGroup.split(",")) {
+            proteinGroupSet.add(acc.trim());
+        }
     }
 
     /**

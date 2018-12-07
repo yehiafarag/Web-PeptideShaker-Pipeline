@@ -113,7 +113,7 @@ public class PeptideObject extends Peptide {
     public PeptideObject() {
         this.proteinsSet = new LinkedHashSet<>();
         this.proteinGroupsSet = new LinkedHashSet<>();
-        
+
     }
 
     /**
@@ -263,7 +263,7 @@ public class PeptideObject extends Peptide {
                 ModificationMatch mod = new ModificationMatch(ptm.getName(), true, Integer.parseInt(modIndex.trim()));
                 modificationMatches.add(mod);
             }
-            
+
         }
     }
 
@@ -310,12 +310,13 @@ public class PeptideObject extends Peptide {
      * @param proteinGroups ';'separated strings of accessions
      */
     public void setProteinGroups(String proteinGroups) {
+       
         proteinGroupKey = proteinGroups.replace("(Confident)", "").replace("(Doubtful)", "");
 //        proteinGroupKey = proteinGroupKey.replace("Not Validated", "").replace("(","").replace(")", "");
-        proteinGroupKey = proteinGroupKey.replace(" ", "").replace(",", "-_-");       
+        proteinGroupKey = proteinGroupKey.replace(" ", "").replace(",", "-_-");
         proteinGroupsSet.addAll(Arrays.asList(proteinGroups.split(", ")));
     }
-    
+
     public String getProteinGroupKey() {
         return proteinGroupKey;
     }
@@ -481,16 +482,16 @@ public class PeptideObject extends Peptide {
     public void setIndex(int index) {
         this.index = index;
     }
-    
+
     @Override
     public boolean isModified() {
         return !this.variableModifications.isEmpty();
-        
+
     }
-    
+
     @Override
     public ArrayList<ModificationMatch> getModificationMatches() {
         return modificationMatches;
     }
-    
+
 }

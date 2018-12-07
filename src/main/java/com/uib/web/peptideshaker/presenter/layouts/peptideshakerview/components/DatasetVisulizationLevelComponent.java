@@ -57,6 +57,7 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
 
         this.datasetFiltersContainer = new FiltersContainer(Selection_Manager);
         DatasetVisulizationLevelComponent.this.addComponent(datasetFiltersContainer);
+         DatasetVisulizationLevelComponent.this.setExpandRatio(datasetFiltersContainer,0.60f);
 
         this.inferenceMap = new HashMap<>();
         this.inferenceMap.put("Single Protein", 1);
@@ -64,22 +65,22 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
         this.inferenceMap.put("Related & Unrelated", 3);
         this.inferenceMap.put("Unrelated", 4);
         TableColumnHeader header1 = new TableColumnHeader("index", Integer.class, null, "", null, Table.Align.RIGHT);
-        TableColumnHeader header2 = new TableColumnHeader("proteinInference", ColorLabel.class, null, generateCaptionWithTooltio("PI","Protein inference"), null, Table.Align.CENTER);
-        TableColumnHeader header3 = new TableColumnHeader("Accession", Link.class, null,generateCaptionWithTooltio("Accession","Protein accession"), null, Table.Align.CENTER);
-        TableColumnHeader header4 = new TableColumnHeader("csf", CSFPRLabel.class, null, generateCaptionWithTooltio("CSF","View in CSF-PR"), null, Table.Align.CENTER);
-        TableColumnHeader header5 = new TableColumnHeader("Name", String.class, null, generateCaptionWithTooltio("Name","Protein name"), null, Table.Align.LEFT);
-        TableColumnHeader header6 = new TableColumnHeader("protein_group", String.class, null,generateCaptionWithTooltio("Protein Group","Proteins accessions in the same group"), null, Table.Align.LEFT);
-        TableColumnHeader header7 = new TableColumnHeader("geneName", String.class, null, generateCaptionWithTooltio("Gene","Gene Name"), null, Table.Align.CENTER);
-        TableColumnHeader header8 = new TableColumnHeader("chromosom", AlphanumComparator.class, null, generateCaptionWithTooltio("Chr","Chromosome"), null, Table.Align.CENTER);
-        TableColumnHeader header9 = new TableColumnHeader("coverage", SparkLineLabel.class, null, generateCaptionWithTooltio("Coverage","Protein sequence coverage"), null, Table.Align.LEFT);
-        TableColumnHeader header10 = new TableColumnHeader("peptides_number", SparkLineLabel.class, null, generateCaptionWithTooltio("#Peptides","Number of validated peptides"), null, Table.Align.LEFT);
-        TableColumnHeader header11 = new TableColumnHeader("psm_number", SparkLineLabel.class, null, generateCaptionWithTooltio("#PSM","Number of Peptide-Spectrum Matches"), null, Table.Align.LEFT);
-        TableColumnHeader header12 = new TableColumnHeader("ms2Quant", SparkLineLabel.class, null, generateCaptionWithTooltio("MS2 Quant","MS2 for protein quantitation"), null, Table.Align.LEFT);
-        TableColumnHeader header13 = new TableColumnHeader("mwkDa", SparkLineLabel.class, null, generateCaptionWithTooltio("MW (kDa)","molecular weight in kilodalton"), null, Table.Align.LEFT);
-        TableColumnHeader header14 = new TableColumnHeader("confidence", SparkLineLabel.class, null, generateCaptionWithTooltio("Confidence","Confidence level"), null, Table.Align.LEFT);
-        TableColumnHeader header15 = new TableColumnHeader("validation", ValidationLabel.class, null, generateCaptionWithTooltio("","Protein validation"), null, Table.Align.CENTER);
+        TableColumnHeader header2 = new TableColumnHeader("proteinInference", ColorLabel.class, null, generateCaptionWithTooltio("PI", "Protein inference"), null, Table.Align.CENTER);
+        TableColumnHeader header3 = new TableColumnHeader("Accession", Link.class, null, generateCaptionWithTooltio("Accession", "Protein accession"), null, Table.Align.CENTER);
+        TableColumnHeader header4 = new TableColumnHeader("csf", CSFPRLabel.class, null, generateCaptionWithTooltio("CSF", "View in CSF-PR"), null, Table.Align.CENTER);
+        TableColumnHeader header5 = new TableColumnHeader("Name", String.class, null, generateCaptionWithTooltio("Name", "Protein name"), null, Table.Align.LEFT);
+        TableColumnHeader header6 = new TableColumnHeader("protein_group", String.class, null, generateCaptionWithTooltio("Protein Group", "Proteins accessions in the same group"), null, Table.Align.LEFT);
+        TableColumnHeader header7 = new TableColumnHeader("geneName", String.class, null, generateCaptionWithTooltio("Gene", "Gene Name"), null, Table.Align.CENTER);
+        TableColumnHeader header8 = new TableColumnHeader("chromosom", AlphanumComparator.class, null, generateCaptionWithTooltio("Chr", "Chromosome"), null, Table.Align.CENTER);
+        TableColumnHeader header9 = new TableColumnHeader("coverage", SparkLineLabel.class, null, generateCaptionWithTooltio("Coverage", "Protein sequence coverage"), null, Table.Align.LEFT);
+        TableColumnHeader header10 = new TableColumnHeader("peptides_number", SparkLineLabel.class, null, generateCaptionWithTooltio("#Peptides", "Number of validated peptides"), null, Table.Align.LEFT);
+        TableColumnHeader header11 = new TableColumnHeader("psm_number", SparkLineLabel.class, null, generateCaptionWithTooltio("#PSM", "Number of Peptide-Spectrum Matches"), null, Table.Align.LEFT);
+        TableColumnHeader header12 = new TableColumnHeader("ms2Quant", SparkLineLabel.class, null, generateCaptionWithTooltio("MS2 Quant", "MS2 for protein quantitation"), null, Table.Align.LEFT);
+        TableColumnHeader header13 = new TableColumnHeader("mwkDa", SparkLineLabel.class, null, generateCaptionWithTooltio("MW (kDa)", "molecular weight in kilodalton"), null, Table.Align.LEFT);
+        TableColumnHeader header14 = new TableColumnHeader("confidence", SparkLineLabel.class, null, generateCaptionWithTooltio("Confidence", "Confidence level"), null, Table.Align.LEFT);
+        TableColumnHeader header15 = new TableColumnHeader("validation", ValidationLabel.class, null, generateCaptionWithTooltio("", "Protein validation"), null, Table.Align.CENTER);
 
-        TableColumnHeader[] tableHeaders = new TableColumnHeader[]{header1, header2, header3, header4, header5, header6, header7, header8, header9, header10, header11, header12, header13, header14,header15};
+        TableColumnHeader[] tableHeaders = new TableColumnHeader[]{header1, header2, header3, header4, header5, header6, header7, header8, header9, header10, header11, header12, header13, header14, header15};
         this.proteinTableContainer = new SearchableTable("Proteins", "Accssion or protein name", tableHeaders) {
             private final Set<Comparable> selectedIds = new LinkedHashSet<>();
 
@@ -96,7 +97,7 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
         };
         this.proteinTableContainer.setStyleName("datasetproteinstablestyle");
         DatasetVisulizationLevelComponent.this.addComponent(proteinTableContainer);
-
+        DatasetVisulizationLevelComponent.this.setExpandRatio(proteinTableContainer,0.40f);
         Selection_Manager.RegistrDatasetsFilter(DatasetVisulizationLevelComponent.this);
         selectionListener = (event) -> {
             proteinTableContainer.getMainTable().setValue(((AbstractOrderedLayout) event.getComponent()).getData());
@@ -140,16 +141,16 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
 
             mainTable.setColumnWidth("index", 50);
             mainTable.setColumnWidth("proteinInference", 37);
-            mainTable.setColumnWidth("Accession", 100);
+            mainTable.setColumnWidth("Accession", 60);
             mainTable.setColumnWidth("csf", 50);
-            mainTable.setColumnWidth("coverage", 150);
-            mainTable.setColumnWidth("peptides_number", 150);
-            mainTable.setColumnWidth("psm_number", 150);
-            mainTable.setColumnWidth("ms2Quant", 150);
-            mainTable.setColumnWidth("mwkDa", 150);
+            mainTable.setColumnWidth("coverage", 120);
+            mainTable.setColumnWidth("peptides_number", 120);
+            mainTable.setColumnWidth("psm_number", 120);
+            mainTable.setColumnWidth("ms2Quant", 120);
+            mainTable.setColumnWidth("mwkDa", 120);
             mainTable.setColumnWidth("chromosom", 50);
             mainTable.setColumnWidth("validation", 32);
-            mainTable.setColumnWidth("confidence", 150);
+            mainTable.setColumnWidth("confidence", 120);
         }
 
         proteinTableContainer.resetTable();
@@ -214,9 +215,9 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
             validation.setData(protein.getProteinGroupKey());
             validation.addLayoutClickListener(selectionListener);
 
-            CSFPRLabel csfprLink = new CSFPRLabel(protein.getAccession(),protein.isAvailableOn_CSF_PR());
+            CSFPRLabel csfprLink = new CSFPRLabel(protein.getAccession(), protein.isAvailableOn_CSF_PR());
             String searchKey = protein.getAccession() + "_" + protein.getDescription() + "_" + protein.getProteinGroup().replace(",", "_");
-            proteinTableContainer.addTableItem(protein.getProteinGroupKey(), new Object[]{protein.getIndex(), piLabel, proteinAccLink,csfprLink, protein.getDescription(), protein.getProteinGroup(), protein.getGeneName(), new AlphanumComparator(protein.getChromosome()), coverageLabel, peptidesNumberLabelLabel, psmNumberLabelLabel, ms2QuantLabelLabel, mwLabel, confidentLabel, validation}, searchKey);
+            proteinTableContainer.addTableItem(protein.getProteinGroupKey(), new Object[]{protein.getIndex(), piLabel, proteinAccLink, csfprLink, protein.getDescription(), protein.getProteinGroup(), protein.getGeneName(), new AlphanumComparator(protein.getChromosome()), coverageLabel, peptidesNumberLabelLabel, psmNumberLabelLabel, ms2QuantLabelLabel, mwLabel, confidentLabel, validation}, searchKey);
         });
         this.proteinTableContainer.activateValueChangeListener();
         this.proteinTableContainer.updateLabel();
@@ -228,7 +229,7 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
         }
         mainTable.setSortEnabled(false);
         ModificationMatrix modificationMatrix = peptideShakerVisualizationDataset.getModificationMatrix();
-        if (modificationMatrix.getRows() == null) {
+        if (modificationMatrix == null || modificationMatrix.getRows() == null) {
             System.out.println("modification matrix has an error ");
         }
         modificationMatrix.getRows().keySet().forEach((mod) -> {
@@ -279,11 +280,11 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
     @Override
     public void suspendFilter(boolean suspend) {
     }
-    
-    private String generateCaptionWithTooltio(String caption,String tooltip){
-    
-    return "<div class='tooltip'>"+caption+"<span class='tooltiptext'>"+tooltip+"</span></div>";
-    
+
+    private String generateCaptionWithTooltio(String caption, String tooltip) {
+
+        return "<div class='tooltip'>" + caption + "<span class='tooltiptext'>" + tooltip + "</span></div>";
+
     }
 
 }

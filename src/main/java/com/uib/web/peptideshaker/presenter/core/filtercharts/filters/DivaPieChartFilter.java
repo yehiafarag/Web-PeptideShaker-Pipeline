@@ -105,8 +105,8 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
         this.appliedFilter = new LinkedHashSet<>();
         this.dountChartListener = (LayoutEvents.LayoutClickEvent event) -> {
             Component clickedComponent = event.getClickedComponent();
-            if (clickedComponent instanceof Label && clickedComponent.getId()!=null && clickedComponent.getId().equalsIgnoreCase("chart") ) {
-                
+            if (clickedComponent instanceof Label && clickedComponent.getId() != null && clickedComponent.getId().equalsIgnoreCase("chart")) {
+
                 ChartEntity ent = mainChartRenderingInfo.getEntityCollection().getEntity(event.getRelativeX(), event.getRelativeY());
                 if (ent instanceof PieSectionEntity) {
                     applyFilter(((PieSectionEntity) ent).getSectionKey() + "");
@@ -134,8 +134,8 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
 
         chartTitle = new Label("<font>" + title + "</font>", ContentMode.HTML);
         chartTitle.setStyleName(ValoTheme.LABEL_BOLD);
-        chartTitle.setWidth(60, Unit.PIXELS);
-        chartTitle.setHeight(100, Unit.PERCENTAGE);
+        chartTitle.setWidth(100, Unit.PIXELS);
+        chartTitle.setHeight(20, Unit.PIXELS);
         chartTitle.addStyleName("resizeabletext");
         frame.addComponent(chartTitle, "left:10px; top:10px;");
 //        topLeftContainer.setExpandRatio(chartTitle, 15);
@@ -143,16 +143,16 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
          * ******************right panel*********************
          */
         rightLayout = new VerticalLayout();
-        rightLayout.setWidth(70, Unit.PIXELS);
+        rightLayout.setWidth(90, Unit.PIXELS);
         rightLayout.setHeight(100, Unit.PERCENTAGE);
         rightLayout.addStyleName("autooverflow");
-        frame.addComponent(rightLayout, "top: 10px; right: 20px; bottom: 0px;");
+        frame.addComponent(rightLayout, "top: 10px; right: 0px; bottom: 0px;");
 
         mainChartContainer = new AbsoluteLayout();
         mainChartContainer.setWidth(100, Unit.PERCENTAGE);
         mainChartContainer.setHeight(100, Unit.PERCENTAGE);
         mainChartContainer.addStyleName("divapiechartcontainerstyle");
-        frame.addComponent(mainChartContainer, "left:70px; top:10px;right:70px;bottom:0px");
+        frame.addComponent(mainChartContainer, "left:-10px; top:20px;right:70px;bottom:5px");
         mainChartContainer.addLayoutClickListener(dountChartListener);
 
         middleDountLayout = new VerticalLayout();
@@ -168,7 +168,7 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
         middleDountLayout.addComponent(selectAllLabel);
         middleDountLayout.setComponentAlignment(selectAllLabel, Alignment.MIDDLE_CENTER);
 
-        mainChartImg = new Label("",ContentMode.HTML);
+        mainChartImg = new Label("", ContentMode.HTML);
         mainChartImg.setVisible(false);
         mainChartImg.setId("chart");
         mainChartImg.setStyleName("pointer");
@@ -215,11 +215,11 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
 
             }
         };
-        resetFilterBtn.setWidth(24, Unit.PIXELS);
-        resetFilterBtn.setHeight(24, Unit.PIXELS);
+        resetFilterBtn.setWidth(15, Unit.PIXELS);
+        resetFilterBtn.setHeight(15, Unit.PIXELS);
         resetFilterBtn.setVisible(false);
         resetFilterBtn.addStyleName("btninframe");
-        DivaPieChartFilter.this.addComponent(resetFilterBtn, "right:23px;top:0px;");
+        DivaPieChartFilter.this.addComponent(resetFilterBtn, "right:14px;top:0px;");
     }
 
     public void initializeFilterData(Map<String, Set<Comparable>> fullData, List<Color> colorsArr) {
@@ -270,7 +270,6 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
         String genImgUrl = saveToFile(chart, mainChartRenderingInfo, mainWidth, mainHeight);
         mainChartImg.setValue(genImgUrl);
 //        mainChartImg.setSource(new ExternalResource(genImgUrl));
-        
 
     }
 
@@ -307,15 +306,17 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
         unselectAll();
         if (!sliceKeys.isEmpty()) {
             PiePlot plot = ((PiePlot) chart.getPlot());
-            for (Comparable sliceKey : sliceKeys) {
-                if (sliceKey == null) {
-                    continue;
-                }
+            sliceKeys.stream().filter((sliceKey) -> !(sliceKey == null)).map((sliceKey) -> {
                 plot.setSectionOutlinePaint(sliceKey, selectedColor);
+                return sliceKey;
+            }).map((sliceKey) -> {
                 plot.setSectionPaint(sliceKey, colorsList.get(plot.getDataset().getIndex(sliceKey)).darker().darker());
+                return sliceKey;
+            }).forEachOrdered((sliceKey) -> {
                 appliedFilter.add(sliceKey);
-            }
+            });
         }
+
         redrawChart();
     }
 
@@ -330,6 +331,10 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
                 appliedFilter.remove(pieSlice);
             } else {
                 appliedFilter.add(pieSlice);
+                if (appliedFilter.size() == rightLayout.getComponentCount()) {
+                    appliedFilter.clear();
+                    applyFilter(null);
+                }
             }
         }
 
@@ -348,13 +353,13 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
 
 //        byte imageData[];
 //        try {
-            chart.getLegend().setVisible(false);
-            chart.fireChartChanged();
-            SVGGraphics2D g2 = new SVGGraphics2D(width, height);
-            Rectangle r = new Rectangle(0, 0,width,height);
-            chart.draw(g2, r,chartRenderingInfo);            
-            return g2.getSVGElement();
-            
+        chart.getLegend().setVisible(false);
+        chart.fireChartChanged();
+        SVGGraphics2D g2 = new SVGGraphics2D(width, height);
+        Rectangle r = new Rectangle(0, 0, width, height);
+        chart.draw(g2, r, chartRenderingInfo);
+        return g2.getSVGElement();
+
 //            imageData = ChartUtilities.encodeAsPNG(chart.createBufferedImage(width, height, chartRenderingInfo));
 //            String base64 = Base64.encodeBytes(imageData);
 //            base64 = "data:image/png;base64," + base64;

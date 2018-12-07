@@ -50,11 +50,11 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
         SearchGUI_PeptideShaker_Tool_Presenter.this.setStyleName("activelayout");
         SearchGUI_PeptideShaker_Tool_Presenter.this.addStyleName("integratedframe");
 
-         this.smallControlButton = new SmallSideBtn("img/searchgui-medium-shadow-2.png");//spectra2.png
+         this.smallControlButton = new SmallSideBtn("img/sgui.png");//spectra2.pngimg/searchgui-medium-shadow-2.png
         this.smallControlButton.setData(SearchGUI_PeptideShaker_Tool_Presenter.this.getViewId());
         this.controlButton = new ButtonWithLabel("SearchGUI & PeptideShaker</br><font>Run SearchGUI and PeptideShaker tools on Galaxy Server</font>",1);//spectra2.png
         this.controlButton.setData(SearchGUI_PeptideShaker_Tool_Presenter.this.getViewId());
-        this.controlButton.updateIconResource(new ThemeResource("img/searchgui-medium-shadow-2.png"));//img/workflow3.png
+        this.controlButton.updateIconResource(new ThemeResource("img/sgui.png"));//img/workflow3.png
 
         this.initLayout();
         SearchGUI_PeptideShaker_Tool_Presenter.this.minimizeView();
@@ -102,7 +102,7 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
         };
 
         BigSideBtn workFlowBtn = new BigSideBtn("Work-Flow", 2);
-        workFlowBtn.updateIconResource(new ThemeResource("img/searchgui-medium-shadow-2.png"));
+        workFlowBtn.updateIconResource(new ThemeResource("img/sgui.png"));
         workFlowBtn.addStyleName("padding20");
         workFlowBtn.setData("workflow");
         btnContainer.addComponent(workFlowBtn);

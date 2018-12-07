@@ -149,7 +149,7 @@ myD3library.VennDiagramComponent = function (element) {
                 .on("mouseout", function (d, i) {
 
                 });
-        selectAllCircles();
+       
 
     }
 
@@ -246,7 +246,6 @@ myD3library.VennDiagramComponent = function (element) {
 
     this.setValue = function (value) {
         if (value.startsWith("serverRequest:")) {
-
             if (value.includes(":sizeonly") && sets !== null) {
                 var arr = value.split(";");
                 if (cwidth === parseInt(arr[1]) && cheight === parseInt(arr[2])) {
@@ -255,6 +254,7 @@ myD3library.VennDiagramComponent = function (element) {
                 cwidth = parseInt(arr[1]);
                 cheight = parseInt(arr[2]);
                 initChart(parseInt(arr[1]), parseInt(arr[2]), sets, selectedDataColours, unselectedDataColors);
+                highlightCircle();
             }
             if (value.includes("selection") && sets !== null) {
 
@@ -265,6 +265,7 @@ myD3library.VennDiagramComponent = function (element) {
                 for (var i = 0; i < selectionIndexs.length; i++) {
                     selectedData[selectionIndexs[i]] = true;
                 }
+                
                 highlightCircle();
             }
             if (value.includes(":data")) {
@@ -278,6 +279,7 @@ myD3library.VennDiagramComponent = function (element) {
                 cwidth = parseInt(value.split(";")[4].split(",")[0]);
                 cheight = parseInt(value.split(";")[4].split(",")[1]);
                 initChart(cwidth, cheight, sets, selectedDataColours, unselectedDataColors);
+                 selectAllCircles();
 
             }
 

@@ -46,6 +46,7 @@ public class PeptideVisulizationLevelContainer extends HorizontalLayout implemen
         PeptideVisulizationLevelContainer.this.setSpacing(true);
         PeptideVisulizationLevelContainer.this.setMargin(false);
         PeptideVisulizationLevelContainer.this.setStyleName("psmView");
+        PeptideVisulizationLevelContainer.this.addStyleName("transitionallayout");
 
         this.Selection_Manager = Selection_Manager;
         this.psmViewBtn = psmViewBtn;
@@ -62,7 +63,7 @@ public class PeptideVisulizationLevelContainer extends HorizontalLayout implemen
         container.setExpandRatio(topLabelContainer, 0.01f);
 
         HorizontalLayout topLeftLabelContainer = new HorizontalLayout();
-        topLeftLabelContainer.setWidth(100,Unit.PERCENTAGE);
+        topLeftLabelContainer.setWidth(100, Unit.PERCENTAGE);
         topLeftLabelContainer.setHeight(100, Unit.PERCENTAGE);
         topLabelContainer.addComponent(topLeftLabelContainer);
         headerLabel = new Label();
@@ -115,7 +116,7 @@ public class PeptideVisulizationLevelContainer extends HorizontalLayout implemen
         Button.ClickListener viewControlListener = (Button.ClickEvent event) -> {
             Button actionBtn = event.getButton();
             boolean isSmallScreenMods = (boolean) VaadinSession.getCurrent().getAttribute("smallscreenstyle");
-
+            
             if (actionBtn.getStyleName().contains("selectedBtn")) {
                 actionBtn.removeStyleName("selectedBtn");
                 if (actionBtn.getData().toString().equalsIgnoreCase("plot")) {
@@ -140,10 +141,10 @@ public class PeptideVisulizationLevelContainer extends HorizontalLayout implemen
                         psmViewComponent.viewPSMTable(false);
                         viewTableBtn.removeStyleName("selectedBtn");
                     }
-                    
+
                 } else {
                     psmViewComponent.viewPSMTable(true);
-                     if (isSmallScreenMods) {
+                    if (isSmallScreenMods) {
                         psmViewComponent.viewSpectraPlot(false);
                         viewSpectraChartBtn.removeStyleName("selectedBtn");
                     }
@@ -175,12 +176,14 @@ public class PeptideVisulizationLevelContainer extends HorizontalLayout implemen
             if (Selection_Manager.getSelectedPeptide() != null) {
                 headerLabel.setValue("Peptide Spectrum Matches (" + Selection_Manager.getSelectedPeptide().getModifiedSequence() + ")");
                 this.psmViewComponent.updateView(peptideShakerVisualizationDataset.getPSM(Selection_Manager.getSelectedPeptide().getModifiedSequence()), Selection_Manager.getSelectedPeptide().getTooltip(), Selection_Manager.getSelectedPeptide().getModifiedSequence().length());
-//                this.psmViewBtn.updateIconResource(new ThemeResource("img/spectra_1.png"));
             } else {
                 headerLabel.setValue("Peptide Spectrum Matches");
                 this.psmViewBtn.updateIconResource(null);
             }
 
+        } else {
+            headerLabel.setValue("Peptide Spectrum Matches");
+            this.psmViewBtn.updateIconResource(null);
         }
     }
 
@@ -194,18 +197,14 @@ public class PeptideVisulizationLevelContainer extends HorizontalLayout implemen
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-//    private void peptideSelection(Object peptideId) {
-//        System.out.println("at -------- PSM -------- next------- " + peptideId);
-//
+//    @Override
+//    public void addStyleName(String style) {
+//        System.out.println("remove style name invoked "+style);
+////          this.psmViewComponent.updateView(peptideShakerVisualizationDataset.getPSM(Selection_Manager.getSelectedPeptide().getModifiedSequence()), Selection_Manager.getSelectedPeptide().getTooltip(), Selection_Manager.getSelectedPeptide().getModifiedSequence().length());
+//        super.removeStyleName(style); //To change body of generated methods, choose Tools | Templates.
 //    }
-//
-//    public void reset3DProteinView() {
-//        proteinStructurePanel.reset();
-//    }
-//
-//    public void activate3DProteinView() {
-//        
-//        proteinStructurePanel.updatePdbMap(selectedProteinGraph.getProteinNodes().keySet());
-//        proteinStructurePanel.activate3DProteinView();
-//    }
+    
+    
+
+
 }

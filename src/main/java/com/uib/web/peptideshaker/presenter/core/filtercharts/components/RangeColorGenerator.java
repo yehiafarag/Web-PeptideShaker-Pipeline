@@ -34,10 +34,10 @@ public class RangeColorGenerator {
         colorScale = new HorizontalLayout();
         
         colorScale.setHeight(20, Unit.PIXELS);
-        colorScale.setWidth(130, Unit.PIXELS);
+        colorScale.setWidth(100, Unit.PERCENTAGE);
         colorScale.setStyleName("stacked");
         colorScale.addStyleName("colorscale");
-        Label l = new Label("<center style= 'margin-left:-10px;font-size:10px;width:15px !important; height:15px !important;line-height: 6px'>0</center>", ContentMode.HTML);
+        Label l = new Label("<center style= 'margin-left:-10px;font-size:10px;width:15px !important; height:15px !important;'>0</center>", ContentMode.HTML);
         l.setSizeFull();
         colorScale.addComponent(l);
         for (double x = 0; x < 50; x++) {
@@ -49,7 +49,7 @@ public class RangeColorGenerator {
             colorScale.setComponentAlignment(l, Alignment.TOP_CENTER);
 
         }
-        l = new Label("<center style= 'font-size:10px;width:20px !important; height:15px !important;line-height: 6px'>" + (int) max + "</center>", ContentMode.HTML);
+        l = new Label("<center style= 'font-size:10px;width:20px !important; height:15px !important;'>" + (int) max + "</center>", ContentMode.HTML);
         l.setSizeFull();
         colorScale.addComponent(l);
 
@@ -67,7 +67,7 @@ public class RangeColorGenerator {
      */
     public String getColor(double value) {
         if (value < 1) {
-            return "RGB(" + 255 + "," + 255 + "," + 255 + ")";
+            return "RGB(" + 245 + "," + 245 + "," + 245 + ")";
         }
         double n = (value) / max;
         double R1 = lowerColor.getRed() * n + upperColor.getRed() * (1 - n);

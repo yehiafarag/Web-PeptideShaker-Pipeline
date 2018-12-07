@@ -29,7 +29,7 @@ public abstract class ProteinsPeptidesGraphComponent extends VerticalLayout {
     private final HashMap<String, ArrayList<String>> edges;
     private PeptideShakerVisualizationDataset peptideShakerVisualizationDataset;
     private String thumbURL;
-    private  int maxPsms;
+    private int maxPsms;
     private RangeColorGenerator colorScale;
 
     public RangeColorGenerator getColorScale() {
@@ -81,6 +81,7 @@ public abstract class ProteinsPeptidesGraphComponent extends VerticalLayout {
     }
 
     public String updateGraphData(String selectedProteinId) {
+
         proteinNodes.clear();
         peptidesNodes.clear();
         peptides.clear();
@@ -88,21 +89,12 @@ public abstract class ProteinsPeptidesGraphComponent extends VerticalLayout {
         unrelatedPeptides.clear();
         edges.clear();
         if (peptideShakerVisualizationDataset == null || selectedProteinId == null || selectedProteinId.trim().equalsIgnoreCase("null") || peptideShakerVisualizationDataset.getProtein(selectedProteinId) == null) {
-//            selectedProtiensLabel.setCaption("");
-            graphComponent.updateGraphData(null, null, null, null,null);
+            graphComponent.updateGraphData(null, null, null, null, null);
             thumbURL = null;
             return thumbURL;
         }
         ProteinGroupObject protein = peptideShakerVisualizationDataset.getProtein(selectedProteinId);
-//        if (protein.getSequence() == null) {
-//            peptideShakerVisualizationDataset.selectUpdateProteins(protein);
-//        }
-        protein.getProteinGroupSet().stream().map((acc) -> {
-            proteinNodes.put(acc, peptideShakerVisualizationDataset.getProtein(acc));
-            return acc;
-        }).forEachOrdered((acc) -> {
-            peptides.addAll(peptideShakerVisualizationDataset.getPeptides(acc));
-        });
+        peptides.addAll(peptideShakerVisualizationDataset.getPeptides(selectedProteinId));
 
         Set<String> tunrelatedProt = new LinkedHashSet<>();
         maxPsms = 0;
@@ -112,6 +104,14 @@ public abstract class ProteinsPeptidesGraphComponent extends VerticalLayout {
             return peptide;
         }).forEachOrdered((peptide) -> {
             ArrayList<String> tEd = new ArrayList<>();
+//            for (String protGroupKey : peptide.getProteinGroupKey().split(";")) {
+//                protGroupKey = protGroupKey.trim();
+//                System.out.println("peptide.getModifiedSequence() "+peptide.getModifiedSequence()+" "+protGroupKey);
+//                tEd.add(protGroupKey);
+//                if (!proteinNodes.containsKey(protGroupKey)) {
+//                    tunrelatedProt.add(protGroupKey);
+//                }
+//            }
             peptide.getProteinsSet().stream().map((acc) -> {
                 tEd.add(acc);
                 return acc;
@@ -120,6 +120,7 @@ public abstract class ProteinsPeptidesGraphComponent extends VerticalLayout {
             });
             edges.put(peptide.getModifiedSequence(), tEd);
         });
+
         tunrelatedProt.forEach((unrelated) -> {
             fillUnrelatedProteinsAndPeptides(unrelated, peptideShakerVisualizationDataset.getProtein(unrelated));
         });
@@ -131,7 +132,7 @@ public abstract class ProteinsPeptidesGraphComponent extends VerticalLayout {
             proteinNodes.replace(accession, peptideShakerVisualizationDataset.updateProteinInformation(tempProteinNodes.get(accession), accession));
         });
         colorScale = new RangeColorGenerator(maxPsms);
-        graphComponent.updateGraphData(protein, proteinNodes, peptidesNodes, edges,colorScale);
+        graphComponent.updateGraphData(protein, proteinNodes, peptidesNodes, edges, colorScale);
         thumbURL = graphComponent.getThumbImgeUrl();
         return thumbURL;
 
@@ -157,6 +158,9 @@ public abstract class ProteinsPeptidesGraphComponent extends VerticalLayout {
                 unrelatedPeptides.put(pep.getModifiedSequence(), pep);
                 return pep;
             }).forEachOrdered((pep) -> {
+//               for(String proteinGroupsKey:pep.getProteinGroupKey().split(";")) {
+//                    fillUnrelatedProteinsAndPeptides(proteinGroupsKey, peptideShakerVisualizationDataset.getProtein(proteinGroupsKey));
+//                };
                 pep.getProteinsSet().forEach((newAcc) -> {
                     fillUnrelatedProteinsAndPeptides(newAcc, peptideShakerVisualizationDataset.getProtein(newAcc));
                 });

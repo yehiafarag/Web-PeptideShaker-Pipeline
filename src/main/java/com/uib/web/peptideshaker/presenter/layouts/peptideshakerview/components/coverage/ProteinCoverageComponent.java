@@ -115,6 +115,9 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
             } else if(clickedComp instanceof Label){                
                 selectPeptide(protein.getAccession(), ((Label)clickedComp).getData());
 
+            }else if(clickedComp instanceof VerticalLayout){                
+                selectPeptide(protein.getAccession(), ((VerticalLayout)clickedComp).getData());
+
             }
         };
 

@@ -50,6 +50,7 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
         ProteinVisulizationLevelContainer.this.setSizeFull();
         ProteinVisulizationLevelContainer.this.setSpacing(true);
         ProteinVisulizationLevelContainer.this.setMargin(false);
+        ProteinVisulizationLevelContainer.this.setStyleName("transitionallayout");
         this.Selection_Manager = Selection_Manager;
         this.proteinoverviewBtn = proteinoverviewBtn;
 
@@ -131,7 +132,7 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
                     case "Validation Status":
                         mode = 2;
                         break;
-                    case "Modification  Status":
+                    case "Modification Status":
                         mode = 3;
                         break;
                 }
@@ -181,8 +182,9 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
     @Override
     public void selectionChange(String type) {
         if (type.equalsIgnoreCase("protein_selection")) {
+           
             String proteinsId = Selection_Manager.getSelectedProteinId();
-            String imgUrl = selectedProteinGraph.updateGraphData(proteinsId);
+             String imgUrl = selectedProteinGraph.updateGraphData(proteinsId);
             this.colorScale = selectedProteinGraph.getColorScale();
             proteinCoverageContainer.selectDataset(selectedProteinGraph.getProteinNodes(), selectedProteinGraph.getPeptidesNodes(), selectedProteinGraph.getSelectedProteins(), selectedProteinGraph.getSelectedPeptides(), colorScale);
             if (imgUrl != null) {
@@ -230,5 +232,6 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
     public void activate3DProteinView() {
         proteinStructurePanel.activate3DProteinView();
     }
+ 
 
 }

@@ -56,16 +56,18 @@ public class PeptidShakerUI extends UI {
      */
     @Override
     protected void init(VaadinRequest vaadinRequest) {
-
-         try { PeptidShakerUI.this.setSizeFull();
-        notification = new Notification("Use the device in landscape mode :-)", Notification.Type.ERROR_MESSAGE);
-        notification.setDelayMsec(10000);
-        notification.setStyleName("mobilealertnotification");
-        /**
-         * Initialise the context parameters and store them in VaadinSession.
-         *
-         */
-      
+        
+        try {
+            PeptidShakerUI.this.setSizeFull();
+            notification = new Notification("Use the device in landscape mode :-)", Notification.Type.ERROR_MESSAGE);
+            notification.setDelayMsec(10000);
+            notification.setStyleName("mobilealertnotification");
+            /**
+             * Initialise the context parameters and store them in
+             * VaadinSession.
+             *
+             */
+            
             ServletContext scx = VaadinServlet.getCurrent().getServletContext();
             String localFileSystemFolderPath = (scx.getInitParameter("filesURL"));
             VaadinSession.getCurrent().setAttribute("userDataFolderUrl", localFileSystemFolderPath);
@@ -75,7 +77,7 @@ public class PeptidShakerUI extends UI {
             VaadinSession.getCurrent().setAttribute("testUserAPIKey", testUserAPIKey);
             String galaxyServerUrl = (scx.getInitParameter("galaxyServerUrl"));
             VaadinSession.getCurrent().setAttribute("galaxyServerUrl", galaxyServerUrl);
-
+            
             updateCSFPRProteinsList();
             if (testUserAPIKey == null || galaxyServerUrl == null) {
                 notification = new Notification("Error in Galaxy server address, Contact administrator :-(", Notification.Type.ERROR_MESSAGE);
@@ -89,77 +91,79 @@ public class PeptidShakerUI extends UI {
                 notification.show(Page.getCurrent());
                 return;
             }
-        
-        WebPeptideShakerApp webPeptideShakerApp = new WebPeptideShakerApp();
-        PeptidShakerUI.this.setContent(webPeptideShakerApp);
-       
-        /**
-         * Check the visualisation mode based on screen size small screen for
-         * mobile browser or tablet.
-         *
-         * @todo: we need better optimisation to detect the window ratio.
-         */
+//            this.setWidth(1000, Unit.PIXELS);
+//            this.setHeight(500, Unit.PIXELS);
+            WebPeptideShakerApp webPeptideShakerApp = new WebPeptideShakerApp();
+            PeptidShakerUI.this.setContent(webPeptideShakerApp);
+
+            /**
+             * Check the visualisation mode based on screen size small screen
+             * for mobile browser or tablet.
+             *
+             * @todo: we need better optimisation to detect the window ratio.
+             */
 //        if ((Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight()) || (Page.getCurrent().getBrowserWindowWidth() < 650) || (Page.getCurrent().getBrowserWindowHeight() < 600)) {
-        if (Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile")) {
-            webPeptideShakerApp.addStyleName("mobilestyle");
-            webPeptideShakerApp.addStyleName("smallscreenstyle");
-            VaadinSession.getCurrent().setAttribute("smallscreenstyle", true);
-        } else {
-            webPeptideShakerApp.removeStyleName("mobilestyle");
-            VaadinSession.getCurrent().setAttribute("smallscreenstyle", false);
-        }
-        if ((Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight()) || (Page.getCurrent().getBrowserWindowWidth() < 500) || (Page.getCurrent().getBrowserWindowHeight() < 500)) {
-            webPeptideShakerApp.addStyleName("smallscreenstyle");
-            VaadinSession.getCurrent().setAttribute("smallscreenstyle", true);
-        } else {
-            webPeptideShakerApp.removeStyleName("smallscreenstyle");
-            VaadinSession.getCurrent().setAttribute("smallscreenstyle", false);
-        }
-
-        /**
-         * On resize the browser re-arrange all the created pop-up windows to
-         * the page center.
-         */
-        Page.getCurrent().addBrowserWindowResizeListener((Page.BrowserWindowResizeEvent event) -> {
-            if (Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile") && (Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight())) {
-                notification.show(Page.getCurrent());
-                webPeptideShakerApp.addStyleName("hidemode");
-            } else if (Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile") && (Page.getCurrent().getBrowserWindowWidth() >= Page.getCurrent().getBrowserWindowHeight())) {
-                webPeptideShakerApp.removeStyleName("hidemode");
-
-            } else if ((Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight()) || (Page.getCurrent().getBrowserWindowWidth() < 500) || (Page.getCurrent().getBrowserWindowHeight() < 500)) {
+            if (Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile")) {
+                webPeptideShakerApp.addStyleName("mobilestyle");
+                webPeptideShakerApp.addStyleName("smallscreenstyle");
+                VaadinSession.getCurrent().setAttribute("smallscreenstyle", true);
+            } else {
+                webPeptideShakerApp.removeStyleName("mobilestyle");
+                VaadinSession.getCurrent().setAttribute("smallscreenstyle", false);
+            }
+            if ((Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight()) || (Page.getCurrent().getBrowserWindowWidth() < 1000) || (Page.getCurrent().getBrowserWindowHeight() < 500)) {
                 webPeptideShakerApp.addStyleName("smallscreenstyle");
                 VaadinSession.getCurrent().setAttribute("smallscreenstyle", true);
             } else {
                 webPeptideShakerApp.removeStyleName("smallscreenstyle");
                 VaadinSession.getCurrent().setAttribute("smallscreenstyle", false);
             }
-            UI.getCurrent().getWindows().forEach((w) -> {
-                w.center();
+
+            /**
+             * On resize the browser re-arrange all the created pop-up windows
+             * to the page center.
+             */
+            Page.getCurrent().addBrowserWindowResizeListener((Page.BrowserWindowResizeEvent event) -> {
+                if (Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile") && (Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight())) {
+                    notification.show(Page.getCurrent());
+                    webPeptideShakerApp.addStyleName("hidemode");
+                } else if (Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile") && (Page.getCurrent().getBrowserWindowWidth() >= Page.getCurrent().getBrowserWindowHeight())) {
+                    webPeptideShakerApp.removeStyleName("hidemode");
+                    
+                } else if ((Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight()) || (Page.getCurrent().getBrowserWindowWidth() < 1000) || (Page.getCurrent().getBrowserWindowHeight() < 500)) {
+                    webPeptideShakerApp.addStyleName("smallscreenstyle");
+                    VaadinSession.getCurrent().setAttribute("smallscreenstyle", true);
+                } else {
+                    webPeptideShakerApp.removeStyleName("smallscreenstyle");
+                    VaadinSession.getCurrent().setAttribute("smallscreenstyle", false);
+                }
+                UI.getCurrent().getWindows().forEach((w) -> {
+                    w.center();
+                });
             });
-        });
 
-        /**
-         * for future use to integrate with NeLS.
-         *
-         * @todo:re implement all concept in future
-         */
-        NeLS_Galaxy = new NeLSStorageInteractiveLayer();
-        boolean isNelsGalaxyConnection = NeLS_Galaxy.isNelsGalaxyConnection(vaadinRequest);
-        VaadinSession.getCurrent().setAttribute("nelsgalaxy", isNelsGalaxyConnection);
+            /**
+             * for future use to integrate with NeLS.
+             *
+             * @todo:re implement all concept in future
+             */
+            NeLS_Galaxy = new NeLSStorageInteractiveLayer();
+            boolean isNelsGalaxyConnection = NeLS_Galaxy.isNelsGalaxyConnection(vaadinRequest);
+            VaadinSession.getCurrent().setAttribute("nelsgalaxy", isNelsGalaxyConnection);
 
-        /**
-         * Auto-reconnect to galaxy server if the session is still valid.
-         */
-        if (isNelsGalaxyConnection || (VaadinSession.getCurrent().getAttribute("ApiKey") != null && VaadinSession.getCurrent().getAttribute("galaxyUrl") != null)) {
-            webPeptideShakerApp.reConnectToGalaxyServer(VaadinSession.getCurrent().getAttribute("ApiKey") + "", VaadinSession.getCurrent().getAttribute("galaxyUrl") + "");
-        }
-        Page.getCurrent().setTitle("PeptideShaker");
-    } catch (Exception e) {
-             System.out.println("---------------------------error---------------------------");
+            /**
+             * Auto-reconnect to galaxy server if the session is still valid.
+             */
+            if (isNelsGalaxyConnection || (VaadinSession.getCurrent().getAttribute("ApiKey") != null && VaadinSession.getCurrent().getAttribute("galaxyUrl") != null)) {
+                webPeptideShakerApp.reConnectToGalaxyServer(VaadinSession.getCurrent().getAttribute("ApiKey") + "", VaadinSession.getCurrent().getAttribute("galaxyUrl") + "");
+            }
+            Page.getCurrent().setTitle("PeptideShaker");
+        } catch (Exception e) {
+            System.out.println("---------------------------error---------------------------");
             e.printStackTrace();
-
+            
         }
+        
     }
 
     /**
@@ -178,7 +182,7 @@ public class PeptidShakerUI extends UI {
             if (code == 404) {
                 return false;
             }
-
+            
         } catch (MalformedURLException ex) {
             return false;
         } catch (IOException ex) {
@@ -186,11 +190,11 @@ public class PeptidShakerUI extends UI {
         }
         return true;
     }
-
+    
     @Override
     public void addExtension(Extension extension) {
         super.addExtension(extension);
-
+        
     }
 
     /**
@@ -227,7 +231,7 @@ public class PeptidShakerUI extends UI {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-
+        
         String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
         VaadinSession.getCurrent().setAttribute("csfprfile", basepath + "/VAADIN/" + updateFileName);
         File file = new File(basepath + "/VAADIN/" + updateFileName);
@@ -258,9 +262,9 @@ public class PeptidShakerUI extends UI {
                         ex.printStackTrace();
                     }
                 }
-
+                
             }
-
+            
         } catch (MalformedURLException ex) {
             ex.printStackTrace();
         } catch (IOException ex) {
@@ -273,9 +277,9 @@ public class PeptidShakerUI extends UI {
                     ex.printStackTrace();
                 }
             }
-
+            
         }
-
+        
     }
-
+    
 }

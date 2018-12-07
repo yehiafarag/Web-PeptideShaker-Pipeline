@@ -159,7 +159,7 @@
         border-bottom-left-radius: 5px;
         padding-left: 30px;
         border: 1px solid #2c3143;
-        background-image: url("img/galaxyLogo.png");
+        background-image: url("img/galaxyLogo1.png");
         background-size: auto 105%;
         background-repeat: no-repeat;
         font-weight: bold;
@@ -268,7 +268,14 @@
         transition: all 0.5s ease-in-out;
     }
     .v-absolutelayout-wrapper-hidepanel{
-        width:0px !important;
+        opacity:  0 !important;
+        visibility:hidden;
+    }
+    .transitionallayout{
+        -webkit-transition: all .5s ease-in-out;
+        -moz-transition: all .5s ease-in-out;
+        -o-transition: all .5s ease-in-out;
+        transition: all .5s ease-in-out;
     }
 
     .activelayout {
@@ -298,7 +305,9 @@
     .lightgraylayout {
         background-color: lightgray;
     }
-
+    .whitelayout{
+        background-color: white !important;
+    }
     .bigmenubtn {
        	max-height: 225px;
         height: auto !important;
@@ -328,7 +337,7 @@
         border: 1px solid rgba(0,0,0,0);
         border-radius: 5px;
         cursor: pointer;
-        padding: 10%;
+        padding: 0px;
         position: relative;
         z-index: 10 !important;
 
@@ -430,7 +439,7 @@
     .v-label-frametitle{
         padding-left:10px;
         padding-top:10px;
-        font-size:20px;
+        font-size:13px;
         font-weight:bold;
         font-family:"Open Sans", sans-serif;
         color:rgb(70,70,70);
@@ -853,7 +862,7 @@
     .largetitle .v-label,.v-link-largetitle, .v-label-largetitle {
         margin-top: 10px;
         margin-left: 25px;
-        font-size: 18px !important;
+        font-size: 13px !important;
         font-weight: normal !important;
         text-decoration:none !important;
         color: #3d84dc !important;
@@ -866,7 +875,7 @@
         margin-top:10px !important;
     }
     .psmtable{
-        margin-top:-10px !important;
+        margin-top:-20px !important;
         background-color:rgba(255,255,255,0) !important;
         border:none !important;
     }
@@ -896,7 +905,8 @@
 
     .buttoncontainerstyle{
         padding:5px;
-        margin-top:5px;
+        margin-top:7.5px;
+        margin-right: 20px;
         border-radius:5px;
         min-height:35px;
         z-index:2 !important;
@@ -952,7 +962,7 @@
     }
     .v-table-framedpanel, .v-table-framedpanel.v-table-borderless {
         border:1px solid lightgray;
-        font-size:12px;
+        font-size:11px;
         font-weight: normal;
     }
     .v-table-framedpanel .v-label{
@@ -1206,33 +1216,34 @@
         border-radius: 100%;
     }
     .v-slot-searchtablecontainer {
-        max-width: 345px;
-        max-height: 4px !important;
-        margin-top: -35px !important;
-        float: right;
-        padding-top:20px;
+     max-width: 345px;
+	max-height: 4px !important;
+	float: right;
+	font-size:11px !important;
+	line-height:20px;
+        
     }
     .v-verticallayout-datasetproteinstablestyle .v-slot-framedpanel{
-        margin-top:-25px !important;
+     
     }
-    .searchtablecontainer {
+   
         .searchtablecontainer {
             width: 530px !important;
             text-align: middle !important;
             position: relative !important;
             right:-35px;
         }
-    }
-    .v-verticallayout-datasetproteinstablestyle .v-caption-framedpanel .v-captiontext{
-
-        position:relative;
-        top:-1px !important;
-    }
+    
+    .v-slot-datasetproteinstablestyle  .v-captiontext {
+	position: relative;
+	top: -5px !important;
+        font-size: 12px !important;
+}
 
     .searchtablecontainer .v-label,  .searchtablecontainer .smallundecorated.v-label-smallundecorated {
         text-align: center;
         max-width: 300px;
-        font-size: 15px !important;
+        font-size: 11px !important;
         color: gray !important;
         margin-top: 2px;
         font-weight: bold !important;
@@ -1242,9 +1253,11 @@
         width: 140px !important;
         text-overflow: ellipsis !important;
         overflow: hidden !important;
-        border-width: 2px;     
+        border-width: 1px;     
         z-index:3 !important;
         position:relative !important;
+                font-size: 10px !important;
+
     }
     .v-horizontallayout-searchtablecontainer .v-label{
         margin-left:3px;
@@ -1254,6 +1267,11 @@
         color:gray;
 
     }
+    .searchtablecontainer .v-button-icon-only{;
+	float: right;
+	font-size:11px !important;
+	line-height:20px;
+	}
     .v-slot-minwidth30{
         min-width:30px !important;
     }
@@ -1492,15 +1510,10 @@
         margin-left:-6px;
         width:180% !important;
     }
-    .v-button-icon-only.v-button-tiny{
-        color:gray !important;
-        padding:0px !important;
-        font-size:15px;
-        text-align:center;
-        font-weight:bold;
-    }
+    
     .v-button-icon-only.v-button-tiny:hover{
         color: black !important;
+         cursor: pointer;
     }
     .v-slot-centeredtext{
         min-height:20px;	
@@ -1647,7 +1660,8 @@
 
     .rangeslider .v-slider-handle:before {
         height: 20px !important;
-        width:20px !important;
+        width: 5px !important;
+        cursor:pointer;
     }
 
     .rangeslider .v-slider-handle:before, .rangeslider .v-slider-handle:after {
@@ -1876,7 +1890,7 @@
         overflow:visible !important;
     }
     .stacked center{
-        margin-top: 5px;
+        margin-top: 3px;
         line-height:10px;
     }
     .colorscale {
@@ -1955,10 +1969,10 @@
         margin-left: -5px !important;
     }
     .resizeabletext{
-        font-size: 12px;
+        font-size: 10px;
     }
     .legenditem {
-        font-size: 11px;
+        font-size: 10px;
         height:20px !important;
     }
     .v-slot-legenditem{
@@ -2074,9 +2088,9 @@
     .v-absolutelayout-wrapper-proteincoverage{
         padding-left:25px !important;
         padding-right:25px !important;
-       background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='15px' width='25px'><text  style='font-family:sans-serif;' x='8.5' y='12' fill='gray' font-size='12px'>N</text></svg>"), url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='15px' width='25px'><text style='font-family:sans-serif;' x='8.5' y='12' fill='gray' font-size='12px'>C</text></svg>");
-	background-repeat: no-repeat;
-	background-position: 0px 50%, right 0px top 50%;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='15px' width='25px'><text  style='font-family:sans-serif;' x='8.5' y='12' fill='gray' font-size='12px'>N</text></svg>"), url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='15px' width='25px'><text style='font-family:sans-serif;' x='8.5' y='12' fill='gray' font-size='12px'>C</text></svg>");
+        background-repeat: no-repeat;
+        background-position: 0px 50%, right 0px top 50%;
 
     }
     .peptidecoverage{
@@ -3308,7 +3322,7 @@
     .smallscreenstyle .v-label-frametitle {
 
         padding-left: 10px;
-        padding-top: 20px;
+        padding-top: 13px;
         font-size: 14px;
         font-weight: bold;
         font-family: "Open Sans", sans-serif;
@@ -3425,8 +3439,8 @@
             margin-top: -10px;
         }*/
     .v-slot-cornerfiltercontainerstyle{
-        min-width:300px;
-        min-height:350px;
+        min-width:190px;
+        min-height:250px;
     }
     .v-absolutelayout-wrapper-innerborderframe{	
         top:0px !important;
@@ -3717,6 +3731,7 @@
         position:fixed !important;
         margin-left:-50px;
         background-color:white !important;
+        display: none;
     }
     .v-slot-welcomepagstyle .v-absolutelayout-presentercontainer.v-absolutelayout-bigmenubtn {
         background-color:white !important;
@@ -3982,7 +3997,7 @@
         font-size: 12px !important;
     }
     .smallscreenstyle .searchtablecontainer .v-label, .smallscreenstyle .searchtablecontainer .smallundecorated.v-label-smallundecorated {
-        font-size: 12px !important;
+        font-size: 11px !important;
         color: gray !important;
 
     }
@@ -3997,7 +4012,7 @@
 
     }
     .smallscreenstyle .searchtablecontainer .v-textfield{   
-        font-size:12px !important;
+        font-size:10px !important;
         text-align: middle !important;
         position: relative !important;
         max-height:20px !important;
@@ -4104,7 +4119,7 @@
     .useroverviewpanelstyle{
         border-right:1px solid lightgray;
         margin-left: 20px;
-        min-height:400px;
+        min-height:330px;
     }
 
 
@@ -4127,7 +4142,7 @@
         border-radius: 5px;
         background-color: whitesmoke;
         float: left;
-        padding :15px;
+        padding :10px;
     }
     .btnwithtext .v-label{
         font-size:15px !important;
@@ -4290,7 +4305,7 @@
         margin-top:-20px !important;
     }
     .galaxylabel img{
-        padding:20px !important;
+        padding:15px !important;
     }
     .psprojectname{
         max-width:400px;
@@ -4491,6 +4506,56 @@
     .subpanelframe .v-button-icon-align-right .v-button-caption{
         color:#1b7de1;
     }
+    .dsoverview .v-button, .dsoverview  .v-slot-icon-align-right div:hover {
+        color:transparent !important;
+        cursor:default !important;
+    }
+    .v-button-icon-only.v-button-tiny, .dsoverview .v-button-icon-only.v-button-tiny{
+	color: gray !important;
+	padding: 0px !important;
+	font-size: 15px;
+	text-align: center;
+	font-weight: bold;
+        cursor: pointer !important;
+}
+
+    .dsoverview .subpanelframe .v-button-icon-align-right .v-button-caption{
+        color:rgb(71, 71, 71) !important;
+    }
+    .dsoverview label, .dsoverview {
+        cursor:default !important;
+    }
+    .dsoverview .v-checkbox.v-disabled > label, .dsoverview .v-checkbox.v-disabled > .v-icon{
+        opacity: 1 !important;
+    }
+
+
+
+    .dropdowntolabel .v-filterselect [class*="input"]{
+        color:gray !important;
+        position:relative !important;
+        font-weight:1000;
+    }
+    .dropdowntolabel .v-filterselect [class$="button"] {
+        border:none !important;
+    }
+    .dropdowntolabel .v-filterselect [class$="button"]:before{
+        display:none ;
+    }
+    .dropdowntolabel .v-filterselect-no-input [class*="input"] {	
+        background: transparent;
+        cursor: default;
+        -webkit-box-shadow:none;
+        box-shadow: none;
+        border: 1px solid lightgray;
+        text-shadow: inherit;
+        text-overflow: ellipsis;
+        border-radius: inherit;
+    }
+    .dropdowntolabel .v-filterselect.v-disabled{
+        opacity:1 !important;
+    }
+
     .v-slot-bordertopseparator {
         border-top: 1px solid lightgray;
         margin-top: 10px;
@@ -4788,16 +4853,16 @@
         height:15px !important;
         border-radius:2px;
         text-align:center;
-        font-size:12px;
+        font-size:10px;
         line-height:15px;
-        font-weight:800;
+        font-weight:100;
         color:white;
         margin-right:5px;
 
     }
     .venndiagramlegend font{
         margin-left:5px;
-        font-weight:800;
+        font-weight:100;
 
     }
     .v-label-venndiagramlegend .v-icon{
@@ -4923,26 +4988,76 @@
         top:2px !important
     }
     .protein3dstructurecoverage .v-label {
-text-align:center;
-line-height:30px;
-font-family:sans-serif;
-font-size:12px !important;
-color:gray;
-text-transform:uppercase;
+        text-align:center;
+        line-height:30px;
+        font-family:sans-serif;
+        font-size:12px !important;
+        color:gray;
+        text-transform:uppercase;
+    }
+    .graymiddleline{
+        background-color:gray;
+        margin-top:-1px;
+    }
+    .coveragecompoenent {
+        background-color:whitesmoke;
+        border:1px solid lightgray;
+        margin-top:7px;
+        margin-bottom:5px;
+        max-height:15px;
+    }
+    .heighlightcoverage{
+        background-color:lightgray;
+        border-color:gray;
+    }
+    .psmlegendrangeconatainer .v-horizontal{
+        background-color:transparent !important;
+        min-width:250px;
+        left:50%;
+        margin-left:-125px;
+        font-size:15px !important;
+    }
+    .psmlegendrangeconatainer center{	
+        font-size:15px !important;
+
+    }
+    .v-verticallayout-psmlegendrangeconatainer{
+        margin-top:-30px;
+        max-height:0px !important;
+    }
+    .v-verticallayout-modificationlegendconatiner{
+        margin-bottom:10px;
+
+    }
+    .modificationlegendconatiner .peptidenode  .v-label,.modificationlegendconatiner .v-verticallayout{
+        margin-left:0px !important;
+        cursor:default !important;
+
+    }
+    .litemolcontainer{
+        background-image:url("img/litemoldarksm.png");
+        background-size:200px;
+        background-position:center;
+        background-repeat:no-repeat;
+    }
+    .nomargintop{
+        margin-top:15px !important;
+    }
+    
+.v-table-framedpanel .v-table-caption-container{
+	font-size:12px;
 }
-.graymiddleline{
-	background-color:gray;
-	margin-top:-1px;
+
+.framedpanel .v-table-header-wrap {
+	max-height:25px !important;
+padding-left:1.3px;
 }
-.coveragecompoenent {
-	background-color:whitesmoke;
-	border:1px solid lightgray;
-	margin-top:7px;
-	margin-bottom:5px;
-	max-height:15px;
+.framedpanel .v-table-header-wrap div{
+	line-height:5px;
+	
+
 }
-.heighlightcoverage{
-	background-color:lightgray;
-	border-color:gray;
+.framedpanel  .v-table-sort-indicator{
+	line-height:20px !important;
 }
 }

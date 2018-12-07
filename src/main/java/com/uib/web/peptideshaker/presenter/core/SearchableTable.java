@@ -5,17 +5,13 @@ import com.vaadin.data.Property;
 import com.vaadin.event.FieldEvents;
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.MultiSelectMode;
-import com.vaadin.ui.AbstractSelect;
-import com.vaadin.ui.Alignment;
+import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import java.text.DecimalFormat;
 import java.util.Iterator;
@@ -29,7 +25,7 @@ import java.util.TreeMap;
  *
  * @author Yehia Farag
  */
-public abstract class SearchableTable extends VerticalLayout implements Property.ValueChangeListener {
+public abstract class SearchableTable extends AbsoluteLayout implements Property.ValueChangeListener {
 
     private Label searchResultsLabel;
     private final String tableMainTitle;
@@ -41,20 +37,18 @@ public abstract class SearchableTable extends VerticalLayout implements Property
 
     public SearchableTable(String title, String defaultSearchingMessage, TableColumnHeader[] tableHeaders) {
         SearchableTable.this.setSizeFull();
-        SearchableTable.this.setMargin(new MarginInfo(false, false, false, false));
 
         this.tableMainTitle = title;
         this.tableSearchingResults = new TreeMap<>();
         this.tableSearchingMap = new LinkedHashMap<>();
 
-        HorizontalLayout serachComponent = initSearchComponentLayout(defaultSearchingMessage);
-        SearchableTable.this.addComponent(serachComponent);
-        SearchableTable.this.setExpandRatio(serachComponent, 0);
-        SearchableTable.this.setComponentAlignment(serachComponent, Alignment.TOP_RIGHT);
+     
 
         this.mainTable = initTable(tableHeaders);
-        SearchableTable.this.addComponent(mainTable);
-        SearchableTable.this.setExpandRatio(mainTable, 100);
+        SearchableTable.this.addComponent(mainTable,"top: 35px;left: 0px;");
+        
+        HorizontalLayout serachComponent = initSearchComponentLayout(defaultSearchingMessage);
+        SearchableTable.this.addComponent(serachComponent,"top: 10px;right: 0px;");
 
         this.tableData = new LinkedHashMap<>();
 
@@ -64,14 +58,14 @@ public abstract class SearchableTable extends VerticalLayout implements Property
         HorizontalLayout searchContainer = new HorizontalLayout();
         searchContainer.setSpacing(false);
         searchContainer.setStyleName("searchtablecontainer");
-        searchContainer.setHeight(25, Unit.PIXELS);
+        searchContainer.setHeight(20, Unit.PIXELS);
         HorizontalLabelTextField searchField = new HorizontalLabelTextField("", defaultSearchingMessage, null);
         searchContainer.addComponent(searchField);
 
         searchBtn = new Button(VaadinIcons.SEARCH);
         searchBtn.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-        searchBtn.setWidth(25, Unit.PIXELS);
-        searchBtn.setHeight(25, Unit.PIXELS);
+        searchBtn.setWidth(20, Unit.PIXELS);
+        searchBtn.setHeight(20, Unit.PIXELS);
         searchContainer.addComponent(searchBtn);
         searchBtn.setClickShortcut(ShortcutAction.KeyCode.ENTER);
 
@@ -90,8 +84,8 @@ public abstract class SearchableTable extends VerticalLayout implements Property
 
         };
         nextBtn.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-        nextBtn.setWidth(25, Unit.PIXELS);
-        nextBtn.setHeight(25, Unit.PIXELS);
+        nextBtn.setWidth(20, Unit.PIXELS);
+        nextBtn.setHeight(20, Unit.PIXELS);
         searchContainer.addComponent(nextBtn);
 
         searchResultsLabel = new Label("0 of 0");

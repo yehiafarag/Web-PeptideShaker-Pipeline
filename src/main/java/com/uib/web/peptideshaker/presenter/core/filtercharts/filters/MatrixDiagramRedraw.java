@@ -29,7 +29,7 @@ import java.util.concurrent.Future;
  * @author Yehia Farag
  */
 public abstract class MatrixDiagramRedraw extends VerticalLayout {
-
+    
     private final AbsoluteLayout container;
     /**
      * The width of the filter container.
@@ -47,7 +47,7 @@ public abstract class MatrixDiagramRedraw extends VerticalLayout {
     private final Set<Comparable> fullItemsSet;
     private final Map<Integer, Double> barChartValues;
     private final Map<Comparable, List<SelectableNode>> nodesTable;
-
+    
     private final LayoutEvents.LayoutClickListener barListener;
     private final Map<String, HBarWithLabel> columnMap;
     private final Map<String, SparkLine> rowLabelsMap;
@@ -57,7 +57,7 @@ public abstract class MatrixDiagramRedraw extends VerticalLayout {
     private int minWidth;
     private boolean allowRedraw = false;
     private VerticalLayout spacer;
-
+    
     public MatrixDiagramRedraw() {
         this.container = new AbsoluteLayout();
         MatrixDiagramRedraw.this.addStyleName("autooverflow");
@@ -85,15 +85,15 @@ public abstract class MatrixDiagramRedraw extends VerticalLayout {
             } else {
                 selectedIndexes.add(columnIndx);
             }
-
+            
             applyFilter(selectedIndexes);
         };
         this.initlayout();
-
+        
     }
-
+    
     private void initlayout() {
-
+        
         SizeReporter mainSizeReporter = new SizeReporter(MatrixDiagramRedraw.this);
         mainSizeReporter.addResizeListener((ComponentResizeEvent event) -> {
             int tChartWidth = event.getWidth();
@@ -101,7 +101,7 @@ public abstract class MatrixDiagramRedraw extends VerticalLayout {
             if (tChartWidth <= 0 || tChartHeight <= 0) {
                 return;
             }
-
+            
             if ((tChartWidth == mainWidth || Math.abs(tChartWidth - mainWidth) < 10) && (mainHeight == tChartHeight || Math.abs(tChartHeight - mainHeight) < 10)) {
                 return;
             }
@@ -110,9 +110,9 @@ public abstract class MatrixDiagramRedraw extends VerticalLayout {
             reDrawLayout();
         });
     }
-
+    
     public void initializeFilterData(ModificationMatrix modificationMatrix, Map<String, Color> dataColors, Set<Object> selectedCategories, int totalNumber) {
-
+        
         rows.clear();
         rowLabelsMap.clear();
         this.dataColors = dataColors;
@@ -127,9 +127,9 @@ public abstract class MatrixDiagramRedraw extends VerticalLayout {
         }
         drawLayout();
     }
-
+    
     private void reDrawLayout() {
-
+        
         if (!allowRedraw) {
             return;
         }
@@ -137,8 +137,8 @@ public abstract class MatrixDiagramRedraw extends VerticalLayout {
             mainWidth = minWidth;
         }
         int step;
-        if (columnMap.size() > 0) {
-            step = (mainWidth - rowLabelsWidth - 20) / (columnMap.size() - 1);
+        if (columnMap.size() > 1) {
+            step = (mainWidth - rowLabelsWidth - 20) / (columnMap.size());
         } else {
             step = (mainWidth - rowLabelsWidth - 20);
         }
@@ -167,22 +167,22 @@ public abstract class MatrixDiagramRedraw extends VerticalLayout {
         }
         spacer.setWidth(((x - step + 15) - (rowLabelsWidth + corrector)), Unit.PIXELS);
         container.setWidth(mainWidth, Unit.PIXELS);
-
+        
     }
-
+    
     private void drawLayout() {
         allowRedraw = false;
         container.removeAllComponents();
         rowLabelsMap.clear();
         columnMap.clear();
         nodesTable.clear();
-
+        
         int currentX = 0;
         int currentY = 0;
         int max = Integer.MIN_VALUE;
         int min = Integer.MAX_VALUE;
         rowLabelsWidth = 0;
-
+        
         Map<String, Integer> effictiveRowMap = new LinkedHashMap<>();
         rows.keySet().forEach((rowKey) -> {
             int numInRow = 0;
@@ -201,7 +201,7 @@ public abstract class MatrixDiagramRedraw extends VerticalLayout {
             }
         });
         ;
-
+        
         for (String row : effictiveRowMap.keySet()) {
             int i = effictiveRowMap.get(row);
             rowLabelsWidth = Math.max(rowLabelsWidth, (row).length());
@@ -211,7 +211,7 @@ public abstract class MatrixDiagramRedraw extends VerticalLayout {
             if (min > i) {
                 min = i;
             }
-
+            
         }
         rowLabelsWidth = (rowLabelsWidth * 5) + 5 + 70;
         int barchartHeight = 130;//Math.min(Math.max(100, mainHeight - (effictiveRows * 25)), 200); //start drawing columns
@@ -241,7 +241,7 @@ public abstract class MatrixDiagramRedraw extends VerticalLayout {
                     Color c = dataColors.get(key);
                     mod = mod.replace(key, "<font style='color:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ");font-size:10px !important;margin-right:5px'> " + VaadinIcons.CIRCLE.getHtml() + "</font>" + key);
                 }
-
+                
             }
             bar.setDescription(mod);
             columnMap.put(columnKey, bar);
@@ -254,12 +254,12 @@ public abstract class MatrixDiagramRedraw extends VerticalLayout {
         spacer.setStyleName("lightgraylayout");
         spacer.setWidth((currentX - rowLabelsWidth), Unit.PIXELS);
         this.container.addComponent(spacer, "left:" + rowLabelsWidth + "px;top:" + (barchartHeight + 2) + "px");
-
+        
         currentX = 0;
         currentY = barchartHeight + 7;
         int rowIndex = 0;
         for (String rowKey : effictiveRowMap.keySet()) {
-
+            
             SparkLine sl = new SparkLine(rowKey, effictiveRowMap.get(rowKey), 0, max, dataColors.get(rowKey));
             sl.setWidth(rowLabelsWidth, Unit.PIXELS);
             sl.setData(rowIndex);
@@ -293,7 +293,7 @@ public abstract class MatrixDiagramRedraw extends VerticalLayout {
                 int top = container.getPosition(rowLabelsMap.get(rowKey)).getTopValue().intValue();
                 finalheight = Math.max(finalheight, top);
                 this.container.addComponent(node, "left:" + left + "px;top:" + top + "px");
-
+                
                 node.setSelecatble(false);
                 if (columnKey.contains(rowKey)) {
                     node.setSelecatble(true);
@@ -322,18 +322,18 @@ public abstract class MatrixDiagramRedraw extends VerticalLayout {
                         node.setLowerSelected(false);
                     }
                 }
-
+                
                 columnIndex++;
             }
-
+            
         }
         minWidth = finalwidth + 20;
         container.setWidth(minWidth, Unit.PIXELS);
         container.setHeight(finalheight + 30, Unit.PIXELS);
         allowRedraw = true;
-
+        
     }
-
+    
     private void selectColumn(Set<Comparable> columnIds) {
         unselectAll();
         if (columnIds.isEmpty()) {
@@ -356,13 +356,15 @@ public abstract class MatrixDiagramRedraw extends VerticalLayout {
             });
             return columnId;
         }).forEachOrdered((columnId) -> {
-            columnMap.get(columnId).addStyleName("selectedbarlayout");
+            if (columnMap.containsKey(columnId.toString())) {
+                columnMap.get(columnId.toString()).addStyleName("selectedbarlayout");
+            }
         });
-
+        
     }
-
+    
     public void unselectAll() {
-
+        
         rowLabelsMap.values().forEach((sL) -> {
             sL.setSelected(false);
         });
@@ -375,13 +377,13 @@ public abstract class MatrixDiagramRedraw extends VerticalLayout {
             });
         });
     }
-
+    
     public void resetFilter() {
         selectedIndexes.clear();
         unselectAll();
-
+        
     }
-
+    
     public void updateFilterSelection(Set<Comparable> selectedItems, Set<Comparable> selectedCategories, boolean topFilter, boolean singleProteinsFilter, boolean selfAction) {
         if (!selfAction) {
             barChartValues.clear();
@@ -403,7 +405,7 @@ public abstract class MatrixDiagramRedraw extends VerticalLayout {
                     coulmnIndex++;
                 }
                 barChartValues.putAll(tbarChartValues);
-
+                
             }
             drawLayout();
             reDrawLayout();
@@ -411,7 +413,7 @@ public abstract class MatrixDiagramRedraw extends VerticalLayout {
         setMainAppliedFilter(topFilter && !selectedCategories.isEmpty());
         selectColumn(selectedCategories);
     }
-
+    
     public Set<Comparable> filterAction(Set<Integer> columnIndexs) {
         if (columnMap.size() == 1 || columnIndexs == null || columnIndexs.isEmpty()) {
             return null;
@@ -422,9 +424,9 @@ public abstract class MatrixDiagramRedraw extends VerticalLayout {
         });
         return appliedFilter;
     }
-
+    
     public abstract void setMainAppliedFilter(boolean mainAppliedFilter);
-
+    
     public abstract void applyFilter(Set<Integer> columnIndexs);
-
+    
 }

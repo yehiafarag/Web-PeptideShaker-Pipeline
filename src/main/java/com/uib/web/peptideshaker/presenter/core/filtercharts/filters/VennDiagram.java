@@ -6,23 +6,20 @@
 package com.uib.web.peptideshaker.presenter.core.filtercharts.filters;
 
 import com.ejt.vaadin.sizereporter.ComponentResizeEvent;
-import com.ejt.vaadin.sizereporter.ComponentResizeListener;
 import com.ejt.vaadin.sizereporter.SizeReporter;
 import com.google.common.collect.Sets;
 import com.uib.web.peptideshaker.model.core.ModificationMatrix;
 import com.vaadin.event.LayoutEvents;
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import d3diagrams.VennDiagramComponent;
 import java.awt.Color;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -49,6 +46,8 @@ public abstract class VennDiagram extends AbsoluteLayout {
     private final SizeReporter legendSizeReported;
     private final Set<Integer> selectedIndexes;
 
+    private final Map<String, JSONObject> tempDataset;
+
     private final String alphabet = "abcdefghijklmnopqrstuvwxyz".toUpperCase();
 
     private final Map<String, String> nameToCharMap;
@@ -58,6 +57,7 @@ public abstract class VennDiagram extends AbsoluteLayout {
         this.indexMap = new HashMap<>();
         this.nameToCharMap = new HashMap<>();
         this.selectedIndexes = new LinkedHashSet<>();
+        this.tempDataset = new LinkedHashMap<>();
         dataset = new JSONArray();
         selectedDatasetColors = new JSONArray();
         unselectedDatasetColors = new JSONArray();
@@ -77,7 +77,6 @@ public abstract class VennDiagram extends AbsoluteLayout {
                         //unselectall
                         selectedIndexes.clear();
                     } else {
-                        Notification.show("click back is working " + indexMap.get(value.split(",")[0].trim()));
                         String[] valueArr = value.split(",");
                         selectedIndexes.clear();
                         for (String valueArr1 : valueArr) {
@@ -88,7 +87,6 @@ public abstract class VennDiagram extends AbsoluteLayout {
                     updateLegendSelectionStyle();
                     applyFilter(selectedIndexes);
                 }
-                System.out.println("at answer is called " + value);
 
             }
         };
@@ -150,7 +148,10 @@ public abstract class VennDiagram extends AbsoluteLayout {
         selectedDatasetColors = new JSONArray();
         unselectedDatasetColors = new JSONArray();
         indexMap.clear();
+        tempDataset.clear();
         legendContainer.removeAllComponents();
+        Map<String, Integer> intersectionCategories = new HashMap<>();
+        Map<String, Integer> mainCategories = new HashMap<>();
         int index = 0;
         int dsIndex = 0;
         for (String key : columns.keySet()) {
@@ -170,12 +171,13 @@ public abstract class VennDiagram extends AbsoluteLayout {
                 legendContainer.addComponent(initLegendItem(key, nameToCharMap.get(key), colorStr, columns.get(key).size()));
                 colorStr = "rgba(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ",0.3)";
                 unselectedDatasetColors.put(colorStr);
-
+                mainCategories.put(key, logSize);
             } else {
                 String[] intersections = key.replace("[", "").replace("]", "").split(",");
                 String[] updatedIntersection = new String[intersections.length];
                 Map<String, String> charToColorMap = new LinkedHashMap<>();
                 int z = 0;
+                int logSize = columns.get(key).size();
                 Color[] colorsToMix = new Color[intersections.length];
                 for (String cer : intersections) {
                     cer = cer.trim();
@@ -187,9 +189,11 @@ public abstract class VennDiagram extends AbsoluteLayout {
                     updatedIntersection[z++] = nameToCharMap.get(cer);
                     String colorStr = "rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")";
                     charToColorMap.put(nameToCharMap.get(cer), colorStr);
+
                 }
-                int logSize = columns.get(key).size();//((int) (Math.log(columns.get(key).size()) * 10)) + 1;
-                dataset.put(initDatasetObject(updatedIntersection, logSize));
+                intersectionCategories.put(key, logSize);
+                tempDataset.put(key, initDatasetObject(updatedIntersection, logSize));
+//                dataset.put(initDatasetObject(updatedIntersection, logSize));
                 indexMap.put((dsIndex++) + "", key);
                 Color c = mixColors(colorsToMix).darker();
                 String colorStr = "rgba(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ",1.0)";
@@ -198,11 +202,53 @@ public abstract class VennDiagram extends AbsoluteLayout {
                 colorStr = "rgba(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ",1)";
                 unselectedDatasetColors.put(colorStr);
                 legendContainer.addComponent(initLegendItem(charToColorMap, columns.get(key).size()));
+
             }
 
         };
+        for (String key : intersectionCategories.keySet()) {
+            String[] intersections = key.replace("[", "").replace("]", "").split(",");
+            boolean allUnAvailable = true;
+            for (String inter : intersections) {
+                inter = inter.trim();
+                if (mainCategories.containsKey(inter)) {
+                    allUnAvailable = false;
+                    break;
+                }
 
-        vennDiagramComponent.setValue(dataset.toString() + ";" + selectedDatasetColors.toString() + ";" + unselectedDatasetColors.toString());
+            }
+            if (allUnAvailable) {
+                if (!nameToCharMap.containsKey(key)) {
+                    nameToCharMap.put(key, alphabet.charAt(index++) + "");
+                }
+                dataset.put(initDatasetObject(new String[]{nameToCharMap.get(key)}, intersectionCategories.get(key)));
+            } else {
+                for (String inter : intersections) {
+                    inter = inter.trim();
+                    if (!mainCategories.containsKey(inter)) {
+                        if (!nameToCharMap.containsKey(inter)) {
+                            nameToCharMap.put(inter, alphabet.charAt(index++) + "");
+                        }
+                        int logSize = intersectionCategories.get(key);//((int) (Math.log(rows.get(key)) * 10)) + 1;
+                        dataset.put(initDatasetObject(new String[]{nameToCharMap.get(inter)}, logSize));
+                        indexMap.put((dsIndex++) + "", inter);
+                        Color c = dataColors.get(inter);
+                        String colorStr = "rgba(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ",1.0)";
+                        selectedDatasetColors.put(colorStr);
+                        legendContainer.addComponent(initLegendItem(inter, nameToCharMap.get(inter), colorStr, 0));
+                        colorStr = "rgba(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ",0.3)";
+                        unselectedDatasetColors.put(colorStr);
+                    }
+
+                }
+                dataset.put(tempDataset.get(key));
+            }
+        }
+        if (legendContainer.getComponentCount() >5) {
+            compleateLoading(false);
+        } else {
+            vennDiagramComponent.setValue(dataset.toString() + ";" + selectedDatasetColors.toString() + ";" + unselectedDatasetColors.toString());
+        }
 
     }
 
@@ -232,6 +278,7 @@ public abstract class VennDiagram extends AbsoluteLayout {
     }
 
     public void updateFilterSelection(Set<Comparable> selectedItems, Set<Comparable> selectedCategories, boolean topFilter, boolean singleProteinsFilter, boolean selfAction) {
+       
         if (!selfAction) {
 //            intersectionMap.clear();
             nameToCharMap.clear();
@@ -241,9 +288,10 @@ public abstract class VennDiagram extends AbsoluteLayout {
             } else {
                 Map<String, Set<Comparable>> tbarChartValues = new LinkedHashMap<>();
                 Map<String, Integer> updatedRows = new HashMap<>();
-                for (String key : modificationMatrix.getCalculatedColumns().keySet()) {
-                    key = key.trim();
+                modificationMatrix.getCalculatedColumns().keySet().stream().map((key) -> key.trim()).map((key) -> {
                     tbarChartValues.put(key, Sets.intersection(modificationMatrix.getCalculatedColumns().get(key), selectedItems));
+                    return key;
+                }).forEachOrdered((key) -> {
                     if (!key.contains("[")) {
                         if (!updatedRows.containsKey(key)) {
                             updatedRows.put(key, 0);
@@ -261,7 +309,7 @@ public abstract class VennDiagram extends AbsoluteLayout {
                         }
 
                     }
-                }
+                });
                 updateDiagramData(tbarChartValues, updatedRows);
             }
 

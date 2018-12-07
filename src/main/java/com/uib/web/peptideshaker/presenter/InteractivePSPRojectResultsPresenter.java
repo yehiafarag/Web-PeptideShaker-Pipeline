@@ -11,6 +11,7 @@ import com.uib.web.peptideshaker.presenter.core.SmallSideBtn;
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.PeptideVisulizationLevelContainer;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
@@ -60,7 +61,7 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
      * Reference index to the last selected sup-view.
      */
     private int lastSelectedBtn = 1;
-     /**
+    /**
      * The view is in maximised mode.
      */
     private boolean maximisedMode;
@@ -71,23 +72,24 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
     public InteractivePSPRojectResultsPresenter() {
         InteractivePSPRojectResultsPresenter.this.setSizeFull();
         InteractivePSPRojectResultsPresenter.this.setStyleName("activelayout");
-        
+
         this.smallControlButton = new SmallSideBtn(VaadinIcons.CLUSTER);
+        smallControlButton.updateIconURL("img/venn.png");
         this.smallControlButton.setData(InteractivePSPRojectResultsPresenter.this.getViewId());
-        
-        this.controlButton = new ButtonWithLabel("Results</br><font>Interactive results visualization</font>",1);
+
+        this.controlButton = new ButtonWithLabel("Results</br><font>Interactive results visualization</font>", 1);
         this.controlButton.setData(InteractivePSPRojectResultsPresenter.this.getViewId());
         this.controlButton.updateIcon(VaadinIcons.CLUSTER.getHtml());
-         this.controlButton.setDescription("View selected projects");
-         this.controlButton.setEnabled(false);
-         this.controlButton.addStyleName("orangeiconcolor");
-          this.smallControlButton.setEnabled(false);
-         this.Selection_Manager = new SelectionManager();
+        this.controlButton.updateIconResource(new ThemeResource("img/venn.png"));
+        this.controlButton.setDescription("View selected projects");
+        this.controlButton.setEnabled(false);
+        this.controlButton.addStyleName("orangeiconcolor");
+        this.smallControlButton.setEnabled(false);
+        this.Selection_Manager = new SelectionManager();
         this.initLayout();
         InteractivePSPRojectResultsPresenter.this.minimizeView();
-       
-//         this.controlButton.addStyleName("hidetopbtn");
 
+//         this.controlButton.addStyleName("hidetopbtn");
     }
 
     /**
@@ -203,10 +205,10 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
     @Override
     public void minimizeView() {
         controlButton.setSelected(false);
-         smallControlButton.setSelected(false);
+        smallControlButton.setSelected(false);
         this.addStyleName("hidepanel");
         this.viewControlButtonContainer.removeStyleName("visible");
-        this.maximisedMode=false;
+        this.maximisedMode = false;
 
     }
 
@@ -216,10 +218,9 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
     @Override
     public void maximizeView() {
         if (maximisedMode) {
-            System.out.println("is selected??");
             return;
         }
-          smallControlButton.setSelected(true);
+        smallControlButton.setSelected(true);
         controlButton.setSelected(true);
         this.viewControlButtonContainer.addStyleName("visible");
         this.removeStyleName("hidepanel");
@@ -233,7 +234,7 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
         });
         t.start();
         datasetVisulizationLevelContainer.setMargin(true);
-        this.maximisedMode=true;
+        this.maximisedMode = true;
 
     }
 
@@ -248,13 +249,14 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
         BigSideBtn comp = (BigSideBtn) event.getComponent();
         Selection_Manager.selectBtn(comp);
         if (proteinsVisulizationLevelContainer != null) {
-            if (comp.getBtnId() == 2 && lastSelectedBtn == 1) {
+            if (comp.getBtnId() == 2 && lastSelectedBtn != 2) {
                 proteinsVisulizationLevelContainer.activate3DProteinView();
-            } else if (lastSelectedBtn == 1) {
-                proteinsVisulizationLevelContainer.reset3DProteinView();
-            } else {
-                proteinsVisulizationLevelContainer.reset3DProteinView();
             }
+//            else if (lastSelectedBtn == 1) {
+//                proteinsVisulizationLevelContainer.reset3DProteinView();
+//            } else {
+//                proteinsVisulizationLevelContainer.reset3DProteinView();
+//            }
         }
         lastSelectedBtn = comp.getBtnId();
 

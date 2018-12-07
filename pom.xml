@@ -106,7 +106,7 @@
         <dependency>
             <groupId>com.compomics</groupId>
             <artifactId>utilities</artifactId>
-            <version>4.12.8</version>
+            <version>4.12.13</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -120,6 +120,11 @@
                     <groupId>log4j</groupId>
                     <artifactId>log4j</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>it.unimi.dsi</groupId>
+                    <artifactId>fastutil</artifactId>
+                </exclusion>
+           
             </exclusions>
         </dependency>
         <dependency>
@@ -157,11 +162,7 @@
             <artifactId>itextpdf</artifactId>
             <version>5.5.9</version>
         </dependency>
-        <dependency>
-            <groupId>org.jfree</groupId>
-            <artifactId>jfreechart</artifactId>
-            <version>1.0.19</version>
-        </dependency>
+        
         <dependency>
             <groupId>org.vaadin.addons</groupId>
             <artifactId>leapgestures</artifactId>
@@ -172,7 +173,6 @@
             <artifactId>jsoup</artifactId>
             <version>1.8.3</version>
         </dependency>
-       
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-core-asl</artifactId>
@@ -188,7 +188,6 @@
             <artifactId>jackson-jaxrs</artifactId>
             <version>1.9.12</version>
         </dependency>
-        
         <dependency>
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-xc</artifactId>
@@ -254,15 +253,19 @@
             <groupId>pl.exsio</groupId>
             <artifactId>plupload-vaadin</artifactId>
             <version>2.1.0</version>
-        </dependency>
+        </dependency>        
         <!-- https://mvnrepository.com/artifact/org.jfree/jfreesvg -->
-<dependency>
-    <groupId>org.jfree</groupId>
-    <artifactId>jfreesvg</artifactId>
-    <version>3.3</version>
-</dependency>
-
-       
+        <dependency>
+            <groupId>org.jfree</groupId>
+            <artifactId>jfreesvg</artifactId>
+            <version>3.3</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/jazzlib/jazzlib -->
+        <dependency>
+            <groupId>jazzlib</groupId>
+            <artifactId>jazzlib</artifactId>
+            <version>0.0.7</version>
+        </dependency>
     </dependencies>
 
    

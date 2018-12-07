@@ -6,16 +6,13 @@ import com.uib.web.peptideshaker.model.core.pdb.PDBMatch;
 import com.uib.web.peptideshaker.model.core.pdb.PdbHandler;
 import com.uib.web.peptideshaker.model.core.pdb.ChainBlock;
 import com.vaadin.data.Property;
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -113,14 +110,16 @@ public class ProteinStructurePanel extends AbsoluteLayout {
 //            }
 //        });
 
-        uniprotLabel = new Label("UniProt: P11021");
+        uniprotLabel = new Label("UniProt:");
         uniprotLabel.addStyleName("selectchain3dMenue");
+        uniprotLabel.setVisible(false);
 
         pdbChainsSelect = new ComboBox("Chains:");
         pdbChainsSelect.setTextInputAllowed(false);
         pdbChainsSelect.addStyleName("select3dMenue");
         pdbChainsSelect.addStyleName("selectchain3dMenue");
         pdbChainsSelect.setNullSelectionAllowed(false);
+        pdbChainsSelect.setVisible(false);
         HorizontalLayout dropdownMenuesContainer = new HorizontalLayout();
         dropdownMenuesContainer.setWidth(321, Unit.PIXELS);
         dropdownMenuesContainer.setHeight(25, Unit.PIXELS);
@@ -151,6 +150,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
         pdbMatchesSelect.addStyleName("select3dMenue");
         pdbMatchesSelect.setNullSelectionAllowed(false);
         pdbMatchesSelect.setCaptionAsHtml(true);
+        pdbMatchesSelect.setVisible(false);
         dropdownMenuesContainer.addComponent(uniprotLabel);
         dropdownMenuesContainer.setExpandRatio(uniprotLabel, 115);
         dropdownMenuesContainer.addComponent(pdbMatchesSelect);
@@ -159,6 +159,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
         dropdownMenuesContainer.setExpandRatio(pdbChainsSelect, 98);
 
         this.pdbMatchSelectlistener = ((Property.ValueChangeEvent event) -> {
+            //time to active d3
             pdbChainsSelect.removeValueChangeListener(pdbChainsSelectlistener);
             pdbChainsSelect.removeAllItems();
             LiteMolPanel.setVisible(pdbMatchesSelect.getValue() != null);//            
@@ -201,6 +202,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
 
         });
         pdbMatchesSelect.addValueChangeListener(pdbMatchSelectlistener);
+
     }
 
     public void reset() {
@@ -210,14 +212,22 @@ public class ProteinStructurePanel extends AbsoluteLayout {
         pdbChainsSelect.setVisible(false);
         chainCoverageLayout.setVisible(false);
         uniprotLabel.setVisible(false);
+        
+//        liteMOL3DComponent.setVisible(false);
+        
         lastSelectedPeptideKey = null;
 //        playBtn.setCaption("Enable 3D");
     }
 
     public void activate3DProteinView() {
-        if (pdbMatchesSelect.isVisible()) {
+        boolean activate = liteMOL3DComponent.activate3DProteinView();
+        if (!activate) {
+            reset();
             return;
         }
+//        if (pdbMatchesSelect.isVisible()) {
+//            return;
+//        }
         pdbMatchesSelect.setVisible(true);
         pdbChainsSelect.setVisible(true);
         chainCoverageLayout.setVisible(true);
@@ -470,7 +480,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
                 break;
             }
         }
-        String pdbAccession = (pdbMatchesSelect.getValue() + "").toLowerCase();
+        String pdbAccession = (pdbMatchesSelect.getValue() + "").toLowerCase();        
         liteMOL3DComponent.excuteQuery(pdbAccession, lastSelectedMatch.getEntity_id(chainId), chainId.toUpperCase(), initColorMap(basicColor), entriesSet);
 
     }

@@ -60,7 +60,7 @@ public class HorizontalLabelTextField extends HorizontalLayout {
 //        textField.setValue(this.defaultValue);
 
         textField.setWidth(100, Unit.PERCENTAGE);
-        textField.setHeight(25, Unit.PIXELS);
+        textField.setHeight(20, Unit.PIXELS);
         HorizontalLabelTextField.this.addComponent(textField);
         HorizontalLabelTextField.this.setExpandRatio(textField, 55);
        

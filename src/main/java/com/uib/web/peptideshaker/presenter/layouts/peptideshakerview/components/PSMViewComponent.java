@@ -50,12 +50,18 @@ public abstract class PSMViewComponent extends VerticalLayout {
 
     public void viewSpectraPlot(boolean view) {
         chartContainer.setVisible(view);
+        if (!view) {
+            psmTableWrapper.addStyleName("nomargintop");
+        } else {
+            psmTableWrapper.removeStyleName("nomargintop");
+        }
     }
 
     public void viewPSMTable(boolean view) {
         psmTableWrapper.setVisible(view);
         psmTableWrapper.setSizeFull();
         psmOverviewTable.setSizeFull();
+
     }
 
     public PSMViewComponent() {

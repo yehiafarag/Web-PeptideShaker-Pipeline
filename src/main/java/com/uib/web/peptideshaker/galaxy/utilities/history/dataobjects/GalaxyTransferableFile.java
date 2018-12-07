@@ -131,12 +131,13 @@ public class GalaxyTransferableFile extends GalaxyFileObject {
         }
         File file = new File(user_folder, fileName);
         if (file.exists()) {
+         
             return file;
         }
         if (zipped) {
             FileOutputStream fos = null;
             try {
-                URL downloadableFile = new URL(galaxyFileObject.getDownloadUrl());
+                URL downloadableFile= new URL(galaxyFileObject.getDownloadUrl());//"http://localhost:8084/web-peptide-shaker/VAADIN/non_validated_tes-ZIP.zip"                
                 URLConnection conn = downloadableFile.openConnection();
                 conn.addRequestProperty("Accept", "*/*");
                 conn.addRequestProperty("Accept-Encoding", "gzip, deflate, sdch, br");
@@ -148,9 +149,10 @@ public class GalaxyTransferableFile extends GalaxyFileObject {
                 conn.setDoInput(true);
                 ZipInputStream Zis = new ZipInputStream(conn.getInputStream());
                 int counter = 0;
+                long start = System.currentTimeMillis();
                 ZipEntry entry = Zis.getNextEntry();
-
-                while (entry != null && counter < 10) {
+                while (entry != null && counter < 10) { 
+                  
                     if (!entry.isDirectory() && entry.getName().equalsIgnoreCase("SEARCHGUI_IdentificationParameters.par")) //do something with entry  
                     {
                         try (ReadableByteChannel rbc = Channels.newChannel(Zis)) {
@@ -161,8 +163,9 @@ public class GalaxyTransferableFile extends GalaxyFileObject {
                             Zis.close();
                             break;
                         }
-                    } else if (!entry.isDirectory() && entry.getName().endsWith(galaxyFileObject.getGalaxyId().split("__")[1].replace("reports/", ""))) //do something with entry  
-                    {
+                    }
+                    else if (!entry.isDirectory() && entry.getName().endsWith(galaxyFileObject.getGalaxyId().split("__")[1].replace("reports/", "").replace("data/",""))) //do something with entry  
+                    {  
                         try (ReadableByteChannel rbc = Channels.newChannel(Zis)) {
                             fos = new FileOutputStream(file);
                             fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
@@ -175,6 +178,7 @@ public class GalaxyTransferableFile extends GalaxyFileObject {
                     entry = Zis.getNextEntry();
                     counter++;
                 }
+                System.out.println("to test reader : " + (System.currentTimeMillis() - start) + "ms");
 
             } catch (MalformedURLException ex) {
             } finally {

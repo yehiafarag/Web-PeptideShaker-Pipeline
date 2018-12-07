@@ -50,7 +50,7 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
         String subTooltip = "";
         Map<String, String> modificationsTooltip = new HashMap<>();
         for (String mod : modifications.split("\\),")) {
-            if (mod.trim().equalsIgnoreCase("") || mod.contains("Pyrolidone") || mod.contains("Acetylation of protein N-term")) {
+            if (mod.trim().equalsIgnoreCase("") || mod.contains("Pyrolidone") || mod.contains("Acetylation of protein N-term") || mod.contains("No Modifications")|| mod.contains("Two or More Modifications")) {
                 continue;
             }
             String[] tmod = mod.split("\\(");
@@ -72,7 +72,7 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
             }
 
         }
-        if (modificationLayout.getComponentCount() > 1) {
+        if (modificationLayout.getComponentCount() > 1 || modifications.equalsIgnoreCase("Two or More Modifications")) {
             modificationLayout.removeAllComponents();
             Label modification = new Label("<div style='background:orange; width:100%;height:100%;border-radius:100%;opacity:0.2;'></div>", ContentMode.HTML);
             modification.setSizeFull();
@@ -90,7 +90,7 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
         Node.this.addComponent(psmNumberLayout);
         String tooltipExt = "</br>#PSM (" + psmNumber + ")";
         if (psmNumber == -1) {
-            PSMNumberColor = "lightgray";
+            PSMNumberColor = "red";
             tooltipExt = "";
         }
         Label psmsColorLabel = new Label("<div  style='background:" + PSMNumberColor + ";border-radius:100%;width: 100%;height: 100%;opacity:0.2;'></div>", ContentMode.HTML);
@@ -134,7 +134,7 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
             this.addStyleName(validationStatuesStyle);
         } else if (statues.equalsIgnoreCase("Protein Evidence")) {
             this.addStyleName(proteinEvidenceStyle);
-        } else if (statues.equalsIgnoreCase("Modification  Status")) {
+        } else if (statues.equalsIgnoreCase("Modification Status")) {
             modificationLayout.setVisible(true);
             this.addStyleName(modificationStyleName);
         } else if (statues.equalsIgnoreCase("PSMNumber")) {

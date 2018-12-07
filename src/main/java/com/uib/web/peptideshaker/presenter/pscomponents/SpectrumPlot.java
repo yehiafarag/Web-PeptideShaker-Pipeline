@@ -28,7 +28,6 @@ import com.itextpdf.text.pdf.codec.Base64;
 import com.vaadin.data.Property;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ExternalResource;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 import com.vaadin.shared.ui.slider.SliderOrientation;
 import com.vaadin.ui.AbsoluteLayout;
@@ -43,14 +42,15 @@ import com.vaadin.ui.themes.ValoTheme;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JPanel;
 import org.apache.commons.math.MathException;
 import org.jfree.chart.encoders.ImageEncoder;
@@ -100,7 +100,7 @@ public class SpectrumPlot extends AbsoluteLayout {
     }
 
     public SpectrumPlot() {
-        SpectrumPlot.this.setStyleName("splotframe");
+//        SpectrumPlot.this.setStyleName("splotframe");
         SpectrumPlot.this.setSizeFull();
         ions = new LinkedHashMap<>();
         ions.put("a", PeptideFragmentIon.A_ION);
@@ -171,14 +171,13 @@ public class SpectrumPlot extends AbsoluteLayout {
         menue.setAutoOpen(false);
         menue.setHtmlContentAllowed(true);
         controlsLayout.addComponent(menue);
-        
 
         //initialise ions tab
-        ionsItem = menue.addItem("<div class='tinydot'></div>"+VaadinIcons.DOT_CIRCLE.getHtml()+"Ions", null, null);
-        otherItem = menue.addItem("<div class='otinydot'></div>"+VaadinIcons.DOT_CIRCLE.getHtml()+"Other", null, null);
-        
-        lossItem = menue.addItem(VaadinIcons.MINUS_CIRCLE_O.getHtml()+"Loss", null, null);//"<div class='lossin'>"+VaadinIcons.MINUS_CIRCLE_O.getHtml()+"</div><div class='lossout'>"+VaadinIcons.BAR_CHART.getHtml() +"</div>
-        
+        ionsItem = menue.addItem("<div class='tinydot'></div>" + VaadinIcons.DOT_CIRCLE.getHtml() + "Ions", null, null);
+        otherItem = menue.addItem("<div class='otinydot'></div>" + VaadinIcons.DOT_CIRCLE.getHtml() + "Other", null, null);
+
+        lossItem = menue.addItem(VaadinIcons.MINUS_CIRCLE_O.getHtml() + "Loss", null, null);//"<div class='lossin'>"+VaadinIcons.MINUS_CIRCLE_O.getHtml()+"</div><div class='lossout'>"+VaadinIcons.BAR_CHART.getHtml() +"</div>
+
         chargeItem = menue.addItem("Charge", VaadinIcons.PLUS, null);
         resetAnnoItem = menue.addItem("Reset Annotations", VaadinIcons.RETWEET, (MenuItem selectedItem) -> {
             selectedItem.setVisible(false);
@@ -294,8 +293,8 @@ public class SpectrumPlot extends AbsoluteLayout {
 //        ExecutorService executorService = Executors.newSingleThreadExecutor();
 //        executorService.submit(() -> {
         plot.setSource(new ExternalResource(drawImage(jpanel)));
-//        });
-//        executorService.shutdown();
+        //        });
+        //        executorService.shutdown();
     }
 
     private void resetAnnotations() {
@@ -336,6 +335,9 @@ public class SpectrumPlot extends AbsoluteLayout {
                     return;
                 }
                 if (spectrumPanel != null) {
+                    if (startY < 0 || endY < 0) {
+                        return;
+                    }
                     spectrumPanel.zoom((int) startX, (int) startY, (int) endX, (int) endY);
                     updateImage(spectrumPanel);
                 }
@@ -611,18 +613,24 @@ public class SpectrumPlot extends AbsoluteLayout {
         if (panel.getHeight() <= 0) {
             panel.setSize(panel.getWidth(), 100);
         }
-        BufferedImage image = new BufferedImage(panel.getWidth(), panel.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        BufferedImage image = new BufferedImage(panel.getWidth(), panel.getHeight(), BufferedImage.TYPE_4BYTE_ABGR_PRE);
         Graphics2D g2d = image.createGraphics();
-        //draw sequence line
+//        //draw sequence line
         g2d.setColor(Color.LIGHT_GRAY);
-        panel.paint(g2d);
+        try {
+            panel.paint(g2d);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        ImageEncoder in = ImageEncoderFactory.newInstance(ImageFormat.PNG, 1);
         byte[] imageData = null;
         try {
-            ImageEncoder in = ImageEncoderFactory.newInstance(ImageFormat.PNG, 1);
-            imageData = in.encode(image);
-        } catch (IOException e) {
-            System.out.println(e.getLocalizedMessage());
+            imageData = in.encode(image); // ((DataBufferByte) image.getData().getDataBuffer()).getData();
+        } catch (IOException ex) {
+            Logger.getLogger(SpectrumPlot.class.getName()).log(Level.SEVERE, null, ex);
         }
+
         String base64 = Base64.encodeBytes(imageData);
         base64 = "data:image/png;base64," + base64;
         //total chain coverage     

@@ -400,17 +400,16 @@ public abstract class GalaxyToolsHandler {
             File file;
             WorkflowInputs.WorkflowInput input2;
             if (mgfIdsList.size() > 1) {
-                file = new File(basepath + "/VAADIN/Galaxy-Workflow-Web-Peptide-Shaker-Multi-MGF-2018-updated.ga");//Galaxy-Workflow-Web-Peptide-Shaker-Multi-MGF-2018.ga
+                file = new File(basepath + "/VAADIN/Galaxy-Workflow-Web-Peptide-Shaker-Multi-MGF-2018-updated-i.ga");//Galaxy-Workflow-Web-Peptide-Shaker-Multi-MGF-2018.ga
                 input2 = prepareWorkflowCollectionList(WorkflowInputs.InputSourceType.HDCA, mgfIdsList.keySet(), historyId);
             } else {
-                file = new File(basepath + "/VAADIN/Galaxy-Workflow-Web-Peptide-Shaker-Single-MGF-2018-updated.ga");
+                file = new File(basepath + "/VAADIN/Galaxy-Workflow-Web-Peptide-Shaker-Single-MGF-2018-updated-i.ga");
                 input2 = new WorkflowInputs.WorkflowInput(mgfIdsList.keySet().iterator().next(), WorkflowInputs.InputSourceType.HDA);
             }
             String json = readWorkflowFile(file);
             /**
              * @todo: find better way to override the search parameters ?
              */
-            System.out.println("at searchgui ---"+search_GUI_Tool.getVersion()+"---");
             json = json.replace("3.3.5", search_GUI_Tool.getVersion().trim()); 
 //            json = json.replace("3.3.3.0", search_GUI_Tool.getVersion().trim()); //for multi mgf workflow
             json = json.replace("SearchGUI_Label", projectName + "-SearchGUI Results").replace("ZIP_Label", projectName + "-ZIP");

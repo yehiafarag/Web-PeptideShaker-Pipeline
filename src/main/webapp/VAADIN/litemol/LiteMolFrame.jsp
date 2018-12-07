@@ -11,7 +11,12 @@
     <link rel="stylesheet" href="VAADIN/litemol/css/LiteMol-plugin.css?lmversion=1518789385303" type="text/css">
     <link rel="stylesheet" href="VAADIN/litemol/css/style.css" />
     <script src="VAADIN/litemol/js/LiteMol-plugin.js"></script>
+    
 
+
+</head>
+<body>
+    
     <style>
         body {
             font-family: sans-serif;
@@ -100,8 +105,6 @@
             font-size: 14px;    
         }
     </style>
-</head>
-<body>
     <div id='actions'>        
     </div>
 
@@ -114,21 +117,21 @@
 <div>
     <!-- -->
     <div id='progress' style='
-    left: 5% !important;
-    top: 5% !important;
-    /* margin-top: -40px; */
-    /* margin-left: -40px; */
-    position: absolute;
-    z-index: 900000000 !important;
-    width: 50px !important;
-    height: 50px !important;
-    background-image: url("VAADIN/themes/webpeptideshakertheme/img/loading.gif");
-    background-repeat:  no-repeat;
-    background-size:  contain;
-    border-radius:  100%;    
-    display:  block;
-    visibility:  visible;
-'></div>
+         left: 5% !important;
+         top: 5% !important;
+         /* margin-top: -40px; */
+         /* margin-left: -40px; */
+         position: absolute;
+         z-index: 900000000 !important;
+         width: 50px !important;
+         height: 50px !important;
+         background-image: url("VAADIN/themes/webpeptideshakertheme/img/loading.gif");
+         background-repeat:  no-repeat;
+         background-size:  contain;
+         border-radius:  100%;    
+         display:  block;
+         visibility:  visible;
+         '></div>
 
     <button title="Show/Hide water, balls & sticks" class="lm-btn lm-btn-link lm-btn-link-toggle-off" style="
             right: 110px !important;
@@ -146,110 +149,125 @@
 <script src="VAADIN/litemol/js/LiteMol-example.js?lmversion=1518789385303"></script>
 
 
+
 <script>
-                var str = '{"pdbId":"3iuc","chainId":"A"}';
-                var controlBtns;
-                window.onload = function (e) {
-                    controlBtns = document.getElementsByTagName('button');
-                    controlBtns[0].click();
-                    controlBtns[4].click();
-                    controlBtns[5].click();
-                    setTimeout(finalizeStyle, 2000);
-                    document.getElementById('showWB').value = !hideWaterVar;
 
-                };
-                function finalizeStyle() {
-                    var y = document.getElementsByClassName("lm-btn lm-btn-link");
-                    y[5].setAttribute("style", " display:none !important; visibility:hidden;");
-                    y[4].setAttribute("style", " display:none !important; visibility:hidden;");
-                    y[3].setAttribute("style", " display:none !important; visibility:hidden;");
+    var str = '{"pdbId":"3iuc","chainId":"A"}';
+    var controlBtns;
+    
+            
+    var onloadfunction =         function (e) {
+        try {
+            controlBtns = document.getElementsByTagName('button');
+             for (var i = 0; i < controlBtns.length; i++) {
 
-                }
+                controlBtns[i].title = "i - " + i;
+            }     
+    //       controlBtns[0].click();
+     //       controlBtns[4].click();
+    //       controlBtns[5].click();
+     //       setTimeout(finalizeStyle, 2000);
+           document.getElementById('showWB').value = !hideWaterVar;
+        } catch (exp) {
+            alert(exp)
+        }
 
+    };
+    window.onload = onloadfunction;
+    function finalizeStyle() {
+        var y = document.getElementsByClassName("lm-btn lm-btn-link");
+        y[5].setAttribute("style", " display:none !important; visibility:hidden;");
+        y[4].setAttribute("style", " display:none !important; visibility:hidden;");
+        y[3].setAttribute("style", " display:none !important; visibility:hidden;");
 
-                function getParameterByName(name, url) {
-                    if (!url)
-                        url = window.location.href;
-                    name = name.replace(/[\[\]]/g, "\\$&");
-                    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-                            results = regex.exec(url);
-                    if (!results)
-                        return null;
-                    if (!results[2])
-                        return '';
-                    return decodeURIComponent(results[2].replace(/\+/g, " "));
-                }
-
-                //     var tquery = '{"pdbId":"6asy","chainId":"A","coloring":{"entries":[{"start_residue_number":0,"color":{"r":124,"b":124,"g":124},"end_residue_number":1000,"struct_asym_id":"A","entity_id":"1"},{"start_residue_number":618,"color":{"r":0,"b":0,"g":255},"end_residue_number":629,"struct_asym_id":"A","entity_id":"1"},{"start_residue_number":10,"color":{"r":0,"b":255,"g":0},"end_residue_number":50,"struct_asym_id":"A","entity_id":"1"},{"start_residue_number":120,"color":{"r":255,"b":0,"g":0},"end_residue_number":300,"struct_asym_id":"A","entity_id":"1"}],"base":{"r":255,"b":255,"g":255}}}';
-                var tquery = '{"pdbId":"3iuc","chainId":"A","coloring":{"entries":[{"start_residue_number":44,"color":{"r":255,"b":0,"g":0},"end_residue_number":404,"struct_asym_id":"A","entity_id":"1"}],"base":{"r":255,"b":255,"g":255}}}';
-                  
-                    function excutequery(query, newId) {                 
-                    document.getElementById("progress").style.display = "block";
-                    tquery = query;
-                    document.getElementById('pdbid').value = tquery;
-                    if (newId) {
-                        reset();
-                        controlBtns[14].click();
-                        setTimeout(update, 5000);
-                    } else {
-                        update();
-                    }
-
-                }
-                function update() {
-                    controlBtns[24].click();
-                    controlBtns[19].click();
-                    document.getElementById("progress").style.display = "none";
-                   
-                }
-                function reset() {
-                   document.getElementById("progress").style.display = "none";
-                    controlBtns[26].click();
-                }
+    }
 
 
-                var colorCode2 = {r: 200, g: 0, b: 000};
-                var colorCode = {r: 255, g: 255, b: 255};
-                var selectioncolorCode = {r: 0, g: 0, b: 200};
-                var selection = function (entity,chain, start, end) {
-                    var selectionDetails = {
-                        entity_id: entity,
-                        struct_asym_id: chain,
-                        start_residue_number: start,
-                        end_residue_number: end
-                    };
-                    return selectionDetails;
+    function getParameterByName(name, url) {
+        if (!url)
+            url = window.location.href;
+        name = name.replace(/[\[\]]/g, "\\$&");
+        var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+                results = regex.exec(url);
+        if (!results)
+            return null;
+        if (!results[2])
+            return '';
+        return decodeURIComponent(results[2].replace(/\+/g, " "));
+    }
 
-                };
+    //     var tquery = '{"pdbId":"6asy","chainId":"A","coloring":{"entries":[{"start_residue_number":0,"color":{"r":124,"b":124,"g":124},"end_residue_number":1000,"struct_asym_id":"A","entity_id":"1"},{"start_residue_number":618,"color":{"r":0,"b":0,"g":255},"end_residue_number":629,"struct_asym_id":"A","entity_id":"1"},{"start_residue_number":10,"color":{"r":0,"b":255,"g":0},"end_residue_number":50,"struct_asym_id":"A","entity_id":"1"},{"start_residue_number":120,"color":{"r":255,"b":0,"g":0},"end_residue_number":300,"struct_asym_id":"A","entity_id":"1"}],"base":{"r":255,"b":255,"g":255}}}';
+    var tquery = '{"pdbId":"3iuc","chainId":"A","coloring":{"entries":[{"start_residue_number":44,"color":{"r":255,"b":0,"g":0},"end_residue_number":404,"struct_asym_id":"A","entity_id":"1"}],"base":{"r":255,"b":255,"g":255}}}';
+
+    function excutequery(query, newId) {
+        document.getElementById("progress").style.display = "block";
+        tquery = query;
+        document.getElementById('pdbid').value = tquery;
+        if (newId) {
+            reset();
+            controlBtns[14].click();
+            setTimeout(update, 5000);
+        } else {
+            update();
+        }
+
+    }
+    function update() {
+        controlBtns[24].click();
+        controlBtns[19].click();
+        document.getElementById("progress").style.display = "none";
+
+    }
+    function reset() {
+        document.getElementById("progress").style.display = "none";
+        controlBtns[26].click();
+    }
 
 
-                var selectionDetails = {
-                    entity_id: '1',
-                    struct_asym_id: 'A',
-                    start_residue_number: 28,
-                    end_residue_number: 406
-                };
+    var colorCode2 = {r: 200, g: 0, b: 000};
+    var colorCode = {r: 255, g: 255, b: 255};
+    var selectioncolorCode = {r: 0, g: 0, b: 200};
+    var selection = function (entity, chain, start, end) {
+        var selectionDetails = {
+            entity_id: entity,
+            struct_asym_id: chain,
+            start_residue_number: start,
+            end_residue_number: end
+        };
+        return selectionDetails;
 
-                var selectionDetails2 = {
-                    entity_id: '1',
-                    struct_asym_id: 'B',
-                    start_residue_number: 1,
-                    end_residue_number: 100
-                };
-                var visualParams = {
-                    polymer: true,
-                    polymerRef: 'polymer-visual',
-                    het: false,
-                    hetRef: 'het-visual',
-                    water: false,
-                    waterRef: 'water-visual'
-                };
-                var hideWaterVar = true;
-                function hideWater() {
-                    document.getElementById('showWB').value = hideWaterVar;
-                    hideWaterVar = !hideWaterVar;
-                    excutequery(tquery, true);
-                }
+    };
+
+
+    var selectionDetails = {
+        entity_id: '1',
+        struct_asym_id: 'A',
+        start_residue_number: 28,
+        end_residue_number: 406
+    };
+
+    var selectionDetails2 = {
+        entity_id: '1',
+        struct_asym_id: 'B',
+        start_residue_number: 1,
+        end_residue_number: 100
+    };
+    var visualParams = {
+        polymer: true,
+        polymerRef: 'polymer-visual',
+        het: false,
+        hetRef: 'het-visual',
+        water: false,
+        waterRef: 'water-visual'
+    };
+    var hideWaterVar = true;
+    function hideWater() {
+        document.getElementById('showWB').value = hideWaterVar;
+        hideWaterVar = !hideWaterVar;
+        excutequery(tquery, true);
+    }
+    hideWater();
+
 </script>    
 
 </body>

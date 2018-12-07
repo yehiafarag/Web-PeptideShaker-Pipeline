@@ -13371,7 +13371,7 @@ div.v-layout.v-horizontal.v-widget {
 	border-bottom-left-radius: 5px;
 	padding-left: 30px;
 	border: 1px solid #2c3143;
-	background-image: url("img/galaxyLogo.png");
+	background-image: url("img/galaxyLogo1.png");
 	background-size: auto 105%;
 	background-repeat: no-repeat;
 	font-weight: bold;
@@ -13479,7 +13479,15 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .v-absolutelayout-wrapper-hidepanel {
-	width: 0px !important;
+	opacity: 0 !important;
+	visibility: hidden;
+}
+
+.webpeptideshakertheme .transitionallayout {
+	-webkit-transition: all 0.5s ease-in-out;
+	-moz-transition: all 0.5s ease-in-out;
+	-o-transition: all 0.5s ease-in-out;
+	transition: all 0.5s ease-in-out;
 }
 
 .webpeptideshakertheme .activelayout {
@@ -13507,6 +13515,10 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .lightgraylayout {
 	background-color: lightgray;
+}
+
+.webpeptideshakertheme .whitelayout {
+	background-color: white !important;
 }
 
 .webpeptideshakertheme .bigmenubtn {
@@ -13538,7 +13550,7 @@ div.v-layout.v-horizontal.v-widget {
 	border: 1px solid transparent;
 	border-radius: 5px;
 	cursor: pointer;
-	padding: 10%;
+	padding: 0px;
 	position: relative;
 	z-index: 10 !important;
 }
@@ -13646,7 +13658,7 @@ div.v-layout.v-horizontal.v-widget {
 .webpeptideshakertheme .v-label-frametitle {
 	padding-left: 10px;
 	padding-top: 10px;
-	font-size: 20px;
+	font-size: 13px;
 	font-weight: bold;
 	font-family: "Open Sans", sans-serif;
 	color: #464646;
@@ -13739,7 +13751,7 @@ div.v-layout.v-horizontal.v-widget {
 .webpeptideshakertheme .frame {
 	border-radius: 5px;
 	padding: 10px !important;
-	min-height: 600px;
+	min-height:500px;
 	min-width: 650px;
 	background-color: white;
 }
@@ -14089,7 +14101,7 @@ div.v-layout.v-horizontal.v-widget {
 .webpeptideshakertheme .largetitle .v-label, .webpeptideshakertheme .v-link-largetitle, .webpeptideshakertheme .v-label-largetitle {
 	margin-top: 10px;
 	margin-left: 25px;
-	font-size: 18px !important;
+	font-size: 13px !important;
 	font-weight: normal !important;
 	text-decoration: none !important;
 	color: #3d84dc !important;
@@ -14105,12 +14117,13 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .psmtable {
-	margin-top: -10px !important;
+	margin-top: -20px !important;
 	background-color: rgba(255, 255, 255, 0) !important;
 	border: none !important;
 }
-.psmtable.v-table .v-table-body{
-	overflow-x:hidden;
+
+.webpeptideshakertheme .psmtable.v-table .v-table-body {
+	overflow-x: hidden;
 }
 
 .webpeptideshakertheme .psmtable.v-table [class*="-row"].v-selected {
@@ -14135,7 +14148,8 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .buttoncontainerstyle {
 	padding: 5px;
-	margin-top: 5px;
+	margin-top: 7.5px;
+	margin-right: 20px;
 	border-radius: 5px;
 	min-height: 35px;
 	z-index: 2 !important;
@@ -14437,15 +14451,15 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .v-slot-searchtablecontainer {
-	max-width: 345px;
+max-width: 345px;
 	max-height: 4px !important;
-	margin-top: -35px !important;
 	float: right;
-	padding-top: 20px;
+	font-size:11px !important;
+	line-height:20px;
 }
 
 .webpeptideshakertheme .v-verticallayout-datasetproteinstablestyle .v-slot-framedpanel {
-	margin-top: -25px !important;
+	
 }
 
 .webpeptideshakertheme .searchtablecontainer .searchtablecontainer {
@@ -14454,16 +14468,22 @@ div.v-layout.v-horizontal.v-widget {
 	position: relative !important;
 	right: -35px;
 }
+.searchtablecontainer .v-button-icon-only{;
+	float: right;
+	font-size:11px !important;
+	line-height:20px;
+	}
 
-.webpeptideshakertheme .v-verticallayout-datasetproteinstablestyle .v-caption-framedpanel .v-captiontext {
+.v-slot-datasetproteinstablestyle  .v-captiontext {
 	position: relative;
-	top: -1px !important;
+	top: -5px !important;
+        font-size: 12px !important;
 }
 
 .webpeptideshakertheme .searchtablecontainer .v-label, .webpeptideshakertheme .searchtablecontainer .smallundecorated.v-label-smallundecorated {
 	text-align: center;
 	max-width: 300px;
-	font-size: 15px !important;
+	font-size: 11px !important;
 	color: gray !important;
 	margin-top: 2px;
 	font-weight: bold !important;
@@ -14473,9 +14493,10 @@ div.v-layout.v-horizontal.v-widget {
 	width: 140px !important;
 	text-overflow: ellipsis !important;
 	overflow: hidden !important;
-	border-width: 2px;
+	border-width: 1px;
 	z-index: 3 !important;
 	position: relative !important;
+        font-size: 10px !important;
 }
 
 .webpeptideshakertheme .v-horizontallayout-searchtablecontainer .v-label {
@@ -14701,16 +14722,11 @@ div.v-layout.v-horizontal.v-widget {
 	width: 180% !important;
 }
 
-.webpeptideshakertheme .v-button-icon-only.v-button-tiny {
-	color: gray !important;
-	padding: 0px !important;
-	font-size: 15px;
-	text-align: center;
-	font-weight: bold;
-}
+
 
 .webpeptideshakertheme .v-button-icon-only.v-button-tiny:hover {
 	color: black !important;
+        cursor: pointer;
 }
 
 .webpeptideshakertheme .v-slot-centeredtext {
@@ -14863,7 +14879,8 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .rangeslider .v-slider-handle:before {
 	height: 20px !important;
-	width: 20px !important;
+	width: 5px !important;
+	cursor: pointer;
 }
 
 .webpeptideshakertheme .rangeslider .v-slider-handle:before, .webpeptideshakertheme .rangeslider .v-slider-handle:after {
@@ -15098,7 +15115,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .stacked center {
-	margin-top: 5px;
+	margin-top: 3px;
 	line-height: 10px;
 }
 
@@ -15189,11 +15206,11 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .resizeabletext {
-	font-size: 12px;
+	font-size: 10px;
 }
 
 .webpeptideshakertheme .legenditem {
-	font-size: 11px;
+	font-size: 10px;
 	height: 20px !important;
 }
 
@@ -15274,8 +15291,8 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .v-verticallayout-inframe .v-select-optiongroup {
 	margin-top: -4px;
-        z-index:2 !important;
-	position:relative !important;
+	z-index: 2 !important;
+	position: relative !important;
 }
 
 .webpeptideshakertheme .v-verticallayout-inframe .v-select-optiongroup label {
@@ -15310,17 +15327,12 @@ div.v-layout.v-horizontal.v-widget {
 	cursor: pointer;
 }
 
- .v-absolutelayout-wrapper-proteincoverage{
-        padding-left:25px !important;
-        padding-right:25px !important;
-       background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='15px' width='25px'><text  style='font-family:sans-serif;' x='8.5' y='12' fill='gray' font-size='12px'>N</text></svg>"), url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='15px' width='25px'><text style='font-family:sans-serif;' x='8.5' y='12' fill='gray' font-size='12px'>C</text></svg>");
+.webpeptideshakertheme .v-absolutelayout-wrapper-proteincoverage {
+	padding-left: 25px !important;
+	padding-right: 25px !important;
+	background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='15px' width='25px'><text  style='font-family:sans-serif;' x='8.5' y='12' fill='gray' font-size='12px'>N</text></svg>"), url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='15px' width='25px'><text style='font-family:sans-serif;' x='8.5' y='12' fill='gray' font-size='12px'>C</text></svg>");
 	background-repeat: no-repeat;
 	background-position: 0px 50%, right 0px top 50%;
-
-    }
-    .graymiddleline{
-	background-color:gray;
-	margin-top:-1px;
 }
 
 .webpeptideshakertheme .peptidecoverage {
@@ -16452,7 +16464,7 @@ div.v-layout.v-horizontal.v-widget {
 .webpeptideshakertheme .smallscreenstyle .v-label-frametitle {
 	padding-left: 10px;
 	padding-top: 20px;
-	font-size: 14px;
+	font-size: 13px;
 	font-weight: bold;
 	font-family: "Open Sans", sans-serif;
 	color: #464646;
@@ -16547,8 +16559,8 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .v-slot-cornerfiltercontainerstyle {
-	min-width: 300px;
-	min-height: 350px;
+	 min-width:190px;
+        min-height:250px;
 }
 
 .webpeptideshakertheme .v-absolutelayout-wrapper-innerborderframe {
@@ -16831,6 +16843,7 @@ div.v-layout.v-horizontal.v-widget {
 	position: fixed !important;
 	margin-left: -50px;
 	background-color: white !important;
+        display: none;
 }
 
 .webpeptideshakertheme .v-slot-welcomepagstyle .v-absolutelayout-presentercontainer.v-absolutelayout-bigmenubtn {
@@ -17067,7 +17080,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .smallscreenstyle .searchtablecontainer .v-label, .webpeptideshakertheme .smallscreenstyle .searchtablecontainer .smallundecorated.v-label-smallundecorated {
-	font-size: 12px !important;
+	font-size: 11px !important;
 	color: gray !important;
 }
 
@@ -17083,7 +17096,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .smallscreenstyle .searchtablecontainer .v-textfield {
-	font-size: 12px !important;
+	font-size: 10px !important;
 	text-align: middle !important;
 	position: relative !important;
 	max-height: 20px !important;
@@ -17155,7 +17168,7 @@ div.v-layout.v-horizontal.v-widget {
 .webpeptideshakertheme .useroverviewpanelstyle {
 	border-right: 1px solid lightgray;
 	margin-left: 20px;
-	min-height: 400px;
+	min-height: 330px;
 }
 
 .webpeptideshakertheme .v-slot-clickableimg {
@@ -17179,7 +17192,7 @@ div.v-layout.v-horizontal.v-widget {
 	border-radius: 5px;
 	background-color: whitesmoke;
 	float: left;
-	padding: 15px;
+	padding: 10px;
 }
 
 .webpeptideshakertheme .btnwithtext .v-label {
@@ -17347,7 +17360,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .galaxylabel img {
-	padding: 20px !important;
+	padding: 15px !important;
 }
 
 .webpeptideshakertheme .psprojectname {
@@ -17569,6 +17582,61 @@ div.v-layout.v-horizontal.v-widget {
 	color: #1b7de1;
 }
 
+.webpeptideshakertheme .dsoverview .v-button, .webpeptideshakertheme .dsoverview .v-slot-icon-align-right div:hover {
+	color: transparent !important;
+	cursor: default !important;
+}
+.v-button-icon-only.v-button-tiny, .dsoverview .v-button-icon-only.v-button-tiny{
+	color: gray !important;
+	padding: 0px !important;
+	font-size: 15px;
+	text-align: center;
+	font-weight: bold;
+          cursor: pointer !important;
+}
+
+
+.webpeptideshakertheme .dsoverview .subpanelframe .v-button-icon-align-right .v-button-caption {
+	color: #474747 !important;
+}
+
+.webpeptideshakertheme .dsoverview label, .webpeptideshakertheme .dsoverview {
+	cursor: default !important;
+}
+
+.webpeptideshakertheme .dsoverview .v-checkbox.v-disabled > label, .webpeptideshakertheme .dsoverview .v-checkbox.v-disabled > .v-icon {
+	opacity: 1 !important;
+}
+
+.webpeptideshakertheme .dropdowntolabel .v-filterselect [class*="input"] {
+	color: gray !important;
+	position: relative !important;
+	font-weight: 1000;
+}
+
+.webpeptideshakertheme .dropdowntolabel .v-filterselect [class$="button"] {
+	border: none !important;
+}
+
+.webpeptideshakertheme .dropdowntolabel .v-filterselect [class$="button"]:before {
+	display: none;
+}
+
+.webpeptideshakertheme .dropdowntolabel .v-filterselect-no-input [class*="input"] {
+	background: transparent;
+	cursor: default;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+	border: 1px solid lightgray;
+	text-shadow: inherit;
+	text-overflow: ellipsis;
+	border-radius: inherit;
+}
+
+.webpeptideshakertheme .dropdowntolabel .v-filterselect.v-disabled {
+	opacity: 1 !important;
+}
+
 .webpeptideshakertheme .v-slot-bordertopseparator {
 	border-top: 1px solid lightgray;
 	margin-top: 10px;
@@ -17763,16 +17831,16 @@ div.v-layout.v-horizontal.v-widget {
 	height: 15px !important;
 	border-radius: 2px;
 	text-align: center;
-	font-size: 12px;
+	font-size: 10px;
 	line-height: 15px;
-	font-weight: 800;
+	font-weight: 100;
 	color: white;
 	margin-right: 5px;
 }
 
 .webpeptideshakertheme .venndiagramlegend font {
 	margin-left: 5px;
-	font-weight: 800;
+	font-weight: 500;
 }
 
 .webpeptideshakertheme .v-label-venndiagramlegend .v-icon {
@@ -17892,22 +17960,83 @@ div.v-layout.v-horizontal.v-widget {
 .webpeptideshakertheme .v-align-center .btninframe {
 	top: 2px !important;
 }
-.protein3dstructurecoverage .v-label {
-text-align:center;
-line-height:30px;
-font-family:sans-serif;
-font-size:12px !important;
-color:gray;
-text-transform:uppercase;
+
+.webpeptideshakertheme .protein3dstructurecoverage .v-label {
+	text-align: center;
+	line-height: 30px;
+	font-family: sans-serif;
+	font-size: 12px !important;
+	color: gray;
+	text-transform: uppercase;
 }
-.coveragecompoenent {
-	background-color:whitesmoke;
-	border:1px solid lightgray;
-	margin-top:7px;
-	margin-bottom:5px;
-	max-height:15px;
+
+.webpeptideshakertheme .graymiddleline {
+	background-color: gray;
+	margin-top: -1px;
 }
-.heighlightcoverage{
-	background-color:lightgray;
-	border-color:gray;
+
+.webpeptideshakertheme .coveragecompoenent {
+	background-color: whitesmoke;
+	border: 1px solid lightgray;
+	margin-top: 7px;
+	margin-bottom: 5px;
+	max-height: 15px;
+}
+
+.webpeptideshakertheme .heighlightcoverage {
+	background-color: lightgray;
+	border-color: gray;
+}
+
+.webpeptideshakertheme .psmlegendrangeconatainer .v-horizontal {
+	background-color: transparent !important;
+	min-width: 250px;
+	left: 50%;
+	margin-left: -125px;
+	font-size: 15px !important;
+}
+
+.webpeptideshakertheme .psmlegendrangeconatainer center {
+	font-size: 15px !important;
+}
+
+.webpeptideshakertheme .v-verticallayout-psmlegendrangeconatainer {
+	margin-top: -30px;
+	max-height: 0px !important;
+}
+
+.webpeptideshakertheme .v-verticallayout-modificationlegendconatiner {
+	margin-bottom: 10px;
+}
+
+.webpeptideshakertheme .modificationlegendconatiner .peptidenode .v-label, .webpeptideshakertheme .modificationlegendconatiner .v-verticallayout {
+	margin-left: 0px !important;
+	cursor: default !important;
+}
+
+.webpeptideshakertheme .litemolcontainer {
+	background-image: url("img/litemoldarksm.png");
+	background-size: 200px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.webpeptideshakertheme .nomargintop {
+	margin-top: 15px !important;
+}
+.v-table-framedpanel .v-table-caption-container{
+	font-size:12px;
+}
+
+.framedpanel .v-table-header-wrap {
+	max-height:25px !important;
+padding-left:1.3px;
+}
+.framedpanel .v-table-header-wrap div{
+	line-height:5px;
+	
+
+}
+.framedpanel  .v-table-sort-indicator{
+	line-height:20px !important;
 }

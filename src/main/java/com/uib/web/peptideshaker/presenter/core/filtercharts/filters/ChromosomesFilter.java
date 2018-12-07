@@ -89,11 +89,11 @@ public abstract class ChromosomesFilter extends AbsoluteLayout implements Regist
 
             }
         };
-        removeFilterBtn.setWidth(24, Unit.PIXELS);
-        removeFilterBtn.setHeight(24, Unit.PIXELS);
+        removeFilterBtn.setWidth(15, Unit.PIXELS);
+        removeFilterBtn.setHeight(15, Unit.PIXELS);
         removeFilterBtn.setVisible(false);
         removeFilterBtn.addStyleName("btninframe");
-        ChromosomesFilter.this.addComponent(removeFilterBtn, "right:23px;top:5px;");
+        ChromosomesFilter.this.addComponent(removeFilterBtn, "right:14px;top:5px;");
         
 
         mainFilterPanel = new Panel();
@@ -192,7 +192,7 @@ public abstract class ChromosomesFilter extends AbsoluteLayout implements Regist
             ChromosomesFilter.this.removeComponent(colorGenerator.getColorScale());
         }
         colorGenerator = new RangeColorGenerator(treeSet.last());
-        frame.addComponent(colorGenerator.getColorScale(), "top:20;right:30px");
+        frame.addComponent(colorGenerator.getColorScale(), "left:90px;top:12;right:20px");
         updateChromosomesLabelsColor();
 
     }
@@ -224,7 +224,7 @@ public abstract class ChromosomesFilter extends AbsoluteLayout implements Regist
                     frame.removeComponent(colorGenerator.getColorScale());
                 }
                 colorGenerator = new RangeColorGenerator(treeSet.last());
-                frame.addComponent(colorGenerator.getColorScale(), "top:15;right:30px");
+                frame.addComponent(colorGenerator.getColorScale(), "left:90px;top:12;right:20px");
                 updateChromosomesLabelsColor();
 
             }

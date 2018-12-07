@@ -11,8 +11,9 @@ import com.vaadin.ui.VerticalLayout;
  *
  * @author Yehia Farag
  */
-public class ValidationLabel extends VerticalLayout {
+public class ValidationLabel extends VerticalLayout implements Comparable<ValidationLabel>{
 private final Label icon;
+private final Integer sortIndex;
     public ValidationLabel(String validation) {
         ValidationLabel.this.setSizeFull();
         this.icon = new Label();
@@ -21,20 +22,29 @@ private final Label icon;
         this.icon.setContentMode(ContentMode.HTML);
         ValidationLabel.this.addComponent(icon);
         ValidationLabel.this.setComponentAlignment(icon, Alignment.TOP_CENTER);
-        if (validation.equalsIgnoreCase("confident")) {
+        if (validation.trim().equalsIgnoreCase("confident")) {
             ValidationLabel.this.setStyleName("validlabel");
             this.icon.setValue(VaadinIcons.CHECK_CIRCLE.getHtml());
+            sortIndex=0;
 
-        } else if (validation.equalsIgnoreCase("doubtful")) {
+        } else if (validation.trim().equalsIgnoreCase("doubtful")) {
             ValidationLabel.this.setStyleName("doubtfullabel");
             this.icon.setValue(VaadinIcons.WARNING.getHtml());
+             sortIndex=1;
 
         } else {
             ValidationLabel.this.setStyleName("notvalidlabel");
             this.icon.setValue(VaadinIcons.CLOSE_CIRCLE.getHtml());
+             sortIndex=2;
         }
         ValidationLabel.this.setDescription(validation);
 
     }
+
+    @Override
+    public int compareTo(ValidationLabel t) {
+        return t.sortIndex.compareTo(sortIndex);
+    }
+    
 
 }

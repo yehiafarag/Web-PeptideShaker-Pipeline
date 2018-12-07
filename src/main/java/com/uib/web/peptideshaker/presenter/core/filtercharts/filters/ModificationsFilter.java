@@ -66,11 +66,11 @@ public class ModificationsFilter extends AbsoluteLayout implements RegistrableFi
                 applyFilter(null);
             }
         };
-        resetFilterbtn.setWidth(24, Unit.PIXELS);
-        resetFilterbtn.setHeight(24, Unit.PIXELS);
+        resetFilterbtn.setWidth(15, Unit.PIXELS);
+        resetFilterbtn.setHeight(15, Unit.PIXELS);
         resetFilterbtn.setVisible(false);
         resetFilterbtn.addStyleName("btninframe");
-        ModificationsFilter.this.addComponent(resetFilterbtn, "right:23px;top:-1px;");
+        ModificationsFilter.this.addComponent(resetFilterbtn, "right:14px;top:-1px;");
 
         this.matrixDiagram = new MatrixDiagramRedraw() {
             @Override

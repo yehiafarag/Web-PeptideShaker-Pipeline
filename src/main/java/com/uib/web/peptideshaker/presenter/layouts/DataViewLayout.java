@@ -1,5 +1,6 @@
 package com.uib.web.peptideshaker.presenter.layouts;
 
+import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyFileObject;
 import com.uib.web.peptideshaker.presenter.core.DatasetOverviewLayout;
@@ -266,15 +267,30 @@ public abstract class DataViewLayout extends Panel {
 
                 };
                 infoLabel.setIcon(VaadinIcons.INFO_CIRCLE_O);
-                DatasetOverviewLayout dsOverview = new DatasetOverviewLayout((PeptideShakerVisualizationDataset) ds) {
+//                DatasetOverviewLayout dsOverview = new DatasetOverviewLayout((PeptideShakerVisualizationDataset) ds) {
+//                    private final PopupWindow tDsOverview = (PopupWindow) infoLabel;
+//
+//                    @Override
+//                    public void close() {
+//                        ((PopupWindow) tDsOverview).setPopupVisible(false);
+//                    }
+//
+//                };
+                SearchSettingsLayout dsOverview = new SearchSettingsLayout((PeptideShakerVisualizationDataset) ds) {
                     private final PopupWindow tDsOverview = (PopupWindow) infoLabel;
 
                     @Override
-                    public void close() {
+                    public void saveSearchingFile(SearchParameters searchParameters, boolean isNew) {
+                        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                    }
+
+                    @Override
+                    public void cancel() {
                         ((PopupWindow) tDsOverview).setPopupVisible(false);
                     }
 
                 };
+
                 ((PeptideShakerVisualizationDataset) ds).setEnzyme(dsOverview.getEnzyme());
                 ((PopupWindow) infoLabel).setContent(dsOverview);
                 ((PopupWindow) infoLabel).setDescription("View searching settings ");

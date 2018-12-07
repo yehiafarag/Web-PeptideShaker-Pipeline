@@ -555,11 +555,11 @@ private Set<String> csf_pr_Accssion_List;
                         file.setDownloadUrl(ds.getDownloadUrl());
                         file.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
                         file.setAvailableOnNels(NeLSFilesMap.containsKey(file.getNelsKey()));
-                        try {
-                            file.getFile();
-                        } catch (IOException ex) {
-                            ex.printStackTrace();
-                        }
+//                        try {
+//                            file.getFile();
+//                        } catch (IOException ex) {
+//                            ex.printStackTrace();
+//                        }
                         this.searchSettingsFilesMap.put(ds.getGalaxyId(), file);
                         file.setSize(sizeinMB);
                         file.setCreate_time(ds.getCreate_time());

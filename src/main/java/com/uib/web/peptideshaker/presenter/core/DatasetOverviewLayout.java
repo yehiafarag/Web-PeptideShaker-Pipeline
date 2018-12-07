@@ -101,27 +101,6 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
         titleLayout.addComponent(closeIconBtn);
         titleLayout.setComponentAlignment(closeIconBtn, Alignment.TOP_RIGHT);
 
-//        HorizontalLayout overviewPanel = new HorizontalLayout();
-//        overviewPanel.setSizeFull();
-//        overviewPanel.addStyleName("subpanelframe");
-//        DatasetOverviewLayout.this.addComponent(overviewPanel);
-//        HorizontalLayout topUpper = new HorizontalLayout();
-//        topUpper.setSizeFull();
-//        topUpper.setSpacing(true);
-//        overviewPanel.addComponent(topUpper);
-//
-//        Horizontal2Label proteinsNumber = new Horizontal2Label("#Proteins:", dataset.getProteinsNumber() + "");//new Label("#Proteins: <font style='text-align:right;'>" + dataset.getProteinsNumber() + "</font>");
-//        topUpper.addComponent(proteinsNumber);
-//        topUpper.setComponentAlignment(proteinsNumber, Alignment.MIDDLE_CENTER);
-//        Horizontal2Label peptidesNumber = new Horizontal2Label("#Peptides:", dataset.getPeptidesNumber() + "");//new Label("#Peptides: <font style='text-align:right;'>" + dataset.getPeptidesNumber()+ "</font>");
-//
-//        topUpper.addComponent(peptidesNumber);
-//        topUpper.setComponentAlignment(peptidesNumber, Alignment.MIDDLE_CENTER);
-//
-//        Horizontal2Label PSMNumber = new Horizontal2Label("#PSM:", dataset.getPsmNumber() + "");//new Label("#Peptides: <font style='text-align:right;'>" + dataset.getPeptidesNumber()+ "</font>");
-//
-//        topUpper.addComponent(PSMNumber);
-//        topUpper.setComponentAlignment(PSMNumber, Alignment.MIDDLE_CENTER);
         VerticalLayout upperPanel = new VerticalLayout();
         upperPanel.setWidth(100, Unit.PERCENTAGE);
         upperPanel.addStyleName("subpanelframe");

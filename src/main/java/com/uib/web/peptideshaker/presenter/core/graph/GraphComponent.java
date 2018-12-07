@@ -235,13 +235,11 @@ public abstract class GraphComponent extends VerticalLayout {
         proteinsControl.addStyleName(ValoTheme.OPTIONGROUP_SMALL);
         proteinsControl.addStyleName("smallertext");
         proteinsControl.addItem("Validation Status");
-        proteinsControl.addItem("Modification  Status");
+        proteinsControl.addItem("Modification Status");
         proteinsControl.addItem("Protein Evidence");
         proteinsControl.addItem("PSMNumber");
         proteinsControl.setItemCaption("PSMNumber", "#PSM");
         proteinsControl.addItem("Molecule Type");
-
-        proteinsControl.setValue("Molecule Type");
         lefTtopPanel.addComponent(proteinsControl);
 
         proteinsControlListener = (Property.ValueChangeEvent event) -> {
@@ -282,10 +280,13 @@ public abstract class GraphComponent extends VerticalLayout {
         sizeReporter.addResizeListener((ComponentResizeEvent event) -> {
             int tWidth = event.getWidth();
             int tHeight = event.getHeight();
-//            if (liveWidth == tWidth && liveHeight == tHeight || ignorResize) {
-//                ignorResize = false;
-//                return;
-//            }
+            
+             if (tWidth<100 || tHeight<100 ||(Math.abs(tWidth-liveWidth)<20 && Math.abs(tHeight-liveHeight)<20 )) {
+                return;
+            }
+            if (liveWidth == tWidth && liveHeight == tHeight ) {
+                return;
+            }
 //            ignorResize = true;
             liveWidth = tWidth;
             liveHeight = tHeight;

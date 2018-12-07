@@ -1,2 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Context path="/web-peptide-shaker"/>
+<Context path="/web-peptide-shaker" 
+         cookies="true"/>
+
