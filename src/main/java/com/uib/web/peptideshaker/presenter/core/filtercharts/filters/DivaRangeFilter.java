@@ -154,7 +154,7 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
         resetFilterBtn.setHeight(15, Unit.PIXELS);
         resetFilterBtn.setVisible(false);
         resetFilterBtn.addStyleName("btninframe");
-        DivaRangeFilter.this.addComponent(resetFilterBtn, "right:14px;top:0px;");
+        DivaRangeFilter.this.addComponent(resetFilterBtn, "top:0px;right:0px;");
 
     }
 

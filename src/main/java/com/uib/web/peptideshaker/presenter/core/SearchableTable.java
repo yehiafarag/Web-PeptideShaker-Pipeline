@@ -7,6 +7,7 @@ import com.vaadin.event.ShortcutAction;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.MultiSelectMode;
 import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -33,7 +34,7 @@ public abstract class SearchableTable extends AbsoluteLayout implements Property
     private boolean resetSearching = false;
     private final Map<String, String> tableSearchingMap;
     private final Table mainTable;
-    private Button searchBtn ;
+    private Button searchBtn;
 
     public SearchableTable(String title, String defaultSearchingMessage, TableColumnHeader[] tableHeaders) {
         SearchableTable.this.setSizeFull();
@@ -42,13 +43,11 @@ public abstract class SearchableTable extends AbsoluteLayout implements Property
         this.tableSearchingResults = new TreeMap<>();
         this.tableSearchingMap = new LinkedHashMap<>();
 
-     
-
         this.mainTable = initTable(tableHeaders);
-        SearchableTable.this.addComponent(mainTable,"top: 35px;left: 0px;");
-        
+        SearchableTable.this.addComponent(mainTable, "top: 35px;left: 0px;");
+
         HorizontalLayout serachComponent = initSearchComponentLayout(defaultSearchingMessage);
-        SearchableTable.this.addComponent(serachComponent,"top: 10px;right: 0px;");
+        SearchableTable.this.addComponent(serachComponent, "top: 10px;right: 0px;");
 
         this.tableData = new LinkedHashMap<>();
 
@@ -67,6 +66,7 @@ public abstract class SearchableTable extends AbsoluteLayout implements Property
         searchBtn.setWidth(20, Unit.PIXELS);
         searchBtn.setHeight(20, Unit.PIXELS);
         searchContainer.addComponent(searchBtn);
+        searchContainer.setComponentAlignment(searchBtn, Alignment.TOP_RIGHT);
         searchBtn.setClickShortcut(ShortcutAction.KeyCode.ENTER);
 
         final Button nextBtn = new Button(VaadinIcons.STEP_FORWARD) {
@@ -87,10 +87,11 @@ public abstract class SearchableTable extends AbsoluteLayout implements Property
         nextBtn.setWidth(20, Unit.PIXELS);
         nextBtn.setHeight(20, Unit.PIXELS);
         searchContainer.addComponent(nextBtn);
+        searchContainer.setComponentAlignment(nextBtn, Alignment.TOP_RIGHT);
 
         searchResultsLabel = new Label("0 of 0");
         searchContainer.addComponent(searchResultsLabel);
-        
+        searchContainer.setComponentAlignment(searchResultsLabel, Alignment.TOP_RIGHT);
 
         searchBtn.addClickListener((Button.ClickEvent event) -> {
             searchforKeyword(searchField.getSelectedValue().trim());
@@ -133,9 +134,9 @@ public abstract class SearchableTable extends AbsoluteLayout implements Property
     }
 
     private void searchforKeyword(String keyWord) {
-           tableSearchingResults.clear();
-            searchResultsLabel.setValue(0 + " of " + 0);
-        if (keyWord == null || keyWord.equalsIgnoreCase("")) {            
+        tableSearchingResults.clear();
+        searchResultsLabel.setValue(0 + " of " + 0);
+        if (keyWord == null || keyWord.equalsIgnoreCase("")) {
             mainTable.setValue(null);
             return;
 
@@ -153,6 +154,8 @@ public abstract class SearchableTable extends AbsoluteLayout implements Property
         }
 
     }
+
+    private boolean suspendColumnResizeListener;
 
     /**
      * Initialise the proteins table.
@@ -193,6 +196,9 @@ public abstract class SearchableTable extends AbsoluteLayout implements Property
 
         table.setColumnCollapsingAllowed(true);
         table.addColumnResizeListener((Table.ColumnResizeEvent event) -> {
+            if (suspendColumnResizeListener) {
+                return;
+            }
             table.setColumnWidth(event.getPropertyId(), event.getPreviousWidth());
         });
         table.setImmediate(true);
@@ -202,9 +208,16 @@ public abstract class SearchableTable extends AbsoluteLayout implements Property
         table.addHeaderClickListener((Table.HeaderClickEvent event) -> {
             sortTable(event.getPropertyId());
         });
-      
 
         return table;
+    }
+
+    public void suspendColumnResizeListener() {
+        suspendColumnResizeListener = true;
+    }
+
+    public void activateColumnResizeListener() {
+        suspendColumnResizeListener = false;
     }
 
     public void sortTable(Object id) {
@@ -346,7 +359,7 @@ public abstract class SearchableTable extends AbsoluteLayout implements Property
     public abstract void itemSelected(Object itemId);
 
     public void filterTable(Set<Comparable> objectIds) {
-      
+
         if ((objectIds == null || objectIds.isEmpty()) && this.mainTable.getItemIds().size() == tableData.size()) {
             return;
         }
@@ -376,8 +389,8 @@ public abstract class SearchableTable extends AbsoluteLayout implements Property
         } else {
             mainTable.select(null);
             itemSelected(null);
-        }  
-       searchBtn.click();
+        }
+        searchBtn.click();
 
     }
 

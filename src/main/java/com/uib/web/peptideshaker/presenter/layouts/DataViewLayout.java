@@ -3,7 +3,6 @@ package com.uib.web.peptideshaker.presenter.layouts;
 import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyFileObject;
-import com.uib.web.peptideshaker.presenter.core.DatasetOverviewLayout;
 import com.uib.web.peptideshaker.presenter.core.ActionLabel;
 import com.uib.web.peptideshaker.presenter.core.FileOverviewLayout;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
@@ -12,8 +11,10 @@ import com.uib.web.peptideshaker.presenter.core.Uploader;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Page;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -307,7 +308,14 @@ public abstract class DataViewLayout extends Panel {
 //
 //                };
                 infoLabel.addStyleName("centeredicon");
-                rowLayout = initializeRowData(new Component[]{new Label(i + ""), nameLabel, new Label(ds.getType()), infoLabel, getToGalaxyLabel, nelsLabel, downloadLabel, deleteLabel, statusLabel}, false);
+
+                //0psiconHRNS
+                Label type = new Label();
+                type.setIcon(new ThemeResource("img/psiconHRNS.png"));
+                type.setDescription(ds.getType());
+                type.setStyleName("smalliconlabel");
+
+                rowLayout = initializeRowData(new Component[]{new Label(i + ""), nameLabel, type, infoLabel, getToGalaxyLabel, nelsLabel, downloadLabel, deleteLabel, statusLabel}, false);
                 topDataTable.addComponent(rowLayout);
             } else {
                 infoLabel = new PopupWindow("   ") {
@@ -331,8 +339,17 @@ public abstract class DataViewLayout extends Panel {
                 ((PopupWindow) infoLabel).setDescription("View searching settings ");
 
                 nameLabel = new Label(ds.getName());
+
+                Label type = new Label();
+                if (ds.getType().contains("JSON")) {
+                    type.setValue("<b>JSON</b>");
+                } else {
+                    type.setValue("<b>" + ds.getType() + "</b>");
+                }
+                type.setContentMode(ContentMode.HTML);
+                type.setDescription(ds.getType());
 //                ((Label) nameLabel).setDescription(ds.getName());
-                rowLayout = initializeRowData(new Component[]{new Label(i + ""), nameLabel, new Label(ds.getType()), infoLabel, getToGalaxyLabel, nelsLabel, downloadLabel, deleteLabel, statusLabel}, false);
+                rowLayout = initializeRowData(new Component[]{new Label(i + ""), nameLabel, type, infoLabel, getToGalaxyLabel, nelsLabel, downloadLabel, deleteLabel, statusLabel}, false);
                 bottomDataTable.addComponent(rowLayout);
             }
 

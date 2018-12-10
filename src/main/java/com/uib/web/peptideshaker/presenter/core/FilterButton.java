@@ -8,7 +8,6 @@ package com.uib.web.peptideshaker.presenter.core;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Image;
-import com.vaadin.ui.Layout;
 import com.vaadin.ui.VerticalLayout;
 
 /**
@@ -23,8 +22,8 @@ public abstract class FilterButton extends VerticalLayout implements LayoutEvent
 
     public FilterButton() {
         FilterButton.this.setStyleName("btnlayout");
-        FilterButton.this.setWidth(20, Unit.PIXELS);
-        FilterButton.this.setHeight(20, Unit.PIXELS);
+        FilterButton.this.setWidth(22, Unit.PIXELS);
+        FilterButton.this.setHeight(22, Unit.PIXELS);
         icon = new Image();
         icon.setSizeFull(); 
         icon.setSource(activeBunResource);

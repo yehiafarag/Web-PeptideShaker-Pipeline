@@ -35,7 +35,7 @@ public abstract class ChromosomesFilter extends AbsoluteLayout implements Regist
     private final Panel mainFilterPanel;
     private final Label chartTitle;
 
-    private final FilterButton removeFilterBtn;
+    private final FilterButton resetFilterBtn;
 
     private final Set<Object> selectedCategories;
     private final Set<Comparable> appliedFilters;
@@ -82,18 +82,18 @@ public abstract class ChromosomesFilter extends AbsoluteLayout implements Regist
         chartTitle.setHeight(78, Unit.PIXELS);
         chartTitle.addStyleName("resizeabletext");
         frame.addComponent(chartTitle, "left:10px; top:10px;");
-        removeFilterBtn = new FilterButton() {
+        resetFilterBtn = new FilterButton() {
             @Override
             public void layoutClick(LayoutEvents.LayoutClickEvent event) {
                 applyFilter(null);
 
             }
         };
-        removeFilterBtn.setWidth(15, Unit.PIXELS);
-        removeFilterBtn.setHeight(15, Unit.PIXELS);
-        removeFilterBtn.setVisible(false);
-        removeFilterBtn.addStyleName("btninframe");
-        ChromosomesFilter.this.addComponent(removeFilterBtn, "right:14px;top:5px;");
+//        resetFilterBtn.setWidth(10, Unit.PERCENTAGE);
+//        resetFilterBtn.setHeight(10, Unit.PERCENTAGE);
+        resetFilterBtn.setVisible(false);
+        resetFilterBtn.addStyleName("btninframe");
+        ChromosomesFilter.this.addComponent(resetFilterBtn, "top:5px;right:0px;");
         
 
         mainFilterPanel = new Panel();
@@ -192,7 +192,7 @@ public abstract class ChromosomesFilter extends AbsoluteLayout implements Regist
             ChromosomesFilter.this.removeComponent(colorGenerator.getColorScale());
         }
         colorGenerator = new RangeColorGenerator(treeSet.last());
-        frame.addComponent(colorGenerator.getColorScale(), "left:90px;top:12;right:20px");
+        frame.addComponent(colorGenerator.getColorScale(), "left:150px;top:12;right:35px");
         updateChromosomesLabelsColor();
 
     }
@@ -224,7 +224,7 @@ public abstract class ChromosomesFilter extends AbsoluteLayout implements Regist
                     frame.removeComponent(colorGenerator.getColorScale());
                 }
                 colorGenerator = new RangeColorGenerator(treeSet.last());
-                frame.addComponent(colorGenerator.getColorScale(), "left:90px;top:12;right:20px");
+                frame.addComponent(colorGenerator.getColorScale(), "left:150px;top:12;right:35px");
                 updateChromosomesLabelsColor();
 
             }
@@ -326,7 +326,7 @@ public abstract class ChromosomesFilter extends AbsoluteLayout implements Regist
     }
 
     private void setMainAppliedFilter(boolean mainAppliedFilter) {
-        removeFilterBtn.setVisible(mainAppliedFilter);
+        resetFilterBtn.setVisible(mainAppliedFilter);
         if (mainAppliedFilter) {
             this.addStyleName("highlightfilter");
         } else {

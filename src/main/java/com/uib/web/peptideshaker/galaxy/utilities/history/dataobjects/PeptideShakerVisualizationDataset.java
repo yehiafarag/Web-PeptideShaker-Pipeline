@@ -1302,7 +1302,6 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
             try {//           
 //                System.out.println("start loading peptides");
                 File f = peptides_file.getFile();              
-            System.out.println("peptide file can"+f.exists()+"  "+f.canRead());
                 bufferedReader = new BufferedReader(new FileReader(f), 1024 * 100);
                 String line;
                 /**

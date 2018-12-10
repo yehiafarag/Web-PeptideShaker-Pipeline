@@ -1,6 +1,9 @@
 package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components;
 
 import com.compomics.util.experiment.biology.PTMFactory;
+import com.ejt.vaadin.sizereporter.ComponentResizeEvent;
+import com.ejt.vaadin.sizereporter.ComponentResizeListener;
+import com.ejt.vaadin.sizereporter.SizeReporter;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.ProteinGroupObject;
 import com.uib.web.peptideshaker.model.core.AlphanumComparator;
@@ -57,7 +60,7 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
 
         this.datasetFiltersContainer = new FiltersContainer(Selection_Manager);
         DatasetVisulizationLevelComponent.this.addComponent(datasetFiltersContainer);
-         DatasetVisulizationLevelComponent.this.setExpandRatio(datasetFiltersContainer,0.60f);
+        DatasetVisulizationLevelComponent.this.setExpandRatio(datasetFiltersContainer, 0.60f);
 
         this.inferenceMap = new HashMap<>();
         this.inferenceMap.put("Single Protein", 1);
@@ -97,11 +100,49 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
         };
         this.proteinTableContainer.setStyleName("datasetproteinstablestyle");
         DatasetVisulizationLevelComponent.this.addComponent(proteinTableContainer);
-        DatasetVisulizationLevelComponent.this.setExpandRatio(proteinTableContainer,0.40f);
+        DatasetVisulizationLevelComponent.this.setExpandRatio(proteinTableContainer, 0.40f);
         Selection_Manager.RegistrDatasetsFilter(DatasetVisulizationLevelComponent.this);
         selectionListener = (event) -> {
             proteinTableContainer.getMainTable().setValue(((AbstractOrderedLayout) event.getComponent()).getData());
         };
+        SizeReporter reporter = new SizeReporter(proteinTableContainer.getMainTable());
+        reporter.addResizeListener(new ComponentResizeListener() {
+            private int lastWidth = -1;
+
+            @Override
+            public void sizeChanged(ComponentResizeEvent event) {
+                Table mainTable = proteinTableContainer.getMainTable();
+                if (mainTable.getItemIds().isEmpty() || event.getWidth() == lastWidth) {
+                    return;
+                }
+                
+
+                lastWidth = event.getWidth();
+                System.out.println("at resize is working and width is " + lastWidth);
+                double corrector = 1;
+                if (lastWidth < 780) {
+                    corrector = (double) lastWidth / 770.0;
+                    System.out.println("at  corrector is " + corrector);
+                }
+                proteinTableContainer.suspendColumnResizeListener();
+                mainTable.setColumnWidth("index", (int)(50*corrector));
+                mainTable.setColumnWidth("proteinInference", (int)(37*corrector));
+                mainTable.setColumnWidth("Accession",(int)( 60*corrector));
+                mainTable.setColumnWidth("csf",(int)( 50*corrector));
+                mainTable.setColumnWidth("coverage",(int)( 120*corrector));
+                mainTable.setColumnWidth("peptides_number",(int)( 120*corrector));
+                mainTable.setColumnWidth("psm_number", (int)(120*corrector));
+                mainTable.setColumnWidth("ms2Quant",(int)( 120*corrector));
+                mainTable.setColumnWidth("mwkDa", (int)(120*corrector));
+                mainTable.setColumnWidth("chromosom",(int)( 50*corrector));
+                mainTable.setColumnWidth("validation", (int)(32*corrector));
+                mainTable.setColumnWidth("confidence",(int)(120*corrector));
+                mainTable.setColumnWidth("chromosom",(int)( 37*corrector));
+                mainTable.setColumnWidth("Name",lastWidth-((int)( 775*corrector)));
+                 proteinTableContainer.activateColumnResizeListener();
+            }
+        });
+
     }
 
     public void updateData(PeptideShakerVisualizationDataset peptideShakerVisualizationDataset) {
@@ -151,6 +192,7 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
             mainTable.setColumnWidth("chromosom", 50);
             mainTable.setColumnWidth("validation", 32);
             mainTable.setColumnWidth("confidence", 120);
+            mainTable.setColumnWidth("chromosom", 37);
         }
 
         proteinTableContainer.resetTable();

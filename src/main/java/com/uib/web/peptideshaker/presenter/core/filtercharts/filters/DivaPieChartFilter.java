@@ -143,7 +143,7 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
          * ******************right panel*********************
          */
         rightLayout = new VerticalLayout();
-        rightLayout.setWidth(90, Unit.PIXELS);
+        rightLayout.setWidth(120, Unit.PIXELS);
         rightLayout.setHeight(100, Unit.PERCENTAGE);
         rightLayout.addStyleName("autooverflow");
         frame.addComponent(rightLayout, "top: 10px; right: 0px; bottom: 0px;");
@@ -219,7 +219,7 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
         resetFilterBtn.setHeight(15, Unit.PIXELS);
         resetFilterBtn.setVisible(false);
         resetFilterBtn.addStyleName("btninframe");
-        DivaPieChartFilter.this.addComponent(resetFilterBtn, "right:14px;top:0px;");
+        DivaPieChartFilter.this.addComponent(resetFilterBtn, "top:0px;right:0px;");
     }
 
     public void initializeFilterData(Map<String, Set<Comparable>> fullData, List<Color> colorsArr) {

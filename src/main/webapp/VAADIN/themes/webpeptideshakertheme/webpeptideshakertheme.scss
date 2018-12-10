@@ -862,7 +862,7 @@
     .largetitle .v-label,.v-link-largetitle, .v-label-largetitle {
         margin-top: 10px;
         margin-left: 25px;
-        font-size: 13px !important;
+        font-size: 15px !important;
         font-weight: normal !important;
         text-decoration:none !important;
         color: #3d84dc !important;
@@ -1216,29 +1216,27 @@
         border-radius: 100%;
     }
     .v-slot-searchtablecontainer {
-     max-width: 345px;
-	max-height: 4px !important;
-	float: right;
-	font-size:11px !important;
-	line-height:20px;
-        
+        max-width: 345px;
+        max-height: 4px !important;
+        float: right;
+        font-size:11px !important;
+        line-height:20px;
+
     }
     .v-verticallayout-datasetproteinstablestyle .v-slot-framedpanel{
-     
+
     }
-   
-        .searchtablecontainer {
-            width: 530px !important;
-            text-align: middle !important;
-            position: relative !important;
-            right:-35px;
-        }
-    
+
+    .searchtablecontainer {
+        text-align: middle !important;
+        position: relative !important;
+    }
+
     .v-slot-datasetproteinstablestyle  .v-captiontext {
-	position: relative;
-	top: -5px !important;
+        position: relative;
+        top: -5px !important;
         font-size: 12px !important;
-}
+    }
 
     .searchtablecontainer .v-label,  .searchtablecontainer .smallundecorated.v-label-smallundecorated {
         text-align: center;
@@ -1256,7 +1254,7 @@
         border-width: 1px;     
         z-index:3 !important;
         position:relative !important;
-                font-size: 10px !important;
+        font-size: 10px !important;
 
     }
     .v-horizontallayout-searchtablecontainer .v-label{
@@ -1267,11 +1265,11 @@
         color:gray;
 
     }
-    .searchtablecontainer .v-button-icon-only{;
-	float: right;
-	font-size:11px !important;
-	line-height:20px;
-	}
+    .searchtablecontainer .v-button-icon-only{
+        float: right;
+        font-size:11px !important;
+        line-height:20px;
+    }
     .v-slot-minwidth30{
         min-width:30px !important;
     }
@@ -1510,10 +1508,10 @@
         margin-left:-6px;
         width:180% !important;
     }
-    
+
     .v-button-icon-only.v-button-tiny:hover{
         color: black !important;
-         cursor: pointer;
+        cursor: pointer;
     }
     .v-slot-centeredtext{
         min-height:20px;	
@@ -1968,13 +1966,14 @@
     .marginleft-5{
         margin-left: -5px !important;
     }
-    .resizeabletext{
-        font-size: 10px;
-    }
-    .legenditem {
-        font-size: 10px;
-        height:20px !important;
-    }
+     .resizeabletext {
+	font-size: 1vh;
+}
+
+ .legenditem {
+	font-size: 1vmin;
+	height: 20px !important;
+}
     .v-slot-legenditem{
         min-width:20px !important;
         max-height: 20px;
@@ -4511,13 +4510,13 @@
         cursor:default !important;
     }
     .v-button-icon-only.v-button-tiny, .dsoverview .v-button-icon-only.v-button-tiny{
-	color: gray !important;
-	padding: 0px !important;
-	font-size: 15px;
-	text-align: center;
-	font-weight: bold;
+        color: gray !important;
+        padding: 0px !important;
+        font-size: 15px;
+        text-align: center;
+        font-weight: bold;
         cursor: pointer !important;
-}
+    }
 
     .dsoverview .subpanelframe .v-button-icon-align-right .v-button-caption{
         color:rgb(71, 71, 71) !important;
@@ -4629,17 +4628,22 @@
 
 
     .btninframe {
-        position: absolute !important;
-        z-index:5 !important;
-        margin: 0px !important;
-        padding: 0px !important;
-        border-top-color: white !important;
-        border-right-color: white !important;
-        border-top-left-radius: 0px !important;
-        border-bottom-right-radius: 0px !important;
+       	position: absolute !important;
+	z-index: 5 !important;
+	margin: 0px !important;
+	padding: 0px !important;
+	border-top-color: white !important;
+	border-right-color: white !important;
+	border-top-left-radius: 0px !important;
+	border-bottom-right-radius: 0px !important;
+	width:2vmin !important;
+	height:2vmin !important;
+	right:0px;
     }
     .btninframe .v-image{
         padding:10% !important;
+        
+	vertical-align:center !important;
 
     }
     .btninframe .v-image:hover{
@@ -4884,10 +4888,11 @@
         color:black;
         text-decoration:underline !important;
         text-decoration-color:orange !important;
+        font-size:11px;
     }
 
     .v-label-venndiagramlegend{
-        font-weight:bold!important;
+        font-weight:normal!important;
         text-align:justify !important;
         font-size:11px;
         cursor:pointer;
@@ -5043,21 +5048,42 @@
     .nomargintop{
         margin-top:15px !important;
     }
-    
-.v-table-framedpanel .v-table-caption-container{
+
+.v-table-framedpanel .v-table-caption-container {
+	font-size: 12px;
+	line-height:20px;
+	padding-top:0px;
+	overflow:visible;
+}
+ .framedpanel .v-table-header-wrap {
+	max-height: 25px !important;
+	min-height:25px !important;
+	padding-left: 0.0px;
+}
+
+ .framedpanel .v-table-sort-indicator {
+	line-height: 20px !important;
+}
+.chromosomefiltercontainerstyle{
+	max-height:150px !important;
+	bottom:5px !important;
+	position:absolute !important;;
+}
+.divapiechartcontainerstyle{
+	max-height:150px !important;
+	top:0px !important;
+	position:absolute !important;;
+}
+.correctresetbtn  .btninframe {
+	top:4px;
+}
+.v-caption-smalliconlabel img{
+	height:20px !important;
+
+}
+.row .v-label b{
+	color:gray ;
 	font-size:12px;
-}
-
-.framedpanel .v-table-header-wrap {
-	max-height:25px !important;
-padding-left:1.3px;
-}
-.framedpanel .v-table-header-wrap div{
-	line-height:5px;
-	
-
-}
-.framedpanel  .v-table-sort-indicator{
-	line-height:20px !important;
+	font-weight:normal !important;
 }
 }

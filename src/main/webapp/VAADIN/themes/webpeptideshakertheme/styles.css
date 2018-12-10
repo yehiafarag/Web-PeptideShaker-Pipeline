@@ -13751,7 +13751,7 @@ div.v-layout.v-horizontal.v-widget {
 .webpeptideshakertheme .frame {
 	border-radius: 5px;
 	padding: 10px !important;
-	min-height:500px;
+	min-height: 600px;
 	min-width: 650px;
 	background-color: white;
 }
@@ -14101,7 +14101,7 @@ div.v-layout.v-horizontal.v-widget {
 .webpeptideshakertheme .largetitle .v-label, .webpeptideshakertheme .v-link-largetitle, .webpeptideshakertheme .v-label-largetitle {
 	margin-top: 10px;
 	margin-left: 25px;
-	font-size: 13px !important;
+	font-size: 15px !important;
 	font-weight: normal !important;
 	text-decoration: none !important;
 	color: #3d84dc !important;
@@ -14204,7 +14204,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .v-table-framedpanel, .webpeptideshakertheme .v-table-framedpanel.v-table-borderless {
 	border: 1px solid lightgray;
-	font-size: 12px;
+	font-size: 11px;
 	font-weight: normal;
 }
 
@@ -14451,33 +14451,24 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .v-slot-searchtablecontainer {
-max-width: 345px;
+	max-width: 345px;
 	max-height: 4px !important;
 	float: right;
-	font-size:11px !important;
-	line-height:20px;
+	font-size: 11px !important;
+	line-height: 20px;
 }
 
-.webpeptideshakertheme .v-verticallayout-datasetproteinstablestyle .v-slot-framedpanel {
-	
-}
-
-.webpeptideshakertheme .searchtablecontainer .searchtablecontainer {
+.webpeptideshakertheme .searchtablecontainer {
 	width: 530px !important;
 	text-align: middle !important;
 	position: relative !important;
 	right: -35px;
 }
-.searchtablecontainer .v-button-icon-only{;
-	float: right;
-	font-size:11px !important;
-	line-height:20px;
-	}
 
-.v-slot-datasetproteinstablestyle  .v-captiontext {
+.webpeptideshakertheme .v-slot-datasetproteinstablestyle .v-captiontext {
 	position: relative;
 	top: -5px !important;
-        font-size: 12px !important;
+	font-size: 12px !important;
 }
 
 .webpeptideshakertheme .searchtablecontainer .v-label, .webpeptideshakertheme .searchtablecontainer .smallundecorated.v-label-smallundecorated {
@@ -14496,7 +14487,7 @@ max-width: 345px;
 	border-width: 1px;
 	z-index: 3 !important;
 	position: relative !important;
-        font-size: 10px !important;
+	font-size: 10px !important;
 }
 
 .webpeptideshakertheme .v-horizontallayout-searchtablecontainer .v-label {
@@ -14506,6 +14497,12 @@ max-width: 345px;
 .webpeptideshakertheme .searchtablecontainer .v-button {
 	margin-left: 5px !important;
 	color: gray;
+}
+
+.webpeptideshakertheme .searchtablecontainer .v-button-icon-only {
+	float: right;
+	font-size: 11px !important;
+	line-height: 20px;
 }
 
 .webpeptideshakertheme .v-slot-minwidth30 {
@@ -14722,11 +14719,9 @@ max-width: 345px;
 	width: 180% !important;
 }
 
-
-
 .webpeptideshakertheme .v-button-icon-only.v-button-tiny:hover {
 	color: black !important;
-        cursor: pointer;
+	cursor: pointer;
 }
 
 .webpeptideshakertheme .v-slot-centeredtext {
@@ -15206,11 +15201,11 @@ max-width: 345px;
 }
 
 .webpeptideshakertheme .resizeabletext {
-	font-size: 10px;
+	font-size: 1vh;
 }
 
 .webpeptideshakertheme .legenditem {
-	font-size: 10px;
+	font-size: 1vmin;
 	height: 20px !important;
 }
 
@@ -16463,8 +16458,8 @@ max-width: 345px;
 
 .webpeptideshakertheme .smallscreenstyle .v-label-frametitle {
 	padding-left: 10px;
-	padding-top: 20px;
-	font-size: 13px;
+	padding-top: 13px;
+	font-size: 14px;
 	font-weight: bold;
 	font-family: "Open Sans", sans-serif;
 	color: #464646;
@@ -16559,8 +16554,8 @@ max-width: 345px;
 }
 
 .webpeptideshakertheme .v-slot-cornerfiltercontainerstyle {
-	 min-width:190px;
-        min-height:250px;
+	min-width: 190px;
+	min-height: 250px;
 }
 
 .webpeptideshakertheme .v-absolutelayout-wrapper-innerborderframe {
@@ -16843,7 +16838,7 @@ max-width: 345px;
 	position: fixed !important;
 	margin-left: -50px;
 	background-color: white !important;
-        display: none;
+	display: none;
 }
 
 .webpeptideshakertheme .v-slot-welcomepagstyle .v-absolutelayout-presentercontainer.v-absolutelayout-bigmenubtn {
@@ -17586,15 +17581,15 @@ max-width: 345px;
 	color: transparent !important;
 	cursor: default !important;
 }
-.v-button-icon-only.v-button-tiny, .dsoverview .v-button-icon-only.v-button-tiny{
+
+.webpeptideshakertheme .v-button-icon-only.v-button-tiny, .webpeptideshakertheme .dsoverview .v-button-icon-only.v-button-tiny {
 	color: gray !important;
 	padding: 0px !important;
 	font-size: 15px;
 	text-align: center;
 	font-weight: bold;
-          cursor: pointer !important;
+	cursor: pointer !important;
 }
-
 
 .webpeptideshakertheme .dsoverview .subpanelframe .v-button-icon-align-right .v-button-caption {
 	color: #474747 !important;
@@ -17664,10 +17659,14 @@ max-width: 345px;
 	border-right-color: white !important;
 	border-top-left-radius: 0px !important;
 	border-bottom-right-radius: 0px !important;
+	width: 2vmin !important;
+	height: 2vmin !important;
+	right: 0px;
 }
 
 .webpeptideshakertheme .btninframe .v-image {
 	padding: 10% !important;
+	vertical-align: center !important;
 }
 
 .webpeptideshakertheme .v-slot-toppanel {
@@ -17840,7 +17839,7 @@ max-width: 345px;
 
 .webpeptideshakertheme .venndiagramlegend font {
 	margin-left: 5px;
-	font-weight: 500;
+	font-weight: 100;
 }
 
 .webpeptideshakertheme .v-label-venndiagramlegend .v-icon {
@@ -17864,10 +17863,11 @@ max-width: 345px;
 	color: black;
 	text-decoration: underline !important;
 	text-decoration-color: orange !important;
+	font-size: 11px;
 }
 
 .webpeptideshakertheme .v-label-venndiagramlegend {
-	font-weight: bold !important;
+	font-weight: normal !important;
 	text-align: justify !important;
 	font-size: 11px;
 	cursor: pointer;
@@ -18024,19 +18024,46 @@ max-width: 345px;
 .webpeptideshakertheme .nomargintop {
 	margin-top: 15px !important;
 }
-.v-table-framedpanel .v-table-caption-container{
-	font-size:12px;
+
+.webpeptideshakertheme .v-table-framedpanel .v-table-caption-container {
+	font-size: 12px;
+	line-height: 20px;
+	padding-top: 0px;
+	overflow: visible;
 }
 
-.framedpanel .v-table-header-wrap {
-	max-height:25px !important;
-padding-left:1.3px;
+.webpeptideshakertheme .framedpanel .v-table-header-wrap {
+	max-height: 25px !important;
+	min-height: 25px !important;
+	padding-left: 0px;
 }
-.framedpanel .v-table-header-wrap div{
-	line-height:5px;
-	
 
+.webpeptideshakertheme .framedpanel .v-table-sort-indicator {
+	line-height: 20px !important;
 }
-.framedpanel  .v-table-sort-indicator{
-	line-height:20px !important;
+
+.webpeptideshakertheme .chromosomefiltercontainerstyle {
+	max-height: 150px !important;
+	bottom: 5px !important;
+	position: absolute !important;
+}
+
+.webpeptideshakertheme .divapiechartcontainerstyle {
+	max-height: 150px !important;
+	top: 0px !important;
+	position: absolute !important;
+}
+
+.webpeptideshakertheme .correctresetbtn .btninframe {
+	top: 4px;
+}
+
+.webpeptideshakertheme .v-caption-smalliconlabel img {
+	height: 20px !important;
+}
+
+.webpeptideshakertheme .row .v-label b {
+	color: gray;
+	font-size: 12px;
+	font-weight: normal !important;
 }

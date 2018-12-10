@@ -60,10 +60,10 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
         FileSystemPresenter.this.setSizeFull();
         FileSystemPresenter.this.setStyleName("activelayout");
         FileSystemPresenter.this.addStyleName("hidelowerpanel");
-        
+
         this.smallControlButton = new SmallSideBtn(VaadinIcons.GLOBE);
         this.smallControlButton.setData(FileSystemPresenter.this.getViewId());
-        this.controlButton = new ButtonWithLabel("Data Overview</br><font>Available files and projects</font>",1);
+        this.controlButton = new ButtonWithLabel("Data Overview</br><font>Available files and projects</font>", 1);
         this.controlButton.updateIcon(VaadinIcons.GLOBE.getHtml());
         this.controlButton.setData(FileSystemPresenter.this.getViewId());
         this.controlButton.setDescription("View available datastes and files");
@@ -84,7 +84,7 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
         leftSideButtonsContainer.setSpacing(true);
         leftSideButtonsContainer.setMargin(new MarginInfo(false, false, true, false));
         leftSideButtonsContainer.addStyleName("singlebtn");
-        viewDataBtn = new BigSideBtn("Data Overview",1);
+        viewDataBtn = new BigSideBtn("Data Overview", 1);
         viewDataBtn.setDescription("Available datasets and files");
         viewDataBtn.updateIcon(VaadinIcons.GLOBE.getHtml());
         viewDataBtn.setData("datasetoverview");
@@ -162,11 +162,11 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
      */
     public void updateSystemData(Map<String, GalaxyFileObject> historyFilesMap, boolean jobInProgress) {
         if (jobInProgress) {
-             smallControlButton.updateIconURL("img/globeearthanimation.gif");
-            controlButton.updateIconResource(new ThemeResource("img/globeearthanimation.gif"));
-            viewDataBtn.updateIconResource(new ThemeResource("img/globeearthanimation.gif"));
+            smallControlButton.updateIconURL("img/globeearthanimation1.gif");
+            controlButton.updateIconResource(new ThemeResource("img/globeearthanimation1.gif"));
+            viewDataBtn.updateIconResource(new ThemeResource("img/globeearthanimation1.gif"));
         } else {
-             smallControlButton.updateIconURL(VaadinIcons.GLOBE);
+            smallControlButton.updateIconURL(VaadinIcons.GLOBE);
             controlButton.updateIcon(VaadinIcons.GLOBE.getHtml());
             viewDataBtn.updateIcon(VaadinIcons.GLOBE.getHtml());
         }
@@ -200,8 +200,6 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
     public ButtonWithLabel getLargePresenterControlButton() {
         return controlButton;
     }
-    
-    
 
     /**
      * Get the current view ID
@@ -232,7 +230,7 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
     public void maximizeView() {
         controlButton.setSelected(true);
         dataLayout.setEnabled(true);
-         smallControlButton.setSelected(true);
+        smallControlButton.setSelected(true);
         this.leftSideButtonsContainer.addStyleName("visible");
         this.removeStyleName("hidepanel");
 

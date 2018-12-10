@@ -174,6 +174,7 @@ public class FiltersContainer extends HorizontalLayout {
 
         filterRightPanelContainer.addComponent(coverageFilter);
         coverageFilter.addStyleName("bottomfilter");
+        coverageFilter.addStyleName("correctresetbtn");
         filterRightPanelContainer.setComponentAlignment(coverageFilter, Alignment.TOP_RIGHT);
     }
     private final Color[] colorsArr = new Color[]{Color.DARK_GRAY, new Color(4, 180, 95), new Color(245, 226, 80), new Color(213, 8, 8), Color.ORANGE};

@@ -206,7 +206,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
      * Constructor to initialise the main setting parameters.
      */
     public SearchSettingsLayout(boolean overviewDataset) {
-        this.overviewDataset=overviewDataset;
+        this.overviewDataset = overviewDataset;
         SearchSettingsLayout.this.setMargin(true);
         SearchSettingsLayout.this.setHeightUndefined();
         SearchSettingsLayout.this.setWidth(630, Unit.PIXELS);
@@ -424,9 +424,13 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
      * @param dataset PeptideShakerVisulization dataset object
      */
     public SearchSettingsLayout(PeptideShakerVisualizationDataset dataset) {
+
         this(true);
+        if (!dataset.getStatus().equalsIgnoreCase("ok")) {
+            return;
+        }
         dataset.getFixedModification();
-       dataset.getVariableModification();
+        dataset.getVariableModification();
         SearchSettingsLayout.this.addStyleName("dsoverview");
         SearchSettingsLayout.this.updateForms(dataset.getSearchingParameters().getSearchParameters(), null);
         titleLabel.setValue(dataset.getName().split("___")[0] + " <i style='color: gray;font-size: 12px;'>(" + dataset.getCreateTime() + ")</i>");
@@ -446,8 +450,8 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         fastaFileList.updateList(fastaFileIdToNameMap);
         fastaFileList.setSelected(dataset.getFastaFileName());
         fastaFileList.setEnabled(false);
-       dataset.getFixedModification();
-       dataset.getVariableModification();
+        dataset.getFixedModification();
+        dataset.getVariableModification();
 
     }
 
