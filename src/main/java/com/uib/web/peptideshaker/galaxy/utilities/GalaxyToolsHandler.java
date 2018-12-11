@@ -493,7 +493,6 @@ public abstract class GalaxyToolsHandler {
                     }
                 } else {
                     for (String mgfId : mgfIdsList.keySet()) {
-                        System.out.println("at mgf  greater file id " + mgfId);
                         this.reIndexFile(mgfId, projectName + "-" + mgfId + "-" + (index++) + "-MGFFile", historyId);
                     }
                 }
