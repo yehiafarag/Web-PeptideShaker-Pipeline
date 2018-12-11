@@ -163,12 +163,12 @@ public abstract class GalaxyToolsHandler {
                     }
                 }
 
-                if (peptideShaker_Tool != null && search_GUI_Tool != null && nelsExporter_Tool_Id != null) {
-                    validToolsAvailable = true;
-                    nelsSupport = true;
-                } else if (peptideShaker_Tool != null && search_GUI_Tool != null) {
-                    validToolsAvailable = true;
-                }
+            }
+            if (peptideShaker_Tool != null && search_GUI_Tool != null && nelsExporter_Tool_Id != null) {
+                validToolsAvailable = true;
+                nelsSupport = true;
+            } else if (peptideShaker_Tool != null && search_GUI_Tool != null) {
+                validToolsAvailable = true;
             }
         } catch (Exception e) {
             if (e.toString().contains("Service Temporarily Unavailable")) {
@@ -410,7 +410,7 @@ public abstract class GalaxyToolsHandler {
             /**
              * @todo: find better way to override the search parameters ?
              */
-            json = json.replace("3.3.5", search_GUI_Tool.getVersion().trim()); 
+            json = json.replace("3.3.5", search_GUI_Tool.getVersion().trim());
 //            json = json.replace("3.3.3.0", search_GUI_Tool.getVersion().trim()); //for multi mgf workflow
             json = json.replace("SearchGUI_Label", projectName + "-SearchGUI Results").replace("ZIP_Label", projectName + "-ZIP");
             String createDecoy = searchParameters.getFastaFile().getName().split("__")[2];

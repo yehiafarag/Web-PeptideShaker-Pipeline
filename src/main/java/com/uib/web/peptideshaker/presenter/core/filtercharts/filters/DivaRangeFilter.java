@@ -341,9 +341,16 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
         Selection_Manager.setSelection("dataset_filter_selection", filter, null, filterId);
     }
 
+    
+    private Set<Comparable> lastselectedItems=new LinkedHashSet<>();
+    private Set<Comparable> lastselectedCategories = new LinkedHashSet<>();
     @Override
     public void updateFilterSelection(Set<Comparable> selectedItems, Set<Comparable> selectedCategories, boolean topFilter, boolean singleProteinsFilter, boolean selfAction) {
+        System.out.println("at booleans repaeated "+(lastselectedItems.containsAll(selectedItems)&&lastselectedCategories.containsAll(selectedCategories)&&selectedCategories.containsAll(lastselectedCategories)&&selectedItems.containsAll(lastselectedItems)));
 
+        lastselectedItems=selectedItems;
+        lastselectedCategories=selectedCategories;
+        System.out.println("at update the chart value change inside range filter "+selectedItems);
         if (!selfAction) {
             if (selectedItems == null || selectedItems.isEmpty()) {
 //                filterGridContainer.setVisible(false);
@@ -455,8 +462,8 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
     }
 
     @Override
-    public void valueChange(Property.ValueChangeEvent event
-    ) {
+    public void valueChange(Property.ValueChangeEvent event) {
+        
         valueChange();
     }
 
