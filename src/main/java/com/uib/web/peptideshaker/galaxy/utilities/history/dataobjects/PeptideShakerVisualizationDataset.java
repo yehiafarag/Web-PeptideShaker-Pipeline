@@ -1175,15 +1175,13 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
             String galaxyFileId = "";
             String galaxyHistoryId = "";
             for (GalaxyFileObject ds : inputMGFFiles.values()) {
-                System.out.println("at input file index "+ds.getName().split("-")[1]);
-                if (ds.getName().split("-")[1].equalsIgnoreCase(selectedPsm.getSpectrumFile())) {
+                if (ds.getName().split("-")[1].replace(".mgf","").equalsIgnoreCase(selectedPsm.getSpectrumFile().replace(".mgf",""))) {
                     galaxyFileId = ds.getGalaxyId();
                     galaxyHistoryId = ds.getHistoryId();
                     break;
                 }
             }
 
-            System.out.println("at here is the focos ---->>> "+mgfIndex.getIndex(selectedPsm.getSpectrumTitle())+","+ galaxyHistoryId+","+ galaxyFileId+","+ selectedPsm.getSpectrumFile());
             MSnSpectrum spectrum = galaxyDatasetServingUtil.getSpectrum(mgfIndex.getIndex(selectedPsm.getSpectrumTitle()), galaxyHistoryId, galaxyFileId, selectedPsm.getSpectrumFile());
 
             int tCharge = 0;
