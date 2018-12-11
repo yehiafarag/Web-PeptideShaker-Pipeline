@@ -173,6 +173,7 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
      */
     @Override
     public void maximizeView() {
+        
         smallControlButton.setSelected(true);
         controlButton.setSelected(true);
         this.btnContainer.addStyleName("visible");

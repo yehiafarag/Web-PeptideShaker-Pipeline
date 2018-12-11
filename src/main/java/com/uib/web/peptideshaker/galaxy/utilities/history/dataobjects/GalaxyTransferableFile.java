@@ -153,8 +153,6 @@ public class GalaxyTransferableFile extends GalaxyFileObject {
                 ZipEntry entry = Zis.getNextEntry();
                 while (entry != null && counter < 10) {
 
-                    System.out.println("at entry order " + entry.getName() + "  " + counter);
-
                     if (!entry.isDirectory() && entry.getName().equalsIgnoreCase("SEARCHGUI_IdentificationParameters.par")) //do something with entry  
                     {
                         try (ReadableByteChannel rbc = Channels.newChannel(Zis)) {
@@ -179,7 +177,7 @@ public class GalaxyTransferableFile extends GalaxyFileObject {
                     entry = Zis.getNextEntry();
                     counter++;
                 }
-                System.out.println("to test reader : " + (System.currentTimeMillis() - start) + "ms");
+                System.out.println("to test reader : "+ file.getName()+"  "+ (System.currentTimeMillis() - start) + "ms");
 
             } catch (MalformedURLException ex) {
             } finally {

@@ -478,6 +478,7 @@ public abstract class GalaxyToolsHandler {
             workflowInputs.setInput("1", input2);
 
             Thread t = new Thread(() -> {
+                
                 galaxyWorkFlowClient.runWorkflow(workflowInputs);
             });
             t.start();
@@ -486,8 +487,15 @@ public abstract class GalaxyToolsHandler {
              */
             Thread t1 = new Thread(() -> {
                 int index = 1;
-                for (String mgfId : mgfIdsList.keySet()) {
-                    this.reIndexFile(mgfId, projectName + "-" + mgfIdsList.get(mgfId) + "-" + (index++) + "-MGFFile", historyId);
+                if (mgfIdsList.size() == 1) {
+                    for (String mgfId : mgfIdsList.keySet()) {
+                        this.reIndexFile(mgfId, projectName + "-" + mgfIdsList.get(mgfId) + "-" + (index++) + "-MGFFile", historyId);
+                    }
+                } else {
+                    for (String mgfId : mgfIdsList.keySet()) {
+                        System.out.println("at mgf  greater file id " + mgfId);
+                        this.reIndexFile(mgfId, projectName + "-" + mgfId + "-" + (index++) + "-MGFFile", historyId);
+                    }
                 }
 
             });

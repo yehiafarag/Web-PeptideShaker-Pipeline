@@ -260,12 +260,7 @@
             <artifactId>jfreesvg</artifactId>
             <version>3.3</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/jazzlib/jazzlib -->
-        <dependency>
-            <groupId>jazzlib</groupId>
-            <artifactId>jazzlib</artifactId>
-            <version>0.0.7</version>
-        </dependency>
+       
     </dependencies>
 
    

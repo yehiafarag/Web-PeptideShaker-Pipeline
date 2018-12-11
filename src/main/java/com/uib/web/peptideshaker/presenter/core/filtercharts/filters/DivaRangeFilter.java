@@ -188,10 +188,6 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
 
         upperRangeSlider.addValueChangeListener(DivaRangeFilter.this);
         lowerRangeSlider.addValueChangeListener(DivaRangeFilter.this);
-//        selectedRangeValueLabelComponent.setValue("<center>" + (int) maxValue + "</center>");
-//        lowerLableValueComponent.setValue("<center>" + (int) min + "</center>");
-//        slidersContainer.addComponent(lowerLableValueComponent, "left:0px; top:0px;");
-//        slidersContainer.addComponent(selectedRangeValueLabelComponent, "right:0px; top:0px;");
         chartTitle.setValue("<font>" + title + "</font> [" + (int) min + " " + "&#x2014;" + " " + (int) maxValue + "] " + sign);
         activeData.putAll(data);
         updateChartDataset();
@@ -277,17 +273,6 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
         Rectangle r = new Rectangle(0, 0, width, height);
         chart.draw(g2, r);
         return g2.getSVGElement();
-//        byte imageData[];
-//        try {
-//            chart.getLegend().setVisible(false);
-//            imageData = ChartUtilities.encodeAsPNG(chart.createBufferedImage(width, height));
-//            String base64 = Base64.encodeBytes(imageData);
-//            base64 = "data:image/png;base64," + base64;
-//            return base64;
-//        } catch (IOException e) {
-//            System.err.println("at error " + e.getMessage());
-//        }
-//        return "";
     }
 
     public void valueChange() {
@@ -321,13 +306,6 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
             max = lowerRangeSlider.getValue();
 
         }
-
-//        slidersContainer.addComponent(lowerLableValueComponent, "left:" + (min * positionIndexFactro) + "%;top:0px;");
-//        if (min != max) {
-//            slidersContainer.addComponent(selectedRangeValueLabelComponent, "right:" + (100.0 - (max * positionIndexFactro)) + "%;top:0px;");
-//        }
-//        selectedRangeValueLabelComponent.setValue("<center>" + (int) max + "</center>");
-//        lowerLableValueComponent.setValue("<center>" + (int) min + "</center>");
         chartTitle.setValue("<font>" + title + "</font> [" + (int) min + " " + "&#x2014;" + " " + (int) max + "] " + sign);
         applyFilter(min, max);
 
@@ -341,40 +319,36 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
         Selection_Manager.setSelection("dataset_filter_selection", filter, null, filterId);
     }
 
-    
-    private Set<Comparable> lastselectedItems=new LinkedHashSet<>();
+    private Set<Comparable> lastselectedItems = new LinkedHashSet<>();
     private Set<Comparable> lastselectedCategories = new LinkedHashSet<>();
+
     @Override
     public void updateFilterSelection(Set<Comparable> selectedItems, Set<Comparable> selectedCategories, boolean topFilter, boolean singleProteinsFilter, boolean selfAction) {
-        System.out.println("at booleans repaeated "+(lastselectedItems.containsAll(selectedItems)&&lastselectedCategories.containsAll(selectedCategories)&&selectedCategories.containsAll(lastselectedCategories)&&selectedItems.containsAll(lastselectedItems)));
-
-        lastselectedItems=selectedItems;
-        lastselectedCategories=selectedCategories;
-        System.out.println("at update the chart value change inside range filter "+selectedItems);
+        if (selectedItems == null || selectedCategories == null || (lastselectedItems.containsAll(selectedItems) && lastselectedCategories.containsAll(selectedCategories) && selectedCategories.size() == lastselectedCategories.size() && selectedItems.size() == lastselectedItems.size())) {
+            return;
+        }
+        lastselectedItems = selectedItems;
+        lastselectedCategories = selectedCategories;
         if (!selfAction) {
-            if (selectedItems == null || selectedItems.isEmpty()) {
-//                filterGridContainer.setVisible(false);
-                System.out.println("its empty selection ");
+            if (selectedItems.isEmpty()) {
                 return;
             }
 
             if (singleProteinsFilter && !selectedCategories.isEmpty()) {
                 //reset filter value to oreginal 
-                System.out.println("resre range filter ");
                 initializeFilterData(this.data);
             } else {
                 TreeMap<Comparable, Set<Comparable>> tPieChartValues = new TreeMap<>();
-                for (Comparable key : data.keySet()) {
+                data.keySet().forEach((key) -> {
                     LinkedHashSet<Comparable> tSet = new LinkedHashSet<>(Sets.intersection(data.get(key), selectedItems));
                     if (!tSet.isEmpty()) {
                         tPieChartValues.put(key, new LinkedHashSet<>(Sets.intersection(data.get(key), selectedItems)));
                     }
-                }
-
+                });
                 initializeFilterData(tPieChartValues);
             }
         }
-        if (selectedCategories == null || selectedCategories.isEmpty()) {
+        if ( selectedCategories.isEmpty()) {
             if (chartWidth <= 0 || chartHeight <= 0) {
                 return;
             }
@@ -382,10 +356,7 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
             if (dataset.getSeriesCount() == 2) {
                 dataset.removeSeries(0);
             }
-            XYAreaRenderer renderer = (XYAreaRenderer) ((XYPlot) mainChart.getPlot()).getRenderer();
-
-            renderer.setSeriesPaint(0, new Color(211, 211, 211), true);
-            chartImage.setValue(saveToFile(mainChart, chartWidth, chartHeight));
+            redrawRangeOnChart(Math.min(lowerRangeSlider.getValue(), upperRangeSlider.getValue()), Math.max(lowerRangeSlider.getValue(), upperRangeSlider.getValue()), false);
             setMainAppliedFilter(false);
             return;
         }
@@ -401,21 +372,13 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
         }
         min = Math.max(min, tmin);
         max = Math.min(max, tmax);
-        redrawRangeOnChart(min, max);
+        redrawRangeOnChart(min, max, true);
         setMainAppliedFilter(topFilter);
     }
 
-    private Label initLabel(String labelValue) {
-        Label label = new Label("<center>" + labelValue + "</center>", ContentMode.HTML);
-        label.setStyleName(ValoTheme.LABEL_TINY);
-        label.addStyleName(ValoTheme.LABEL_SMALL);
-        label.setHeight(20, Unit.PIXELS);
-        label.setWidthUndefined();
-        return label;
+  
 
-    }
-
-    private void redrawRangeOnChart(double start, double end) {
+    private void redrawRangeOnChart(double start, double end, boolean highlight) {
         if (start != -1 && end != -1) {
             upperRangeSlider.removeValueChangeListener(DivaRangeFilter.this);
             lowerRangeSlider.removeValueChangeListener(DivaRangeFilter.this);
@@ -452,8 +415,11 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
         dataset.addSeries(series2);
         XYAreaRenderer renderer = (XYAreaRenderer) ((XYPlot) mainChart.getPlot()).getRenderer();
         renderer.setSeriesPaint(1, new Color(211, 211, 211), true);
-        renderer.setSeriesPaint(0, new Color(186, 213, 242), true);
-
+        if (highlight) {
+            renderer.setSeriesPaint(0, new Color(186, 213, 242), true);
+        } else {
+            renderer.setSeriesPaint(0, new Color(211, 211, 211), true);
+        }
         if (chartWidth <= 0 || chartHeight <= 0) {
             return;
         }
@@ -463,7 +429,7 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
 
     @Override
     public void valueChange(Property.ValueChangeEvent event) {
-        
+
         valueChange();
     }
 

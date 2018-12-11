@@ -192,8 +192,10 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
             Map<String, Boolean> selectedSearchEngines = new HashMap<>();
             searchEngienList.keySet().forEach((paramId) -> {
                 selectedSearchEngines.put(paramId, searchEngines.getSelectedValue().contains(paramId));
-            });
+            });;
             executeWorkFlow(projectName, fastFileId, spectrumIds, searchEnginesIds, searchSettingsLayout.getSearchParameters());
+            projectNameField.clear();
+
         });
         mgfFileList.setEnabled(false);
         searchEngines.setEnabled(false);
@@ -205,17 +207,17 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
                 if (searchSettingsFileList.getSelectedValue().equalsIgnoreCase("Add new")) {
                     String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
                     File file = new File(basepath + "/VAADIN/default_searching.par");
-                    SearchParameters searchParameters;
+                    SearchParameters tSearchParameters;
                     try {
-                        searchParameters = SearchParameters.getIdentificationParameters(file);
-                        searchParameters.setFastaFile(null);
+                        tSearchParameters = SearchParameters.getIdentificationParameters(file);
+                        tSearchParameters.setFastaFile(null);
                     } catch (IOException | ClassNotFoundException ex) {
 
                         ex.printStackTrace();
                         return;
                     }
-                    searchParameters.setDefaultAdvancedSettings();
-                    searchSettingsLayout.updateForms(searchParameters, null);
+                    tSearchParameters.setDefaultAdvancedSettings();
+                    searchSettingsLayout.updateForms(tSearchParameters, null);
                     editSearchOption.setPopupVisible(true);
                     searchSettingInfo.setValue("Add new searching parameters");
 

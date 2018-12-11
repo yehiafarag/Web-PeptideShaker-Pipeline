@@ -14459,10 +14459,8 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .searchtablecontainer {
-	width: 530px !important;
 	text-align: middle !important;
 	position: relative !important;
-	right: -35px;
 }
 
 .webpeptideshakertheme .v-slot-datasetproteinstablestyle .v-captiontext {

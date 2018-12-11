@@ -327,7 +327,14 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
         for (String str : SearchGUIResultFile.getOverview().split("Spectrums:")) {
 
             if (str.contains("API:")) {
-                String key = "data/" + str.split("\\(API:")[0].trim() + ".cui";
+                String mgfFileName = str.split("\\(API:")[0].trim();
+                String key = "";
+                if (mgfFileName.endsWith(".mgf")) {
+                    key = "data/" + mgfFileName + ".cui";
+                } else {
+                    //here is the file name error should we call it with id ??
+                    key = "data/" + mgfFileName + ".mgf.cui";
+                }
                 GalaxyFileObject ds = new GalaxyFileObject();
                 ds.setName(this.projectName + "-CUI");
                 ds.setType("MGF Index File");
@@ -480,7 +487,7 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
             initIdintificationParameters();
         }
         ArrayList<String> variableModifications = identificationParameters.getSearchParameters().getPtmSettings().getVariableModifications();
-        
+
         variableModifications.forEach((mod) -> {
             modificationMap.put(mod.trim(), new LinkedHashSet<>());
         });
@@ -500,7 +507,7 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
         fixedModifications.forEach((mod) -> {
             modificationMap.put(mod.trim(), new LinkedHashSet<>());
         });
-        
+
         return fixedModifications;
 
     }
@@ -855,7 +862,7 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
             while (!peptideProcessFuture.isDone()) {
                 Thread.sleep(1000);
             }
-            System.out.println("pep futu is done "+peptideProcessFuture.isDone());
+            System.out.println("pep futu is done " + peptideProcessFuture.isDone());
             return (ModificationMatrix) peptideProcessFuture.get();
         } catch (InterruptedException | ExecutionException ex) {
             ex.printStackTrace();
@@ -1157,17 +1164,18 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
 
         for (PSMObject selectedPsm : PSMs) {
             try {
-                if (!importedMgfFilesIndexers.containsKey(selectedPsm.getSpectrumFile())) {
+                 if (!importedMgfFilesIndexers.containsKey(selectedPsm.getSpectrumFile())) {
                     importedMgfFilesIndexers.put(selectedPsm.getSpectrumFile(), (MgfIndex) SerializationUtils.readObject(MGFFileIndexMap.get("data/" + selectedPsm.getSpectrumFile() + ".cui").getFile()));
                 }
 
             } catch (IOException | ClassNotFoundException ex) {
-                ex.printStackTrace();
+//                ex.printStackTrace();
             }
             MgfIndex mgfIndex = importedMgfFilesIndexers.get(selectedPsm.getSpectrumFile());
             String galaxyFileId = "";
             String galaxyHistoryId = "";
             for (GalaxyFileObject ds : inputMGFFiles.values()) {
+                System.out.println("at input file index "+ds.getName().split("-")[1]);
                 if (ds.getName().split("-")[1].equalsIgnoreCase(selectedPsm.getSpectrumFile())) {
                     galaxyFileId = ds.getGalaxyId();
                     galaxyHistoryId = ds.getHistoryId();
@@ -1175,6 +1183,7 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
                 }
             }
 
+            System.out.println("at here is the focos ---->>> "+mgfIndex.getIndex(selectedPsm.getSpectrumTitle())+","+ galaxyHistoryId+","+ galaxyFileId+","+ selectedPsm.getSpectrumFile());
             MSnSpectrum spectrum = galaxyDatasetServingUtil.getSpectrum(mgfIndex.getIndex(selectedPsm.getSpectrumTitle()), galaxyHistoryId, galaxyFileId, selectedPsm.getSpectrumFile());
 
             int tCharge = 0;
@@ -1301,7 +1310,7 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
             BufferedReader bufferedReader = null;
             try {//           
 //                System.out.println("start loading peptides");
-                File f = peptides_file.getFile();              
+                File f = peptides_file.getFile();
                 bufferedReader = new BufferedReader(new FileReader(f), 1024 * 100);
                 String line;
                 /**
@@ -1324,7 +1333,7 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
                     peptide.setAasAfter(arr[9]);
                     peptide.setVariableModifications(arr[10]);
                     peptide.setFixedModifications(arr[11]);
-                    
+
                     peptide.setLocalizationConfidence(arr[12]);
                     peptide.setValidatedPSMsNumber(Integer.parseInt(arr[13]));
                     peptide.setPSMsNumber(Integer.parseInt(arr[14]));

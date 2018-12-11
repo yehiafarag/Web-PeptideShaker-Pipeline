@@ -90,6 +90,7 @@ private Set<String> csf_pr_Accssion_List;
      * Constructor to initialise the the galaxy history handler, and Connection
      * refresher to keep tracking running jobs on Galaxy Server.
      *
+     * @param csf_pr_Accssion_List
      */
     public GalaxyHistoryHandler(Set<String> csf_pr_Accssion_List ) {
         REFRESHER = new Refresher();
@@ -347,6 +348,8 @@ private Set<String> csf_pr_Accssion_List;
 
         }
         REFRESHER.setRefreshInterval(mSecound);
+        
+        
         refreshlistener = (Refresher source) -> {
             HistoriesClient loopGalaxyHistoriesClient = Galaxy_Instance.getHistoriesClient();
             List<History> historiesList = Galaxy_Instance.getHistoriesClient().getHistories();
@@ -714,7 +717,10 @@ private Set<String> csf_pr_Accssion_List;
                 historyFilesMap.putAll(searchSettingsFilesMap);
                 historyFilesMap.putAll(indexFilesMap);
                 if (jobsInProgress) {
-                    invokeRecheckDataProcessing(updatePresenterView);
+                    
+                        invokeRecheckDataProcessing(updatePresenterView);
+                  
+                   
                 }
                 synchronizeDataWithGalaxyServer(historyFilesMap, jobsInProgress, updatePresenterView);
             } catch (Exception e) {

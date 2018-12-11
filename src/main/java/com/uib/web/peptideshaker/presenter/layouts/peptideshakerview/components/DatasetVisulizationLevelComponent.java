@@ -118,11 +118,9 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
                 
 
                 lastWidth = event.getWidth();
-                System.out.println("at resize is working and width is " + lastWidth);
                 double corrector = 1;
                 if (lastWidth < 780) {
                     corrector = (double) lastWidth / 770.0;
-                    System.out.println("at  corrector is " + corrector);
                 }
                 proteinTableContainer.suspendColumnResizeListener();
                 mainTable.setColumnWidth("index", (int)(50*corrector));
