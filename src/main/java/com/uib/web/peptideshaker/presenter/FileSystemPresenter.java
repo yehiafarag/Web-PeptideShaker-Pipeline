@@ -10,6 +10,7 @@ import com.uib.web.peptideshaker.presenter.core.SmallSideBtn;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ThemeResource;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
@@ -123,6 +124,7 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
         dataLayout = new DataViewLayout() {
             @Override
             public void deleteDataset(GalaxyFileObject ds) {
+                System.out.println("at user "+(VaadinSession.getCurrent().getAttribute("ApiKey").toString().equals(VaadinSession.getCurrent().getAttribute("testUserAPIKey"))));
                 FileSystemPresenter.this.deleteDataset(ds);
             }
 

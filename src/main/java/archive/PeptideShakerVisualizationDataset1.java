@@ -633,7 +633,7 @@ public class PeptideShakerVisualizationDataset1 extends GalaxyFileObject {
             }
         }
         if (enzyme != null) {
-            for (String str : protein.getRelatedPeptidesList()) {
+            for (String str : protein.getRelatedPeptidesList()) {               
                 protein.updatePeptideType(str, isEnzymaticPeptide(protein.getSequence(), peptidesMap.get(str).getSequence(), enzymeFactory.getEnzyme(enzyme), sequenceMatchingPreferences));
             }
         }

@@ -16,6 +16,14 @@ import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.VerticalLayout;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class represent PeptideShaker view presenter which is responsible for
@@ -222,19 +230,19 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
         }
         smallControlButton.setSelected(true);
         controlButton.setSelected(true);
+        datasetVisulizationLevelContainer.setMargin(new MarginInfo(false, false, false, false));
+        this.maximisedMode = true;
         this.viewControlButtonContainer.addStyleName("visible");
-        this.removeStyleName("hidepanel");
-        Thread t = new Thread(() -> {
+        while (!dataprocessFuture.isDone()) {
             try {
                 Thread.sleep(500);
-                datasetVisulizationLevelContainer.setMargin(false);
             } catch (InterruptedException ex) {
-                ex.printStackTrace();
+
             }
-        });
-        t.start();
-        datasetVisulizationLevelContainer.setMargin(true);
-        this.maximisedMode = true;
+        }
+        System.out.println("to test threads : " + (System.currentTimeMillis() - start) + "ms");
+
+        this.removeStyleName("hidepanel");
 
     }
 
@@ -277,6 +285,8 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
     public ButtonWithLabel getLargePresenterControlButton() {
         return controlButton;
     }
+    private Future dataprocessFuture;
+    private long start;
 
     /**
      * Activate PeptideShaker dataset visualisation upon user selection
@@ -285,13 +295,37 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
      * dataset
      */
     public void setSelectedDataset(PeptideShakerVisualizationDataset peptideShakerVisualizationDataset) {
-        this.controlButton.setEnabled(peptideShakerVisualizationDataset != null);
-        this.smallControlButton.setEnabled(peptideShakerVisualizationDataset != null);
-        Selection_Manager.reset();
-        Selection_Manager.selectBtn(0);
-        this.datasetVisulizationLevelContainer.selectDataset(peptideShakerVisualizationDataset);
-        this.proteinsVisulizationLevelContainer.selectDataset(peptideShakerVisualizationDataset);
-        this.peptideVisulizationLevelContainer.selectDataset(peptideShakerVisualizationDataset);
+        start = System.currentTimeMillis();
+
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
+        Runnable runnableTask = () -> {
+            controlButton.setEnabled(peptideShakerVisualizationDataset != null);
+            smallControlButton.setEnabled(peptideShakerVisualizationDataset != null);
+            Selection_Manager.reset();
+            Selection_Manager.selectBtn(0);
+
+        };
+        Runnable runnableTask1 = () -> {
+            controlButton.setEnabled(peptideShakerVisualizationDataset != null);
+            smallControlButton.setEnabled(peptideShakerVisualizationDataset != null);
+            Selection_Manager.reset();
+            Selection_Manager.selectBtn(0);
+            datasetVisulizationLevelContainer.selectDataset(peptideShakerVisualizationDataset);
+
+        };
+        Runnable runnableTask2 = () -> {
+            proteinsVisulizationLevelContainer.selectDataset(peptideShakerVisualizationDataset);
+
+        };
+        Runnable runnableTask3 = () -> {
+            peptideVisulizationLevelContainer.selectDataset(peptideShakerVisualizationDataset);
+
+        }; 
+        dataprocessFuture = executorService.submit(runnableTask1);
+        executorService.submit(runnableTask);       
+        executorService.submit(runnableTask2);
+        executorService.submit(runnableTask3);
+        executorService.shutdown();
 
     }
 }

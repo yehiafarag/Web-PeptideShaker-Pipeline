@@ -121,7 +121,7 @@ public abstract class ProteinsPeptidesGraphComponent extends VerticalLayout {
             edges.put(peptide.getModifiedSequence(), tEd);
         });
 
-        tunrelatedProt.forEach((unrelated) -> {
+        tunrelatedProt.forEach((unrelated) -> {            
             fillUnrelatedProteinsAndPeptides(unrelated, peptideShakerVisualizationDataset.getProtein(unrelated));
         });
         proteinNodes.putAll(unrelatedProt);
@@ -129,6 +129,7 @@ public abstract class ProteinsPeptidesGraphComponent extends VerticalLayout {
 
         Map<String, ProteinGroupObject> tempProteinNodes = new LinkedHashMap<>(proteinNodes);
         tempProteinNodes.keySet().forEach((accession) -> {
+           
             proteinNodes.replace(accession, peptideShakerVisualizationDataset.updateProteinInformation(tempProteinNodes.get(accession), accession));
         });
         colorScale = new RangeColorGenerator(maxPsms);
@@ -162,7 +163,8 @@ public abstract class ProteinsPeptidesGraphComponent extends VerticalLayout {
 //                    fillUnrelatedProteinsAndPeptides(proteinGroupsKey, peptideShakerVisualizationDataset.getProtein(proteinGroupsKey));
 //                };
                 pep.getProteinsSet().forEach((newAcc) -> {
-                    fillUnrelatedProteinsAndPeptides(newAcc, peptideShakerVisualizationDataset.getProtein(newAcc));
+                    ProteinGroupObject tprot = peptideShakerVisualizationDataset.getProtein(newAcc,pep.getModifiedSequence());
+                    fillUnrelatedProteinsAndPeptides(newAcc, tprot);
                 });
             });
         }

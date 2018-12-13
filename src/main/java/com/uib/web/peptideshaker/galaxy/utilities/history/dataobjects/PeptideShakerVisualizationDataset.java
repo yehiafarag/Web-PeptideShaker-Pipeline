@@ -21,15 +21,8 @@ import com.uib.web.peptideshaker.presenter.pscomponents.SpectrumInformation;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -47,11 +40,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-import java.util.zip.ZipOutputStream;
 import org.apache.commons.collections15.map.LinkedMap;
 import org.biojava.nbio.core.sequence.ProteinSequence;
 import org.biojava.nbio.core.sequence.compound.AminoAcidCompound;
@@ -944,6 +932,40 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
     }
 
     /**
+     * Get protein object from the protein list
+     *
+     * @param proteinKey (accession)
+     * @param peptideKey peptide key
+     * @return protein object
+     */
+    public ProteinGroupObject getProtein(String proteinKey, String peptideKey) {
+        checkAndUpdateProtein(proteinKey);
+        ProteinGroupObject proteinGroupObject;
+        if (processProteinsTask.getProteinsMap().containsKey(proteinKey)) {
+            proteinGroupObject = processProteinsTask.getProteinsMap().get(proteinKey);
+            completeProteinInformation(proteinGroupObject);
+        } else if (processFastaFileTask.getFastaProteinMap().containsKey(proteinKey)) {
+            proteinGroupObject = processFastaFileTask.getFastaProteinMap().get(proteinKey);
+        } else {
+            proteinGroupObject = updateProteinInformation(null, proteinKey);
+            completeProteinInformation(proteinGroupObject);
+        }
+        if (enzyme != null) {
+            if (sequenceMatchingPreferences == null) {
+                this.sequenceMatchingPreferences = SequenceMatchingPreferences.getDefaultSequenceMatching();
+            }
+            if (enzymeFactory == null) {
+                this.enzymeFactory = EnzymeFactory.getInstance();
+            }
+            proteinGroupObject.addPeptideSequence(peptideKey);
+            proteinGroupObject.updatePeptideType(peptideKey, isEnzymaticPeptide(proteinGroupObject.getSequence(), processPeptidesTask.getPeptidesMap().get(peptideKey).getSequence(), enzymeFactory.getEnzyme(enzyme), sequenceMatchingPreferences));
+        }
+
+        return proteinGroupObject;
+
+    }
+
+    /**
      * Update protein information to be display
      *
      * @param proteinObject protein object
@@ -1000,15 +1022,14 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
 
         // get the surrounding amino acids
         HashMap<Integer, String[]> surroundingAminoAcids = getSurroundingAA(sequence, peptideSequence, 1, sequenceMatchingPreferences);
-
         String firstAA = peptideSequence.charAt(0) + "";
         String lastAA = peptideSequence.charAt(peptideSequence.length() - 1) + "";
 
         // iterate the possible extended peptide sequences
-        for (Iterator<Integer> it = surroundingAminoAcids.keySet().iterator(); it.hasNext();) {
-            int index = it.next();
+        for (int index : surroundingAminoAcids.keySet()) {
             String before = surroundingAminoAcids.get(index)[0];
             String after = surroundingAminoAcids.get(index)[1];
+
             // @TODO: how to handle semi-specific enzymes??
             if ((enzyme.isCleavageSite(before, firstAA) && enzyme.isCleavageSite(lastAA, after)
                     || (before.length() == 0 && enzyme.isCleavageSite(lastAA, after)
@@ -1164,7 +1185,7 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
 
         for (PSMObject selectedPsm : PSMs) {
             try {
-                 if (!importedMgfFilesIndexers.containsKey(selectedPsm.getSpectrumFile())) {
+                if (!importedMgfFilesIndexers.containsKey(selectedPsm.getSpectrumFile())) {
                     importedMgfFilesIndexers.put(selectedPsm.getSpectrumFile(), (MgfIndex) SerializationUtils.readObject(MGFFileIndexMap.get("data/" + selectedPsm.getSpectrumFile() + ".cui").getFile()));
                 }
 
@@ -1175,7 +1196,7 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
             String galaxyFileId = "";
             String galaxyHistoryId = "";
             for (GalaxyFileObject ds : inputMGFFiles.values()) {
-                if (ds.getName().split("-")[1].replace(".mgf","").equalsIgnoreCase(selectedPsm.getSpectrumFile().replace(".mgf",""))) {
+                if (ds.getName().split("-")[1].replace(".mgf", "").equalsIgnoreCase(selectedPsm.getSpectrumFile().replace(".mgf", ""))) {
                     galaxyFileId = ds.getGalaxyId();
                     galaxyHistoryId = ds.getHistoryId();
                     break;
@@ -1345,7 +1366,8 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
 
                 peptidesMap.values().forEach((peptide) -> {
                     peptide.getProteinsSet().forEach((acc) -> {
-                        if (!protein_ProteinGroup_Map.containsKey(acc)) {
+
+                        if (!protein_ProteinGroup_Map.containsKey(acc.trim())) {
                             if (!unMappedProteinMap.containsKey(acc)) {
                                 unMappedProteinMap.put(acc, new HashSet<>());
                             }
@@ -1365,6 +1387,7 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
                                 protein_peptide_Map.get(key).add(peptide);
                                 return key;
                             }).forEachOrdered((key) -> {
+
                                 ProteinGroupObject pObj = proteinsGroupMap.get(key);
                                 pObj.addPeptideSequence(peptide.getModifiedSequence());
                                 modificationMap.keySet().stream().filter((modification) -> (peptide.getVariableModifications().contains(modification) || peptide.getFixedModifications().contains(modification))).forEachOrdered((modification) -> {
@@ -1668,19 +1691,12 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
                             Set<ProteinGroupObject> protenHashSet = new LinkedHashSet<>();
                             protein_relatedProteins_Map.put(acc, protenHashSet);
                         }
-                        if (acc.contains("P54652")) {
-                            System.out.println("the wirdo acc found :-D P54652");
-                        }
 
                         if (!protein_ProteinGroup_Map.containsKey(acc)) {
                             Set<String> protenHashSet = new LinkedHashSet<>();
                             protein_ProteinGroup_Map.put(acc, protenHashSet);
                         }
                         protein_ProteinGroup_Map.get(acc).add(proteinGroup.getProteinGroupKey());
-//                        if (!accessionToGroupKeyMap.containsKey(acc)) {
-//                            accessionToGroupKeyMap.put(acc, new HashSet<>());
-//                        }
-//                        accessionToGroupKeyMap.get(acc).add(proteinGroupKey);
                         return acc;
                     }).forEachOrdered((acc) -> {
                         protein_relatedProteins_Map.get(acc).add(proteinGroup);

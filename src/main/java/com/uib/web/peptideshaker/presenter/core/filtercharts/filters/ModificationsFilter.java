@@ -47,7 +47,7 @@ public class ModificationsFilter extends AbsoluteLayout implements RegistrableFi
      * Venn diagram to represent limited number of data intersections .
      */
     private final VennDiagram vennDiagram;
-
+    
     public ModificationsFilter(String title, String filterId, SelectionManager Selection_Manager) {
         this.filterId = filterId;
         this.Selection_Manager = Selection_Manager;
@@ -71,74 +71,74 @@ public class ModificationsFilter extends AbsoluteLayout implements RegistrableFi
         resetFilterbtn.setVisible(false);
         resetFilterbtn.addStyleName("btninframe");
         ModificationsFilter.this.addComponent(resetFilterbtn, "right:14px;top:-1px;");
-
+        
         this.matrixDiagram = new MatrixDiagramRedraw() {
             @Override
             public void setMainAppliedFilter(boolean mainAppliedFilter) {
                 ModificationsFilter.this.setMainAppliedFilter(mainAppliedFilter);
             }
-
+            
             @Override
             public void applyFilter(Set<Integer> columnIndexs) {
                 ModificationsFilter.this.applyFilter(columnIndexs);
             }
-
+            
         };
         ModificationsFilter.this.addComponent(matrixDiagram, "left:10px;top:30px;right:10px;bottom:10px;");
-
+        matrixDiagram.setVisible(false);
         this.vennDiagram = new VennDiagram() {
             @Override
             public void compleateLoading(boolean done) {
                 vennDiagram.setVisible(done);
                 matrixDiagram.setVisible(!done);
-
+                
             }
-
+            
             @Override
             public void applyFilter(Set<Integer> columnIndexs) {
                 ModificationsFilter.this.applyFilter(columnIndexs);
             }
-
+            
         };
         ModificationsFilter.this.addComponent(vennDiagram, "left:0px;top:0px;");
-
+        
     }
-
+    
     public void initializeFilterData(ModificationMatrix modificationMatrix, Map<String, Color> dataColors, Set<Object> selectedCategories, int totalNumber) {
         matrixDiagram.initializeFilterData(modificationMatrix, dataColors, selectedCategories, totalNumber);
         vennDiagram.initializeFilterData(modificationMatrix, dataColors, selectedCategories, totalNumber);
-
+        
     }
-
+    
     @Override
     public void suspendFilter(boolean suspend) {
     }
-
+    
     @Override
     public void redrawChart() {
 //        matrixDiagram.redrawChart();
     }
-
+    
     @Override
     public String getFilterId() {
         return filterId;
     }
-
+    
     @Override
     public void updateFilterSelection(Set<Comparable> selectedItems, Set<Comparable> selectedCategories, boolean topFilter, boolean singleProteinsFilter, boolean selfAction) {
-
+        
         matrixDiagram.updateFilterSelection(selectedItems, selectedCategories, topFilter, singleProteinsFilter, selfAction);
         vennDiagram.updateFilterSelection(selectedItems, selectedCategories, topFilter, singleProteinsFilter, selfAction);
-
+        
     }
-
+    
     @Override
     public void selectionChange(String type) {
 //        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
+    
     public void applyFilter(Set<Integer> columnIndexs) {
-       
+        
         Set<Comparable> appliedFilter = matrixDiagram.filterAction(columnIndexs);
         if (columnIndexs == null || columnIndexs.isEmpty() || columnIndexs.size() == vennDiagram.getModificationMatrix().getCalculatedColumns().size()) {
             vennDiagram.resetFilter();
@@ -146,10 +146,10 @@ public class ModificationsFilter extends AbsoluteLayout implements RegistrableFi
             Selection_Manager.setSelection("dataset_filter_selection", new LinkedHashSet<>(), null, filterId);
             return;
         }
-     
+        
         Selection_Manager.setSelection("dataset_filter_selection", appliedFilter, null, filterId);
     }
-
+    
     private void setMainAppliedFilter(boolean mainAppliedFilter) {
         resetFilterbtn.setVisible(mainAppliedFilter);
         if (mainAppliedFilter) {
@@ -157,6 +157,6 @@ public class ModificationsFilter extends AbsoluteLayout implements RegistrableFi
         } else {
             this.removeStyleName("highlightfilter");
         }
-
+        
     }
 }

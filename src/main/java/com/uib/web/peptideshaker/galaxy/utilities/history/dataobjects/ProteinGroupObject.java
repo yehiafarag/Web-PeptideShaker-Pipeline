@@ -240,7 +240,7 @@ public class ProteinGroupObject extends Protein {
      * @param peptideKey peptides keys (modified sequence)
      * @param enzymatic enzymatic peptide
      */
-    public void updatePeptideType(String peptideKey, boolean enzymatic) {
+    public void updatePeptideType(String peptideKey, boolean enzymatic) {        
         relatedPeptidesList.put(peptideKey, enzymatic);
     }
 
@@ -251,7 +251,7 @@ public class ProteinGroupObject extends Protein {
      * @return is enzymatic peptide
      */
     public boolean isEnymaticPeptide(String peptideKey) {
-        if (relatedPeptidesList.containsKey(peptideKey)) {
+        if (relatedPeptidesList.containsKey(peptideKey)) {            
             return relatedPeptidesList.get(peptideKey);
         } else {
             return true;

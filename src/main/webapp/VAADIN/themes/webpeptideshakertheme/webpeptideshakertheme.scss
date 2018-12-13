@@ -1237,6 +1237,10 @@
         top: -5px !important;
         font-size: 12px !important;
     }
+    .v-slot-datasetproteinstablestyle{
+	bottom:5px !important;
+	position:relative !important; 
+}
 
     .searchtablecontainer .v-label,  .searchtablecontainer .smallundecorated.v-label-smallundecorated {
         text-align: center;

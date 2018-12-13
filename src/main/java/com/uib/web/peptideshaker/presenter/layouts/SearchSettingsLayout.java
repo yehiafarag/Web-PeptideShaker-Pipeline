@@ -957,7 +957,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
             }
 
         };
-        enzyme = enzymeList.getSelectedValue();
+       
         proteaseFragmentationWindow.setClosable(true);
 
         proteaseFragmentationWindow.setContent(popupproteaseFragmentationContainer);
@@ -1025,6 +1025,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         if (searchParameters.getDigestionPreferences() != null) {
             digestionList.setSelected(searchParameters.getDigestionPreferences().getCleavagePreference().toString());
             enzymeList.setSelected(searchParameters.getDigestionPreferences().getEnzymes().get(0).getName());
+             enzyme = enzymeList.getSelectedValue();
             specificityList.setSelected(searchParameters.getDigestionPreferences().getSpecificity(searchParameters.getDigestionPreferences().getEnzymes().get(0).getName()));
             maxMissCleavages.setSelectedValue(searchParameters.getDigestionPreferences().getnMissedCleavages(searchParameters.getDigestionPreferences().getEnzymes().get(0).getName()));
             fragmentIonTypes.setSelectedI(ions.get(searchParameters.getForwardIons().get(0)));
@@ -1060,6 +1061,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
                 mostUsedModificationsTable.addItem(completeModificationItems.get(id), id);
             });
             enzymeList.setSelected("Trypsin");
+             enzyme = enzymeList.getSelectedValue();
             digestionList.setSelected("Enzyme");
             specificityList.setSelected("Specific");
             fragmentIonTypes.setSelectedI("b");

@@ -154,9 +154,9 @@ public class PeptidShakerUI extends UI {
             /**
              * Auto-reconnect to galaxy server if the session is still valid.
              */
-            if (isNelsGalaxyConnection || (VaadinSession.getCurrent().getAttribute("ApiKey") != null && VaadinSession.getCurrent().getAttribute("galaxyUrl") != null)) {
-                webPeptideShakerApp.reConnectToGalaxyServer(VaadinSession.getCurrent().getAttribute("ApiKey") + "", VaadinSession.getCurrent().getAttribute("galaxyUrl") + "");
-            }
+//            if (isNelsGalaxyConnection || (VaadinSession.getCurrent().getAttribute("ApiKey") != null && VaadinSession.getCurrent().getAttribute("galaxyUrl") != null)) {
+//                webPeptideShakerApp.reConnectToGalaxyServer(VaadinSession.getCurrent().getAttribute("ApiKey") + "", VaadinSession.getCurrent().getAttribute("galaxyUrl") + "");
+//            }
             Page.getCurrent().setTitle("PeptideShaker");
         } catch (Exception e) {
             System.out.println("---------------------------error---------------------------");

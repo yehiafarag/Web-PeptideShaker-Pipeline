@@ -115,14 +115,6 @@ public class DatasetVisulizationLevelContainer extends HorizontalLayout {
                 headerLabel.setPopupVisible(false);
             }
         };
-
-//        DatasetOverviewLayout dsOverview = new DatasetOverviewLayout((PeptideShakerVisualizationDataset) peptideShakerVisualizationDataset) {
-//            @Override
-//            public void close() {
-//                headerLabel.setPopupVisible(false);
-//            }
-//
-//        };
         headerLabel.setContent(dsOverview);
         datasetVisulizationLevelComponent.updateData(peptideShakerVisualizationDataset);
 

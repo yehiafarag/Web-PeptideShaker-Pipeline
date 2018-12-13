@@ -11,31 +11,33 @@ import com.vaadin.ui.VerticalLayout;
  *
  * @author Yehia Farag
  */
-public class ValidationLabel extends VerticalLayout implements Comparable<ValidationLabel>{
-private final Label icon;
-private final Integer sortIndex;
+public class ValidationLabel extends VerticalLayout implements Comparable<ValidationLabel> {
+
+    private final Label icon;
+    private final Integer sortIndex;
+
     public ValidationLabel(String validation) {
         ValidationLabel.this.setSizeFull();
         this.icon = new Label();
         this.icon.setWidth(16, Unit.PIXELS);
-        this.icon.setHeight(16,Unit.PIXELS);
+        this.icon.setHeight(16, Unit.PIXELS);
         this.icon.setContentMode(ContentMode.HTML);
         ValidationLabel.this.addComponent(icon);
         ValidationLabel.this.setComponentAlignment(icon, Alignment.TOP_CENTER);
         if (validation.trim().equalsIgnoreCase("confident")) {
             ValidationLabel.this.setStyleName("validlabel");
-            this.icon.setValue(VaadinIcons.CHECK_CIRCLE.getHtml());
-            sortIndex=0;
+            this.icon.setValue("<center style='line-height: 170%;'>" + VaadinIcons.CHECK_CIRCLE.getHtml() + "</center>");
+            sortIndex = 0;
 
         } else if (validation.trim().equalsIgnoreCase("doubtful")) {
             ValidationLabel.this.setStyleName("doubtfullabel");
-            this.icon.setValue(VaadinIcons.WARNING.getHtml());
-             sortIndex=1;
+            this.icon.setValue("<center style='line-height: 170%;'>" + VaadinIcons.WARNING.getHtml() + "</center>");
+            sortIndex = 1;
 
         } else {
             ValidationLabel.this.setStyleName("notvalidlabel");
-            this.icon.setValue(VaadinIcons.CLOSE_CIRCLE.getHtml());
-             sortIndex=2;
+            this.icon.setValue("<center style='line-height: 170%;'>" + VaadinIcons.CLOSE_CIRCLE.getHtml() + "</center>");
+            sortIndex = 2;
         }
         ValidationLabel.this.setDescription(validation);
 
@@ -45,6 +47,5 @@ private final Integer sortIndex;
     public int compareTo(ValidationLabel t) {
         return t.sortIndex.compareTo(sortIndex);
     }
-    
 
 }

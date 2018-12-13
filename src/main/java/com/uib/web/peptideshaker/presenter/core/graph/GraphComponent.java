@@ -122,10 +122,10 @@ public abstract class GraphComponent extends VerticalLayout {
 
     public GraphComponent() {
         GraphComponent.this.setMargin(new MarginInfo(false, false, false, false));
-        this.dashLineStroke = new BasicStroke(1.0f, // Width
+        this.dashLineStroke = new BasicStroke(0.5f, // Width
                 BasicStroke.CAP_SQUARE, // End cap
                 BasicStroke.JOIN_MITER, // Join style
-                10.0f, new float[]{10.0f}, 0.0f);
+                5.0f, new float[]{5.0f}, 0.0f);
 
         nodesMap = new HashMap<>();
         edgesMap = new HashSet<>();
@@ -281,7 +281,7 @@ public abstract class GraphComponent extends VerticalLayout {
             int tWidth = event.getWidth();
             int tHeight = event.getHeight();
             
-             if (tWidth<100 || tHeight<100 ||(Math.abs(tWidth-liveWidth)<20 && Math.abs(tHeight-liveHeight)<20 )) {
+             if (tWidth<100 || tHeight<100 ||(Math.abs(tWidth-liveWidth)<5 && Math.abs(tHeight-liveHeight)<5 )) {
                 return;
             }
             if (liveWidth == tWidth && liveHeight == tHeight ) {
@@ -464,6 +464,7 @@ public abstract class GraphComponent extends VerticalLayout {
                 Node n2 = nodesMap.get(node);
                 n1.addEdge();
                 n2.addEdge();
+               
                 Edge edge = new Edge(n1, n2, !proteinNodes.get(node).isEnymaticPeptide(key));
                 return edge;
             }).forEachOrdered((edge) -> {

@@ -140,7 +140,9 @@ public class PeptideObject extends Peptide {
      * @param proteins ';'separated strings of accessions
      */
     public void setProteins(String proteins) {
-        proteinsSet.addAll(Arrays.asList(proteins.split("; ")));
+        for (String acc : proteins.split(";")) {
+            proteinsSet.add(acc.replace(" ", ""));
+        }
     }
 
     /**
@@ -310,11 +312,12 @@ public class PeptideObject extends Peptide {
      * @param proteinGroups ';'separated strings of accessions
      */
     public void setProteinGroups(String proteinGroups) {
-       
         proteinGroupKey = proteinGroups.replace("(Confident)", "").replace("(Doubtful)", "");
 //        proteinGroupKey = proteinGroupKey.replace("Not Validated", "").replace("(","").replace(")", "");
         proteinGroupKey = proteinGroupKey.replace(" ", "").replace(",", "-_-");
-        proteinGroupsSet.addAll(Arrays.asList(proteinGroups.split(", ")));
+        for (String protGroup : proteinGroups.split(",")) {
+            proteinGroupsSet.add(protGroup.replace(" ", ""));
+        }
     }
 
     public String getProteinGroupKey() {

@@ -110,7 +110,7 @@ public abstract class PSMViewComponent extends VerticalLayout {
         psmOverviewTable.addContainerProperty("sequenceFrag", VerticalLayout.class, null, generateCaptionWithTooltio("Fragmentation", "Sequence Fragmentation"), null, Table.Align.LEFT);
         psmOverviewTable.addContainerProperty("massErrorPlot", VerticalLayout.class, null, generateCaptionWithTooltio("Mass Error", "Mass Error Plot"), null, Table.Align.LEFT);
         psmOverviewTable.addContainerProperty("charge", SparkLineLabel.class, null, generateCaptionWithTooltio("Charge", "Charge"), null, Table.Align.LEFT);
-        psmOverviewTable.addContainerProperty("mzError", SparkLineLabel.class, null, generateCaptionWithTooltio("m/z Error", "m/z Error"), null, Table.Align.LEFT);
+        psmOverviewTable.addContainerProperty("mzError", SparkLineLabel.class, null, generateCaptionWithTooltio("Mass Error", "Mass Error"), null, Table.Align.LEFT);
 
         psmOverviewTable.addContainerProperty("confidence", SparkLineLabel.class, null, generateCaptionWithTooltio("Confidence", "Confidence level"), null, Table.Align.LEFT);
         psmOverviewTable.addContainerProperty("validation", ValidationLabel.class, null, generateCaptionWithTooltio("", "Protein validation"), null, Table.Align.CENTER);
@@ -221,7 +221,7 @@ public abstract class PSMViewComponent extends VerticalLayout {
             ValidationLabel validation = new ValidationLabel(psm.getValidation());
             this.psmOverviewTable.addItem(new Object[]{index++, chartGenerator.getSequenceFragmentationChart(), chartGenerator.getMassErrorPlot(), chargeLabel, mzErrorLabel, confidentLabel, validation}, psm.getIndex());
         });
-        this.psmOverviewTable.setSortContainerPropertyId("charge");
+        this.psmOverviewTable.setSortContainerPropertyId("confidence");
         this.psmOverviewTable.sort();
         index = 1;
         psmOverviewTable.getItemIds().forEach((id) -> {

@@ -17,6 +17,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import pl.exsio.plupload.PluploadFile;
 
 /**
@@ -65,7 +71,7 @@ public class WebPeptideShakerApp extends VerticalLayout {
             public void synchronizeDataWithGalaxyServer(Map<String, GalaxyFileObject> historyFilesMap, boolean jobsInProgress, boolean updatePresenterView) {
                 fileSystemPresenter.updateSystemData(historyFilesMap, jobsInProgress);
                 if (updatePresenterView && initialised) {
-                    
+
                     presentationManager.viewLayout(fileSystemPresenter.getViewId());
                 }
                 initialised = true;
@@ -137,7 +143,10 @@ public class WebPeptideShakerApp extends VerticalLayout {
                 interactivePSPRojectResultsPresenter = new InteractivePSPRojectResultsPresenter();
                 presentationManager.registerView(interactivePSPRojectResultsPresenter);
                 interactivePSPRojectResultsPresenter.setSelectedDataset(peptideShakerVisualizationDataset);
+             
                 presentationManager.viewLayout(interactivePSPRojectResultsPresenter.getViewId());
+                   
+
             }
 
             @Override
@@ -187,10 +196,10 @@ public class WebPeptideShakerApp extends VerticalLayout {
         interactivePSPRojectResultsPresenter = new InteractivePSPRojectResultsPresenter();
         presentationManager.registerView(welcomePage);
         presentationManager.viewLayout(welcomePage.getViewId());
-        presentationManager.registerView(fileSystemPresenter);        
+        presentationManager.registerView(fileSystemPresenter);
         presentationManager.registerView(SearchGUI_PeptideShaker_Tool_Presenter);
         presentationManager.registerView(interactivePSPRojectResultsPresenter);
-   
+
     }
 
     /**

@@ -14468,6 +14468,10 @@ div.v-layout.v-horizontal.v-widget {
 	top: -5px !important;
 	font-size: 12px !important;
 }
+.v-slot-datasetproteinstablestyle{
+	bottom:5px !important;
+	position:relative !important; 
+}
 
 .webpeptideshakertheme .searchtablecontainer .v-label, .webpeptideshakertheme .searchtablecontainer .smallundecorated.v-label-smallundecorated {
 	text-align: center;
