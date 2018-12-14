@@ -188,7 +188,7 @@ public abstract class GraphComponent extends VerticalLayout {
             selectAll();
         });
 
-         informationLegend = new Legend() {
+        informationLegend = new Legend() {
             @Override
             public void close() {
                 legendLayout.setPopupVisible(false);
@@ -239,13 +239,13 @@ public abstract class GraphComponent extends VerticalLayout {
         proteinsControl.addItem("Protein Evidence");
         proteinsControl.addItem("PSMNumber");
         proteinsControl.setItemCaption("PSMNumber", "#PSM");
-        proteinsControl.addItem("Molecule Type");
+//        proteinsControl.addItem("Molecule Type");
         lefTtopPanel.addComponent(proteinsControl);
 
         proteinsControlListener = (Property.ValueChangeEvent event) -> {
-             informationLegend.updateLegend(proteinsControl.getValue() + "");
+            informationLegend.updateLegend(proteinsControl.getValue() + "");
             updateNodeColourType(proteinsControl.getValue() + "");
-            
+
         };
         proteinsControl.addValueChangeListener(proteinsControlListener);
 
@@ -264,7 +264,7 @@ public abstract class GraphComponent extends VerticalLayout {
         nodeControl.addValueChangeListener((Property.ValueChangeEvent event) -> {
             uniqueOnly = nodeControl.getValue().equals("Unique Only");
             selectNodes(selectedProteins.toArray());
-           
+
         });
         leftBottomPanel.addComponent(nodeControl);
 
@@ -280,11 +280,11 @@ public abstract class GraphComponent extends VerticalLayout {
         sizeReporter.addResizeListener((ComponentResizeEvent event) -> {
             int tWidth = event.getWidth();
             int tHeight = event.getHeight();
-            
-             if (tWidth<100 || tHeight<100 ||(Math.abs(tWidth-liveWidth)<5 && Math.abs(tHeight-liveHeight)<5 )) {
+
+            if (tWidth < 100 || tHeight < 100 || (Math.abs(tWidth - liveWidth) < 5 && Math.abs(tHeight - liveHeight) < 5)) {
                 return;
             }
-            if (liveWidth == tWidth && liveHeight == tHeight ) {
+            if (liveWidth == tWidth && liveHeight == tHeight) {
                 return;
             }
 //            ignorResize = true;
@@ -378,7 +378,7 @@ public abstract class GraphComponent extends VerticalLayout {
 
     }
 
-    public void updateGraphData(ProteinGroupObject selectedProtein, Map<String, ProteinGroupObject> proteinNodes, Map<String, PeptideObject> peptidesNodes, HashMap<String, ArrayList<String>> edges,RangeColorGenerator colorScale) {
+    public void updateGraphData(ProteinGroupObject selectedProtein, Map<String, ProteinGroupObject> proteinNodes, Map<String, PeptideObject> peptidesNodes, HashMap<String, ArrayList<String>> edges, RangeColorGenerator colorScale) {
         uniqueOnly = nodeControl.getValue().equals("Unique Only");
         canvas.removeAllComponents();
         nodesMap.clear();
@@ -394,13 +394,10 @@ public abstract class GraphComponent extends VerticalLayout {
         }
         this.proteinNodes = proteinNodes;
         this.peptidesNodes = peptidesNodes;
-        
+
         this.edges = edges;
         setUpGraph();
-        
-        
-        
-        
+
         for (String node : graph.getVertices()) {
             String modifications = "";
             String sequence = "";
@@ -409,12 +406,11 @@ public abstract class GraphComponent extends VerticalLayout {
             if (peptidesNodes.containsKey(node)) {
                 modifications = peptidesNodes.get(node).getVariableModifications();
                 sequence = peptidesNodes.get(node).getSequence();
-                 psmNumber = peptidesNodes.get(node).getPSMsNumber();
+                psmNumber = peptidesNodes.get(node).getPSMsNumber();
+            } else {
+                psmNumber = -1;
             }
-            else{
-               psmNumber =-1;
-            }
-            Node n = new Node(node, modifications, sequence,psmNumber,colorScale.getColor(psmNumber)) {
+            Node n = new Node(node, modifications, sequence, psmNumber, colorScale.getColor(psmNumber)) {
                 @Override
                 public void selected(String id) {
                     selectNodes(new Object[]{id});
@@ -455,17 +451,25 @@ public abstract class GraphComponent extends VerticalLayout {
             wrapper.setData(node);
             wrapper.setDescription(n.getDescription());
             canvas.addComponent(wrapper, "left: " + n.getX() + "px; top: " + n.getY() + "px");
-            
+
         }
+        Set<String> tnodesMap = new HashSet<>();
         edges.keySet().forEach((key) -> {
             ArrayList<String> edg = edges.get(key);
             edg.stream().map((node) -> {
+
                 Node n1 = nodesMap.get(key);
                 Node n2 = nodesMap.get(node);
-                n1.addEdge();
-                n2.addEdge();
-               
                 Edge edge = new Edge(n1, n2, !proteinNodes.get(node).isEnymaticPeptide(key));
+                String edgeString = n1.getNodeId() + "__" + n2.getNodeId();
+                String edgeString2 = n2.getNodeId() + "__" + n1.getNodeId();
+                if (!tnodesMap.contains(edgeString) && !tnodesMap.contains(edgeString2)) {
+                    n1.addEdge();
+                    n2.addEdge();;
+                }
+                tnodesMap.add(edgeString);
+                tnodesMap.add(edgeString2);
+
                 return edge;
             }).forEachOrdered((edge) -> {
                 edgesMap.add(edge);
@@ -473,7 +477,7 @@ public abstract class GraphComponent extends VerticalLayout {
         });
         selectNodes(selectedProtein.getProteinGroupSet().toArray());
         proteinsControl.removeValueChangeListener(proteinsControlListener);
-        proteinsControl.setValue("Molecule Type");
+        proteinsControl.setValue("PSMNumber");
         proteinsControl.addValueChangeListener(proteinsControlListener);
         thumbImgeUrl = generateThumbImg();
         informationLegend.updatePSMNumberLayout(colorScale.getColorScale());
@@ -559,7 +563,9 @@ public abstract class GraphComponent extends VerticalLayout {
         Graphics2D g2 = image.createGraphics();
         for (Edge edge : edgesMap) {
             Shape edgeLine = drawEdge((int) edge.getStartX(), (int) edge.getStartY(), (int) edge.getEndX(), (int) edge.getEndY());
-            if (edge.isSelected()) {
+           if (uniqueOnly && edge.isHide()) {
+                g2.setPaint(Color.lightGray);
+            } else if (edge.isSelected()) {
                 g2.setPaint(Color.GRAY);
             } else {
                 g2.setPaint(Color.LIGHT_GRAY);
@@ -753,35 +759,36 @@ public abstract class GraphComponent extends VerticalLayout {
         edgesImage.addStyleName("hide");
         nodesMap.values().forEach((node) -> {
             node.setSelected(false);
+            node.setUniqueOnlyMode(uniqueOnly);
         });
         this.selectedPeptides.clear();
         this.selectedProteins.clear();
-        for (Object id : ids) {
-            Node n = nodesMap.get(id);
-            if (uniqueOnly && n.getType() == 1) {
-                n.setSelected(true);
-                selectedPeptides.add(id);
-            } else if (n.getType() == 0) {
-                n.setSelected(true);
-                selectedProteins.add(id);
-            } else if (n.getType() == 1) {
-                n.setSelected(true);
-                selectedPeptides.add(id);
+            for (Object id : ids) {
+                Node n = nodesMap.get(id);
+                if (uniqueOnly && n.getType() == 1) {
+                    n.setSelected(true);
+                    selectedPeptides.add(id);
+                } else if (n.getType() == 0) {
+                    n.setSelected(true);
+                    selectedProteins.add(id);
+                } else if (n.getType() == 1) {
+                    n.setSelected(true);
+                    selectedPeptides.add(id);
+                }
+                if (selectRelatedNodes) {
+                    edgesMap.stream().map((edge) -> {
+                        edge.select(n, uniqueOnly);
+                        return edge;
+                    }).map((edge) -> {
+                        if (edge.getN2().isSelected()) {
+                            selectedProteins.add(edge.getN2().getNodeId());
+                        }
+                        return edge;
+                    }).filter((edge) -> (edge.getN1().isSelected())).forEachOrdered((edge) -> {
+                        selectedPeptides.add(edge.getN1().getNodeId());
+                    });
+                }
             }
-            if (selectRelatedNodes) {
-                edgesMap.stream().map((edge) -> {
-                    edge.select(n, uniqueOnly);
-                    return edge;
-                }).map((edge) -> {
-                    if (edge.getN2().isSelected()) {
-                        selectedProteins.add(edge.getN2().getNodeId());
-                    }
-                    return edge;
-                }).filter((edge) -> (edge.getN1().isSelected())).forEachOrdered((edge) -> {
-                    selectedPeptides.add(edge.getN1().getNodeId());
-                });
-            }
-        }
         drawEdges();
         graphInfo.setValue("#Proteins: <font style='float:right'>" + selectedProteins.size() + "</font><br/>#Peptides: <font style='float:right'>" + selectedPeptides.size() + "</font>");
     }

@@ -34,6 +34,7 @@ import org.jfree.chart.encoders.ImageEncoderFactory;
 import org.jfree.chart.encoders.ImageFormat;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
+import org.jfree.ui.RectangleInsets;
 
 /**
  *
@@ -65,7 +66,7 @@ public class SecondarySpectraChartsGenerator {
         return massErrorPlot;
     }
 
-    public SecondarySpectraChartsGenerator(String sequence,String tooltip, Object objectId, SpectrumInformation spectrumInformation) {
+    public SecondarySpectraChartsGenerator(String sequence, String tooltip, Object objectId, SpectrumInformation spectrumInformation) {
         this.sequenceFragmentationChart = new VerticalLayout();
         this.massErrorPlot = new VerticalLayout();
         this.sequenceFragmentationChart.setHeight(70, Unit.PIXELS);
@@ -77,13 +78,11 @@ public class SecondarySpectraChartsGenerator {
         SecondarySpectraChartsGenerator.this.massErrorPlot.setStyleName("sequencefragmentationchart");
         SecondarySpectraChartsGenerator.this.massErrorPlot.setData(objectId);
         this.sequenceFragmentationChartComponent = new Image();
-        this.massErrorPlotComponent=new Image();
+        this.massErrorPlotComponent = new Image();
 
         this.sequenceFragmentationChart.addComponent(this.sequenceFragmentationChartComponent);
-         this.massErrorPlot.addComponent(this.massErrorPlotComponent);
-         
-         
-         
+        this.massErrorPlot.addComponent(this.massErrorPlotComponent);
+
 //        SecondarySpectraChartsGenerator.this.setComponentAlignment(this.plotImage, Alignment.TOP_CENTER);
         sequenceFragmentationChart.setDescription(tooltip);
 //        this.sequenceLabel = new Label(sequence, ContentMode.HTML);
@@ -130,8 +129,8 @@ public class SecondarySpectraChartsGenerator {
         sequenceFragmentationChartComponent.setSource(new ExternalResource(drawImage(sequenceFragmentationPanel)));
         try {
             errorPlot = new MassErrorPlot(annotations, spectrumInformation.getSpectrum(), accuracy, spectrumInformation.getIdentificationParameters().getSearchParameters().getFragmentAccuracyType() == SearchParameters.MassAccuracyType.PPM);
-            errorPlot.setSize(270, 68);
-            errorPlot.getChartPanel().setSize(270, 68);
+            errorPlot.setSize(300, 68);
+            errorPlot.getChartPanel().setSize(300, 68);
             errorPlot.updateUI();
             XYPlot plot = (XYPlot) errorPlot.getChartPanel().getChart().getPlot();
             plot.getDomainAxis().setVisible(false);
@@ -139,19 +138,19 @@ public class SecondarySpectraChartsGenerator {
             plot.setRangeGridlinesVisible(false);
             plot.setRangeZeroBaselineVisible(true);
             plot.setRangeZeroBaselinePaint(Color.LIGHT_GRAY);
-            plot.setRangeZeroBaselineStroke(new BasicStroke(1.0f,BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[] {10.0f}, 0.0f));
-           
+            plot.setRangeZeroBaselineStroke(new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[]{10.0f}, 0.0f));
+            plot.getDomainAxis().setUpperBound(plot.getDomainAxis().getUpperBound()+30);
+
             DefaultXYItemRenderer renderer = (DefaultXYItemRenderer) plot.getRenderer();
             for (int i = 0; i < plot.getSeriesCount(); i++) {
                 renderer.setSeriesShape(i, new Ellipse2D.Double(-2.0, -2.0, 4.0, 4.0));
             }
             plot.setRenderer(renderer);
             massErrorPlotComponent.setSource(new ExternalResource(drawImage(errorPlot.getChartPanel().getChart(), 270, 68)));
-        
+
         } catch (InterruptedException ex) {
             ex.printStackTrace();
         }
-       
 
     }
 
@@ -171,7 +170,7 @@ public class SecondarySpectraChartsGenerator {
         if (panel.getHeight() <= 0) {
             panel.setSize(panel.getWidth(), 100);
         }
-        panel.setBorder(BorderFactory.createLineBorder(Color.WHITE,2));
+        panel.setBorder(BorderFactory.createLineBorder(Color.WHITE, 2));
 
         imgH = panel.getHeight();
         imgW = panel.getWidth();

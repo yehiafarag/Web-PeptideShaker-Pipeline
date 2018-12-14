@@ -15,6 +15,7 @@ public class Edge {
     private final Node n1;
     private final Node n2;
     private final boolean dotted;
+    private boolean hide;
 
     public Edge(Node n1, Node n2, boolean dotted) {
         this.n1 = n1;
@@ -67,6 +68,14 @@ public class Edge {
 
     public boolean isDotted() {
         return dotted;
+    }
+
+    public boolean isHide() {
+        return (n1.getStyleName().contains("nodedisabled") || n2.getStyleName().contains("nodedisabled"));
+    }
+
+    public void setHide(boolean hide) {
+        this.hide = hide;
     }
     
 

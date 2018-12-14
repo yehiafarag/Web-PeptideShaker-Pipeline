@@ -30,6 +30,7 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
     private String proteinEvidenceStyle;
     private final String modificationStyleName = "nodemodificationbackground";
     private int edgesNumber;
+    private boolean uniqueOnlyMode;
 
     /**
      * The post translational modifications factory.
@@ -50,7 +51,7 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
         String subTooltip = "";
         Map<String, String> modificationsTooltip = new HashMap<>();
         for (String mod : modifications.split("\\),")) {
-            if (mod.trim().equalsIgnoreCase("") || mod.contains("Pyrolidone") || mod.contains("Acetylation of protein N-term") || mod.contains("No Modifications")|| mod.contains("Two or More Modifications")) {
+            if (mod.trim().equalsIgnoreCase("") || mod.contains("Pyrolidone") || mod.contains("Acetylation of protein N-term") || mod.contains("No Modifications") || mod.contains("Two or More Modifications")) {
                 continue;
             }
             String[] tmod = mod.split("\\(");
@@ -63,11 +64,10 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
                 int i = Integer.valueOf(indexStr) - 1;
                 if (sequence != null) {
                     modificationsTooltip.put(sequence.charAt(i) + "<" + PTM.getPTM(tmod[0].trim()).getShortName() + ">", "<font style='background-color:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")'>" + sequence.charAt(i) + "</font>");
-                
 
-                if (!subTooltip.contains("</br><span style='width:20px;height:10px;background-color:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")'>" + sequence.charAt(i) + "</span> - " + mod)) {
-                    subTooltip += "</br><span style='width:20px;height:10px;background-color:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")'>" + sequence.charAt(i) + "</span> - " + mod;
-                }
+                    if (!subTooltip.contains("</br><span style='width:20px;height:10px;background-color:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")'>" + sequence.charAt(i) + "</span> - " + mod)) {
+                        subTooltip += "</br><span style='width:20px;height:10px;background-color:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")'>" + sequence.charAt(i) + "</span> - " + mod;
+                    }
                 }
             }
 
@@ -88,7 +88,7 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
         this.psmNumberLayout = new VerticalLayout();
         this.psmNumberLayout.setSizeFull();
         Node.this.addComponent(psmNumberLayout);
-        String tooltipExt = "</br>#PSM (" + psmNumber + ")";
+        String tooltipExt = "</br>#PSM: " + psmNumber + "";
         if (psmNumber == -1) {
             PSMNumberColor = "red";
             tooltipExt = "";
@@ -118,7 +118,7 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
         return edgesNumber;
     }
 
-    public void addEdge() {
+    public void addEdge() {        
         this.edgesNumber++;
     }
 
@@ -213,5 +213,16 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
     }
 
     public abstract void selected(String id);
+
+    public void setUniqueOnlyMode(boolean uniqueOnlyMode) {
+        this.uniqueOnlyMode = uniqueOnlyMode;
+        if (type == 1 && uniqueOnlyMode && edgesNumber > 1) {
+            Node.this.addStyleName("nodedisabled");
+            Node.this.setEnabled(false);
+        } else if (type == 1) {
+            Node.this.removeStyleName("nodedisabled"); 
+            Node.this.setEnabled(true);
+        }
+    }
 
 }

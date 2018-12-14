@@ -3459,7 +3459,10 @@
         top: 5px !important;
         bottom: 0px !important;
     }
-
+.nodedisabled{
+	border:1px solid lightgray !important;
+	background:white !important;
+}
 
     /**mobile screen style***/
     .smallscreenstyle.mobilestyle .logocontainer img {

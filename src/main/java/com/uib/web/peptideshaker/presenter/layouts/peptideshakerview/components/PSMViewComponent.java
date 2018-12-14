@@ -108,7 +108,7 @@ public abstract class PSMViewComponent extends VerticalLayout {
         psmOverviewTable.addContainerProperty("index", Integer.class, null, "", null, Table.Align.RIGHT);
 //        psmOverviewTable.addContainerProperty("id", ColorLabel.class, null, "ID", null, Table.Align.CENTER);
         psmOverviewTable.addContainerProperty("sequenceFrag", VerticalLayout.class, null, generateCaptionWithTooltio("Fragmentation", "Sequence Fragmentation"), null, Table.Align.LEFT);
-        psmOverviewTable.addContainerProperty("massErrorPlot", VerticalLayout.class, null, generateCaptionWithTooltio("Mass Error", "Mass Error Plot"), null, Table.Align.LEFT);
+        psmOverviewTable.addContainerProperty("massErrorPlot", VerticalLayout.class, null, generateCaptionWithTooltio("Mass Error Plot", "Mass Error Plot"), null, Table.Align.LEFT);
         psmOverviewTable.addContainerProperty("charge", SparkLineLabel.class, null, generateCaptionWithTooltio("Charge", "Charge"), null, Table.Align.LEFT);
         psmOverviewTable.addContainerProperty("mzError", SparkLineLabel.class, null, generateCaptionWithTooltio("Mass Error", "Mass Error"), null, Table.Align.LEFT);
 
@@ -120,7 +120,7 @@ public abstract class PSMViewComponent extends VerticalLayout {
         psmOverviewTable.setColumnWidth("confidence", 170);
         psmOverviewTable.setColumnWidth("charge", 130);
         psmOverviewTable.setColumnWidth("mzError", 180);
-        psmOverviewTable.setColumnWidth("massErrorPlot", 274);
+        psmOverviewTable.setColumnWidth("massErrorPlot",300);
         psmOverviewTable.setSortContainerPropertyId("charge");
 
         splitpanel.setStyleName("nonscrollsplitpanel");
@@ -167,7 +167,7 @@ public abstract class PSMViewComponent extends VerticalLayout {
             psmOverviewTable.setColumnWidth("confidence", 170);
             psmOverviewTable.setColumnWidth("charge", 130);
             psmOverviewTable.setColumnWidth("mzError", 180);
-            psmOverviewTable.setColumnWidth("massErrorPlot", 274);
+            psmOverviewTable.setColumnWidth("massErrorPlot", 300);
             psmOverviewTable.addColumnResizeListener(columnResizeListener);
         });
 
@@ -203,7 +203,7 @@ public abstract class PSMViewComponent extends VerticalLayout {
             Map<String, Number> mzErrorValues = new LinkedHashMap<>();
             mzErrorValues.put("greenlayout", (float) mzError / ((float) spectrumInformationMap.get(psm.getIndex()).getMzError() * 2.0f));
 
-            SparkLineLabel mzErrorLabel = new SparkLineLabel(df.format(mzError) + "", mzErrorValues, psm.getIndex()) {
+            SparkLineLabel mzErrorLabel = new SparkLineLabel(df1.format(mzError) + "", mzErrorValues, psm.getIndex()) {
                 @Override
                 public void selected(Object itemId) {
                     psmOverviewTable.setValue(itemId);
@@ -222,6 +222,7 @@ public abstract class PSMViewComponent extends VerticalLayout {
             this.psmOverviewTable.addItem(new Object[]{index++, chartGenerator.getSequenceFragmentationChart(), chartGenerator.getMassErrorPlot(), chargeLabel, mzErrorLabel, confidentLabel, validation}, psm.getIndex());
         });
         this.psmOverviewTable.setSortContainerPropertyId("confidence");
+        this.psmOverviewTable.setSortAscending(false);
         this.psmOverviewTable.sort();
         index = 1;
         psmOverviewTable.getItemIds().forEach((id) -> {

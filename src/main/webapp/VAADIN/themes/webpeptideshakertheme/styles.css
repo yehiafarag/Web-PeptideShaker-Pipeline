@@ -16577,6 +16577,11 @@ div.v-layout.v-horizontal.v-widget {
 	bottom: 0px !important;
 }
 
+.nodedisabled{
+	border:1px solid lightgray !important;
+	background:white !important;
+}
+
 .webpeptideshakertheme .smallscreenstyle.mobilestyle .logocontainer img {
 	height: 150px !important;
 	overflow: visible;
