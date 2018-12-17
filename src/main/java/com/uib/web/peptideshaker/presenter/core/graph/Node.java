@@ -37,7 +37,7 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
      */
     private final PTMFactory PTM = PTMFactory.getInstance();
 
-    public Node(String id, String modifications, String sequence, int psmNumber, String PSMNumberColor) {
+    public Node(String id,String tooltip, String modifications, String sequence, int psmNumber, String PSMNumberColor) {
 
         Node.this.setWidth(20, Unit.PIXELS);
         Node.this.setHeight(20, Unit.PIXELS);
@@ -78,7 +78,6 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
             modification.setSizeFull();
             modificationLayout.addComponent(modification);
         }
-        String tooltip = nodeId;
         for (String key : modificationsTooltip.keySet()) {
             tooltip = tooltip.replace(key, modificationsTooltip.get(key));
         }
@@ -88,7 +87,7 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
         this.psmNumberLayout = new VerticalLayout();
         this.psmNumberLayout.setSizeFull();
         Node.this.addComponent(psmNumberLayout);
-        String tooltipExt = "</br>#PSM: " + psmNumber + "";
+        String tooltipExt = "</br>#PSMs: " + psmNumber + "";
         if (psmNumber == -1) {
             PSMNumberColor = "red";
             tooltipExt = "";

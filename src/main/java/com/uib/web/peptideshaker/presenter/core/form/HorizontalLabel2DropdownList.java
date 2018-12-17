@@ -37,12 +37,13 @@ public class HorizontalLabel2DropdownList extends HorizontalLayout {
     public HorizontalLabel2DropdownList(String title, Set<String> values, Set<String> values2) {
 
         HorizontalLabel2DropdownList.this.setSizeFull();
+         HorizontalLabel2DropdownList.this.setSpacing(true);
          cap = new Label(title);
         cap.addStyleName(ValoTheme.LABEL_TINY);
         cap.addStyleName(ValoTheme.LABEL_SMALL);
         cap.addStyleName("smallundecorated");
         HorizontalLabel2DropdownList.this.addComponent(cap);
-        HorizontalLabel2DropdownList.this.setExpandRatio(cap, 45);
+        HorizontalLabel2DropdownList.this.setExpandRatio(cap, 47);
 
         if (values == null) {
             values = new HashSet<>();
@@ -58,7 +59,7 @@ public class HorizontalLabel2DropdownList extends HorizontalLayout {
         }
         list1 = new ComboBox();
         list1.setWidth(100, Unit.PERCENTAGE);
-        list1.setHeight(25, Unit.PIXELS);
+        list1.setHeight(20, Unit.PIXELS);
         list1.setStyleName(ValoTheme.COMBOBOX_SMALL);
         list1.addStyleName(ValoTheme.COMBOBOX_TINY);
         list1.addStyleName(ValoTheme.COMBOBOX_ALIGN_CENTER);
@@ -71,12 +72,12 @@ public class HorizontalLabel2DropdownList extends HorizontalLayout {
         list1.setValue(values.toArray()[0]);
 
         HorizontalLabel2DropdownList.this.addComponent(list1);
-        HorizontalLabel2DropdownList.this.setExpandRatio(list1, 27.5f);
+        HorizontalLabel2DropdownList.this.setExpandRatio(list1, 26.5f);
 
         list2 = new ComboBox();
         list2.setTextInputAllowed(false);
         list2.setWidth(100, Unit.PERCENTAGE);
-        list2.setHeight(25, Unit.PIXELS);
+        list2.setHeight(20, Unit.PIXELS);
         list2.setStyleName(ValoTheme.COMBOBOX_SMALL);
         list2.addStyleName(ValoTheme.COMBOBOX_TINY);
         list2.addStyleName(ValoTheme.COMBOBOX_ALIGN_CENTER);
@@ -88,7 +89,7 @@ public class HorizontalLabel2DropdownList extends HorizontalLayout {
         }
         list2.setValue(values2.toArray()[0]);
         HorizontalLabel2DropdownList.this.addComponent(list2);
-        HorizontalLabel2DropdownList.this.setExpandRatio(list2, 27.5f);
+        HorizontalLabel2DropdownList.this.setExpandRatio(list2, 26.5f);
     }
 
     public String getFirstSelectedValue() {

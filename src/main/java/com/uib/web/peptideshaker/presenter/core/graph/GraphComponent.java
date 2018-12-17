@@ -238,7 +238,7 @@ public abstract class GraphComponent extends VerticalLayout {
         proteinsControl.addItem("Modification Status");
         proteinsControl.addItem("Protein Evidence");
         proteinsControl.addItem("PSMNumber");
-        proteinsControl.setItemCaption("PSMNumber", "#PSM");
+        proteinsControl.setItemCaption("PSMNumber", "#PSMs");
 //        proteinsControl.addItem("Molecule Type");
         lefTtopPanel.addComponent(proteinsControl);
 
@@ -402,15 +402,18 @@ public abstract class GraphComponent extends VerticalLayout {
             String modifications = "";
             String sequence = "";
             int psmNumber = 0;
+            String tooltip = "";
 
             if (peptidesNodes.containsKey(node)) {
                 modifications = peptidesNodes.get(node).getVariableModifications();
                 sequence = peptidesNodes.get(node).getSequence();
+                tooltip = node;
                 psmNumber = peptidesNodes.get(node).getPSMsNumber();
             } else {
                 psmNumber = -1;
+                tooltip = node + "<br/>" + proteinNodes.get(node).getDescription();
             }
-            Node n = new Node(node, modifications, sequence, psmNumber, colorScale.getColor(psmNumber)) {
+            Node n = new Node(node, tooltip, modifications, sequence, psmNumber, colorScale.getColor(psmNumber)) {
                 @Override
                 public void selected(String id) {
                     selectNodes(new Object[]{id});
@@ -476,9 +479,7 @@ public abstract class GraphComponent extends VerticalLayout {
             });
         });
         selectNodes(selectedProtein.getProteinGroupSet().toArray());
-        proteinsControl.removeValueChangeListener(proteinsControlListener);
         proteinsControl.setValue("PSMNumber");
-        proteinsControl.addValueChangeListener(proteinsControlListener);
         thumbImgeUrl = generateThumbImg();
         informationLegend.updatePSMNumberLayout(colorScale.getColorScale());
 //        updateGraphLayout();
@@ -563,7 +564,7 @@ public abstract class GraphComponent extends VerticalLayout {
         Graphics2D g2 = image.createGraphics();
         for (Edge edge : edgesMap) {
             Shape edgeLine = drawEdge((int) edge.getStartX(), (int) edge.getStartY(), (int) edge.getEndX(), (int) edge.getEndY());
-           if (uniqueOnly && edge.isHide()) {
+            if (uniqueOnly && edge.isHide()) {
                 g2.setPaint(Color.lightGray);
             } else if (edge.isSelected()) {
                 g2.setPaint(Color.GRAY);
@@ -763,32 +764,32 @@ public abstract class GraphComponent extends VerticalLayout {
         });
         this.selectedPeptides.clear();
         this.selectedProteins.clear();
-            for (Object id : ids) {
-                Node n = nodesMap.get(id);
-                if (uniqueOnly && n.getType() == 1) {
-                    n.setSelected(true);
-                    selectedPeptides.add(id);
-                } else if (n.getType() == 0) {
-                    n.setSelected(true);
-                    selectedProteins.add(id);
-                } else if (n.getType() == 1) {
-                    n.setSelected(true);
-                    selectedPeptides.add(id);
-                }
-                if (selectRelatedNodes) {
-                    edgesMap.stream().map((edge) -> {
-                        edge.select(n, uniqueOnly);
-                        return edge;
-                    }).map((edge) -> {
-                        if (edge.getN2().isSelected()) {
-                            selectedProteins.add(edge.getN2().getNodeId());
-                        }
-                        return edge;
-                    }).filter((edge) -> (edge.getN1().isSelected())).forEachOrdered((edge) -> {
-                        selectedPeptides.add(edge.getN1().getNodeId());
-                    });
-                }
+        for (Object id : ids) {
+            Node n = nodesMap.get(id);
+            if (uniqueOnly && n.getType() == 1) {
+                n.setSelected(true);
+                selectedPeptides.add(id);
+            } else if (n.getType() == 0) {
+                n.setSelected(true);
+                selectedProteins.add(id);
+            } else if (n.getType() == 1) {
+                n.setSelected(true);
+                selectedPeptides.add(id);
             }
+            if (selectRelatedNodes) {
+                edgesMap.stream().map((edge) -> {
+                    edge.select(n, uniqueOnly);
+                    return edge;
+                }).map((edge) -> {
+                    if (edge.getN2().isSelected()) {
+                        selectedProteins.add(edge.getN2().getNodeId());
+                    }
+                    return edge;
+                }).filter((edge) -> (edge.getN1().isSelected())).forEachOrdered((edge) -> {
+                    selectedPeptides.add(edge.getN1().getNodeId());
+                });
+            }
+        }
         drawEdges();
         graphInfo.setValue("#Proteins: <font style='float:right'>" + selectedProteins.size() + "</font><br/>#Peptides: <font style='float:right'>" + selectedPeptides.size() + "</font>");
     }

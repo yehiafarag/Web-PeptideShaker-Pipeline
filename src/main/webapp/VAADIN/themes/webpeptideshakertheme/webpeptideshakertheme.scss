@@ -675,8 +675,8 @@
     }
     .smallundecorated.v-label-smallundecorated {
         text-decoration: none !important;
-        font-size: 12px !important;
-        font-weight:normal !important;
+        font-size: 11px !important;
+        font-weight: normal !important;
     }
     .windowtitle{
         font-size:13px;
@@ -1238,9 +1238,9 @@
         font-size: 12px !important;
     }
     .v-slot-datasetproteinstablestyle{
-	bottom:5px !important;
-	position:relative !important; 
-}
+        bottom:5px !important;
+        position:relative !important; 
+    }
 
     .searchtablecontainer .v-label,  .searchtablecontainer .smallundecorated.v-label-smallundecorated {
         text-align: center;
@@ -1970,14 +1970,14 @@
     .marginleft-5{
         margin-left: -5px !important;
     }
-     .resizeabletext {
-	font-size: 1vh;
-}
+    .resizeabletext {
+        font-size: 1vh;
+    }
 
- .legenditem {
-	font-size: 1vmin;
-	height: 20px !important;
-}
+    .legenditem {
+        font-size: 1vmin;
+        height: 20px !important;
+    }
     .v-slot-legenditem{
         min-width:20px !important;
         max-height: 20px;
@@ -3459,10 +3459,10 @@
         top: 5px !important;
         bottom: 0px !important;
     }
-.nodedisabled{
-	border:1px solid lightgray !important;
-	background:white !important;
-}
+    .nodedisabled{
+        border:1px solid lightgray !important;
+        background:white !important;
+    }
 
     /**mobile screen style***/
     .smallscreenstyle.mobilestyle .logocontainer img {
@@ -4314,7 +4314,7 @@
         padding:15px !important;
     }
     .psprojectname{
-        max-width:400px;
+        max-width:450px;
         margin-left:20px;
         margin-top:20px;
         margin-bottom: 10px;
@@ -4348,7 +4348,18 @@
         min-height:30px;
 
     }
-
+    .optiongroupframe{
+        max-height:135px;
+        overflow-y:auto;
+        overflow-x:hidden;
+        min-width:495px;
+        text-overflow: ellipsis;
+    }
+    .optiongroupframe label{
+        text-overflow: ellipsis;
+        overflow: hidden;
+        max-width:100px !important;
+    }
     .v-select-optiongroup-showlist .v-checkbox{
         min-height: 19px !important;
     }
@@ -4375,17 +4386,16 @@
     .popupwindow .v-window-closebox {
         z-index: 3;
         right: 10px !important;
-        margin-top: 10px !important;    
-        font-size: 25px !important;
+        margin-top: 10px !important;
+        font-size: 20px !important;
         font-weight: bold !important;
         font-family: "Open Sans", sans-serif !important;
         text-decoration: none !important;
-        width:25px !important;
-        height: 25px !important;
-        border:1px solid gray;
+        width: 20px !important;
+        height: 20px !important;
+        border: 1px solid gray;
         text-align: center;
-        outline: none;   
-
+        outline: none;
         -webkit-tap-highlight-color: transparent;
         -webkit-touch-callout: none;
         cursor: pointer;
@@ -4394,15 +4404,16 @@
         border-radius: 4px;
         border: 1px solid #c5c5c5;
         background-color: #fafafa;
+        line-height:18px;
     }
     .subpanelframe .Vaadin-Icons{
         font-size:15px;
     }
-    .panelframe .v-filterselect{
-        margin-top:35px !important;
-        border-bottom:1px solid white !important;
-        max-height:25px;
-
+    .panelframe .v-filterselect {
+        margin-top: 30px !important;
+        border-right: 3px solid white;
+        border-bottom: 1px solid white !important;
+        max-height: 25px;
     }
     .breakline .v-label{
         min-width: 50px;
@@ -4427,6 +4438,11 @@
     .nomargin .v-filterselect.v-filterselect-small.v-filterselect-tiny.v-filterselect-align-center{
         margin-top: 0px !important;
     }
+    .v-filterselect-button{
+        font-size:10px !important;
+        margin-top:5px;
+    }
+
     .v-caption-psprojectname{
         font-family: "Open Sans", sans-serif !important;
         color: #464646;
@@ -4451,7 +4467,15 @@
     .v-caption-on-left .v-slot-dropdownlist{
         vertical-align:middle !important;
     }
-
+    .panelframe .v-filterselect .v-filterselect-button{
+	line-height:0px !important;
+	top:-5px;
+}
+.psmlegendrangeconatainer .v-slot-stacked.v-slot-colorscale{
+	max-width:60% !important;
+	margin-top:-4px;
+	margin-left:26%
+}
     .v-caption-on-left .v-slot-dropdownlist div {
         display: inline-block !important;
         vertical-align: middle !important;
@@ -4470,7 +4494,7 @@
         padding-left:0px !important;
     }
     .nomargintop .v-filterselect.v-widget.dropdownlist.v-filterselect-dropdownlist {
-        max-width:400px !important;
+        max-width:450px !important;
         margin-top:0px;
     }
     .v-slot-multiheaders {
@@ -4490,7 +4514,7 @@
 
     }
     .multiheaders center {
-        width:33.333%;
+        width:33.333% !important;
         max-height:20px;
         display: inline-block !important;
         text-align:left;
@@ -4503,9 +4527,9 @@
         font-size: 12px;
         margin-top: -2px;
     }
-    .subpanelframe .v-button-icon-align-right {
-        color: transparent ;
-    }
+    /*    .subpanelframe .v-button-icon-align-right {
+            color: transparent ;
+        }*/
     .v-slot-icon-align-right div:hover {
         color: #1b7de1 !important;
     }
@@ -4636,21 +4660,21 @@
 
     .btninframe {
        	position: absolute !important;
-	z-index: 5 !important;
-	margin: 0px !important;
-	padding: 0px !important;
-	border-top-color: white !important;
-	border-right-color: white !important;
-	border-top-left-radius: 0px !important;
-	border-bottom-right-radius: 0px !important;
-	width:2vmin !important;
-	height:2vmin !important;
-	right:0px;
+        z-index: 5 !important;
+        margin: 0px !important;
+        padding: 0px !important;
+        border-top-color: white !important;
+        border-right-color: white !important;
+        border-top-left-radius: 0px !important;
+        border-bottom-right-radius: 0px !important;
+        width:2vmin !important;
+        height:2vmin !important;
+        right:0px;
     }
     .btninframe .v-image{
         padding:10% !important;
-        
-	vertical-align:center !important;
+
+        vertical-align:center !important;
 
     }
     .btninframe .v-image:hover{
@@ -5056,41 +5080,49 @@
         margin-top:15px !important;
     }
 
-.v-table-framedpanel .v-table-caption-container {
-	font-size: 12px;
-	line-height:20px;
-	padding-top:0px;
-	overflow:visible;
-}
- .framedpanel .v-table-header-wrap {
-	max-height: 25px !important;
-	min-height:25px !important;
-	padding-left: 0.0px;
-}
+    .v-table-framedpanel .v-table-caption-container {
+        font-size: 12px;
+        line-height:20px;
+        padding-top:0px;
+        overflow:visible;
+    }
+    .framedpanel .v-table-header-wrap {
+        max-height: 25px !important;
+        min-height:25px !important;
+        padding-left: 0.0px;
+    }
 
- .framedpanel .v-table-sort-indicator {
-	line-height: 20px !important;
-}
-.chromosomefiltercontainerstyle{
-	max-height:150px !important;
-	bottom:5px !important;
-	position:absolute !important;;
-}
-.divapiechartcontainerstyle{
-	max-height:150px !important;
-	top:0px !important;
-	position:absolute !important;;
-}
-.correctresetbtn  .btninframe {
-	top:4px;
-}
-.v-caption-smalliconlabel img{
-	height:20px !important;
+    .framedpanel .v-table-sort-indicator {
+        line-height: 20px !important;
+    }
+    .chromosomefiltercontainerstyle{
+        max-height:150px !important;
+        bottom:5px !important;
+        position:absolute !important;;
+    }
+    .divapiechartcontainerstyle{
+        max-height:150px !important;
+        top:0px !important;
+        position:absolute !important;;
+    }
+    .correctresetbtn  .btninframe {
+        top:4px;
+    }
+    .v-caption-smalliconlabel img{
+        height:20px !important;
 
+    }
+    .row .v-label b{
+        color:gray ;
+        font-size:12px;
+        font-weight:normal !important;
+    }
+     .v-ddwrapper-over:before,  .v-ddwrapper-over:after {
+	
+	border: 0 solid transparent !important;
 }
-.row .v-label b{
-	color:gray ;
-	font-size:12px;
-	font-weight:normal !important;
+.v-ddwrapper-over-middle:after,  .v-ddwrapper-over-center:after {
+	
+	background: transparent !important;
 }
 }

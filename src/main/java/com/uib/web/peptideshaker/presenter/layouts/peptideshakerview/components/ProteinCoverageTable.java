@@ -32,6 +32,7 @@ public abstract class ProteinCoverageTable extends VerticalLayout {
 
     public ProteinCoverageTable(AbsoluteLayout chainCoverageLayout) {
         ProteinCoverageTable.this.setSizeFull();
+        ProteinCoverageTable.this.setStyleName("proteincoveragetablecontainer");
         this.chainCoverageLayout = chainCoverageLayout;
         tableData = new LinkedMap<>();
         proteinCoverageTable = new Table(" ");
@@ -50,6 +51,8 @@ public abstract class ProteinCoverageTable extends VerticalLayout {
         proteinCoverageTable.setColumnWidth("index", 37);
         proteinCoverageTable.setColumnWidth("acc", 100);
         proteinCoverageTable.setColumnWidth("name", 300);
+        proteinCoverageTable.setCacheRate(1);
+        proteinCoverageTable.setBuffered(true);
         ProteinCoverageTable.this.addComponent(proteinCoverageTable);
         proteinCoverageTable.addColumnResizeListener((Table.ColumnResizeEvent event) -> {
             proteinCoverageTable.setColumnWidth(event.getPropertyId(), event.getPreviousWidth());
@@ -81,6 +84,7 @@ public abstract class ProteinCoverageTable extends VerticalLayout {
             return pcov;
         }).forEachOrdered((_item) -> {
         });
+       
 
     }
 

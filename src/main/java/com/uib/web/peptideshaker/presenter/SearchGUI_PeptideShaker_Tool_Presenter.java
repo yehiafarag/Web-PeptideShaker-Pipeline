@@ -52,6 +52,7 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
 
          this.smallControlButton = new SmallSideBtn("img/sgui.png");//spectra2.pngimg/searchgui-medium-shadow-2.png
         this.smallControlButton.setData(SearchGUI_PeptideShaker_Tool_Presenter.this.getViewId());
+        this.smallControlButton.setDescription("Run SearchGUI & PeptideShaker tool");
         this.controlButton = new ButtonWithLabel("SearchGUI & PeptideShaker</br><font>Run SearchGUI and PeptideShaker tools on Galaxy Server</font>",1);//spectra2.png
         this.controlButton.setData(SearchGUI_PeptideShaker_Tool_Presenter.this.getViewId());
         this.controlButton.updateIconResource(new ThemeResource("img/sgui.png"));//img/workflow3.png

@@ -839,7 +839,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         leftSideLayout.setWidth(100, Unit.PERCENTAGE);
         leftSideLayout.setHeightUndefined();
         leftSideLayout.setSpacing(true);
-        leftSideLayout.setMargin(new MarginInfo(false, false, false, false));
+        leftSideLayout.setMargin(new MarginInfo(false, true, false, false));
         popupproteaseFragmentationContainer.addComponent(leftSideLayout);
 
         Label proteaseFragmentationLabel = new Label("Edit Protease & Fragmentation", ContentMode.HTML);

@@ -156,7 +156,7 @@ public class FiltersContainer extends HorizontalLayout {
         filterRightPanelContainer.addComponent(prptidesNumberFilter);
         filterRightPanelContainer.setComponentAlignment(prptidesNumberFilter, Alignment.TOP_LEFT);
 
-        psmNumberFilter = new DivaRangeFilter("#PSM", "psmNum_filter", this.Selection_Manager) {
+        psmNumberFilter = new DivaRangeFilter("#PSMs", "psmNum_filter", this.Selection_Manager) {
             @Override
             public void selectionChange(String type) {
             }

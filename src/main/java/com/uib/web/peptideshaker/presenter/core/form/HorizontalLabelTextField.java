@@ -31,6 +31,7 @@ public class HorizontalLabelTextField extends HorizontalLayout {
      */
     public HorizontalLabelTextField(String caption, Object defaultValue, Validator validator) {
         HorizontalLabelTextField.this.setSizeFull();
+        HorizontalLabelTextField.this.setSpacing(true);
         captionLabel = new Label(caption);
         captionLabel.setContentMode(ContentMode.HTML);
         captionLabel.addStyleName(ValoTheme.LABEL_TINY);

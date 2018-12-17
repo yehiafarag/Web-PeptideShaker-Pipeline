@@ -140,6 +140,7 @@ public class SecondarySpectraChartsGenerator {
             plot.setRangeZeroBaselinePaint(Color.LIGHT_GRAY);
             plot.setRangeZeroBaselineStroke(new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[]{10.0f}, 0.0f));
             plot.getDomainAxis().setUpperBound(plot.getDomainAxis().getUpperBound()+30);
+            plot.getRangeAxis().setUpperBound(plot.getRangeAxis().getUpperBound()+30);
 
             DefaultXYItemRenderer renderer = (DefaultXYItemRenderer) plot.getRenderer();
             for (int i = 0; i < plot.getSeriesCount(); i++) {

@@ -131,7 +131,7 @@ public abstract class Legend extends VerticalLayout {
         psmNumberContainer.setHeightUndefined();
         psmNumberContainer.setVisible(false);
         psmNumberContainer.addStyleName("psmlegendrangeconatainer");
-        psmNumberContainer.setCaption("<b>#PSM</b>");
+        psmNumberContainer.setCaption("<b>#PSMs</b>");
         psmNumberContainer.setCaptionAsHtml(true);
         layoutMap.put("PSMNumber", psmNumberContainer);
         lowerContainer.addComponent(psmNumberContainer);
@@ -151,7 +151,7 @@ public abstract class Legend extends VerticalLayout {
     }
 
     private Node generateNode(String defaultStyleName) {
-        Node node = new Node("prot", "", "", -1, "") {
+        Node node = new Node("prot","prot", "", "", -1, "") {
             @Override
             public void selected(String id) {
 
@@ -188,7 +188,7 @@ public abstract class Legend extends VerticalLayout {
 
         currentModifications += modifications.split("\\(")[0] + ";";
 
-        Node node = new Node("prot", modifications, null, -1, "red") {
+        Node node = new Node("prot","prot", modifications, null, -1, "red") {
             @Override
             public void selected(String id) {
 

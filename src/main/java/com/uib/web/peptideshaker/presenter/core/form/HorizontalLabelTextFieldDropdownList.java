@@ -38,6 +38,7 @@ public class HorizontalLabelTextFieldDropdownList extends HorizontalLayout {
     public HorizontalLabelTextFieldDropdownList(String title, Object defaultValue, Set<String> values, Validator validator) {
 
         HorizontalLabelTextFieldDropdownList.this.setSizeFull();
+        HorizontalLabelTextFieldDropdownList.this.setSpacing(true);
         cap = new Label(title);
         cap.addStyleName(ValoTheme.LABEL_TINY);
         cap.addStyleName(ValoTheme.LABEL_SMALL);
@@ -67,7 +68,7 @@ public class HorizontalLabelTextFieldDropdownList extends HorizontalLayout {
         textField.setNullRepresentation(this.defaultValue);
         
         textField.setWidth(100, Unit.PERCENTAGE);
-        textField.setHeight(25, Unit.PIXELS);
+        textField.setHeight(20, Unit.PIXELS);
         textField.setValue(this.defaultValue);
         textField.setData(this.defaultValue);
        
@@ -77,7 +78,7 @@ public class HorizontalLabelTextFieldDropdownList extends HorizontalLayout {
         list2 = new ComboBox();
         list2.setTextInputAllowed(false);
         list2.setWidth(100, Unit.PERCENTAGE);
-        list2.setHeight(25, Unit.PIXELS);
+        list2.setHeight(20, Unit.PIXELS);
         list2.setStyleName(ValoTheme.COMBOBOX_SMALL);
         list2.addStyleName(ValoTheme.COMBOBOX_TINY);
         list2.addStyleName(ValoTheme.COMBOBOX_ALIGN_CENTER);

@@ -30,6 +30,7 @@ public class HorizontalLabelDropDounList extends HorizontalLayout {
      */
     public HorizontalLabelDropDounList(String caption) {
         HorizontalLabelDropDounList.this.setSizeFull();
+        HorizontalLabelDropDounList.this.setSpacing(true);
         cap = new Label(caption);
         cap.addStyleName(ValoTheme.LABEL_TINY);
         cap.addStyleName(ValoTheme.LABEL_SMALL);
@@ -40,7 +41,7 @@ public class HorizontalLabelDropDounList extends HorizontalLayout {
         list = new ComboBox();
         list.setTextInputAllowed(false);
         list.setWidth(100, Unit.PERCENTAGE);
-        list.setHeight(25, Unit.PIXELS);
+        list.setHeight(20, Unit.PIXELS);
         list.setStyleName(ValoTheme.COMBOBOX_SMALL);
         list.addStyleName(ValoTheme.COMBOBOX_TINY);
         list.addStyleName(ValoTheme.COMBOBOX_ALIGN_CENTER);

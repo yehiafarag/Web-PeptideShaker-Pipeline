@@ -35,6 +35,7 @@ public class HorizontalLabel2TextField extends HorizontalLayout {
     public HorizontalLabel2TextField(String title, Object defaultValue1, Object defaultValue2, Validator validator) {
 
         HorizontalLabel2TextField.this.setSizeFull();
+        HorizontalLabel2TextField.this.setSpacing(true);
         cap = new Label(title);
         cap.addStyleName(ValoTheme.LABEL_TINY);
         cap.addStyleName(ValoTheme.LABEL_SMALL);
@@ -58,7 +59,7 @@ public class HorizontalLabel2TextField extends HorizontalLayout {
         textField1.addStyleName(ValoTheme.TEXTFIELD_TINY);
         textField1.setNullRepresentation(this.defaultValue1);
         textField1.setWidth(100, Unit.PERCENTAGE);
-        textField1.setHeight(25, Unit.PIXELS);
+        textField1.setHeight(20, Unit.PIXELS);
         HorizontalLabel2TextField.this.addComponent(textField1);
         HorizontalLabel2TextField.this.setExpandRatio(textField1, 27.5f);
 
@@ -78,7 +79,7 @@ public class HorizontalLabel2TextField extends HorizontalLayout {
         textField2.addStyleName(ValoTheme.TEXTFIELD_TINY);
         textField2.setNullRepresentation(this.defaultValue2);
         textField2.setWidth(100, Unit.PERCENTAGE);
-        textField2.setHeight(25, Unit.PIXELS);
+        textField2.setHeight(20, Unit.PIXELS);
         HorizontalLabel2TextField.this.addComponent(textField2);
         HorizontalLabel2TextField.this.setExpandRatio(textField2, 27.5f);
 

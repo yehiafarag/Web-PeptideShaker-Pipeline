@@ -107,7 +107,7 @@ public class PeptideLayout extends AbsoluteLayout implements Comparable<PeptideL
         psmNumberLayout.setData(peptide.getModifiedSequence());
 //        psmNumberLayout.setStyleName("basicpeptidemodification");
 
-        tooltip += "</br>#PSM: " + peptide.getPSMsNumber() + "";
+        tooltip += "</br>#PSMs: " + peptide.getPSMsNumber() + "";
 
         Label psmsColorLabel = new Label("<div style='background:" + PSMNumberColor + "; width:100%;height:100%;'></div>", ContentMode.HTML);
         psmsColorLabel.setSizeFull();
