@@ -45,6 +45,7 @@ import java.awt.Stroke;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -243,6 +244,8 @@ public abstract class GraphComponent extends VerticalLayout {
         lefTtopPanel.addComponent(proteinsControl);
 
         proteinsControlListener = (Property.ValueChangeEvent event) -> {
+            if(proteinsControl.getValue()==null)
+                return;
             informationLegend.updateLegend(proteinsControl.getValue() + "");
             updateNodeColourType(proteinsControl.getValue() + "");
 
@@ -368,9 +371,10 @@ public abstract class GraphComponent extends VerticalLayout {
         scaler.scale(visualizationViewer, 1f, visualizationViewer.getCenter());
         reDrawGraph();
     }
+    private String lastSelectedModeType = null;
 
     private void updateNodeColourType(String modeType) {
-
+        lastSelectedModeType = modeType;
         nodesMap.keySet().forEach((key) -> {
             nodesMap.get(key).setNodeStatues(modeType);
         });
@@ -398,11 +402,11 @@ public abstract class GraphComponent extends VerticalLayout {
         this.edges = edges;
         setUpGraph();
 
-        for (String node : graph.getVertices()) {
+        graph.getVertices().forEach((node) -> {
             String modifications = "";
             String sequence = "";
-            int psmNumber = 0;
-            String tooltip = "";
+            int psmNumber;
+            String tooltip;
 
             if (peptidesNodes.containsKey(node)) {
                 modifications = peptidesNodes.get(node).getVariableModifications();
@@ -454,8 +458,7 @@ public abstract class GraphComponent extends VerticalLayout {
             wrapper.setData(node);
             wrapper.setDescription(n.getDescription());
             canvas.addComponent(wrapper, "left: " + n.getX() + "px; top: " + n.getY() + "px");
-
-        }
+        });
         Set<String> tnodesMap = new HashSet<>();
         edges.keySet().forEach((key) -> {
             ArrayList<String> edg = edges.get(key);
@@ -468,7 +471,7 @@ public abstract class GraphComponent extends VerticalLayout {
                 String edgeString2 = n2.getNodeId() + "__" + n1.getNodeId();
                 if (!tnodesMap.contains(edgeString) && !tnodesMap.contains(edgeString2)) {
                     n1.addEdge();
-                    n2.addEdge();;
+                    n2.addEdge();
                 }
                 tnodesMap.add(edgeString);
                 tnodesMap.add(edgeString2);
@@ -479,10 +482,11 @@ public abstract class GraphComponent extends VerticalLayout {
             });
         });
         selectNodes(selectedProtein.getProteinGroupSet().toArray());
-        proteinsControl.setValue("PSMNumber");
+        if (lastSelectedModeType == null) {
+            lastSelectedModeType = ("PSMNumber");
+        }
         thumbImgeUrl = generateThumbImg();
         informationLegend.updatePSMNumberLayout(colorScale.getColorScale());
-//        updateGraphLayout();
 
     }
 
@@ -527,6 +531,14 @@ public abstract class GraphComponent extends VerticalLayout {
 
     }
 
+    public void updateMode() {
+        if (lastSelectedModeType != null) {
+            proteinsControl.setValue(null);
+            proteinsControl.setValue(lastSelectedModeType);
+        }
+//     updateNodeColourType(lastSelectedModeType);
+    }
+
     /**
      * Set up the graph.
      *
@@ -536,20 +548,20 @@ public abstract class GraphComponent extends VerticalLayout {
     private void setUpGraph() {
         graph = new UndirectedSparseGraph<>();
         // add all the nodes
-        for (String node : proteinNodes.keySet()) {
+        proteinNodes.keySet().forEach((node) -> {
             graph.addVertex(node);
-        }
-        for (String node : peptidesNodes.keySet()) {
+        });
+        peptidesNodes.keySet().forEach((node) -> {
             graph.addVertex(node);
-        }
+        });
 
         // add the vertexes
         Iterator<String> startNodeKeys = edges.keySet().iterator();
         while (startNodeKeys.hasNext()) {
             String startNode = startNodeKeys.next();
-            for (String endNode : edges.get(startNode)) {
+            edges.get(startNode).forEach((endNode) -> {
                 graph.addEdge(startNode + "|" + endNode, startNode, endNode);
-            }
+            });
         }
         // create the visualization viewer
         graphLayout = new FRLayout<>(graph);
@@ -562,7 +574,7 @@ public abstract class GraphComponent extends VerticalLayout {
         }
         BufferedImage image = new BufferedImage(liveWidth, liveHeight, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = image.createGraphics();
-        for (Edge edge : edgesMap) {
+        edgesMap.forEach((edge) -> {
             Shape edgeLine = drawEdge((int) edge.getStartX(), (int) edge.getStartY(), (int) edge.getEndX(), (int) edge.getEndY());
             if (uniqueOnly && edge.isHide()) {
                 g2.setPaint(Color.lightGray);
@@ -576,8 +588,7 @@ public abstract class GraphComponent extends VerticalLayout {
             } else {
                 g2.draw(edgeLine);
             }
-        }
-//        for (String node : graph.getVertices()) {
+        });//        for (String node : graph.getVertices()) {
 //
 //            Shape circle;
 //            if (peptidesNodes.containsKey(node)) {
@@ -601,7 +612,7 @@ public abstract class GraphComponent extends VerticalLayout {
         try {
             ImageEncoder in = ImageEncoderFactory.newInstance(ImageFormat.PNG, 1);
             imageData = in.encode(image);
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.out.println(e.getLocalizedMessage());
         }
 
@@ -695,12 +706,10 @@ public abstract class GraphComponent extends VerticalLayout {
         BufferedImage image = new BufferedImage(100, 100, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = image.createGraphics();
         g2.setPaint(Color.GRAY);
-        for (String edge : graph.getEdges()) {
-            Shape line = drawLine((int) tgraphlayout.getX(graph.getEndpoints(edge).getFirst()) + 10, (int) tgraphlayout.getY(graph.getEndpoints(edge).getFirst()) + 10, (int) tgraphlayout.getX(graph.getEndpoints(edge).getSecond()) + 10, (int) tgraphlayout.getY(graph.getEndpoints(edge).getSecond()) + 10);
+        graph.getEdges().stream().map((edge) -> drawLine((int) tgraphlayout.getX(graph.getEndpoints(edge).getFirst()) + 10, (int) tgraphlayout.getY(graph.getEndpoints(edge).getFirst()) + 10, (int) tgraphlayout.getX(graph.getEndpoints(edge).getSecond()) + 10, (int) tgraphlayout.getY(graph.getEndpoints(edge).getSecond()) + 10)).forEachOrdered((line) -> {
             g2.draw(line);
-        }
-        for (String node : graph.getVertices()) {
-
+        });
+        graph.getVertices().stream().map((node) -> {
             Shape circle;
             if (peptidesNodes.containsKey(node)) {
                 g2.setPaint(Color.GRAY);
@@ -713,17 +722,21 @@ public abstract class GraphComponent extends VerticalLayout {
 
                 circle = new Ellipse2D.Double((int) tgraphlayout.getX(node) - 10 + 10, tgraphlayout.getY(node) - 10 + 10, 20, 20);
             }
+            return circle;
+        }).map((circle) -> {
             g2.fill(circle);
+            return circle;
+        }).forEachOrdered((circle) -> {
             g2.setPaint(Color.WHITE);
             g2.draw(circle);
-        }
+        });
 
         g2.dispose();
         byte[] imageData = null;
         try {
             ImageEncoder in = ImageEncoderFactory.newInstance(ImageFormat.PNG, 1);
             imageData = in.encode(image);
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.out.println(e.getLocalizedMessage());
         }
 
@@ -751,7 +764,6 @@ public abstract class GraphComponent extends VerticalLayout {
     }
 
     public void selectParentItem(Object parentId) {
-
         redrawSelection(new Object[]{parentId}, true);
 
     }
@@ -765,6 +777,7 @@ public abstract class GraphComponent extends VerticalLayout {
         this.selectedPeptides.clear();
         this.selectedProteins.clear();
         for (Object id : ids) {
+
             Node n = nodesMap.get(id);
             if (uniqueOnly && n.getType() == 1) {
                 n.setSelected(true);
@@ -776,6 +789,7 @@ public abstract class GraphComponent extends VerticalLayout {
                 n.setSelected(true);
                 selectedPeptides.add(id);
             }
+
             if (selectRelatedNodes) {
                 edgesMap.stream().map((edge) -> {
                     edge.select(n, uniqueOnly);

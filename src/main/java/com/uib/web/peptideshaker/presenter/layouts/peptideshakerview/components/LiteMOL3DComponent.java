@@ -112,11 +112,10 @@ public class LiteMOL3DComponent extends VerticalLayout {
 
     public boolean activate3DProteinView() {
         if (pdbId == null) {
+            
             proteinStructurePanel.setValue("reset-_-");
-//            proteinStructurePanel.setVisible(false);
             return false;
         } else {
-//            proteinStructurePanel.setVisible(true);
             proteinStructurePanel.setValue("update-_-");
             return true;
         }
@@ -125,8 +124,6 @@ public class LiteMOL3DComponent extends VerticalLayout {
     public void reset3DView() {
         pdbId = null;
         proteinStructurePanel.setValue("reset-_-");
-//        proteinStructurePanel.setVisible(false);
-//        JavaScript.getCurrent().execute("document.getElementById('litemolframe').contentWindow.reset();");
     }
 
 }

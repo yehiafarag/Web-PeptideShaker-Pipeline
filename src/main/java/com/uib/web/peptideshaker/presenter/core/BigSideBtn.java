@@ -48,11 +48,14 @@ public class BigSideBtn extends HorizontalLayout {
             }
 
         };
-        btnThumbIconImage.setSizeFull();
+        btnThumbIconImage.setWidth(100,Unit.PERCENTAGE);
+        btnThumbIconImage.setHeight(60,Unit.PERCENTAGE);
         this.iconLabel = new Label();
         this.iconLabel.setSizeFull();
         this.iconLabel.setContentMode(ContentMode.HTML);
         this.btnId = btnId;
+        BigSideBtn.this.setHeight(100,Unit.PIXELS);
+        BigSideBtn.this.setWidth(100,Unit.PIXELS);
         BigSideBtn.this.addComponent(btnThumbIconImage);
         BigSideBtn.this.setComponentAlignment(btnThumbIconImage, Alignment.MIDDLE_CENTER);
         BigSideBtn.this.setExpandRatio(btnThumbIconImage,1);

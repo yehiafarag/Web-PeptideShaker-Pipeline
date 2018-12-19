@@ -258,7 +258,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         searchsettingsContainer.setWidth(100, Unit.PERCENTAGE);
         searchsettingsContainer.setHeight(25, Unit.PIXELS);
         searchsettingsContainer.setSpacing(true);
-        searchParametersFileNameInputField = new HorizontalLabelTextField("<b>Search Settings Name</b>", "Searching Settings Name", null);
+        searchParametersFileNameInputField = new HorizontalLabelTextField("<b>Search Settings Name</b>", "Search Settings Name", null);
         searchParametersFileNameInputField.setWidth(100, Unit.PERCENTAGE);
         searchParametersFileNameInputField.updateExpandingRatio(0.28f, 0.505f);
         searchParametersFileNameInputField.setRequired(false);

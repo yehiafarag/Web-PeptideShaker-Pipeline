@@ -294,7 +294,7 @@ public abstract class DataViewLayout extends Panel {
 
                 ((PeptideShakerVisualizationDataset) ds).setEnzyme(dsOverview.getEnzyme());
                 ((PopupWindow) infoLabel).setContent(dsOverview);
-                ((PopupWindow) infoLabel).setDescription("View searching settings ");
+                ((PopupWindow) infoLabel).setDescription("View search settings ");
 
                 if (statusLabel.getStatus() == 2) {
                     statusLabel.setStatus("Some files are missings or corrupted please re-run SearchGUI-PeptideShaker-WorkFlow");
@@ -336,7 +336,7 @@ public abstract class DataViewLayout extends Panel {
 
                 };
                 ((PopupWindow) infoLabel).setContent(fileOverview);
-                ((PopupWindow) infoLabel).setDescription("View searching settings ");
+                ((PopupWindow) infoLabel).setDescription("View search settings ");
 
                 nameLabel = new Label(ds.getName());
 

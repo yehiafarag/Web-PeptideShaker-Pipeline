@@ -41,7 +41,6 @@ public class ProteinStructurePanel extends AbsoluteLayout {
     private final ComboBox pdbChainsSelect;
     private final Property.ValueChangeListener pdbMatchSelectlistener;
     private final Property.ValueChangeListener pdbChainsSelectlistener;
-//    private final Button playBtn;
     private ChainCoverageComponent lastSelectedChainCoverage;
     private Object lastSelectedAccession;
     private String lastSelectedProteinSequence;
@@ -93,22 +92,6 @@ public class ProteinStructurePanel extends AbsoluteLayout {
         chainCoverageLayout.setSizeFull();
         LiteMolPanel.addComponent(liteMOL3DComponent);
         ProteinStructurePanel.this.addComponent(LiteMolPanel);
-//        playBtn = new Button("Enable 3D", VaadinIcons.POWER_OFF);
-//        playBtn.setStyleName(ValoTheme.BUTTON_ICON_ALIGN_RIGHT);
-//        playBtn.addStyleName(ValoTheme.BUTTON_LINK);
-//        ProteinStructurePanel.this.addComponent(playBtn, "left: 10px; top:-10px");
-//
-//        playBtn.setDescription("Click to start protein 3D structure");
-//        playBtn.addClickListener((Button.ClickEvent event) -> {
-//            if (playBtn.getCaption().contains("Enable 3D")) {
-//                playBtn.setCaption("Disable 3D");
-//                loadData(lastSelectedAccession, lastSelectedProteinSequence);
-//            } else {
-//                playBtn.setCaption("Enable 3D");
-//                reset();
-//                playBtn.setEnabled(true);
-//            }
-//        });
 
         uniprotLabel = new Label("UniProt:");
         uniprotLabel.addStyleName("selectchain3dMenue");
@@ -206,17 +189,12 @@ public class ProteinStructurePanel extends AbsoluteLayout {
     }
 
     public void reset() {
-//        playBtn.setEnabled(false);
         liteMOL3DComponent.reset3DView();
         pdbMatchesSelect.setVisible(false);
         pdbChainsSelect.setVisible(false);
         chainCoverageLayout.setVisible(false);
         uniprotLabel.setVisible(false);
-        
-//        liteMOL3DComponent.setVisible(false);
-        
         lastSelectedPeptideKey = null;
-//        playBtn.setCaption("Enable 3D");
     }
 
     public void activate3DProteinView() {
@@ -225,26 +203,19 @@ public class ProteinStructurePanel extends AbsoluteLayout {
             reset();
             return;
         }
-//        if (pdbMatchesSelect.isVisible()) {
-//            return;
-//        }
+        
         pdbMatchesSelect.setVisible(true);
         pdbChainsSelect.setVisible(true);
         chainCoverageLayout.setVisible(true);
         uniprotLabel.setVisible(true);
-//        playBtn.setCaption("Disable 3D");
-        loadData(lastSelectedAccession, lastSelectedProteinSequence);
+//        loadData(lastSelectedAccession, lastSelectedProteinSequence);
     }
 
-    public void updatePanel(Object accession, String proteinSequence, Collection<PeptideObject> proteinPeptides) {
-//        playBtn.setEnabled(true);
+    public void updatePanel(Object accession, String proteinSequence, Collection<PeptideObject> proteinPeptides) {        
         this.lastSelectedAccession = accession;
         this.lastSelectedProteinSequence = proteinSequence;
         this.uniprotLabel.setValue("UniProt: " + lastSelectedAccession);
         this.proteinPeptides = proteinPeptides;
-//        if (playBtn.getCaption().equalsIgnoreCase("Enable 3D")) {
-//            return;
-//        }
         loadData(lastSelectedAccession, lastSelectedProteinSequence);
 
     }
@@ -276,7 +247,6 @@ public class ProteinStructurePanel extends AbsoluteLayout {
             pdbMatchesSelect.addValueChangeListener(pdbMatchSelectlistener);
             String pdbMachSelectValue = pdbMatchesSelect.getItemIds().toArray()[0] + "";
             pdbMatchesSelect.setValue(pdbMachSelectValue);
-//            playBtn.addStyleName("poweron");
 
         } else {
             Notification.show("No visulization available ", Notification.Type.TRAY_NOTIFICATION);
@@ -480,7 +450,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
                 break;
             }
         }
-        String pdbAccession = (pdbMatchesSelect.getValue() + "").toLowerCase();        
+        String pdbAccession = (pdbMatchesSelect.getValue() + "").toLowerCase();
         liteMOL3DComponent.excuteQuery(pdbAccession, lastSelectedMatch.getEntity_id(chainId), chainId.toUpperCase(), initColorMap(basicColor), entriesSet);
 
     }

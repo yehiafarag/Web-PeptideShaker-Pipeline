@@ -231,6 +231,7 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
 
     public void activate3DProteinView() {
         proteinStructurePanel.activate3DProteinView();
+       selectedProteinGraph.updateMode();
     }
  
 

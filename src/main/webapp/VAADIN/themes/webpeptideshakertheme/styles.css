@@ -13537,6 +13537,7 @@ div.v-layout.v-horizontal.v-widget {
 	position: relative;
 	z-index: 5 !important;
 	width: 105px !important;
+        height: 105px !important;
 	margin-left: 4px;
 	border-top: 1px solid lightgray;
 	border-bottom: 1px solid lightgray;
@@ -13579,8 +13580,8 @@ div.v-layout.v-horizontal.v-widget {
 	border-top-right-radius: 0px !important;
 	border-bottom-right-radius: 0px !important;
 	z-index: 5 !important;
-	height: auto !important;
 	width: 106px !important;
+        height:106px !important;
 }
 
 .webpeptideshakertheme .selectedbiglbtn img {
@@ -18110,4 +18111,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .v-ddwrapper-over-middle:after, .webpeptideshakertheme .v-ddwrapper-over-center:after {
 	background: transparent !important;
+}
+.v-table-framedpanel .v-table-body-noselection{
+	height:auto !important;
 }

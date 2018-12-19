@@ -292,7 +292,7 @@ public class SpectrumPlot extends AbsoluteLayout {
     private void updateImage(JPanel jpanel) {
 //        ExecutorService executorService = Executors.newSingleThreadExecutor();
 //        executorService.submit(() -> {
-        plot.setSource(new ExternalResource(drawImage(jpanel)));
+        plot.setSource(new ExternalResource(drawImage(jpanel,false)));
         //        });
         //        executorService.shutdown();
     }
@@ -581,7 +581,7 @@ public class SpectrumPlot extends AbsoluteLayout {
                     spectrumPanel.setPeakWidth(2f);
                     spectrumPanel.setBackgroundPeakWidth(0.5f);
                     spectrumPanel.setMaxPadding(10);
-                    plotThumbImage.setSource(new ExternalResource(drawImage(spectrumPanel)));
+                    plotThumbImage.setSource(new ExternalResource(drawImage(spectrumPanel,true)));
                     spectrumPanel.setMiniature(false);
                     spectrumPanel.setPeakWidth(1f);
                     spectrumPanel.setBackgroundPeakWidth(1f);
@@ -604,7 +604,7 @@ public class SpectrumPlot extends AbsoluteLayout {
         return identificationParameters;
     }
 
-    private String drawImage(JPanel panel) {
+    private String drawImage(JPanel panel, boolean thumb) {
 //        panel.revalidate();
         panel.repaint();
         if (panel.getWidth() <= 0) {
@@ -613,15 +613,21 @@ public class SpectrumPlot extends AbsoluteLayout {
         if (panel.getHeight() <= 0) {
             panel.setSize(panel.getWidth(), 100);
         }
+
         BufferedImage image = new BufferedImage(panel.getWidth(), panel.getHeight(), BufferedImage.TYPE_4BYTE_ABGR_PRE);
+      
         Graphics2D g2d = image.createGraphics();
+        if (thumb) {
+          
+            panel.setSize(100, 60);
+            panel.setOpaque(false);
+            panel.repaint();
+            g2d.translate(0, 20);
+
+        }
 //        //draw sequence line
         g2d.setColor(Color.LIGHT_GRAY);
-        try {
-            panel.paint(g2d);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        panel.paint(g2d);
 
         ImageEncoder in = ImageEncoderFactory.newInstance(ImageFormat.PNG, 1);
         byte[] imageData = null;

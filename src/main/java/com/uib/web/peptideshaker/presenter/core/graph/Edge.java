@@ -20,7 +20,7 @@ public class Edge {
     public Edge(Node n1, Node n2, boolean dotted) {
         this.n1 = n1;
         this.n2 = n2;
-        this.dotted=dotted;
+        this.dotted = dotted;
     }
 
     public boolean isSelected() {
@@ -29,14 +29,17 @@ public class Edge {
 
     public void select(Node n, boolean uniqueOnly) {
         if (n == n2) {
-            n2.setSelected(true);            
-            if (uniqueOnly && n1.getEdgesNumber() == 1 || !uniqueOnly) {
+            n2.setSelected(true);
+            if (uniqueOnly && n1.getType() == 1 && n1.getEdgesNumber() == 1 || !uniqueOnly) {
+                n1.setSelected(true);
+            } else if (n1.getType() == 0) {
                 n1.setSelected(true);
             }
-        }
-        else  if (n == n1) {
-            n1.setSelected(true);            
-            if (uniqueOnly && n2.getEdgesNumber() == 1 || !uniqueOnly) {
+        } else if (n == n1) {
+            n1.setSelected(true);
+            if (uniqueOnly && n2.getEdgesNumber() == 1 && n2.getType() == 1 || !uniqueOnly) {
+                n2.setSelected(true);
+            } else if (n2.getType() == 0) {
                 n2.setSelected(true);
             }
         }
@@ -77,6 +80,10 @@ public class Edge {
     public void setHide(boolean hide) {
         this.hide = hide;
     }
-    
+
+    public boolean isBelongToNode(String nodeId) {
+
+        return n1.getNodeId().equalsIgnoreCase(nodeId) || n2.getNodeId().equalsIgnoreCase(nodeId);
+    }
 
 }

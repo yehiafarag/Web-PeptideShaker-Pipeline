@@ -40,6 +40,7 @@ mylitemollibrary.LiteMolComponent = function (element) {
 
     this.setValue = function (value) {
         try {
+
             if ((value === null) || (value === undefined) || latestValue.includes(value)) {
                 return;
             }
@@ -58,6 +59,7 @@ mylitemollibrary.LiteMolComponent = function (element) {
                 }
                 excutequery(newid);
             } else if (value.includes("update-_-")) {
+                latestValue = "";               
                 redraw();
             }
         } catch (exp) {
@@ -115,8 +117,8 @@ mylitemollibrary.LiteMolComponent = function (element) {
     }
 
     var redraw = function () {
-        updatingBtn.click();
-        setTimeout(updatingBtn.click(), 1000);
+        hideWaterVar = !hideWaterVar;
+        setTimeout(hideWater, 1000);
     };
 
     function excutequery(newId) {
@@ -132,7 +134,7 @@ mylitemollibrary.LiteMolComponent = function (element) {
 //        }
 
             document.getElementById('pdbid').value = tquery;
-            if (newId === true) {  
+            if (newId === true) {
                 reset();
                 finalizeStyle();
                 controlBtns[14].click();
@@ -142,7 +144,7 @@ mylitemollibrary.LiteMolComponent = function (element) {
 
                 update();
             }
-          
+
         } catch (exception) {
             alert("exc query excp " + exception)
 
@@ -172,7 +174,7 @@ mylitemollibrary.LiteMolComponent = function (element) {
         controlBtns[26].click();
         document.getElementById('showWB').value = hideWaterVar;
         hideWaterVar = !hideWaterVar;
-        setTimeout(excutequery(true),1000);
+        setTimeout(excutequery(true), 1000);
     }
 
 

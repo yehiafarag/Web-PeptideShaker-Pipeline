@@ -182,5 +182,9 @@ public abstract class ProteinsPeptidesGraphComponent extends VerticalLayout {
     public abstract void selectedItem(Set<Object> selectedItems, Set<Object> selectedChildsItems);
 
     public abstract void updateProteinsMode(String modeType);
+    
+    public void updateMode(){
+    this.graphComponent.updateMode();
+    }
 
 }
