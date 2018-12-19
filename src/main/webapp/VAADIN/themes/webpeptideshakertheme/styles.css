@@ -14468,9 +14468,10 @@ div.v-layout.v-horizontal.v-widget {
 	top: -5px !important;
 	font-size: 12px !important;
 }
-.v-slot-datasetproteinstablestyle{
-	bottom:5px !important;
-	position:relative !important; 
+
+.webpeptideshakertheme .v-slot-datasetproteinstablestyle {
+	bottom: 5px !important;
+	position: relative !important;
 }
 
 .webpeptideshakertheme .searchtablecontainer .v-label, .webpeptideshakertheme .searchtablecontainer .smallundecorated.v-label-smallundecorated {
@@ -16577,9 +16578,9 @@ div.v-layout.v-horizontal.v-widget {
 	bottom: 0px !important;
 }
 
-.nodedisabled{
-	border:1px solid lightgray !important;
-	background:white !important;
+.webpeptideshakertheme .nodedisabled {
+	border: 1px solid lightgray !important;
+	background: white !important;
 }
 
 .webpeptideshakertheme .smallscreenstyle.mobilestyle .logocontainer img {
@@ -17386,17 +17387,7 @@ div.v-layout.v-horizontal.v-widget {
 .webpeptideshakertheme .psprojectname .v-slot-smallundecorated {
 	width: 30% !important;
 }
-.optiongroupframe{
-	max-height:135px;
-	overflow-y:auto;
-	overflow-x:hidden;
-	min-width:495px;
-	text-overflow: ellipsis;
-}
-.optiongroupframe label{
-	text-overflow: ellipsis;
-	overflow: hidden;
-}
+
 .webpeptideshakertheme .v-slot-btnbesidetitle {
 	max-height: 0px;
 	max-width: 420px;
@@ -17412,6 +17403,20 @@ div.v-layout.v-horizontal.v-widget {
 	position: relative !important;
 	min-width: 30px;
 	min-height: 30px;
+}
+
+.webpeptideshakertheme .optiongroupframe {
+	max-height: 135px;
+	overflow-y: auto;
+	overflow-x: hidden;
+	min-width: 495px;
+	text-overflow: ellipsis;
+}
+
+.webpeptideshakertheme .optiongroupframe label {
+	text-overflow: ellipsis;
+	overflow: hidden;
+	max-width: 100px !important;
 }
 
 .webpeptideshakertheme .v-select-optiongroup-showlist .v-checkbox {
@@ -17463,11 +17468,7 @@ div.v-layout.v-horizontal.v-widget {
 	border-radius: 4px;
 	border: 1px solid #c5c5c5;
 	background-color: #fafafa;
-	line-height:18px;
-}
-.v-filterselect-button{
-	font-size:10px !important;
-	margin-top:5px;
+	line-height: 18px;
 }
 
 .webpeptideshakertheme .subpanelframe .Vaadin-Icons {
@@ -17479,15 +17480,6 @@ div.v-layout.v-horizontal.v-widget {
 	border-right: 3px solid white;
 	border-bottom: 1px solid white !important;
 	max-height: 25px;
-}
-.panelframe .v-filterselect .v-filterselect-button{
-	line-height:0px !important;
-	top:-5px;
-}
-.psmlegendrangeconatainer .v-slot-stacked.v-slot-colorscale{
-	max-width:60% !important;
-	margin-top:-4px;
-	margin-left:26%
 }
 
 .webpeptideshakertheme .breakline .v-label {
@@ -17516,6 +17508,11 @@ div.v-layout.v-horizontal.v-widget {
 	margin-top: 0px !important;
 }
 
+.webpeptideshakertheme .v-filterselect-button {
+	font-size: 10px !important;
+	margin-top: 5px;
+}
+
 .webpeptideshakertheme .v-caption-psprojectname {
 	font-family: "Open Sans", sans-serif !important;
 	color: #464646;
@@ -17541,6 +17538,17 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .v-caption-on-left .v-slot-dropdownlist {
 	vertical-align: middle !important;
+}
+
+.webpeptideshakertheme .panelframe .v-filterselect .v-filterselect-button {
+	line-height: 0px !important;
+	top: -5px;
+}
+
+.webpeptideshakertheme .psmlegendrangeconatainer .v-slot-stacked.v-slot-colorscale {
+	max-width: 60% !important;
+	margin-top: -4px;
+	margin-left: 26%;
 }
 
 .webpeptideshakertheme .v-caption-on-left .v-slot-dropdownlist div {
@@ -17583,7 +17591,7 @@ div.v-layout.v-horizontal.v-widget {
 }
 
 .webpeptideshakertheme .multiheaders center {
-	width: 33.333%  !important;;
+	width: 33.333% !important;
 	max-height: 20px;
 	display: inline-block !important;
 	text-align: left;
@@ -17596,10 +17604,6 @@ div.v-layout.v-horizontal.v-widget {
 	font-size: 12px;
 	margin-top: -2px;
 }
-
-/*.webpeptideshakertheme .subpanelframe .v-button-icon-align-right {
-	color: transparent;
-}*/
 
 .webpeptideshakertheme .v-slot-icon-align-right div:hover {
 	color: #1b7de1 !important;
@@ -18099,11 +18103,11 @@ div.v-layout.v-horizontal.v-widget {
 	font-size: 12px;
 	font-weight: normal !important;
 }
- .v-ddwrapper-over:before,  .v-ddwrapper-over:after {
-	
+
+.webpeptideshakertheme .v-ddwrapper-over:before, .webpeptideshakertheme .v-ddwrapper-over:after {
 	border: 0 solid transparent !important;
 }
-.v-ddwrapper-over-middle:after,  .v-ddwrapper-over-center:after {
-	
+
+.webpeptideshakertheme .v-ddwrapper-over-middle:after, .webpeptideshakertheme .v-ddwrapper-over-center:after {
 	background: transparent !important;
 }
