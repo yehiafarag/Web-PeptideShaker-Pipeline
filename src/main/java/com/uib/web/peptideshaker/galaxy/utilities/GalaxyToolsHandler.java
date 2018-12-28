@@ -521,32 +521,11 @@ public abstract class GalaxyToolsHandler {
                 });
                 json = json.replace("\\\\\\\"variable_modifications\\\\\\\": null", "\\\\\\\"variable_modifications\\\\\\\": " + modifications.toString());
             }
-            /**
-             * Fixed_modifications.
-             */
-            if (!searchParameters.getPtmSettings().getFixedModifications().isEmpty()) {
-                Set<String> modifications = new HashSet<>();
-                searchParameters.getPtmSettings().getFixedModifications().forEach((modification) -> {
-                    modifications.add("\\\\\\\"" + modification + "\\\\\\\"");
-                });
-                json = json.replace("\\\\\\\"fixed_modifications\\\\\\\": null", "\\\\\\\"fixed_modifications\\\\\\\": " + modifications.toString());
-            }
-            /**
-             * Search engines options.
-             */
-            Set<String> search_engines = new HashSet<>();
-            searchEnginesList.forEach((searchEng) -> {
-                search_engines.add(("\\\\\\\"" + searchEng + "\\\\\\\"").replace(" (Select for noncommercial use only)", "").replace("+", "").replace("-", ""));
-            });
-            json = json.replace("{\\\\\\\"engines\\\\\\\": null}", "{\\\\\\\"engines\\\\\\\": " + search_engines.toString() + "}");
-            /**
-             * Precursor Options.
-             */
-            String updated = "\"{\\\\\\\"forward_ion\\\\\\\": \\\\\\\"" + ions.get(searchParameters.getForwardIons().get(0)) + "\\\\\\\", \\\\\\\"max_charge\\\\\\\": \\\\\\\"" + searchParameters.getMaxChargeSearched().value + "\\\\\\\", \\\\\\\"fragment_tol_units\\\\\\\": \\\\\\\"" + (searchParameters.getFragmentAccuracyType().ordinal() - 1) + "\\\\\\\", \\\\\\\"max_isotope\\\\\\\": \\\\\\\"" + (searchParameters.getMaxIsotopicCorrection()) + "\\\\\\\", \\\\\\\"precursor_ion_tol_units\\\\\\\": \\\\\\\"" + (searchParameters.getPrecursorAccuracyType().ordinal() + 1) + "\\\\\\\", \\\\\\\"min_isotope\\\\\\\": \\\\\\\"" + searchParameters.getMinIsotopicCorrection() + "\\\\\\\", \\\\\\\"fragment_tol\\\\\\\": \\\\\\\"" + searchParameters.getFragmentIonAccuracyInDaltons() + "\\\\\\\", \\\\\\\"min_charge\\\\\\\": \\\\\\\"" + searchParameters.getMinChargeSearched().value + "\\\\\\\", \\\\\\\"reverse_ion\\\\\\\": \\\\\\\"" + ions.get(searchParameters.getRewindIons().get(0)) + "\\\\\\\", \\\\\\\"precursor_ion_tol\\\\\\\": \\\\\\\"" + searchParameters.getPrecursorAccuracy() + "\\\\\\\"}\\\",";
-            json = json.replace("\"{\\\\\\\"forward_ion\\\\\\\": \\\\\\\"b\\\\\\\", \\\\\\\"max_charge\\\\\\\": \\\\\\\"4\\\\\\\", \\\\\\\"fragment_tol_units\\\\\\\": \\\\\\\"0\\\\\\\", \\\\\\\"max_isotope\\\\\\\": \\\\\\\"1\\\\\\\", \\\\\\\"precursor_ion_tol_units\\\\\\\": \\\\\\\"1\\\\\\\", \\\\\\\"min_isotope\\\\\\\": \\\\\\\"0\\\\\\\", \\\\\\\"fragment_tol\\\\\\\": \\\\\\\"0.5\\\\\\\", \\\\\\\"min_charge\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"reverse_ion\\\\\\\": \\\\\\\"y\\\\\\\", \\\\\\\"precursor_ion_tol\\\\\\\": \\\\\\\"10.0\\\\\\\"}\\\",", updated);
-            json = json.replace("1.16.31", peptideShaker_Tool.getVersion());
-//            json = json.replace("1.16.4", peptideShaker_Tool.getVersion());
-            selectedWf = galaxyWorkFlowClient.importWorkflow(json);
+            
+            String jsonWorkflow = get_json_for_SearchGUI_PeptideShaker_WorkFlow(workflowFile, projectName, searchParameters, searchEnginesList);
+            
+            selectedWf = galaxyWorkFlowClient.importWorkflow(jsonWorkflow);
+            
             WorkflowInputs workflowInputs = new WorkflowInputs();
             workflowInputs.setWorkflowId(selectedWf.getId());
             workflowInputs.setDestination(new WorkflowInputs.ExistingHistory(historyId));
