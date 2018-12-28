@@ -13537,7 +13537,6 @@ div.v-layout.v-horizontal.v-widget {
 	position: relative;
 	z-index: 5 !important;
 	width: 105px !important;
-        height: 105px !important;
 	margin-left: 4px;
 	border-top: 1px solid lightgray;
 	border-bottom: 1px solid lightgray;
@@ -13580,16 +13579,17 @@ div.v-layout.v-horizontal.v-widget {
 	border-top-right-radius: 0px !important;
 	border-bottom-right-radius: 0px !important;
 	z-index: 5 !important;
+	height: auto !important;
 	width: 106px !important;
-        height:106px !important;
-}
-
-.webpeptideshakertheme .selectedbiglbtn img {
 	border: 2px solid rgba(131, 188, 255, 0.96) !important;
 	backface-visibility: hidden;
 	perspective: 1000px;
 	border-radius: 5px;
 	cursor: pointer;
+}
+
+.webpeptideshakertheme .selectedbiglbtn .selectedbiglbtn img {
+	height: 106px !important;
 }
 
 .webpeptideshakertheme .shake {
@@ -18112,6 +18112,7 @@ div.v-layout.v-horizontal.v-widget {
 .webpeptideshakertheme .v-ddwrapper-over-middle:after, .webpeptideshakertheme .v-ddwrapper-over-center:after {
 	background: transparent !important;
 }
-.v-table-framedpanel .v-table-body-noselection{
-	height:auto !important;
+
+.webpeptideshakertheme .v-table-framedpanel .v-table-body-noselection {
+	height: auto !important;
 }
