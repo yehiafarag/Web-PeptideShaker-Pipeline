@@ -150,8 +150,9 @@ public abstract class GalaxyToolsHandler {
                                 SGVersion = version;
                                 search_GUI_Tool = tool;
                             }
-                        } else if (tool.getId().contains("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/peptide_shaker/")) {
-                            String version = tool.getVersion();//.getId().split("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/peptide_shaker/")[1];
+                        //} else if (tool.getId().contains("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/peptide_shaker/")) {
+                        } else if (tool.getId().contains("testtoolshed.g2.bx.psu.edu/repos/carlosh/peptideshaker_tests/peptide_shaker/")) {
+                        String version = tool.getVersion();//.getId().split("toolshed.g2.bx.psu.edu/repos/galaxyp/peptideshaker/peptide_shaker/")[1];
                             boolean check = isFirmwareNewer(version, PSVersion);
                             if (check) {
                                 PSVersion = version;
@@ -574,6 +575,80 @@ public abstract class GalaxyToolsHandler {
             return null;
         }
     }
+    
+    
+    
+    /**
+     * Run Online Peptide-Shaker + PathwayMatcher (Search-GUI -> Peptide Shaker -> PathwayMatcher) work-flow
+     *
+     * @param projectName The project name
+     * @param fastaFileId FASTA file dataset id
+     * @param mgfIdsList list of input MGF file dataset IDs on Galaxy Server
+     * @param searchEnginesList List of selected search engine names
+     * @param historyId Galaxy history id that will store the results
+     * @param searchParameters Search Parameter object
+     * @return Generated PeptideShaker visualisation dataset (Temporary dataset)
+     */
+    public PeptideShakerVisualizationDataset execute_SearchGUI_PeptideShaker_PathwayMatcher_WorkFlow(String projectName, String fastaFileId, Map<String, String> mgfIdsList, Set<String> searchEnginesList, String historyId, SearchParameters searchParameters) {
+        Workflow selectedWf = null;
+        try {
+            String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
+            File workflowFile;
+            WorkflowInputs.WorkflowInput workflowInput2_mgf;
+            if (mgfIdsList.size() > 1) {
+                workflowFile = new File(basepath + "/VAADIN/Galaxy-Workflow-Web-Peptide-Shaker-Multi-MGF-Pathway-Matcher-2018-updated-i.ga");//Galaxy-Workflow-Web-Peptide-Shaker-Multi-MGF-2018.ga
+                workflowInput2_mgf = prepareWorkflowCollectionList(WorkflowInputs.InputSourceType.HDCA, mgfIdsList.keySet(), historyId);
+            } else {
+                workflowFile = new File(basepath + "/VAADIN/Galaxy-Workflow-Web-Peptide-Shaker-Single-MGF-Pathway-Matcher-2018-updated-i.ga");
+                workflowInput2_mgf = new WorkflowInputs.WorkflowInput(mgfIdsList.keySet().iterator().next(), WorkflowInputs.InputSourceType.HDA);
+            }
+            
+            String jsonWorkflow = get_json_for_SearchGUI_PeptideShaker_WorkFlow(workflowFile, projectName, searchParameters, searchEnginesList);
+            
+            selectedWf = galaxyWorkFlowClient.importWorkflow(jsonWorkflow);
+            
+            WorkflowInputs workflowInputs = new WorkflowInputs();
+            workflowInputs.setWorkflowId(selectedWf.getId());
+            workflowInputs.setDestination(new WorkflowInputs.ExistingHistory(historyId));
+
+            WorkflowInputs.WorkflowInput workflowInput1_fasta = new WorkflowInputs.WorkflowInput(fastaFileId, WorkflowInputs.InputSourceType.HDA);
+            workflowInputs.setInput("0", workflowInput1_fasta);
+            workflowInputs.setInput("1", workflowInput2_mgf);
+
+            Thread t = new Thread(() -> {
+                galaxyWorkFlowClient.runWorkflow(workflowInputs);
+            });
+            t.start();
+            /**
+             * Re-index MGF files.
+             */
+            Thread t1 = new Thread(() -> {
+                int index = 1;
+                for (String mgfId : mgfIdsList.keySet()) {
+                    this.reIndexFile(mgfId, projectName + "-" + mgfIdsList.get(mgfId) + "-" + (index++) + "-MGFFile", historyId);
+                }
+
+            });
+            t1.start();
+
+            galaxyWorkFlowClient.deleteWorkflowRequest(selectedWf.getId());
+            while (t.isAlive()) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (selectedWf != null) {
+                galaxyWorkFlowClient.deleteWorkflowRequest(selectedWf.getId());
+            }
+            return null;
+        }
+    }
+
 
     /**
      * Prepares a work flow which takes as input a collection list.

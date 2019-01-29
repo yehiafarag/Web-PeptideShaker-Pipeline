@@ -9,6 +9,7 @@ import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideSha
 import com.uib.web.peptideshaker.presenter.FileSystemPresenter;
 import com.uib.web.peptideshaker.presenter.InteractivePSPRojectResultsPresenter;
 import com.uib.web.peptideshaker.presenter.SearchGUI_PeptideShaker_Tool_Presenter;
+import com.uib.web.peptideshaker.presenter.SearchGUI_PeptideShaker_PathwayMatcher_Tool_Presenter;
 import com.uib.web.peptideshaker.presenter.WelcomePagePresenter;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.MarginInfo;
@@ -48,9 +49,15 @@ public class WebPeptideShakerApp extends VerticalLayout {
     private InteractivePSPRojectResultsPresenter interactivePSPRojectResultsPresenter;
 
     /**
-     * The tools view component (frame to start analysis).
+     * The SearchGUI & PeptideShaker tools view component (frame to start analysis).
      */
-    private final SearchGUI_PeptideShaker_Tool_Presenter SearchGUI_PeptideShaker_Tool_Presenter;
+    //private final SearchGUI_PeptideShaker_Tool_Presenter SearchGUI_PeptideShaker_Tool_Presenter;
+    
+    /**
+     * The SearchGUI & PeptideShaker & PathwayMatcher tools view component (frame to start analysis).
+     */
+    private final SearchGUI_PeptideShaker_PathwayMatcher_Tool_Presenter SearchGUI_PeptideShaker_PathwayMatcher_Tool_Presenter;
+    
     /**
      * Container to view the main available datasets and files on galaxy server
      * or in other databases.
@@ -106,12 +113,38 @@ public class WebPeptideShakerApp extends VerticalLayout {
         };
 
         welcomePage.setPresenterControlButtonContainer(presentationManager.getPresenterButtonsContainerLayout());
-        SearchGUI_PeptideShaker_Tool_Presenter = new SearchGUI_PeptideShaker_Tool_Presenter() {
+        /*SearchGUI_PeptideShaker_Tool_Presenter = new SearchGUI_PeptideShaker_Tool_Presenter() {
             @Override
             public void execute_SearchGUI_PeptideShaker_WorkFlow(String projectName, String fastaFileId, Set<String> mgfIdsList, Set<String> searchEnginesList, SearchParameters searchParameters) {
                 Galaxy_Interactive_Layer.execute_SearchGUI_PeptideShaker_WorkFlow(projectName, fastaFileId, mgfIdsList, searchEnginesList, searchParameters);
             }
+            
+            @Override
+            public Map<String, GalaxyTransferableFile> saveSearchGUIParameters(SearchParameters searchParameters, boolean isNew) {
+                return Galaxy_Interactive_Layer.saveSearchGUIParameters(searchParameters, isNew);
+            }
 
+            @Override
+            public void maximizeView() {
+                updatePeptideShakerToolInputForm(Galaxy_Interactive_Layer.getSearchSettingsFilesMap(), Galaxy_Interactive_Layer.getFastaFilesMap(), Galaxy_Interactive_Layer.getMgfFilesMap());
+                super.maximizeView(); //To change body of generated methods, choose Tools | Templates.
+            }
+
+        };*/
+        
+        SearchGUI_PeptideShaker_PathwayMatcher_Tool_Presenter = new SearchGUI_PeptideShaker_PathwayMatcher_Tool_Presenter() {
+            @Override
+            public void execute_SearchGUI_PeptideShaker_WorkFlow(String projectName, String fastaFileId, Set<String> mgfIdsList, Set<String> searchEnginesList, SearchParameters searchParameters) {
+                System.out.println("SearchGUI_PeptideShaker_PathwayMatcher_Tool_Presenter, execute_SearchGUI_PeptideShaker_WorkFlow");
+                Galaxy_Interactive_Layer.execute_SearchGUI_PeptideShaker_WorkFlow(projectName, fastaFileId, mgfIdsList, searchEnginesList, searchParameters);
+            }
+            
+            @Override
+            public void execute_SearchGUI_PeptideShaker_PathwayMatcher_WorkFlow(String projectName, String fastaFileId, Set<String> mgfIdsList, Set<String> searchEnginesList, SearchParameters searchParameters) {
+                System.out.println("SearchGUI_PeptideShaker_PathwayMatcher_Tool_Presenter, execute_SearchGUI_PeptideShaker_PathwayMatcher_WorkFlow");
+                Galaxy_Interactive_Layer.execute_SearchGUI_PeptideShaker_PathwayMatcher_WorkFlow(projectName, fastaFileId, mgfIdsList, searchEnginesList, searchParameters);
+            }
+            
             @Override
             public Map<String, GalaxyTransferableFile> saveSearchGUIParameters(SearchParameters searchParameters, boolean isNew) {
                 return Galaxy_Interactive_Layer.saveSearchGUIParameters(searchParameters, isNew);
@@ -124,7 +157,8 @@ public class WebPeptideShakerApp extends VerticalLayout {
             }
 
         };
-
+        SearchGUI_PeptideShaker_PathwayMatcher_Tool_Presenter.initLayout();
+        
         fileSystemPresenter = new FileSystemPresenter() {
             @Override
             public void deleteDataset(GalaxyFileObject ds) {
@@ -197,7 +231,7 @@ public class WebPeptideShakerApp extends VerticalLayout {
         presentationManager.registerView(welcomePage);
         presentationManager.viewLayout(welcomePage.getViewId());
         presentationManager.registerView(fileSystemPresenter);
-        presentationManager.registerView(SearchGUI_PeptideShaker_Tool_Presenter);
+        presentationManager.registerView(SearchGUI_PeptideShaker_PathwayMatcher_Tool_Presenter);
         presentationManager.registerView(interactivePSPRojectResultsPresenter);
 
     }

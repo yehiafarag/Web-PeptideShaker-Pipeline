@@ -330,7 +330,7 @@ public abstract class InteractiveGalaxyLayer {
         PeptideShakerVisualizationDataset tempWorkflowOutput = toolsHandler.execute_SearchGUI_PeptideShaker_WorkFlow(projectName, fastaFileId, mgfMap, searchEnginesList, historyHandler.getWorkingHistoryId(), searchParameters);
         toolsHandler.synchronizeDataWithGalaxyServer(true);
     }
-
+    
     public void deleteDataset(GalaxyFileObject ds,boolean updatePresenterView) {
         if (ds.getType().equalsIgnoreCase("Web Peptide Shaker Dataset")) {
             PeptideShakerVisualizationDataset vDs = (PeptideShakerVisualizationDataset) ds;
