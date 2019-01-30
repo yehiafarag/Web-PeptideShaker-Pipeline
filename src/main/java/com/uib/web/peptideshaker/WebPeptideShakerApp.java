@@ -56,7 +56,7 @@ public class WebPeptideShakerApp extends VerticalLayout {
     /**
      * The SearchGUI & PeptideShaker & PathwayMatcher tools view component (frame to start analysis).
      */
-    private final SearchGUI_PeptideShaker_PathwayMatcher_Tool_Presenter SearchGUI_PeptideShaker_PathwayMatcher_Tool_Presenter;
+    //private final SearchGUI_PeptideShaker_PathwayMatcher_Tool_Presenter SearchGUI_PeptideShaker_PathwayMatcher_Tool_Presenter;
     
     /**
      * Container to view the main available datasets and files on galaxy server
@@ -233,7 +233,8 @@ public class WebPeptideShakerApp extends VerticalLayout {
         presentationManager.registerView(welcomePage);
         presentationManager.viewLayout(welcomePage.getViewId());
         presentationManager.registerView(fileSystemPresenter);
-        presentationManager.registerView(SearchGUI_PeptideShaker_PathwayMatcher_Tool_Presenter);
+        //presentationManager.registerView(SearchGUI_PeptideShaker_PathwayMatcher_Tool_Presenter);
+        presentationManager.registerView(SearchGUI_PeptideShaker_Tool_Presenter);
         presentationManager.registerView(interactivePSPRojectResultsPresenter);
 
     }
