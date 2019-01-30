@@ -51,7 +51,7 @@ public class WebPeptideShakerApp extends VerticalLayout {
     /**
      * The SearchGUI & PeptideShaker tools view component (frame to start analysis).
      */
-    //private final SearchGUI_PeptideShaker_Tool_Presenter SearchGUI_PeptideShaker_Tool_Presenter;
+    private final SearchGUI_PeptideShaker_Tool_Presenter SearchGUI_PeptideShaker_Tool_Presenter;
     
     /**
      * The SearchGUI & PeptideShaker & PathwayMatcher tools view component (frame to start analysis).
@@ -113,7 +113,7 @@ public class WebPeptideShakerApp extends VerticalLayout {
         };
 
         welcomePage.setPresenterControlButtonContainer(presentationManager.getPresenterButtonsContainerLayout());
-        /*SearchGUI_PeptideShaker_Tool_Presenter = new SearchGUI_PeptideShaker_Tool_Presenter() {
+        SearchGUI_PeptideShaker_Tool_Presenter = new SearchGUI_PeptideShaker_Tool_Presenter() {
             @Override
             public void execute_SearchGUI_PeptideShaker_WorkFlow(String projectName, String fastaFileId, Set<String> mgfIdsList, Set<String> searchEnginesList, SearchParameters searchParameters) {
                 Galaxy_Interactive_Layer.execute_SearchGUI_PeptideShaker_WorkFlow(projectName, fastaFileId, mgfIdsList, searchEnginesList, searchParameters);
@@ -130,9 +130,10 @@ public class WebPeptideShakerApp extends VerticalLayout {
                 super.maximizeView(); //To change body of generated methods, choose Tools | Templates.
             }
 
-        };*/
+        };
+        SearchGUI_PeptideShaker_Tool_Presenter.initLayout();
         
-        SearchGUI_PeptideShaker_PathwayMatcher_Tool_Presenter = new SearchGUI_PeptideShaker_PathwayMatcher_Tool_Presenter() {
+        /*SearchGUI_PeptideShaker_PathwayMatcher_Tool_Presenter = new SearchGUI_PeptideShaker_PathwayMatcher_Tool_Presenter() {
             @Override
             public void execute_SearchGUI_PeptideShaker_WorkFlow(String projectName, String fastaFileId, Set<String> mgfIdsList, Set<String> searchEnginesList, SearchParameters searchParameters) {
                 System.out.println("SearchGUI_PeptideShaker_PathwayMatcher_Tool_Presenter, execute_SearchGUI_PeptideShaker_WorkFlow");
@@ -158,6 +159,7 @@ public class WebPeptideShakerApp extends VerticalLayout {
 
         };
         SearchGUI_PeptideShaker_PathwayMatcher_Tool_Presenter.initLayout();
+        */
         
         fileSystemPresenter = new FileSystemPresenter() {
             @Override
