@@ -260,11 +260,11 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         searchsettingsContainer.setSpacing(true);
         searchParametersFileNameInputField = new HorizontalLabelTextField("<b>Search Settings Name</b>", "Search Settings Name", null);
         searchParametersFileNameInputField.setWidth(100, Unit.PERCENTAGE);
-        searchParametersFileNameInputField.updateExpandingRatio(0.28f, 0.505f);
+        searchParametersFileNameInputField.updateExpandingRatio(0.271f, 0.525f);
         searchParametersFileNameInputField.setRequired(false);
         VerticalLayout spacer = new VerticalLayout();
         searchParametersFileNameInputField.addComponent(spacer);
-        searchParametersFileNameInputField.setExpandRatio(spacer, 0.215f);
+        searchParametersFileNameInputField.setExpandRatio(spacer, 0.204f);
 
         searchsettingsContainer.addComponent(searchParametersFileNameInputField);
 
@@ -951,7 +951,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
             @Override
             public void onClosePopup() {
 
-                String value = "<center>" + digestionList.fullLabelValue() + "</center><center>" + enzymeList.fullLabelValue() + "</center><center>" + specificityList.fullLabelValue() + " </center><br/><center> " + maxMissCleavages.fullLabelValue() + "</center><center>" + fragmentIonTypes.fullLabelValue().replace("_-_", "&") + "</center><center>" + precursorTolerance.fullLabelValue().replace("_-_", "") + " </center><br/><center> " + fragmentTolerance.fullLabelValue().replace("_-_", "") + "</center><center>" + precursorCharge.fullLabelValue().replace("_-_", "-") + "</center><center>" + isotopes.fullLabelValue().replace("_-_", "-") + "</center>";
+                String value = "<center>" + digestionList.fullLabelValue() + "</center><center>" + enzymeList.fullLabelValue() + "</center><center>" + specificityList.fullLabelValue() + " </center><br/><center> " + maxMissCleavages.fullLabelValue() + "</center><center>" + fragmentIonTypes.fullLabelValue().replace("_-_", " and ") + "</center><center>" + precursorTolerance.fullLabelValue().replace("_-_", "") + " </center><br/><center> " + fragmentTolerance.fullLabelValue().replace("_-_", "") + "</center><center>" + precursorCharge.fullLabelValue().replace("_-_", "-") + "</center><center>" + isotopes.fullLabelValue().replace("_-_", "-") + "</center>";
                 proteaseFragmentationLabels.setValue(value);
 
             }
@@ -1094,7 +1094,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
             proteaseFragmentationContainer.addStyleName("minimizelayout");
         }
 
-        String value = "<center>" + digestionList.fullLabelValue() + "</center><center>" + enzymeList.fullLabelValue() + "</center><center>" + specificityList.fullLabelValue() + " </center><br/><center> " + maxMissCleavages.fullLabelValue() + "</center><center>" + fragmentIonTypes.fullLabelValue().replace("_-_", "&") + "</center><center>" + precursorTolerance.fullLabelValue().replace("_-_", "") + " </center><br/><center> " + fragmentTolerance.fullLabelValue().replace("_-_", "") + "</center><center>" + precursorCharge.fullLabelValue().replace("_-_", "-") + "</center><center>" + isotopes.fullLabelValue().replace("_-_", "-") + "</center>";
+        String value = "<center>" + digestionList.fullLabelValue() + "</center><center>" + enzymeList.fullLabelValue() + "</center><center>" + specificityList.fullLabelValue() + " </center><br/><center> " + maxMissCleavages.fullLabelValue() + "</center><center>" + fragmentIonTypes.fullLabelValue().replace("_-_", " and ") + "</center><center>" + precursorTolerance.fullLabelValue().replace("_-_", "") + " </center><br/><center> " + fragmentTolerance.fullLabelValue().replace("_-_", "") + "</center><center>" + precursorCharge.fullLabelValue().replace("_-_", "-") + "</center><center>" + isotopes.fullLabelValue().replace("_-_", "-") + "</center>";
         proteaseFragmentationLabels.setValue(value);
 
     }

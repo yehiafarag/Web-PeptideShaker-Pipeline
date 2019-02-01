@@ -496,7 +496,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         viewControlButton.addStyleName("homepagepresenterbtn");
         viewControlButton.setData(WelcomePagePresenter.this.getViewId());
 
-        this.viewControlButton.setDescription("View home page");
+        this.viewControlButton.setDescription("Home page");
 
         VerticalLayout mainBottomPanel = new VerticalLayout();
         mainBottomPanel.setStyleName("bluelayout");

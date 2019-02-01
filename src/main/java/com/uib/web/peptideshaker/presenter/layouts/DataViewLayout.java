@@ -250,7 +250,7 @@ public abstract class DataViewLayout extends Panel {
 
             if (ds.getType().equalsIgnoreCase("Web Peptide Shaker Dataset")) {
 
-                nameLabel = new ActionLabel(VaadinIcons.CLUSTER, ds.getName().split("___")[0], "View PeptideShaker results ") {
+                nameLabel = new ActionLabel(VaadinIcons.CLUSTER, ds.getName().split("___")[0], "PeptideShaker results ") {
                     @Override
                     public void layoutClick(LayoutEvents.LayoutClickEvent event) {
                         DataViewLayout.this.setEnabled(false);
@@ -336,7 +336,7 @@ public abstract class DataViewLayout extends Panel {
 
                 };
                 ((PopupWindow) infoLabel).setContent(fileOverview);
-                ((PopupWindow) infoLabel).setDescription("View search settings ");
+                ((PopupWindow) infoLabel).setDescription("Search settings ");
 
                 nameLabel = new Label(ds.getName());
 

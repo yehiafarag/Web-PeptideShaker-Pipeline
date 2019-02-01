@@ -13,11 +13,14 @@ import com.itextpdf.text.pdf.codec.Base64;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Image;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -34,7 +37,7 @@ import org.jfree.chart.encoders.ImageEncoderFactory;
 import org.jfree.chart.encoders.ImageFormat;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
-import org.jfree.ui.RectangleInsets;
+import org.jfree.graphics2d.svg.SVGGraphics2D;
 
 /**
  *
@@ -44,7 +47,7 @@ import org.jfree.ui.RectangleInsets;
 public class SecondarySpectraChartsGenerator {
 
     private final Image sequenceFragmentationChartComponent;
-    private final Image massErrorPlotComponent;
+    private final Label massErrorPlotComponent;
 //    private final Label sequenceLabel;
     private final Object objectId;
     private int imgW = -1;
@@ -78,12 +81,13 @@ public class SecondarySpectraChartsGenerator {
         SecondarySpectraChartsGenerator.this.massErrorPlot.setStyleName("sequencefragmentationchart");
         SecondarySpectraChartsGenerator.this.massErrorPlot.setData(objectId);
         this.sequenceFragmentationChartComponent = new Image();
-        this.massErrorPlotComponent = new Image();
+        this.massErrorPlotComponent = new Label();
+        this.massErrorPlotComponent.setContentMode(ContentMode.HTML);
+        this.massErrorPlotComponent.setHeight(100, Unit.PERCENTAGE);
+        this.massErrorPlotComponent.setWidth(100, Unit.PERCENTAGE);
 
         this.sequenceFragmentationChart.addComponent(this.sequenceFragmentationChartComponent);
         this.massErrorPlot.addComponent(this.massErrorPlotComponent);
-
-//        SecondarySpectraChartsGenerator.this.setComponentAlignment(this.plotImage, Alignment.TOP_CENTER);
         sequenceFragmentationChart.setDescription(tooltip);
 //        this.sequenceLabel = new Label(sequence, ContentMode.HTML);
 //        this.sequenceLabel.setStyleName(ValoTheme.LABEL_SMALL);
@@ -140,14 +144,14 @@ public class SecondarySpectraChartsGenerator {
             plot.setRangeZeroBaselinePaint(Color.LIGHT_GRAY);
             plot.setRangeZeroBaselineStroke(new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[]{10.0f}, 0.0f));
             plot.getDomainAxis().setUpperBound(plot.getDomainAxis().getUpperBound()+30);
-            plot.getRangeAxis().setUpperBound(plot.getRangeAxis().getUpperBound()+30);
+//            plot.getRangeAxis().setUpperBound(plot.getRangeAxis().getUpperBound()+30);
 
             DefaultXYItemRenderer renderer = (DefaultXYItemRenderer) plot.getRenderer();
             for (int i = 0; i < plot.getSeriesCount(); i++) {
                 renderer.setSeriesShape(i, new Ellipse2D.Double(-2.0, -2.0, 4.0, 4.0));
             }
             plot.setRenderer(renderer);
-            massErrorPlotComponent.setSource(new ExternalResource(drawImage(errorPlot.getChartPanel().getChart(), 270, 68)));
+            massErrorPlotComponent.setValue(drawImage(errorPlot.getChartPanel().getChart(), 270, 68));
 
         } catch (InterruptedException ex) {
             ex.printStackTrace();
@@ -193,20 +197,30 @@ public class SecondarySpectraChartsGenerator {
     }
 
     private String drawImage(JFreeChart chart, int imgW, int imgH) {
+        
+        
+//         chart.getLegend().setVisible(false);
+//        chart.fireChartChanged();
+        SVGGraphics2D g2 = new SVGGraphics2D(imgW, imgH);
+        Rectangle r = new Rectangle(0, 0, imgW, imgH);
+        chart.draw(g2, r);
+        return g2.getSVGElement();
+        
+        
 
-        BufferedImage image = chart.createBufferedImage(imgW, imgH);
-
-        byte[] imageData = null;
-        try {
-            ImageEncoder in = ImageEncoderFactory.newInstance(ImageFormat.PNG, 1);
-            imageData = in.encode(image);
-        } catch (IOException e) {
-            System.out.println(e.getLocalizedMessage());
-        }
-        base64 = Base64.encodeBytes(imageData);
-        base64 = "data:image/png;base64," + base64;
-        //total chain coverage     
-        return base64;
+//        BufferedImage image = chart.createBufferedImage(imgW, imgH);
+//
+//        byte[] imageData = null;
+//        try {
+//            ImageEncoder in = ImageEncoderFactory.newInstance(ImageFormat.PNG, 1);
+//            imageData = in.encode(image);
+//        } catch (IOException e) {
+//            System.out.println(e.getLocalizedMessage());
+//        }
+//        base64 = Base64.encodeBytes(imageData);
+//        base64 = "data:image/png;base64," + base64;
+//        //total chain coverage     
+//        return base64;
     }
 
 }

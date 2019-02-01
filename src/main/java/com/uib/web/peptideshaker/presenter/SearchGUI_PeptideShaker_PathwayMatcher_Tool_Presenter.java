@@ -42,6 +42,7 @@ public abstract class SearchGUI_PeptideShaker_PathwayMatcher_Tool_Presenter exte
      * @param fastaFilesMap The main FASTA File Map (ID to Name).
      * @param mgfFilesMap The main MGF File Map (ID to Name).
      */
+    @Override
     public void updatePeptideShakerToolInputForm(Map<String, GalaxyTransferableFile> searchSettingsMap, Map<String, GalaxyFileObject> fastaFilesMap, Map<String, GalaxyFileObject> mgfFilesMap) {
         peptideshakerToolInputForm.updateForm(searchSettingsMap, fastaFilesMap, mgfFilesMap);
     }
@@ -50,12 +51,11 @@ public abstract class SearchGUI_PeptideShaker_PathwayMatcher_Tool_Presenter exte
      * Initialise the main forms for user data input that is required for
      * performing search.
      */
-    public void initLayout() {
-        System.out.println("SearchGUI_PeptideShaker_PathwayMatcher_Tool_Presenter initLayout");
-        
+    @Override
+    public void initLayout() {        
         smallControlButton = new SmallSideBtn("img/sgui.png");//spectra2.pngimg/searchgui-medium-shadow-2.png
         smallControlButton.setData(SearchGUI_PeptideShaker_PathwayMatcher_Tool_Presenter.this.getViewId());
-        smallControlButton.setDescription("Run SearchGUI, PeptideShaker & PathwayMatcher tool");
+        smallControlButton.setDescription("Run SearchGUI, PeptideShaker and PathwayMatcher");
         controlButton = new ButtonWithLabel("SearchGUI, PeptideShaker & PathwayMatcher</br><font>Run SearchGUI, PeptideShaker and PathwayMatcher tools on Galaxy Server</font>",1);//spectra2.png
         controlButton.setData(SearchGUI_PeptideShaker_PathwayMatcher_Tool_Presenter.this.getViewId());
         controlButton.updateIconResource(new ThemeResource("img/sgui.png"));//img/workflow3.png
@@ -105,7 +105,7 @@ public abstract class SearchGUI_PeptideShaker_PathwayMatcher_Tool_Presenter exte
         toolViewFrameContent.addComponent(peptideshakerToolInputForm);
         
         SearchGUI_PeptideShaker_PathwayMatcher_Tool_Presenter.this.minimizeView();
-        this.controlButton.setDescription("Run SearchGUI, PeptideShaker & PathwayMatcher tool");
+        this.controlButton.setDescription("Run SearchGUI, PeptideShaker and PathwayMatcher tool");
 //         this.controlButton.addStyleName("hidetopbtn");
     }
 
@@ -125,7 +125,7 @@ public abstract class SearchGUI_PeptideShaker_PathwayMatcher_Tool_Presenter exte
      * @param fastaFileId FASTA file dataset id
      * @param mgfIdsList list of MGF file dataset ids
      * @param searchEnginesList List of selected search engine names
-     * @param historyId galaxy history id that will store the results
+     * @param searchParam
      */
     public abstract void execute_SearchGUI_PeptideShaker_PathwayMatcher_WorkFlow(String projectName, String fastaFileId, Set<String> mgfIdsList, Set<String> searchEnginesList, SearchParameters searchParam);
     
@@ -137,6 +137,7 @@ public abstract class SearchGUI_PeptideShaker_PathwayMatcher_Tool_Presenter exte
      * @param isNew is new search parameter file
      * @return updated search parameters file list
      */
+    @Override
     public abstract Map<String, GalaxyTransferableFile> saveSearchGUIParameters(SearchParameters searchParameters, boolean isNew);
 
 }

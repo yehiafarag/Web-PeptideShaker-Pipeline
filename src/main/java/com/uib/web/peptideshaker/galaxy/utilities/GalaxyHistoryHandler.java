@@ -15,7 +15,6 @@ import com.vaadin.ui.Notification;
 
 import com.vaadin.ui.UI;
 import java.io.File;
-import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -94,7 +93,7 @@ private Set<String> csf_pr_Accssion_List;
      */
     public GalaxyHistoryHandler(Set<String> csf_pr_Accssion_List ) {
         REFRESHER = new Refresher();
-        ((PeptidShakerUI) UI.getCurrent()).addExtension(REFRESHER);
+//        ((PeptidShakerUI) UI.getCurrent()).addExtension(REFRESHER);
         this.csf_pr_Accssion_List=csf_pr_Accssion_List;
 
     }
@@ -361,10 +360,12 @@ private Set<String> csf_pr_Accssion_List;
                 }
             }
             if (ready) {
+                ((PeptidShakerUI) UI.getCurrent()).removeExtension(REFRESHER);
                 REFRESHER.removeListener(refreshlistener);
                 updateHistory(updatePresenterView);
             }
         };
+        ((PeptidShakerUI) UI.getCurrent()).addExtension(REFRESHER);
         REFRESHER.addListener(refreshlistener);
 
     }

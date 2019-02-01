@@ -78,7 +78,7 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
         
         smallControlButton = new SmallSideBtn("img/sgui.png");//spectra2.pngimg/searchgui-medium-shadow-2.png
         smallControlButton.setData(SearchGUI_PeptideShaker_Tool_Presenter.this.getViewId());
-        smallControlButton.setDescription("Run SearchGUI & PeptideShaker tool");
+        smallControlButton.setDescription("Run SearchGUI and PeptideShaker");
         controlButton = new ButtonWithLabel("SearchGUI & PeptideShaker</br><font>Run SearchGUI and PeptideShaker tools on Galaxy Server</font>",1);//spectra2.png
         controlButton.setData(SearchGUI_PeptideShaker_Tool_Presenter.this.getViewId());
         controlButton.updateIconResource(new ThemeResource("img/sgui.png"));//img/workflow3.png
@@ -128,7 +128,7 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
         toolViewFrameContent.addComponent(peptideshakerToolInputForm);
 
         SearchGUI_PeptideShaker_Tool_Presenter.this.minimizeView();
-        this.controlButton.setDescription("Run SearchGUI & PeptideShaker tool");
+        this.controlButton.setDescription("Run SearchGUI and PeptideShaker tool");
 //         this.controlButton.addStyleName("hidetopbtn");
     }
 

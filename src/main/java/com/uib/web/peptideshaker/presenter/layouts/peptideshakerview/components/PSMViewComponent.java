@@ -84,6 +84,9 @@ public abstract class PSMViewComponent extends VerticalLayout {
             protected String formatPropertyValue(Object rowId, Object colId, Property property) {
                 Object v = property.getValue();
                 if (v instanceof Double) {
+                    if ((double) v == 1) {
+                        return "1.00";
+                    }
                     if ((double) v > 100) {
                         return df.format(v);
                     } else {
@@ -120,7 +123,7 @@ public abstract class PSMViewComponent extends VerticalLayout {
         psmOverviewTable.setColumnWidth("confidence", 170);
         psmOverviewTable.setColumnWidth("charge", 130);
         psmOverviewTable.setColumnWidth("mzError", 180);
-        psmOverviewTable.setColumnWidth("massErrorPlot",300);
+        psmOverviewTable.setColumnWidth("massErrorPlot", 300);
         psmOverviewTable.setSortContainerPropertyId("charge");
 
         splitpanel.setStyleName("nonscrollsplitpanel");
@@ -153,7 +156,7 @@ public abstract class PSMViewComponent extends VerticalLayout {
         tableResporter.addResizeListener((ComponentResizeEvent event) -> {
             int height = event.getHeight();
             int actH = 37 + (74 * psmOverviewTable.getItemIds().size());
-            int fragWidth = event.getWidth() - (836) - 9;
+            int fragWidth = event.getWidth() - (862) - 9;
             if ((actH > height)) {
                 fragWidth -= 20;
             }

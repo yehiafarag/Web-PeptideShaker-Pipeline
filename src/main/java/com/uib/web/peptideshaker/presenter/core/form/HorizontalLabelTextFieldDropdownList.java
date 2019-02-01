@@ -131,7 +131,7 @@ public class HorizontalLabelTextFieldDropdownList extends HorizontalLayout {
     
     }
      public String fullLabelValue(){
-        return "<b>"+cap.getValue()+": </b>"+textField.getValue()+"_-_"+list2.getValue();
+        return "<b>"+cap.getValue()+": </b> <font style='word-spacing: 1px;'>"+textField.getValue()+"_-_ "+list2.getValue()+"</font>";
     
     }
 

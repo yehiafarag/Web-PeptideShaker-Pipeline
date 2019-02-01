@@ -369,11 +369,9 @@
         z-index: 5 !important;
         height:auto !important;
         width:106px !important;
-        .selectedbiglbtn img {
-            height: 106px !important;
-        }
+       
 
-        border: 2px solid rgba(131, 188, 255, 0.96) !important;
+        /*border: 2px solid rgba(131, 188, 255, 0.96) !important;*/
         backface-visibility: hidden;
         perspective: 1000px;
         border-radius: 5px;
@@ -457,13 +455,14 @@
     .v-caption-dropdownlist {
         margin-left: 20px;
         padding-top: 10px;
-        font-size: 12px;
+        font-size: 11px;
+        margin-right:12px;
         font-weight: bold;
         font-family: "Open Sans", sans-serif;
     }
 
     .dropdownlist {
-        max-height: 25px;
+        max-height: 22px;
         margin-left: 20px;
         min-width: 250px !important;
     }
@@ -882,6 +881,7 @@
     }
     .psmtable.v-table .v-table-body{
         overflow-x:hidden;
+        overflow-y:scroll !important;
     }
 
     .psmtable.v-table [class*="-row"].v-selected {
@@ -4491,7 +4491,7 @@
         max-width:300px !important;
     }
     .nopaddingmiddlealign .v-select-optiongroup{
-        margin-top:10px;
+        margin-top:11px;
         padding-left:0px !important;
     }
     .nomargintop .v-filterselect.v-widget.dropdownlist.v-filterselect-dropdownlist {
@@ -4501,7 +4501,7 @@
     .v-slot-multiheaders {
         font-size: 11px !important;
         min-width: 50px;
-        word-spacing: 15px;
+        /*word-spacing: 15px;*/
         display: inline-block !important;
         width:100% !important;
         padding:0px !important;

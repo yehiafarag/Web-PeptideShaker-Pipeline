@@ -56,7 +56,7 @@ public class PeptidShakerUI extends UI {
      */
     @Override
     protected void init(VaadinRequest vaadinRequest) {
-        
+
         try {
             PeptidShakerUI.this.setSizeFull();
             notification = new Notification("Use the device in landscape mode :-)", Notification.Type.ERROR_MESSAGE);
@@ -67,7 +67,7 @@ public class PeptidShakerUI extends UI {
              * VaadinSession.
              *
              */
-            
+
             ServletContext scx = VaadinServlet.getCurrent().getServletContext();
             String localFileSystemFolderPath = (scx.getInitParameter("filesURL"));
             VaadinSession.getCurrent().setAttribute("userDataFolderUrl", localFileSystemFolderPath);
@@ -77,8 +77,8 @@ public class PeptidShakerUI extends UI {
             VaadinSession.getCurrent().setAttribute("testUserAPIKey", testUserAPIKey);
             String galaxyServerUrl = (scx.getInitParameter("galaxyServerUrl"));
             VaadinSession.getCurrent().setAttribute("galaxyServerUrl", galaxyServerUrl);
-            
-            updateCSFPRProteinsList();
+            String csfProteinsListURL = (scx.getInitParameter("csfprservice"));
+            updateCSFPRProteinsList(csfProteinsListURL);
             if (testUserAPIKey == null || galaxyServerUrl == null) {
                 notification = new Notification("Error in Galaxy server address, Contact administrator :-(", Notification.Type.ERROR_MESSAGE);
                 notification.setDelayMsec(-1);
@@ -129,7 +129,7 @@ public class PeptidShakerUI extends UI {
                     webPeptideShakerApp.addStyleName("hidemode");
                 } else if (Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile") && (Page.getCurrent().getBrowserWindowWidth() >= Page.getCurrent().getBrowserWindowHeight())) {
                     webPeptideShakerApp.removeStyleName("hidemode");
-                    
+
                 } else if ((Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight()) || (Page.getCurrent().getBrowserWindowWidth() < 1000) || (Page.getCurrent().getBrowserWindowHeight() < 500)) {
                     webPeptideShakerApp.addStyleName("smallscreenstyle");
                     VaadinSession.getCurrent().setAttribute("smallscreenstyle", true);
@@ -161,9 +161,9 @@ public class PeptidShakerUI extends UI {
         } catch (Exception e) {
             System.out.println("---------------------------error---------------------------");
             e.printStackTrace();
-            
+
         }
-        
+
     }
 
     /**
@@ -182,7 +182,7 @@ public class PeptidShakerUI extends UI {
             if (code == 404) {
                 return false;
             }
-            
+
         } catch (MalformedURLException ex) {
             return false;
         } catch (IOException ex) {
@@ -190,11 +190,17 @@ public class PeptidShakerUI extends UI {
         }
         return true;
     }
-    
+
     @Override
     public void addExtension(Extension extension) {
         super.addExtension(extension);
-        
+
+    }
+
+    @Override
+    public void removeExtension(Extension extension) {
+        super.removeExtension(extension);
+
     }
 
     /**
@@ -212,10 +218,10 @@ public class PeptidShakerUI extends UI {
      * compressed folder).
      *
      */
-    public void updateCSFPRProteinsList() {
+    private void updateCSFPRProteinsList(String csfProteinsListURL) {
         String updateFileName = "";
         try {
-            Document doc = Jsoup.connect("http://129.177.231.63/csf-pr/VAADIN/").get();
+            Document doc = Jsoup.connect(csfProteinsListURL).get();
             Elements elements = doc.getElementsByTag("body");
             for (Element elemet : elements) {
                 if ((elemet.text() + "").contains("prot-")) {
@@ -231,7 +237,7 @@ public class PeptidShakerUI extends UI {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-        
+
         String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
         VaadinSession.getCurrent().setAttribute("csfprfile", basepath + "/VAADIN/" + updateFileName);
         File file = new File(basepath + "/VAADIN/" + updateFileName);
@@ -241,7 +247,7 @@ public class PeptidShakerUI extends UI {
         FileOutputStream fos = null;
         try {
             file.createNewFile();
-            URL downloadableFile = new URL("http://129.177.231.63/csf-pr/VAADIN/" + updateFileName);
+            URL downloadableFile = new URL(csfProteinsListURL + updateFileName);
             URLConnection conn = downloadableFile.openConnection();
             conn.addRequestProperty("Connection", "keep-alive");
             conn.setDoInput(true);
@@ -262,9 +268,9 @@ public class PeptidShakerUI extends UI {
                         ex.printStackTrace();
                     }
                 }
-                
+
             }
-            
+
         } catch (MalformedURLException ex) {
             ex.printStackTrace();
         } catch (IOException ex) {
@@ -277,9 +283,9 @@ public class PeptidShakerUI extends UI {
                     ex.printStackTrace();
                 }
             }
-            
+
         }
-        
+
     }
-    
+
 }

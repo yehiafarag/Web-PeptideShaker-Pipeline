@@ -42,7 +42,7 @@ public class DatasetVisulizationLevelContainer extends HorizontalLayout {
         DatasetVisulizationLevelContainer.this.setStyleName("transitionallayout");
         DatasetVisulizationLevelContainer.this.setSpacing(false);
         DatasetVisulizationLevelContainer.this.setMargin(false);
-        datasetsOverviewBtn.setDescription("View selected dataset overview and the proteins list");
+        datasetsOverviewBtn.setDescription("Selected dataset overview and the proteins list");
 
 //        defaultThemeIcon = new ThemeResource("img/cluster.svg");//new ThemeResource("img/ds_filters_icon.png");
 //        activeThemeIcon = new ThemeResource("img/cluster.svg");

@@ -64,11 +64,11 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
 
         this.smallControlButton = new SmallSideBtn(VaadinIcons.GLOBE);
         this.smallControlButton.setData(FileSystemPresenter.this.getViewId());
-        smallControlButton.setDescription("View available datastes and files");
+        smallControlButton.setDescription("Available datastes");
         this.controlButton = new ButtonWithLabel("Data Overview</br><font>Available files and projects</font>", 1);
         this.controlButton.updateIcon(VaadinIcons.GLOBE.getHtml());
         this.controlButton.setData(FileSystemPresenter.this.getViewId());
-        this.controlButton.setDescription("View available datastes and files");
+        this.controlButton.setDescription("Available datastes");
 //         this.controlButton.addStyleName("hidetopbtn");
         this.btnsLayoutMap = new LinkedHashMap<>();
         this.initLayout();

@@ -83,14 +83,14 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
 
         this.smallControlButton = new SmallSideBtn(VaadinIcons.CLUSTER);
         smallControlButton.updateIconURL("img/venn.png");
-        smallControlButton.setDescription("View selected projects");
+        smallControlButton.setDescription("Selected projects");
         this.smallControlButton.setData(InteractivePSPRojectResultsPresenter.this.getViewId());
 
         this.controlButton = new ButtonWithLabel("Results</br><font>Interactive results visualization</font>", 1);
         this.controlButton.setData(InteractivePSPRojectResultsPresenter.this.getViewId());
         this.controlButton.updateIcon(VaadinIcons.CLUSTER.getHtml());
         this.controlButton.updateIconResource(new ThemeResource("img/venn.png"));
-        this.controlButton.setDescription("View selected projects");
+        this.controlButton.setDescription("Selected projects");
         this.controlButton.setEnabled(false);
         this.controlButton.addStyleName("orangeiconcolor");
         this.smallControlButton.setEnabled(false);

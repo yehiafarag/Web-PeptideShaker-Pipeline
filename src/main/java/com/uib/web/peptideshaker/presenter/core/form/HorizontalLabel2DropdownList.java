@@ -129,7 +129,7 @@ public class HorizontalLabel2DropdownList extends HorizontalLayout {
         return (!list1.getValue().toString().equalsIgnoreCase(list1.getData()+"")) || (!list2.getValue().toString().equalsIgnoreCase(list2.getData()+""));
     }
     public String fullLabelValue(){
-        return "<b>"+cap.getValue()+": </b>"+list1.getValue()+"_-_"+list2.getValue();
+        return "<b>"+cap.getValue()+": </b><font style='word-spacing: 1px;'>"+list1.getValue()+"_-_"+list2.getValue()+"</font>";
     
     }
 }
