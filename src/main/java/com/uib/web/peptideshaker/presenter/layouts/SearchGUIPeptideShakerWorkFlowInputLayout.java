@@ -11,6 +11,7 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.server.VaadinService;
 import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -40,41 +41,46 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
     /**
      * Search settings .par file drop-down list .
      */
-    private final DropDownList searchSettingsFileList;
+    protected DropDownList _searchSettingsFileList;
     /**
      * MGF file list available for user to select from.
      */
-    private final MultiSelectOptionGroup mgfFileList;
+    protected MultiSelectOptionGroup _mgfFileList;
     /**
      * layout contain project name field and execute button.
      */
-    private final TextField projectNameField;
+    protected TextField _projectNameField;
     /**
      * Pop-up layout content that has search input available options.
      */
-    private final SearchSettingsLayout searchSettingsLayout;
+    protected SearchSettingsLayout _searchSettingsLayout;
     /**
      * Pop-up layout container for edit user search input.
      */
-    private final PopupWindow editSearchOption;
+    protected PopupWindow _editSearchOption;
     /**
      * Available pre-saved search parameters files .par from previous searching.
      */
-    private Map<String, GalaxyTransferableFile> searchSettingsMap;
+    protected Map<String, GalaxyTransferableFile> _searchSettingsMap;
     /**
      * selected search parameters to perform the search at galaxy server.
      */
-    private SearchParameters searchParameters;
+    protected SearchParameters _searchParameters;
 
     /**
      * Constructor to initialise the main attributes.
      */
     @SuppressWarnings("Convert2Lambda")
     public SearchGUIPeptideShakerWorkFlowInputLayout() {
-        
+
+    }
+
+    public void initLayout(){
+
         SearchGUIPeptideShakerWorkFlowInputLayout.this.setWidth(100, Unit.PERCENTAGE);
         SearchGUIPeptideShakerWorkFlowInputLayout.this.setHeight(100, Unit.PERCENTAGE);
-        
+
+        // MAIN LAYOUT CONFIGURATION
         VerticalLayout content = new VerticalLayout();
         content.setHeightUndefined();
         content.setWidth(100, Unit.PERCENTAGE);
@@ -82,50 +88,112 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
         SearchGUIPeptideShakerWorkFlowInputLayout.this.setStyleName("subframe");
         SearchGUIPeptideShakerWorkFlowInputLayout.this.addStyleName("floatrightinyscreen");
         content.setSpacing(true);
-        
+
+        // CONFIGURING GRAPHICAL COMPONENTS...
+
+        // Title
         Label titleLabel = new Label("SearchGUI-PeptideShaker");
         titleLabel.setStyleName("frametitle");
         content.addComponent(titleLabel);
-        
-        projectNameField = new TextField("<b>Project Name</b>");
+
+        // Project name field
+        _projectNameField = setAndGetLayoutProjectNameField();
+        content.addComponent(_projectNameField);
+
+        // Search settings
+        _searchSettingsFileList = setAndGetLayoutSearchSettingsFileList();
+        content.addComponent(_searchSettingsFileList);
+        _searchSettingsFileList.setFocous();
+        // Search settings layout
+        _searchSettingsLayout = setAndGetLayoutSearchSettingsLayout();
+
+        // Edit search option
+        _editSearchOption = setAndGetLayoutEditSearchOption(_searchSettingsLayout);
+
+        // Search settings info
+        Label searchSettingInfo = setAndGetLayoutSearchSettingInfo();
+        content.addComponent(searchSettingInfo);
+
+        // MGF file list
+        _mgfFileList = setAndGetLayoutMgfFileList();
+        content.addComponent(_mgfFileList);
+
+        // Search engines list
+        Map<String, String> searchEnginesList = getSearchEnginesList();
+        MultiSelectOptionGroup searchEngines = setAndGetLayoutMultiSelectOptionGroup(searchEnginesList);
+        content.addComponent(searchEngines);
+
+
+        // BOTTOM LAYOUT
+        HorizontalLayout bottomLayout = new HorizontalLayout();
+        bottomLayout.setStyleName("bottomformlayout");
+        bottomLayout.setWidth(450, Unit.PIXELS);
+        bottomLayout.setSpacing(true);
+        content.addComponent(bottomLayout);
+
+        Button executeWorkFlowBtn = setAndGetLayoutExecuteWorkFlowBtn(bottomLayout, searchEngines, searchEnginesList);
+
+        _mgfFileList.setEnabled(false);
+        searchEngines.setEnabled(false);
+        _projectNameField.setEnabled(false);
+//        editSearchSettings.setEnabled(false);
+        executeWorkFlowBtn.setEnabled(false);
+
+        setLayoutSearchSettingsFileListListeners(_searchSettingsFileList, searchSettingInfo, searchEngines, executeWorkFlowBtn);
+    }
+
+
+    protected TextField setAndGetLayoutProjectNameField(){
+        TextField projectNameField = new TextField("<b>Project Name</b>");
         projectNameField.setInputPrompt("New Project Name");
         projectNameField.setCaptionAsHtml(true);
         projectNameField.setWidth(100, Unit.PERCENTAGE);
         projectNameField.setRequired(false);
         projectNameField.addStyleName("psprojectname");
-        content.addComponent(projectNameField);
-        
-        searchSettingsFileList = new DropDownList("Search Settings");
+        return projectNameField;
+    }
+
+    protected DropDownList setAndGetLayoutSearchSettingsFileList(){
+        DropDownList searchSettingsFileList = new DropDownList("Search Settings");
         searchSettingsFileList.setWidth(450, Unit.PIXELS);
         searchSettingsFileList.addStyleName("nomargintop");
         searchSettingsFileList.setReadOnly(true);
-        content.addComponent(searchSettingsFileList);
-        searchSettingsFileList.setFocous();
-        
-        searchSettingsLayout = new SearchSettingsLayout(false) {
+        return searchSettingsFileList;
+    }
+
+
+    protected SearchSettingsLayout setAndGetLayoutSearchSettingsLayout(){
+        SearchSettingsLayout searchSettingsLayout = new SearchSettingsLayout(false) {
             @Override
             public void saveSearchingFile(SearchParameters searchParameters, boolean isNew) {
                 checkAndSaveSearchSettingsFile(searchParameters, isNew);
-                editSearchOption.setPopupVisible(false);
+                _editSearchOption.setPopupVisible(false);
             }
-            
+
             @Override
             public void cancel() {
-                editSearchOption.setPopupVisible(false);
-                searchSettingsFileList.defultSelect();
+                _editSearchOption.setPopupVisible(false);
+                _searchSettingsFileList.defultSelect();
             }
-            
+
         };
-        editSearchOption = new PopupWindow("Edit") {
+        return searchSettingsLayout;
+    }
+
+    protected PopupWindow setAndGetLayoutEditSearchOption(VerticalLayout layoutContent){
+        PopupWindow editSearchOption = new PopupWindow("Edit") {
             @Override
             public void onClosePopup() {
             }
-            
+
         };
-        editSearchOption.setContent(searchSettingsLayout);
+        editSearchOption.setContent(layoutContent);
         editSearchOption.setSizeFull();
         editSearchOption.addStyleName("centerwindow");
-        
+        return editSearchOption;
+    }
+
+    protected Label setAndGetLayoutSearchSettingInfo(){
         Label searchSettingInfo = new Label();
         searchSettingInfo.setWidth(450, Unit.PIXELS);
         searchSettingInfo.setHeight(90, Unit.PIXELS);
@@ -133,151 +201,151 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
         searchSettingInfo.setStyleName("subpanelframe");
         searchSettingInfo.addStyleName("bottomformlayout");
         searchSettingInfo.addStyleName("smallfontlongtext");
-        content.addComponent(searchSettingInfo);
-        
-        mgfFileList = new MultiSelectOptionGroup("Spectrum File(s)", false);
+        return searchSettingInfo;
+    }
+
+    protected MultiSelectOptionGroup setAndGetLayoutMgfFileList(){
+        MultiSelectOptionGroup mgfFileList = new MultiSelectOptionGroup("Spectrum File(s)", false);
         mgfFileList.setWidth(450, Unit.PIXELS);
-        content.addComponent(mgfFileList);
         mgfFileList.setRequired(false, "Select at least 1 MGF file");
         mgfFileList.setViewList(true);
         mgfFileList.addStyleName("smallscreenfloatright");
         mgfFileList.addStyleName("top220");
-        
+        return mgfFileList;
+    }
+
+    protected MultiSelectOptionGroup setAndGetLayoutMultiSelectOptionGroup(Map<String, String> searchEnginesList){
         MultiSelectOptionGroup searchEngines = new MultiSelectOptionGroup("Search Engines", false);
         searchEngines.addStyleName("smallscreenfloatright");
-        content.addComponent(searchEngines);
-        searchEngines.setWidth(450, Unit.PIXELS);
+
         searchEngines.setRequired(false, "Select at least 1 search engine");
         searchEngines.setViewList(true);
-        
-        Map<String, String> searchEngienList = new LinkedHashMap<>();
-        searchEngienList.put("X!Tandem", "X! Tandem");
-        searchEngienList.put("MS-GF+", "MS-GF+");
-        searchEngienList.put("OMSSA", "OMSSA");
-        searchEngienList.put("Comet", "Comet");
-        searchEngienList.put("Tide", "Tide");
-        searchEngienList.put("MyriMatch", "MyriMatch");
-        searchEngienList.put("MS_Amanda", "MS Amanda");
-        searchEngienList.put("DirecTag", "DirecTag");
-        searchEngienList.put("Novor (Select for non-commercial use only)", "Novor");
-        searchEngines.updateList(searchEngienList);
+
+
+        searchEngines.updateList(searchEnginesList);
         searchEngines.setSelectedValue("X!Tandem");
         searchEngines.setSelectedValue("MS-GF+");
         searchEngines.setSelectedValue("OMSSA");
-        HorizontalLayout bottomLayout = new HorizontalLayout();
-        bottomLayout.setStyleName("bottomformlayout");
-        bottomLayout.setWidth(450, Unit.PIXELS);
-        bottomLayout.setSpacing(true);
-        content.addComponent(bottomLayout);
-        
+        return searchEngines;
+    }
+
+    protected Button setAndGetLayoutExecuteWorkFlowBtn(AbstractOrderedLayout layout, MultiSelectOptionGroup searchEngines, Map<String, String> searchEnginesList){
+
         Button executeWorkFlowBtn = new Button("Execute");
         executeWorkFlowBtn.setStyleName(ValoTheme.BUTTON_SMALL);
         executeWorkFlowBtn.addStyleName(ValoTheme.BUTTON_TINY);
-        bottomLayout.addComponent(executeWorkFlowBtn);
-        bottomLayout.setComponentAlignment(executeWorkFlowBtn, Alignment.TOP_CENTER);
-        
+        layout.addComponent(executeWorkFlowBtn);
+        layout.setComponentAlignment(executeWorkFlowBtn, Alignment.TOP_CENTER);
+
         executeWorkFlowBtn.addClickListener((Button.ClickEvent event) -> {
-            projectNameField.setRequired(true);
-            mgfFileList.setRequired(true, "Select at least 1 MGF file");
+            _projectNameField.setRequired(true);
+            _mgfFileList.setRequired(true, "Select at least 1 MGF file");
             searchEngines.setRequired(true, "Select at least 1 search engine");
-            
-            String fastFileId = searchSettingsLayout.getFastaFileId();
-            Set<String> spectrumIds = mgfFileList.getSelectedValue();
+
+            String fastFileId = _searchSettingsLayout.getFastaFileId();
+            Set<String> spectrumIds = _mgfFileList.getSelectedValue();
             Set<String> searchEnginesIds = searchEngines.getSelectedValue();
-            String projectName = projectNameField.getValue().replace(" ", "_").replace("-", "_") + "___" + (new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Timestamp(System.currentTimeMillis())));
+            String projectName = _projectNameField.getValue().replace(" ", "_").replace("-", "_") + "___" + (new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Timestamp(System.currentTimeMillis())));
             
-            if (!projectNameField.isValid()) {
-                mgfFileList.setRequired(false, "Select at least 1 MGF file");
+            if (!_projectNameField.isValid()) {
+                _mgfFileList.setRequired(false, "Select at least 1 MGF file");
                 searchEngines.setRequired(false, "Select at least 1 search engine");
                 return;
             }
             if (spectrumIds == null) {                
-                projectNameField.setRequired(false);
+                _projectNameField.setRequired(false);
                 searchEngines.setRequired(false, "Select at least 1 search engine");
                 return;
             }
             if (searchEnginesIds == null) {
-                
-                projectNameField.setRequired(false);
-                mgfFileList.setRequired(false, "Select at least 1 MGF file");
+
+                _projectNameField.setRequired(false);
+                _mgfFileList.setRequired(false, "Select at least 1 MGF file");
                 return;
             }
             if (fastFileId == null) {
                 Notification.show("FASTA file not available", Notification.Type.ERROR_MESSAGE);
                 return;
             }
-            projectNameField.setRequired(false);
-            mgfFileList.setRequired(false, "Select at least 1 MGF file");
+            
+            _projectNameField.setRequired(false);
+            _mgfFileList.setRequired(false, "Select at least 1 MGF file");
             searchEngines.setRequired(false, "Select at least 1 search engine");
             Map<String, Boolean> selectedSearchEngines = new HashMap<>();
-            searchEngienList.keySet().forEach((paramId) -> {
+            searchEnginesList.keySet().forEach((paramId) -> {
                 selectedSearchEngines.put(paramId, searchEngines.getSelectedValue().contains(paramId));
-            });;
-            executeWorkFlow(projectName, fastFileId, spectrumIds, searchEnginesIds, searchSettingsLayout.getSearchParameters());
-            projectNameField.clear();
-            
-        }
-        );
-        mgfFileList.setEnabled(
-                false);
-        searchEngines.setEnabled(
-                false);
-        projectNameField.setEnabled(
-                false);
+            });
+            executeWorkFlow(projectName, fastFileId, spectrumIds, searchEnginesIds, _searchSettingsLayout.getSearchParameters());
+        });
+        return executeWorkFlowBtn;
+    }
 
-//        editSearchSettings.setEnabled(false);
-        executeWorkFlowBtn.setEnabled(
-                false);
-        searchSettingsFileList.addValueChangeListener(
-                (Property.ValueChangeEvent event) -> {
-                    if (searchSettingsFileList.getSelectedValue() != null) {
-                        if (searchSettingsFileList.getSelectedValue().equalsIgnoreCase("Add new")) {
-                            String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
-                            File file = new File(basepath + "/VAADIN/default_searching.par");
-                            SearchParameters tSearchParameters;
-                            try {
-                                tSearchParameters = SearchParameters.getIdentificationParameters(file);
-                                tSearchParameters.setFastaFile(null);
-                            } catch (IOException | ClassNotFoundException ex) {
-                                
-                                ex.printStackTrace();
-                                return;
-                            }
-                            tSearchParameters.setDefaultAdvancedSettings();
-                            searchSettingsLayout.updateForms(tSearchParameters, null);
-                            editSearchOption.setPopupVisible(true);
-                            searchSettingInfo.setValue("Add new searching parameters");
-                            
-                            return;
-                        }
-                        
-                        mgfFileList.setEnabled(true);
-                        searchEngines.setEnabled(true);
-                        projectNameField.setEnabled(true);
-//                editSearchSettings.setEnabled(true);
-                        executeWorkFlowBtn.setEnabled(true);
+
+    protected void setLayoutSearchSettingsFileListListeners(DropDownList searchSettingsFileList, Label searchSettingInfo, MultiSelectOptionGroup searchEngines, Button executeWorkFlowBtn ){
+        _searchSettingsFileList.addValueChangeListener(
+            (Property.ValueChangeEvent event) -> {
+                if (_searchSettingsFileList.getSelectedValue() != null) {
+                    if (_searchSettingsFileList.getSelectedValue().equalsIgnoreCase("Add new")) {
+                        String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
+                        File file = new File(basepath + "/VAADIN/default_searching.par");
+                        SearchParameters searchParameters;
                         try {
-                            File file = searchSettingsMap.get(searchSettingsFileList.getSelectedValue()).getFile();
                             searchParameters = SearchParameters.getIdentificationParameters(file);
-                            String descrip = searchParameters.getShortDescription();
-                            for (String mod : searchSettingsLayout.getUpdatedModiList().keySet()) {
-                                if (descrip.contains(mod)) {
-                                    descrip = descrip.replace(mod, searchSettingsLayout.getUpdatedModiList().get(mod));
-                                }
-                                
-                            }
-                            
-                            descrip = descrip.replace(searchParameters.getFastaFile().getName(), searchSettingsLayout.getFastaFileName(searchParameters.getFastaFile().getName().split("__")[0]));
-                            searchSettingInfo.setValue(descrip);
+                            searchParameters.setFastaFile(null);
                         } catch (IOException | ClassNotFoundException ex) {
+
                             ex.printStackTrace();
                             return;
                         }
-                        searchSettingsLayout.updateForms(searchParameters, searchSettingsFileList.getSelectedValue());
-                        
+                        searchParameters.setDefaultAdvancedSettings();
+                        _searchSettingsLayout.updateForms(searchParameters, null);
+                        _editSearchOption.setPopupVisible(true);
+                        searchSettingInfo.setValue("Add new searching parameters");
+
+                        return;
                     }
+
+                    _mgfFileList.setEnabled(true);
+                    searchEngines.setEnabled(true);
+                    _projectNameField.setEnabled(true);
+    //                editSearchSettings.setEnabled(true);
+                    executeWorkFlowBtn.setEnabled(true);
+                    try {
+                        File file = _searchSettingsMap.get(_searchSettingsFileList.getSelectedValue()).getFile();
+                        _searchParameters = SearchParameters.getIdentificationParameters(file);
+                        String descrip = _searchParameters.getShortDescription();
+                        for (String mod : _searchSettingsLayout.getUpdatedModiList().keySet()) {
+                            if (descrip.contains(mod)) {
+                                descrip = descrip.replace(mod, _searchSettingsLayout.getUpdatedModiList().get(mod));
+                            }
+
+                        }
+
+                        descrip = descrip.replace(_searchParameters.getFastaFile().getName(), _searchSettingsLayout.getFastaFileName(_searchParameters.getFastaFile().getName().split("__")[0]));
+                        searchSettingInfo.setValue(descrip);
+                    } catch (IOException | ClassNotFoundException ex) {
+                        ex.printStackTrace();
+                        return;
+                    }
+                    _searchSettingsLayout.updateForms(_searchParameters, _searchSettingsFileList.getSelectedValue());
+
                 }
+            }
         );
+    }
+
+    protected Map<String, String> getSearchEnginesList(){
+        Map<String, String> searchEnginesList = new LinkedHashMap<>();
+        searchEnginesList.put("X!Tandem", "X! Tandem");
+        searchEnginesList.put("MS-GF+", "MS-GF+");
+        searchEnginesList.put("OMSSA", "OMSSA");
+        searchEnginesList.put("Comet", "Comet");
+        searchEnginesList.put("Tide", "Tide");
+        searchEnginesList.put("MyriMatch", "MyriMatch");
+        searchEnginesList.put("MS_Amanda", "MS Amanda");
+        searchEnginesList.put("DirecTag", "DirecTag");
+        searchEnginesList.put("Novor (Select for non-commercial use only)", "Novor");
+        return searchEnginesList;
     }
 
     /**
@@ -288,9 +356,9 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
      * @param mgfFilesMap MGF file map
      */
     public void updateForm(Map<String, GalaxyTransferableFile> searchSettingsMap, Map<String, GalaxyFileObject> fastaFilesMap, Map<String, GalaxyFileObject> mgfFilesMap) {
-        
-        this.searchSettingsMap = searchSettingsMap;
-        searchSettingsLayout.updateFastaFileList(fastaFilesMap);
+
+        this._searchSettingsMap = searchSettingsMap;
+        _searchSettingsLayout.updateFastaFileList(fastaFilesMap);
         Map<String, String> searchSettingsFileIdToNameMap = new LinkedHashMap<>();
         Object selectedId = "";
         for (String id : searchSettingsMap.keySet()) {
@@ -298,18 +366,17 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
             selectedId = id;
         }
         searchSettingsFileIdToNameMap.put("Add new", "Add new");
-        
-        searchSettingsFileList.updateList(searchSettingsFileIdToNameMap);
-        searchSettingsFileList.setSelected(selectedId);
-        searchSettingsFileList.setItemIcon("Add new", VaadinIcons.FILE_ADD);
+
+        _searchSettingsFileList.updateList(searchSettingsFileIdToNameMap);
+        _searchSettingsFileList.setSelected(selectedId);
+        _searchSettingsFileList.setItemIcon("Add new", VaadinIcons.FILE_ADD);
         Map<String, String> mgfFileIdToNameMap = new LinkedHashMap<>();
         mgfFilesMap.keySet().forEach((id) -> {
             mgfFileIdToNameMap.put(id, mgfFilesMap.get(id).getName());
         });
-        
-        mgfFileList.updateList(mgfFileIdToNameMap);
+        _mgfFileList.updateList(mgfFileIdToNameMap);
         if (mgfFileIdToNameMap.size() == 1) {
-            mgfFileList.setSelectedValue(mgfFileIdToNameMap.keySet());
+            _mgfFileList.setSelectedValue(mgfFileIdToNameMap.keySet());
         }
     }
 
@@ -333,19 +400,19 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
      * @param isNew create new file or edit exist file
      */
     private void checkAndSaveSearchSettingsFile(SearchParameters searchParameters, boolean isNew) {
-        this.searchParameters = searchParameters;
-        searchSettingsMap = saveSearchGUIParameters(searchParameters, isNew);
+        this._searchParameters = searchParameters;
+        _searchSettingsMap = saveSearchGUIParameters(searchParameters, isNew);
         Map<String, String> searchSettingsFileIdToNameMap = new LinkedHashMap<>();
         String objectId = "";
-        for (String id : searchSettingsMap.keySet()) {
-            searchSettingsFileIdToNameMap.put(id, searchSettingsMap.get(id).getGalaxyFileObject().getName().replace(".par", ""));
+        for (String id : _searchSettingsMap.keySet()) {
+            searchSettingsFileIdToNameMap.put(id, _searchSettingsMap.get(id).getGalaxyFileObject().getName().replace(".par", ""));
             objectId = id;
         }
         searchSettingsFileIdToNameMap.put("Add new", "Add new");
-        searchSettingsFileList.setItemIcon("Add new", VaadinIcons.FILE_ADD);
-        searchSettingsFileList.updateList(searchSettingsFileIdToNameMap);
-        searchSettingsFileList.setSelected(objectId);
-        
+        _searchSettingsFileList.setItemIcon("Add new", VaadinIcons.FILE_ADD);
+        _searchSettingsFileList.updateList(searchSettingsFileIdToNameMap);
+        _searchSettingsFileList.setSelected(objectId);
+
     }
 
     /**

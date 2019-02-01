@@ -237,7 +237,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
 
             });
             if (pdbMatchesSelect.getItemIds() == null) {
-                Notification.show("No visulization available ", Notification.Type.TRAY_NOTIFICATION);
+                Notification.show("No visualization available ", Notification.Type.TRAY_NOTIFICATION);
                 reset();
                 return;
             }
@@ -249,7 +249,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
             pdbMatchesSelect.setValue(pdbMachSelectValue);
 
         } else {
-            Notification.show("No visulization available ", Notification.Type.TRAY_NOTIFICATION);
+            Notification.show("No visualization available ", Notification.Type.TRAY_NOTIFICATION);
             reset();
         }
 

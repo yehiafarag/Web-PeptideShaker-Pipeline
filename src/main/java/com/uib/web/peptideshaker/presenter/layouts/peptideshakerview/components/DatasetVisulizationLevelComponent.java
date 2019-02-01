@@ -65,7 +65,7 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
         this.inferenceMap = new HashMap<>();
         this.inferenceMap.put("Single Protein", 1);
         this.inferenceMap.put("Related", 2);
-        this.inferenceMap.put("Related & Unrelated", 3);
+        this.inferenceMap.put("Rel. & unrelated", 3);
         this.inferenceMap.put("Unrelated", 4);
         TableColumnHeader header1 = new TableColumnHeader("index", Integer.class, null, "", null, Table.Align.RIGHT);
         TableColumnHeader header2 = new TableColumnHeader("proteinInference", ColorLabel.class, null, generateCaptionWithTooltio("PI", "Protein inference"), null, Table.Align.CENTER);

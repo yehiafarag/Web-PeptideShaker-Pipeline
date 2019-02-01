@@ -155,7 +155,28 @@ public abstract class GalaxyInteractiveLayer {
         mgfIdsList.forEach((mgfId) -> {
             mgfMap.put(mgfId, historyHandler.getMgfFilesMap().get(mgfId).getName());
         });
+        System.out.println("execute_SearchGUI_PeptideShaker_WorkFlow");
         toolsHandler.execute_SearchGUI_PeptideShaker_WorkFlow(projectName, fastaFileId, mgfMap, searchEnginesList, historyHandler.getWorkingHistoryId(), searchParameters);
+        toolsHandler.synchronizeDataWithGalaxyServer(true);
+    }
+    
+    
+    /**
+     * Run Online Peptide-Shaker & PathwayMatcher search and analysis work-flow
+     *
+     * @param projectName new project name
+     * @param fastaFileId FASTA file dataset id
+     * @param mgfIdsList list of MGF file dataset ids
+     * @param searchEnginesList List of selected search engine names
+     * @param searchParameters User input search parameters
+     */
+    public void execute_SearchGUI_PeptideShaker_PathwayMatcher_WorkFlow(String projectName, String fastaFileId, Set<String> mgfIdsList, Set<String> searchEnginesList, SearchParameters searchParameters) {
+        Map<String, String> mgfMap = new LinkedHashMap<>();
+        mgfIdsList.forEach((mgfId) -> {
+            mgfMap.put(mgfId, historyHandler.getMgfFilesMap().get(mgfId).getName());
+        });
+        System.out.println("execute_SearchGUI_PeptideShaker_PathwayMatcher_WorkFlow ");
+        toolsHandler.execute_SearchGUI_PeptideShaker_PathwayMatcher_WorkFlow(projectName, fastaFileId, mgfMap, searchEnginesList, historyHandler.getWorkingHistoryId(), searchParameters);
         toolsHandler.synchronizeDataWithGalaxyServer(true);
     }
 
