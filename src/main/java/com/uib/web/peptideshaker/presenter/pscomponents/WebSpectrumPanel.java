@@ -137,7 +137,6 @@ public class WebSpectrumPanel extends SpectrumPanel {
         int xAxisYLocation = (getHeight() - currentPadding) / 2;
         boolean aboveXAxis = e.getY() < xAxisYLocation;
 
-
         if (dataSetCounterMirroredSpectra == 0) {
             aboveXAxis = true;
         }
@@ -346,7 +345,10 @@ public class WebSpectrumPanel extends SpectrumPanel {
      */
     @Override
     public void paint(Graphics g) {
-        super.paint(g);
+
+//        
+    
+super.paint(g);
         if (iXAxisData != null) {
             if (iDragged && iDragXLoc > 0) {
                 g.drawLine(iStartXLoc, iStartYLoc, iDragXLoc, iStartYLoc);
@@ -361,8 +363,7 @@ public class WebSpectrumPanel extends SpectrumPanel {
             iYAxisMax = (int) Math.ceil(iYAxisMax);
 
             // draw the x and y axis
-            drawAxes(g, iXAxisMin, iXAxisMax, 2, iYAxisMin, iYAxisMax);// @TODO: scale?
-
+            drawAxes(g, iXAxisMin, iXAxisMax, 2, iYAxisMin, iYAxisMax);// @TODO: scale?        
             // add reference areas that are to be drawn in the back, if any
             drawYAxisReferenceAreas(g, false);
             drawXAxisReferenceAreas(g, false);
@@ -385,49 +386,39 @@ public class WebSpectrumPanel extends SpectrumPanel {
                 this.drawMeasurementLine(iClickedIndex, iClickedDataSetIndex,
                         iHighLightIndex, iHighLightDatasetIndex, g, Color.blue, 0, false);
             }
-
             // draw any measurement lines in the mirrored spectra
             if (iClickedMirrored && iHighLightMirrored && iClickedIndexMirrored != iHighLightIndexMirrored) {
                 // Now we should calculate the distance based on the real values and draw a line to show this.
                 this.drawMeasurementLine(iClickedIndexMirrored, iClickedDataSetIndexMirrored,
                         iHighLightIndexMirrored, iHighLightDatasetIndexMirrored, g, Color.blue, 0, true);
             }
-
             // hihlight peaks 
             if (iHighLight) {
-                System.out.println("at 1 *************************************************highlight peacks******************************************************************* ");
-
                 this.highLightPeak(iHighLightIndex, iHighLightDatasetIndex, g, false);
                 iHighLight = false;
             }
 
             // highlight mirrored peaks
             if (iHighLightMirrored) {
-                System.out.println("at 2 *************************************************highlight peacks******************************************************************* ");
-
+               
                 this.highLightPeak(iHighLightIndexMirrored, iHighLightDatasetIndexMirrored, g, true);
                 iHighLightMirrored = false;
             }
-
             // highlight clicked peaks
             if (iClicked) {
-                System.out.println("at 1 *************************************************i clicked******************************************************************* " + iClickedIndex + " , " + iHighLightDatasetIndex);
-
                 this.highlightClicked(iClickedIndex, iHighLightDatasetIndex, g, false);
             }
 
             // highlight clicked mirrored peaks
             if (iClickedMirrored) {
 
-                System.out.println("at 2 *************************************************i clicked******************************************************************* ");
-                this.highlightClicked(iClickedIndexMirrored, iHighLightDatasetIndexMirrored, g, true);
+               this.highlightClicked(iClickedIndexMirrored, iHighLightDatasetIndexMirrored, g, true);
             }
-
             // see if there are daisychain to display
             drawDaisyChain(g, iClickedList, iClickedListDatasetIndices, iClickedIndex, iClickedDataSetIndex, iStoredSequence, iStoredSequenceDatasetIndices, false);
 
             // see if there are daisychains to display for the mirrored spectra
-            drawDaisyChain(g, iClickedListMirrored, iClickedListDatasetIndicesMirrored, iClickedIndexMirrored,    iClickedDataSetIndexMirrored, iStoredSequenceMirrored, iStoredSequenceDatasetIndicesMirrored, true);
+            drawDaisyChain(g, iClickedListMirrored, iClickedListDatasetIndicesMirrored, iClickedIndexMirrored, iClickedDataSetIndexMirrored, iStoredSequenceMirrored, iStoredSequenceDatasetIndicesMirrored, true);
 
             // annotate peaks
             annotatePeaks(g, iAnnotations, false);
@@ -441,7 +432,6 @@ public class WebSpectrumPanel extends SpectrumPanel {
 
             // (re-)draw the axes to have them appear in front of the data points
             drawAxes(g, iXAxisMin, iXAxisMax, 2, iYAxisMin, iYAxisMax); // @TODO scale.
-
             if (showAllPeakDetails) {
                 boolean aboveXAxis = false;
                 if (dataSetCounterMirroredSpectra == 0) {
@@ -462,8 +452,8 @@ public class WebSpectrumPanel extends SpectrumPanel {
                     for (int j = 0; j < xAxisDataInPixels.size(); j++) {
                         for (int i = 0; i < xAxisDataInPixels.get(j).length; i++) {
                             double xAxisPeakValue = iXAxisData.get(j)[i];
-                            boolean annotatedPeak = isPeakAnnotated(xAxisPeakValue, false);                         
-                            boolean visiblePeak = xAxisPeakValue>=this.getXAxisZoomRangeLowerValue()&&xAxisPeakValue<=this.getXAxisZoomRangeUpperValue();
+                            boolean annotatedPeak = isPeakAnnotated(xAxisPeakValue, false);
+                            boolean visiblePeak = xAxisPeakValue >= this.getXAxisZoomRangeLowerValue() && xAxisPeakValue <= this.getXAxisZoomRangeUpperValue();
                             if (annotatedPeak && visiblePeak) {
                                 this.highlightClicked(i, j, g, false);
                             }
@@ -475,6 +465,8 @@ public class WebSpectrumPanel extends SpectrumPanel {
 
             }
         }
+        
+      
     }
 
     /**
@@ -516,4 +508,5 @@ public class WebSpectrumPanel extends SpectrumPanel {
 
         return annotatedPeak;
     }
+   
 }

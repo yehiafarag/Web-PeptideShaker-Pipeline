@@ -23,6 +23,7 @@ import com.compomics.util.experiment.massspectrometry.MSnSpectrum;
 import com.compomics.util.experiment.massspectrometry.Precursor;
 import com.compomics.util.preferences.IdentificationParameters;
 import com.ejt.vaadin.sizereporter.ComponentResizeEvent;
+import com.ejt.vaadin.sizereporter.ComponentResizeListener;
 import com.ejt.vaadin.sizereporter.SizeReporter;
 import com.itextpdf.text.pdf.codec.Base64;
 import com.vaadin.data.Property;
@@ -42,15 +43,12 @@ import com.vaadin.ui.themes.ValoTheme;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JPanel;
 import org.apache.commons.math.MathException;
 import org.jfree.chart.encoders.ImageEncoder;
@@ -85,6 +83,9 @@ public class SpectrumPlot extends AbsoluteLayout {
     private final MenuItem deNovoItem;
     private final MenuItem settingsItem;
     private boolean disableSizeReporter = false;
+    private final ComponentResizeListener compResizeListener;
+    private int updatedComponentWidth; 
+    private int updatedComponentHeight; 
 
     public boolean isDisableSizeReporter() {
         return disableSizeReporter;
@@ -251,12 +252,17 @@ public class SpectrumPlot extends AbsoluteLayout {
         MenuItem helpItem = menue.addItem("Help", VaadinIcons.QUESTION_CIRCLE_O, null);
 
         mainSizeReporter = new SizeReporter(SpectrumPlot.this);
-        mainSizeReporter.addResizeListener((ComponentResizeEvent event) -> {
+        compResizeListener = (ComponentResizeEvent event) -> {
+
             if (isDisableSizeReporter()) {
                 return;
-            }
-            reDraw();
-        });
+            } 
+            updatedComponentWidth=event.getWidth();
+            updatedComponentHeight=event.getHeight();
+            reDraw(updatedComponentWidth,updatedComponentHeight);
+        };
+           mainSizeReporter.addResizeListener(compResizeListener);
+
         MenuBar.Command showPeakDetailsCommand = (MenuItem selectedItem) -> {
             spectrumPanel.showPeakDetails((selectedItem.getText().equals("Show Peak Details")));
             if (selectedItem.getText().equals("Show Peak Details")) {
@@ -290,11 +296,8 @@ public class SpectrumPlot extends AbsoluteLayout {
     }
 
     private void updateImage(JPanel jpanel) {
-//        ExecutorService executorService = Executors.newSingleThreadExecutor();
-//        executorService.submit(() -> {
-        plot.setSource(new ExternalResource(drawImage(jpanel,false)));
-        //        });
-        //        executorService.shutdown();
+        String resUrl = drawImage(jpanel, false);
+        plot.setSource(new ExternalResource(resUrl));
     }
 
     private void resetAnnotations() {
@@ -335,10 +338,7 @@ public class SpectrumPlot extends AbsoluteLayout {
                     return;
                 }
                 if (spectrumPanel != null) {
-                    if (startY < 0 || endY < 0) {
-                        return;
-                    }
-                    spectrumPanel.zoom((int) startX, (int) startY, (int) endX, (int) endY);
+                    spectrumPanel.zoom((int) startX, 50, (int) endX, (int) 50);
                     updateImage(spectrumPanel);
                 }
             }
@@ -354,10 +354,6 @@ public class SpectrumPlot extends AbsoluteLayout {
             @Override
             public void leftSelectionIsPerformed(double startX, double startY) {
                 if (spectrumPanel != null) {
-
-//                    MouseEvent e = new MouseEvent(spectrumPanel, 0, 0, -1, (int) startX, (int) startY, 1, false, MouseEvent.BUTTON1);
-//                    spectrumPanel.mouseClickedAction(e);
-//                    plot.setSource(new ExternalResource(drawImage(spectrumPanel)));
                 }
             }
 
@@ -366,10 +362,9 @@ public class SpectrumPlot extends AbsoluteLayout {
         return sc;
     }
 
-    public void reDraw() {
-
-        int w = mainSizeReporter.getWidth() - 52;
-        int h = mainSizeReporter.getHeight() - 92;
+    private void reDraw(int comW,int comH) {
+        int w = /*mainSizeReporter.getWidth()*/comW - 52;
+        int h = /*mainSizeReporter.getHeight()*/comH - 92;
         if (w <= 0 || h <= 0) {
             return;
         }
@@ -384,11 +379,13 @@ public class SpectrumPlot extends AbsoluteLayout {
             spectrumPanel.setSize(w, h);
             plot.setWidth(w, Unit.PIXELS);
             plot.setHeight(h, Unit.PIXELS);
+            
             updateImage(spectrumPanel);
+            double tH = ((double) h * 0.8 * 0.5);
+            levelSlider.setHeight((int) tH, Unit.PIXELS);
+            annotationAccuracySlider.setHeight((int) tH, Unit.PIXELS);
         }
-        double tH = ((double) h * 0.8 * 0.5);
-        levelSlider.setHeight((int) tH, Unit.PIXELS);
-        annotationAccuracySlider.setHeight((int) tH, Unit.PIXELS);
+
     }
 
     /**
@@ -467,9 +464,10 @@ public class SpectrumPlot extends AbsoluteLayout {
                 }
 
                 SpectrumAnnotator.TiesResolution tiesResolution = settingsItem.getChildren().get(1).isChecked() ? SpectrumAnnotator.TiesResolution.mostAccurateMz : SpectrumAnnotator.TiesResolution.mostIntense;
-                annotationPreferences.setTiesResolution(tiesResolution); //@TODO: replace by a drop down menu
+                annotationPreferences.setTiesResolution(tiesResolution); //@TODO: replace by a drop down menu               
                 annotationPreferences.setShowAllPeaks(settingsItem.getChildren().get(0).isChecked());//@TODO:implement control btns
                 annotationPreferences.setAutomaticAnnotation(settingsItem.getChildren().get(3).isChecked());
+
             } catch (IOException | ClassNotFoundException | InterruptedException | SQLException e) {
                 e.printStackTrace();
             }
@@ -489,8 +487,7 @@ public class SpectrumPlot extends AbsoluteLayout {
                     annotationPreferences.showForwardIonDeNovoTags(),
                     annotationPreferences.showRewindIonDeNovoTags(), false);
             spectrumPanel.setAnnotateHighestPeak(annotationPreferences.getTiesResolution() == SpectrumAnnotator.TiesResolution.mostIntense); //@TODO: implement ties resolution in the spectrum panel
-            spectrumPanel.setAnnotations(SpectrumAnnotator.getSpectrumAnnotation(annotations), annotationPreferences.getTiesResolution() == SpectrumAnnotator.TiesResolution.mostIntense); //@TODO: the selection of the peak to annotate should be done outside the spectrum panel
-            spectrumPanel.updateUI();
+            spectrumPanel.setAnnotations(SpectrumAnnotator.getSpectrumAnnotation(annotations), annotationPreferences.getTiesResolution() == SpectrumAnnotator.TiesResolution.mostIntense); //@TODO: the selection of the peak to annotate should be done outside the spectrum panel          
             updateImage(spectrumPanel);
 
         } catch (InterruptedException | MathException e) {
@@ -520,6 +517,7 @@ public class SpectrumPlot extends AbsoluteLayout {
     private Thread selectedSpectrumThread;
 
     public void selectedSpectrum(MSnSpectrum currentSpectrum, String charge, double fragmentIonAccuracy, IdentificationParameters identificationParameters, SpectrumMatch spectrumMatch) {
+        mainSizeReporter.removeResizeListener(compResizeListener);
         this.identificationParameters = identificationParameters;
         this.currentSpectrum = currentSpectrum;
         this.fragmentIonAccuracy = fragmentIonAccuracy;
@@ -572,21 +570,21 @@ public class SpectrumPlot extends AbsoluteLayout {
                 levelSlider.setValue(75.0);
                 levelSlider.addValueChangeListener(listener);
                 annotationAccuracySlider.addValueChangeListener(listener);
-
                 updateAnnotationPreferences();
-
                 if (plotThumbImage != null) {
                     spectrumPanel.setMiniature(true);
                     spectrumPanel.setSize(100, 100);
                     spectrumPanel.setPeakWidth(2f);
                     spectrumPanel.setBackgroundPeakWidth(0.5f);
                     spectrumPanel.setMaxPadding(10);
-                    plotThumbImage.setSource(new ExternalResource(drawImage(spectrumPanel,true)));
+                    plotThumbImage.setSource(new ExternalResource(drawImage(spectrumPanel, true)));
                     spectrumPanel.setMiniature(false);
                     spectrumPanel.setPeakWidth(1f);
                     spectrumPanel.setBackgroundPeakWidth(1f);
                     spectrumPanel.setMaxPadding(50);
                 }
+                reDraw(updatedComponentWidth,updatedComponentHeight);
+                mainSizeReporter.addResizeListener(compResizeListener);
 
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
@@ -605,41 +603,34 @@ public class SpectrumPlot extends AbsoluteLayout {
     }
 
     private String drawImage(JPanel panel, boolean thumb) {
-//        panel.revalidate();
-        panel.repaint();
         if (panel.getWidth() <= 0) {
             panel.setSize(100, panel.getHeight());
         }
         if (panel.getHeight() <= 0) {
             panel.setSize(panel.getWidth(), 100);
         }
-
+//        panel.repaint();
         BufferedImage image = new BufferedImage(panel.getWidth(), panel.getHeight(), BufferedImage.TYPE_4BYTE_ABGR_PRE);
-      
         Graphics2D g2d = image.createGraphics();
         if (thumb) {
-          
             panel.setSize(100, 60);
             panel.setOpaque(false);
-            panel.repaint();
+//            panel.repaint();
             g2d.translate(0, 20);
-
         }
 //        //draw sequence line
         g2d.setColor(Color.LIGHT_GRAY);
+        panel.updateUI();
         panel.paint(g2d);
-
         ImageEncoder in = ImageEncoderFactory.newInstance(ImageFormat.PNG, 1);
         byte[] imageData = null;
         try {
-            imageData = in.encode(image); // ((DataBufferByte) image.getData().getDataBuffer()).getData();
+            imageData = in.encode(image);
         } catch (IOException ex) {
-            Logger.getLogger(SpectrumPlot.class.getName()).log(Level.SEVERE, null, ex);
+            ex.printStackTrace();
         }
-
         String base64 = Base64.encodeBytes(imageData);
         base64 = "data:image/png;base64," + base64;
-        //total chain coverage     
         return base64;
     }
 
@@ -726,6 +717,8 @@ public class SpectrumPlot extends AbsoluteLayout {
 
         return knownMassDeltas;
     }
+
+   
 
     /**
      * The spectrum annotator.
