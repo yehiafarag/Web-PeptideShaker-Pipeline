@@ -14,6 +14,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,7 @@ public class FiltersContainer extends HorizontalLayout {
     private final DivaRangeFilter prptidesNumberFilter;
     private final DivaRangeFilter coverageFilter;
     private final DivaRangeFilter psmNumberFilter;
+    private final Map<String, Color> PIColorMap;// new Color[]{Color.DARK_GRAY, new Color(4, 180, 95), new Color(245, 226, 80), new Color(213, 8, 8), Color.ORANGE};
 
     private final List<Color> colorList;
     /**
@@ -61,7 +63,12 @@ public class FiltersContainer extends HorizontalLayout {
         FiltersContainer.this.setSizeFull();
         FiltersContainer.this.setSpacing(true);
         FiltersContainer.this.setStyleName("datasetfilterstyle");
+        PIColorMap = new HashMap<>();// new Color[]{Color.DARK_GRAY, new Color(4, 180, 95), new Color(245, 226, 80), new Color(213, 8, 8), Color.ORANGE};
 
+        PIColorMap.put("Single", new Color(4, 180, 95));
+        PIColorMap.put("Related", new Color(245, 226, 80));
+        PIColorMap.put("Related & Unrelated", Color.ORANGE);
+        PIColorMap.put("Unrelated", new Color(213, 8, 8));
         this.Selection_Manager = Selection_Manager;
         colorList = new ArrayList<>(Arrays.asList(defaultColors));
         for (String str : extraColourValues) {
@@ -177,7 +184,6 @@ public class FiltersContainer extends HorizontalLayout {
         coverageFilter.addStyleName("correctresetbtn");
         filterRightPanelContainer.setComponentAlignment(coverageFilter, Alignment.TOP_RIGHT);
     }
-    private final Color[] colorsArr = new Color[]{Color.DARK_GRAY, new Color(4, 180, 95), new Color(245, 226, 80), new Color(213, 8, 8), Color.ORANGE};
     private final Color[] colorsArrII = new Color[]{Color.DARK_GRAY, new Color(4, 180, 95), Color.ORANGE, new Color(213, 8, 8)};
 
     public void updateFiltersData(ModificationMatrix modificationMatrix, Map<String, Color> modificationsColorMap, Map<Integer, Set<Comparable>> chromosomeMap, Map<String, Set<Comparable>> piMap, Map<String, Set<Comparable>> proteinValidationMap, TreeMap<Comparable, Set<Comparable>> proteinPeptidesNumberMap, TreeMap<Comparable, Set<Comparable>> proteinPSMNumberMap, TreeMap<Comparable, Set<Comparable>> proteinCoverageMap) {
@@ -188,7 +194,7 @@ public class FiltersContainer extends HorizontalLayout {
         chromosomeFilter.initializeFilterData(chromosomeMap);
         Selection_Manager.setChromosomeMap(chromosomeMap);
 
-        ProteinInferenceFilter.initializeFilterData(piMap, new ArrayList<>(Arrays.asList(colorsArr)));//colorList.subList(0, piMap.size()).toArray(new Color[piMap.size()])
+        ProteinInferenceFilter.initializeFilterData(piMap, PIColorMap);//colorList.subList(0, piMap.size()).toArray(new Color[piMap.size()])
         Selection_Manager.setPiMap(piMap);
         Selection_Manager.setProteinValidationMap(proteinValidationMap);
 

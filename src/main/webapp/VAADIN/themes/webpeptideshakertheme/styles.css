@@ -14121,7 +14121,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .psmtable.v-table .v-table-body {
 	overflow-x: hidden;
-        overflow-y:scroll !important;
+	overflow-y: scroll !important;
 }
 
 .webpeptideshakertheme .psmtable.v-table [class*="-row"].v-selected {

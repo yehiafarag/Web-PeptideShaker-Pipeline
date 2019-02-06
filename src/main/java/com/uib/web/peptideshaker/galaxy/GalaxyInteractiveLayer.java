@@ -61,18 +61,18 @@ public abstract class GalaxyInteractiveLayer {
      */
     private final DecimalFormat dsFormater = new DecimalFormat("#.##");
 
-    private Set<String> csf_pr_Accssion_List;
+    private Set<String> csf_pr_Accession_List;
 
     /**
      * Constructor to initialise the main Galaxy history handler.
      */
     public GalaxyInteractiveLayer() {
         this.userOverViewList = new ArrayList<>();
-         if (csf_pr_Accssion_List == null) {
-            csf_pr_Accssion_List = initialiseCSFList();
+         if (csf_pr_Accession_List == null) {
+            csf_pr_Accession_List = initialiseCSFList();
         }      
         
-        this.historyHandler = new GalaxyHistoryHandler(csf_pr_Accssion_List) {
+        this.historyHandler = new GalaxyHistoryHandler(csf_pr_Accession_List) {
             @Override
             public void synchronizeDataWithGalaxyServer(Map<String, GalaxyFileObject> historyFilesMap, boolean jobsInProgress, boolean updatePresenterView) {
                 //update history in the system                 

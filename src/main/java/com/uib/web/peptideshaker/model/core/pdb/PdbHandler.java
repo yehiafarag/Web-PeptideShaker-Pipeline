@@ -33,15 +33,15 @@ public class PdbHandler {
     /**
      * Get PDB matches for the selected protein accession
      *
-     * @param uniProtAccssion UniProt accession
+     * @param uniProtAccession UniProt accession
      * @return Map of PDB matches
      */
-    public Map<String, PDBMatch> getData(String uniProtAccssion) {
+    public Map<String, PDBMatch> getData(String uniProtAccession) {
         final Map<String, PDBMatch> subMap;
-        if (!proteinToPDBMap.containsKey(uniProtAccssion)) {
-            proteinToPDBMap.putAll(EBI_Rest_Service.getPdbIds(uniProtAccssion, true));
+        if (!proteinToPDBMap.containsKey(uniProtAccession)) {
+            proteinToPDBMap.putAll(EBI_Rest_Service.getPdbIds(uniProtAccession, true));
         }
-        Map<String, PDBMatch> Pdbs = proteinToPDBMap.get(uniProtAccssion);
+        Map<String, PDBMatch> Pdbs = proteinToPDBMap.get(uniProtAccession);
         if (Pdbs == null) {
             return null;
         }

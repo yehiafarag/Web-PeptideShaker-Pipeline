@@ -316,9 +316,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         connectinoWindow.center();
         connectinoWindow.setWindowMode(WindowMode.NORMAL);
         UI.getCurrent().addWindow(connectinoWindow);
-        connectinoWindow.setVisible(false);       
-        
-        
+        connectinoWindow.setVisible(false);
 
         presenterControlButtonsPanel.addLayoutClickListener((LayoutEvents.LayoutClickEvent event) -> {
             AbstractComponent comp = (AbstractComponent) event.getClickedComponent();
@@ -458,10 +456,10 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
                 connectinoWindow.setClosable(false);
                 connectionBtnLabel.setVisible(false);
                 galaxyLoginLayout.setVisible(false);
-                Runnable task = () -> { 
+                Runnable task = () -> {
                     connectinoWindow.removeStyleName("windowcontainer");
                     connectinoWindow.setStyleName("connectionwindow");
-       
+
                     List<String> userOverviewData = connectToGalaxy(userAPIFeald.getValue(), viewId);
                     connectedToGalaxy(userOverviewData);
                 };
@@ -547,7 +545,6 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         busyConnectinWindow.center();
         this.busyConnectinWindow.setWindowMode(WindowMode.NORMAL);
         busyConnectinWindow.addStyleName("hidewindow");
-
         this.loginAsGuest();
 
 //        presenterControlButtonsPanel.addComponent(new IconDesign());
@@ -563,7 +560,6 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         Runnable task = () -> {
             connectinoWindow.removeStyleName("windowcontainer");
             connectinoWindow.setStyleName("connectionwindow");
-        
             List<String> userOverviewData = connectToGalaxy(testUserLogin, viewId);
             connectedToGalaxy(userOverviewData);
         };
@@ -584,7 +580,6 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         connectinoWindow.setClosable(true);
         connectionBtnLabel.setVisible(true);
         galaxyLoginLayout.setEnabled(true);
-//        loadExampleUserAccount.setEnabled(true);
         galaxyLoginLayout.setVisible(true);
         galaxyLloginBtn.setData(null);
         connectingLabel.setCaption(null);
@@ -595,25 +590,18 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         } else if (userOverviewData != null && !userOverviewData.get(0).contains("Guest User")) {
             connectinoWindow.setVisible(false);
             galaxyLloginBtn.updateText("Galaxy Logout");
-//            loginLabel.setValue("<img src='VAADIN/themes/webpeptideshakertheme/img/galaxyLogo_2.png' alt style='width: 25px;height: 25px;border: 1px solid lightgray;border-radius: 5px;background-color: whitesmoke;cursor:pointer !important;'><font color='green' style='line-height: 0px !important; vertical-align:text-top;cursor:pointer !important;'> Galaxy Logout </font>");
             galaxyLloginBtn.setData("connected");
-//            loginLabel.setVisible(true);
             galaxyLoginLayout.setEnabled(false);
-//            loadExampleUserAccount.setEnabled(false);
             presenteControlButtonsLayout.setEnabled(true);
 
         } else {
             userAPIFeald.setValue(apiErrorMessage);
             userAPIFeald.addStyleName("redfont");
-//            loginLabel.setValue("Galaxy is<font color='#cd6e1d'>  not connected </font><font size='3' color='#cd6e1d'> " + FontAwesome.FROWN_O.getHtml() + "</font>");
-//            galaxyLoginLayout.setEnabled(true);
-//            loadExampleUserAccount.setEnabled(true);
-//            galaxyLoginLayout.setVisible(true);
-//            loginLabel.setData(null);
-//            loginLabel.setVisible(false);
         }
-        updateUserOverviewPanel(userOverviewData);
+        
+        updateUserOverviewPanel(userOverviewData);        
         connectingLabel.setVisible(false);
+        
 
     }
 

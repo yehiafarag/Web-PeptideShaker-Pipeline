@@ -156,10 +156,10 @@ public abstract class PSMViewComponent extends VerticalLayout {
         tableResporter.addResizeListener((ComponentResizeEvent event) -> {
             int height = event.getHeight();
             int actH = 37 + (74 * psmOverviewTable.getItemIds().size());
-            int fragWidth = event.getWidth() - (862) - 9;
-            if ((actH > height)) {
-                fragWidth -= 20;
-            }
+            int fragWidth = event.getWidth() - (862) - 9-20;
+//            if ((actH > height)) {
+//                fragWidth -= 20;
+//            }
             if (fragWidth < 1) {
                 return;
             }

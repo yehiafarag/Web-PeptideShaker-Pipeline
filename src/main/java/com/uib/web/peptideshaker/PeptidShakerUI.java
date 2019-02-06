@@ -199,7 +199,7 @@ public class PeptidShakerUI extends UI {
 
     @Override
     public void removeExtension(Extension extension) {
-        super.removeExtension(extension);
+//        super.removeExtension(extension);
 
     }
 

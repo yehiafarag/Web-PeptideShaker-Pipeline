@@ -264,11 +264,11 @@ public class PeptideShakerVisualizationDataset1 extends GalaxyFileObject {
                 if (line.startsWith(">")) {
                     if (!fastaHeader.equalsIgnoreCase("")) {
                         ProteinGroupObject protein = new ProteinGroupObject();
-                        String accss = fastaHeader.split("\\|")[1];
+                        String access = fastaHeader.split("\\|")[1];
                         String desc = fastaHeader.split("\\|")[2].split("OS=")[0];
                         desc = desc.replace(desc.split(" ")[0], "").trim();
                         protein.setDescription(desc);
-                        protein.setAccession(accss);
+                        protein.setAccession(access);
                         protein.setSequence(sequence);
                         protein.setProteinEvidence(proteinEvedence[Integer.parseInt(fastaHeader.split("PE=")[1].split(" ")[0])]);
                         fastaProteinsMap.put(protein.getAccession(), protein);

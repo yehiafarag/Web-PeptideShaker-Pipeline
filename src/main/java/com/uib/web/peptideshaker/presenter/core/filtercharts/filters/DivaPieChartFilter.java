@@ -242,6 +242,28 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
 
     }
 
+    public void initializeFilterData(Map<String, Set<Comparable>> fullData, Map<String, Color> colorMap) {
+        activateFilter = true;
+        Map<String, Set<Comparable>> filterfullData = new LinkedHashMap<>(fullData);
+        colorsList = new ArrayList<>();
+        int index = 0;
+        filterfullData.keySet().stream().filter((key) -> (fullData.get(key).isEmpty())).map((key) -> {
+            fullData.remove(key);
+
+            return key;
+        }).forEachOrdered((_item) -> {
+//            colorsList.remove(index);
+        });
+        this.fullData = fullData;
+        fullItemsSet.clear();
+        fullData.keySet().forEach((key) -> {
+            colorsList.add(colorMap.get(key.replace("Protein", "").trim()));
+            fullItemsSet.addAll(fullData.get(key));
+        });
+        updateChartDataset(fullData);
+
+    }
+
     private void reDrawLayout() {
         //calc 60% of width
         double w = Math.min(mainWidth, mainHeight);

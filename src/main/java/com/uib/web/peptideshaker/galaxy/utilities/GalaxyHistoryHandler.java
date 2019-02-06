@@ -84,17 +84,37 @@ public abstract class GalaxyHistoryHandler {
      * the dataset json file.
      */
     private final DateFormat df6 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-private Set<String> csf_pr_Accssion_List;
+    private Set<String> csf_pr_Accession_List;
+    private boolean updatePresenterView;
+
     /**
      * Constructor to initialise the the galaxy history handler, and Connection
      * refresher to keep tracking running jobs on Galaxy Server.
      *
-     * @param csf_pr_Accssion_List
+     * @param csf_pr_Accession_List
      */
-    public GalaxyHistoryHandler(Set<String> csf_pr_Accssion_List ) {
+    public GalaxyHistoryHandler(Set<String> csf_pr_Accession_List) {
         REFRESHER = new Refresher();
-//        ((PeptidShakerUI) UI.getCurrent()).addExtension(REFRESHER);
-        this.csf_pr_Accssion_List=csf_pr_Accssion_List;
+        ((PeptidShakerUI) UI.getCurrent()).addExtension(REFRESHER);
+        this.csf_pr_Accession_List = csf_pr_Accession_List;
+        refreshlistener = (Refresher source) -> {
+            HistoriesClient loopGalaxyHistoriesClient = Galaxy_Instance.getHistoriesClient();
+            List<History> historiesList = Galaxy_Instance.getHistoriesClient().getHistories();
+            boolean ready = false;
+            for (History history : historiesList) {
+                ready = (loopGalaxyHistoriesClient.showHistory(history.getId()).isReady());
+                if (!ready) {
+                    break;
+                }
+            }
+            if (ready) {
+                REFRESHER.removeListener(refreshlistener);
+                updateHistory(updatePresenterView);
+                REFRESHER.setRefreshInterval(1000);
+                updatePresenterView = false;
+                Notification.show("Data is ready to display", Notification.Type.ASSISTIVE_NOTIFICATION);
+            }
+        };
 
     }
 
@@ -342,30 +362,29 @@ private Set<String> csf_pr_Accssion_List;
      */
     private void invokeRecheckDataProcessing(boolean updatePresenterView) {
         int mSecound = 20000;
+        this.updatePresenterView = updatePresenterView;
         if (refreshlistener != null) {
             REFRESHER.removeListener(refreshlistener);
 
         }
         REFRESHER.setRefreshInterval(mSecound);
-        
-        
-        refreshlistener = (Refresher source) -> {
-            HistoriesClient loopGalaxyHistoriesClient = Galaxy_Instance.getHistoriesClient();
-            List<History> historiesList = Galaxy_Instance.getHistoriesClient().getHistories();
-            boolean ready = false;
-            for (History history : historiesList) {
-                ready = (loopGalaxyHistoriesClient.showHistory(history.getId()).isReady());
-                if (!ready) {
-                    break;
-                }
-            }
-            if (ready) {
-                ((PeptidShakerUI) UI.getCurrent()).removeExtension(REFRESHER);
-                REFRESHER.removeListener(refreshlistener);
-                updateHistory(updatePresenterView);
-            }
-        };
-        ((PeptidShakerUI) UI.getCurrent()).addExtension(REFRESHER);
+
+//        refreshlistener = (Refresher source) -> {
+//            System.out.println("at call refrecher listener");
+//            HistoriesClient loopGalaxyHistoriesClient = Galaxy_Instance.getHistoriesClient();
+//            List<History> historiesList = Galaxy_Instance.getHistoriesClient().getHistories();
+//            boolean ready = false;
+//            for (History history : historiesList) {
+//                ready = (loopGalaxyHistoriesClient.showHistory(history.getId()).isReady());
+//                if (!ready) {
+//                    break;
+//                }
+//            }
+//            if (ready) {
+//                REFRESHER.removeListener(refreshlistener);
+//                updateHistory(updatePresenterView);
+//            }
+//        };
         REFRESHER.addListener(refreshlistener);
 
     }
@@ -650,7 +669,7 @@ private Set<String> csf_pr_Accssion_List;
                         }
                     } else if ((map.get("name").toString().endsWith("-ZIP")) && (map.get("data_type").toString().equalsIgnoreCase("abc.CompressedArchive") || map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.binary.CompressedZipArchive"))) {
                         String projectId = map.get("name").toString().split("-")[0];
-                        PeptideShakerVisualizationDataset vDs = new PeptideShakerVisualizationDataset(projectId, user_folder, Galaxy_Instance.getGalaxyUrl(), Galaxy_Instance.getApiKey(), galaxyDatasetServingUtil,csf_pr_Accssion_List);
+                        PeptideShakerVisualizationDataset vDs = new PeptideShakerVisualizationDataset(projectId, user_folder, Galaxy_Instance.getGalaxyUrl(), Galaxy_Instance.getApiKey(), galaxyDatasetServingUtil, csf_pr_Accession_List);
                         peptideShakerVisualizationMap.put(projectId, vDs);
                         vDs.setHistoryId(map.get("history_id") + "");
                         vDs.setType("Web Peptide Shaker Dataset");
@@ -718,10 +737,9 @@ private Set<String> csf_pr_Accssion_List;
                 historyFilesMap.putAll(searchSettingsFilesMap);
                 historyFilesMap.putAll(indexFilesMap);
                 if (jobsInProgress) {
-                    
-                        invokeRecheckDataProcessing(updatePresenterView);
-                  
-                   
+
+                    invokeRecheckDataProcessing(updatePresenterView);
+
                 }
                 synchronizeDataWithGalaxyServer(historyFilesMap, jobsInProgress, updatePresenterView);
             } catch (Exception e) {
@@ -729,12 +747,12 @@ private Set<String> csf_pr_Accssion_List;
                     Notification.show("Service Temporarily Unavailable", Notification.Type.ERROR_MESSAGE);
                 } else {
                     e.printStackTrace();
-                    System.out.println("at history are not available"); 
+                    System.out.println("at history are not available");
                     Page.getCurrent().reload();
-                    if (VaadinSession.getCurrent()!=null && VaadinSession.getCurrent().getSession() != null) {
+                    if (VaadinSession.getCurrent() != null && VaadinSession.getCurrent().getSession() != null) {
                         VaadinSession.getCurrent().getSession().invalidate();
                     }
-                   
+
                 }
             }
             memoryUsed = memoryUsed / 1000000000.0;

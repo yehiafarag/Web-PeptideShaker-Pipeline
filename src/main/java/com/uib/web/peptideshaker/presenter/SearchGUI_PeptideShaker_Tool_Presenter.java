@@ -46,7 +46,6 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
      *
      */
     public SearchGUI_PeptideShaker_Tool_Presenter() {
-        System.out.println("SearchGUI_PeptideShaker_Tool_Presenter");
         SearchGUI_PeptideShaker_Tool_Presenter.this.setSizeFull();
         SearchGUI_PeptideShaker_Tool_Presenter.this.setStyleName("activelayout");
         SearchGUI_PeptideShaker_Tool_Presenter.this.addStyleName("integratedframe");
@@ -73,9 +72,7 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
      * Initialise the main forms for user data input that is required for
      * performing search.
      */
-    public void initLayout() {
-        System.out.println("SearchGUI_PeptideShaker_Tool_Presenter initLayout");
-        
+    public void initLayout() {        
         smallControlButton = new SmallSideBtn("img/sgui.png");//spectra2.pngimg/searchgui-medium-shadow-2.png
         smallControlButton.setData(SearchGUI_PeptideShaker_Tool_Presenter.this.getViewId());
         smallControlButton.setDescription("Run SearchGUI and PeptideShaker");
@@ -95,6 +92,7 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
             @Override
             public void executeWorkFlow(String projectName, String fastaFileId, Set<String> mgfIdsList, Set<String> searchEnginesList, SearchParameters searchParam) {
                 SearchGUI_PeptideShaker_Tool_Presenter.this.execute_SearchGUI_PeptideShaker_WorkFlow(projectName, fastaFileId, mgfIdsList, searchEnginesList, searchParam);
+                
             }
 
             @Override

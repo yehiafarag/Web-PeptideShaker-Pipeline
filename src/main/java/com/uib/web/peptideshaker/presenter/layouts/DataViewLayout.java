@@ -15,6 +15,7 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
@@ -35,10 +36,10 @@ import pl.exsio.plupload.PluploadFile;
  */
 public abstract class DataViewLayout extends Panel {
 
-    private final VerticalLayout topPanelLayout;
+    private final Panel topPanelLayout;
     private final VerticalLayout topDataTable;
 
-    private final VerticalLayout bottomPanelLayout;
+    private final Panel bottomPanelLayout;
     private final VerticalLayout bottomDataTable;
 
     private final float[] expandingRatio = new float[]{5f, 32f, 9f, 9f, 9f, 9f, 9f, 9f, 9f};
@@ -50,11 +51,11 @@ public abstract class DataViewLayout extends Panel {
         DataViewLayout.this.setWidth(100, Unit.PERCENTAGE);
         DataViewLayout.this.setHeight(100, Unit.PERCENTAGE);
         DataViewLayout.this.setStyleName("integratedframe");
-        VerticalLayout panelsContainers = new VerticalLayout();
-        panelsContainers.setMargin(new MarginInfo(true, true, true, true));
+        AbsoluteLayout panelsContainers = new AbsoluteLayout();
+//        panelsContainers.setMargin(new MarginInfo(true, true, true, true));
         panelsContainers.setWidth(100, Unit.PERCENTAGE);
-        panelsContainers.setHeightUndefined();
-        panelsContainers.setSpacing(true);
+        panelsContainers.setHeight(100, Unit.PERCENTAGE);
+//        panelsContainers.setSpacing(true);
         DataViewLayout.this.setContent(panelsContainers);
 
         Uploader uploader = new Uploader() {
@@ -65,38 +66,41 @@ public abstract class DataViewLayout extends Panel {
 
         };
 
-        topPanelLayout = new VerticalLayout();
+        topPanelLayout = new Panel();
+        topPanelLayout.setStyleName(ValoTheme.PANEL_BORDERLESS);
         topPanelLayout.setWidth(100, Unit.PERCENTAGE);
-        topPanelLayout.setHeightUndefined();
-        topPanelLayout.setSpacing(true);
+        topPanelLayout.setHeight(100, Unit.PERCENTAGE);
+        topPanelLayout.addStyleName("maxheight50per");
         topPanelLayout.setCaption("PeptideShaker Projects");
-        panelsContainers.addComponent(topPanelLayout);
+        panelsContainers.addComponent(topPanelLayout, "top:10px;left:10px;right:10px;bottom:50%;");
+//        panelsContainers.setExpandRatio(topPanelLayout,0.5f);
 
         topDataTable = new VerticalLayout();
         topDataTable.setWidth(100, Unit.PERCENTAGE);
         topDataTable.setHeightUndefined();
         topDataTable.setSpacing(true);
-        topDataTable.setSpacing(true);
-        topPanelLayout.addComponent(topDataTable);
+        topPanelLayout.setContent(topDataTable);
 
         VerticalLayout spacer = new VerticalLayout();
         spacer.setHeight(10, Unit.PIXELS);
         spacer.setWidth(100, Unit.PERCENTAGE);
-        panelsContainers.addComponent(spacer);
+//        panelsContainers.addComponent(spacer);
 
-        bottomPanelLayout = new VerticalLayout();
+        bottomPanelLayout = new Panel();
+        bottomPanelLayout.setStyleName(ValoTheme.PANEL_BORDERLESS);
         bottomPanelLayout.setWidth(100, Unit.PERCENTAGE);
-        bottomPanelLayout.setHeightUndefined();
-        bottomPanelLayout.setSpacing(true);
+        bottomPanelLayout.setHeight(100, Unit.PERCENTAGE);
+//        bottomPanelLayout.setSpacing(true);
         bottomPanelLayout.setCaption("Input Files");
-        bottomPanelLayout.setMargin(new MarginInfo(false, false, true, false));
-        panelsContainers.addComponent(bottomPanelLayout);
-        bottomPanelLayout.addComponent(uploader);
+        bottomPanelLayout.addStyleName("maxheight50per");
+//        bottomPanelLayout.setMargin(new MarginInfo(false, false, true, false));
+        panelsContainers.addComponent(bottomPanelLayout, "top: 50%;left: 10px;right: 10px;bottom: 10px;");
+        panelsContainers.addComponent(uploader, "top: 50%;right: 30px;");
         bottomDataTable = new VerticalLayout();
         bottomDataTable.setWidth(100, Unit.PERCENTAGE);
         bottomDataTable.setHeightUndefined();
         bottomDataTable.setSpacing(true);
-        bottomPanelLayout.addComponent(bottomDataTable);
+        bottomPanelLayout.setContent(bottomDataTable);
 
     }
     private Component nameLabel;

@@ -198,7 +198,7 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
      */
     private boolean PSMFileInitialized = false;
 
-    private final Set<String> csf_pr_Accssion_List;
+    private final Set<String> csf_pr_Accession_List;
 
     /**
      * Constructor to initialise the main variables required to visualise
@@ -212,7 +212,7 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
      * transfer between Galaxy Server and Online Peptide Shaker (managing
      * requests and responses)
      */
-    public PeptideShakerVisualizationDataset(String projectName, File user_folder, String galaxyLink, String apiKey, GalaxyDatasetServingUtil galaxyDatasetServingUtil, Set<String> csf_pr_Accssion_List) {
+    public PeptideShakerVisualizationDataset(String projectName, File user_folder, String galaxyLink, String apiKey, GalaxyDatasetServingUtil galaxyDatasetServingUtil, Set<String> csf_pr_Accession_List) {
         this.projectName = projectName;
         this.user_folder = user_folder;
         this.galaxyLink = galaxyLink;
@@ -224,7 +224,7 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
         this.modificationMap = new ConcurrentHashMap<>();
         this.modificationMap.put("No Modification", new LinkedHashSet<>());
         this.galaxyDatasetServingUtil = galaxyDatasetServingUtil;
-        this.csf_pr_Accssion_List = csf_pr_Accssion_List;
+        this.csf_pr_Accession_List = csf_pr_Accession_List;
     }
 
     /**
@@ -508,7 +508,7 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
     private void initialiseFromFastaFile(String proteinkey) {
         ProteinGroupObject protein = new ProteinGroupObject();
         protein.setAccession(proteinkey);
-        protein.setAvailableOn_CSF_PR(csf_pr_Accssion_List.contains(protein.getAccession().trim()));
+        protein.setAvailableOn_CSF_PR(csf_pr_Accession_List.contains(protein.getAccession().trim()));
         ProteinSequence entry = processFastaFileTask.getFastaProteinSequenceMap().get(protein.getAccession());
         String[] descArr = entry.getDescription().split("\\s");
         protein.setDescription(descArr[0].replace("OS", "").trim());
@@ -846,6 +846,7 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
      * @return Modification matrix object
      */
     public ModificationMatrix getModificationMatrix() {
+        System.out.println("get mod matricx");
         try {
             while (!peptideProcessFuture.isDone()) {
                 Thread.sleep(1000);
@@ -998,7 +999,7 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
                 proteinObject.updatePeptideType(str, isEnzymaticPeptide(proteinObject.getSequence(), processPeptidesTask.getPeptidesMap().get(str).getSequence(), enzymeFactory.getEnzyme(enzyme), sequenceMatchingPreferences));
             }
         }
-        proteinObject.setAvailableOn_CSF_PR(csf_pr_Accssion_List.contains(proteinObject.getAccession().trim()));
+        proteinObject.setAvailableOn_CSF_PR(csf_pr_Accession_List.contains(proteinObject.getAccession().trim()));
         return proteinObject;
     }
 
@@ -1579,7 +1580,7 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
                     ProteinGroupObject proteinGroup;
                     proteinGroup = new ProteinGroupObject();
                     proteinGroup.setAccession(arr[1]);
-                    proteinGroup.setAvailableOn_CSF_PR(csf_pr_Accssion_List.contains(proteinGroup.getAccession().trim()));
+                    proteinGroup.setAvailableOn_CSF_PR(csf_pr_Accession_List.contains(proteinGroup.getAccession().trim()));
                     proteinGroup.setProteinGroup(arr[15]);
                     proteinGroup.setProteinGroupKey(proteinGroup.getProteinGroup().replace(" ", "").replace(",", "-_-"));
                     proteinGroup.setIndex(Integer.valueOf(arr[0]));
@@ -1831,8 +1832,8 @@ public class PeptideShakerVisualizationDataset extends GalaxyFileObject implemen
             return maxPsmNumber;
         }
 
-        public Set<String> getProtein_ProteinGroupkeys(String accssion) {
-            return protein_ProteinGroup_Map.get(accssion);
+        public Set<String> getProtein_ProteinGroupkeys(String accession) {
+            return protein_ProteinGroup_Map.get(accession);
         }
 
         public Map<String, Set<String>> getProtein_ProteinGroup_Map() {
