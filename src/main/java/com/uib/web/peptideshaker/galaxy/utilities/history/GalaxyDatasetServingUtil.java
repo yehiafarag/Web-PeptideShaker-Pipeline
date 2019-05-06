@@ -60,7 +60,7 @@ public class GalaxyDatasetServingUtil {
     public MSnSpectrum getSpectrum(long startIndex, String historyId, String MGFGalaxyID, String MGFFileName) {
 
         try {
-            StringBuilder locationBuilder = new StringBuilder(galaxyLink + "/api/histories/" + historyId + "/contents/" + MGFGalaxyID + "/display?");
+            StringBuilder locationBuilder = new StringBuilder(galaxyLink + "/datasets/"+ MGFGalaxyID + "/display?");//"/api/histories/" + historyId + "/contents/" + MGFGalaxyID + "/display?"
 //            StringBuilder locationBuilder = new StringBuilder(galaxyLink + "/api/histories/" + "df7a1f0c02a5b08e" + "/contents/" + "9f916718ff70f082" + "/display?");
             for (int i = 0; i < params.length; i++) {
                 if (i > 0) {

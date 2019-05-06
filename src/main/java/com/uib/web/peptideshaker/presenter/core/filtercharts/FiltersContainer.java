@@ -2,7 +2,6 @@ package com.uib.web.peptideshaker.presenter.core.filtercharts;
 
 import com.uib.web.peptideshaker.model.core.ModificationMatrix;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.filters.ChromosomesFilter;
-import com.uib.web.peptideshaker.presenter.core.filtercharts.filters.MatrixDiagram;
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.SelectionManager;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.filters.DivaPieChartFilter;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.filters.DivaRangeFilter;
@@ -41,7 +40,7 @@ public class FiltersContainer extends HorizontalLayout {
     private final DivaRangeFilter coverageFilter;
     private final DivaRangeFilter psmNumberFilter;
     private final Map<String, Color> PIColorMap;// new Color[]{Color.DARK_GRAY, new Color(4, 180, 95), new Color(245, 226, 80), new Color(213, 8, 8), Color.ORANGE};
-
+//    private final SelectionGraph proteinsPathwayNewtorkGraph;
     private final List<Color> colorList;
     /**
      * Array of default slice colors.
@@ -120,7 +119,7 @@ public class FiltersContainer extends HorizontalLayout {
         filterLeftPanelContainer.setComponentAlignment(chromosomeFilter, Alignment.TOP_RIGHT);
         chromosomeFilter.addStyleName("bottomfilter");
 
-        HorizontalLayout filterMiddlePanelContainer = new HorizontalLayout();
+        VerticalLayout filterMiddlePanelContainer = new VerticalLayout();
         filterMiddlePanelContainer.setHeight(100, Unit.PERCENTAGE);
         filterMiddlePanelContainer.setWidth(100, Unit.PERCENTAGE);
         filterMiddlePanelContainer.setSpacing(true);
@@ -183,6 +182,10 @@ public class FiltersContainer extends HorizontalLayout {
         coverageFilter.addStyleName("bottomfilter");
         coverageFilter.addStyleName("correctresetbtn");
         filterRightPanelContainer.setComponentAlignment(coverageFilter, Alignment.TOP_RIGHT);
+
+//        proteinsPathwayNewtorkGraph = new SelectionGraph();
+//        proteinsPathwayNewtorkGraph.setSizeFull();
+//        filterMiddlePanelContainer.addComponent(proteinsPathwayNewtorkGraph);
     }
     private final Color[] colorsArrII = new Color[]{Color.DARK_GRAY, new Color(4, 180, 95), Color.ORANGE, new Color(213, 8, 8)};
 
@@ -205,6 +208,15 @@ public class FiltersContainer extends HorizontalLayout {
         prptidesNumberFilter.initializeFilterData(proteinPeptidesNumberMap);
         psmNumberFilter.initializeFilterData(proteinPSMNumberMap);
         coverageFilter.initializeFilterData(proteinCoverageMap);
+        
+//         Thread t = new Thread(new Runnable() {
+//            @Override
+//            public void run() {
+//                proteinsPathwayNewtorkGraph.updateGraph();
+//            }
+//        }
+//        );
+//        t.start();
     }
 
     /**

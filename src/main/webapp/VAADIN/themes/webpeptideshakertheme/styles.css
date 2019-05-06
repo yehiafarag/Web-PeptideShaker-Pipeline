@@ -13748,7 +13748,7 @@ div.v-layout.v-horizontal.v-widget {
 .webpeptideshakertheme .frame {
 	border-radius: 5px;
 	padding: 10px !important;
-	min-height: 600px;
+	min-height: 522px;
 	min-width: 650px;
 	background-color: white;
 }
@@ -18111,4 +18111,429 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .v-table-framedpanel .v-table-body-noselection {
 	height: auto !important;
+}
+
+.webpeptideshakertheme .v-button-icon-only.v-button-link.v-button:focus {
+	top: 2px !important;
+	bottom: 0px !important;
+	background-color: transparent;
+	max-height: 20px !important;
+	outline: none !important;
+	border: none !important;
+}
+
+.webpeptideshakertheme .range-slider {
+	position: absolute !important;
+	left: -50px !important;
+	top: 0px !important;
+}
+
+.webpeptideshakertheme .input-range {
+	-webkit-appearance: none;
+	height: 200px;
+	border-radius: 5px;
+	background: #ccc;
+	outline: none;
+	writing-mode: bt-lr;
+	-webkit-appearance: slider-vertical !important;
+}
+
+.webpeptideshakertheme ::-moz-range-track {
+	background: #ccc;
+	border: 0;
+}
+
+.webpeptideshakertheme input::-moz-focus-inner {
+	border: 0;
+}
+
+.webpeptideshakertheme .v-absolutelayout-wrapper-loadingimg {
+	background-color: white;
+	opacity: 0.8;
+}
+
+.webpeptideshakertheme .v-absolutelayout-wrapper-loadingimg img {
+	max-width: 100px;
+	max-height: 100px;
+	left: 50% !important;
+	top: 50% !important;
+	position: relative;
+	margin-left: -50px;
+	margin-top: -50px;
+	background-color: white;
+	border-radius: 100%;
+}
+
+.webpeptideshakertheme .iconbtn {
+	font-size: 14px;
+}
+
+.webpeptideshakertheme .v-button-icon-only.v-button-link.v-button-iconbtn {
+	height: 22px !important;
+	width: 28px !important;
+	top: 10px !important;
+	border: 1px solid lightgray;
+	background-color: whitesmoke;
+	text-align: center;
+	padding-right: 2px;
+}
+
+.webpeptideshakertheme .v-button-icon-only.v-button-link.v-button.iconbtn:focus {
+	top: 10px !important;
+	bottom: auto !important;
+	position: relative !important;
+	max-height: 22px !important;
+	outline: none !important;
+	border: 1px solid lightgray !important;
+	background-color: whitesmoke !important;
+	margin: 0 0 0 0 !important;
+	bottom: 0px !important;
+}
+
+.webpeptideshakertheme .selectediconbtn {
+	background-color: whitesmoke !important;
+	border-color: orange !important;
+}
+
+.webpeptideshakertheme .pathwaynode {
+	opacity: 0.5;
+	background: none !important;
+	min-width: 20px !important;
+	min-height: 20px !important;
+	margin-left: -10px;
+	margin-top: -10px;
+	z-index: 2 !important;
+	position: absolute;
+}
+
+.webpeptideshakertheme .v-verticallayout-protoformparentnode {
+	background-color: gray !important;
+	min-width: 30px !important;
+	min-height: 30px !important;
+	margin-left: -15px;
+	margin-top: -15px;
+	border-color: lightgray !important;
+	border-width: 3px !important;
+	z-index: 3 !important;
+}
+
+.webpeptideshakertheme .v-verticallayout-pathwaynode.v-verticallayout-protoformnode {
+	background-color: gray !important;
+	border-color: lightgray !important;
+	z-index: 3 !important;
+}
+
+.webpeptideshakertheme .v-verticallayout-protoformnode.v-verticallayout-isoform div {
+	background-image: url("img/blackdot.png") !important;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: 100% 100%;
+}
+
+.webpeptideshakertheme .v-verticallayout-protoformparentnode.v-verticallayout-externalNode {
+	min-width: 20px !important;
+	min-height: 20px !important;
+	margin-left: -10px;
+	margin-top: -10px;
+	z-index: 2 !important;
+	position: absolute;
+}
+
+.webpeptideshakertheme .v-verticallayout-pathwaynode.v-verticallayout-externalNode {
+	background-color: #a4dbff !important;
+	border-color: lightgray !important;
+	border-radius: 3px !important;
+}
+
+.webpeptideshakertheme .v-verticallayout-pathwaynode.v-verticallayout-internalNode {
+	border-color: #004f84;
+}
+
+.webpeptideshakertheme .v-verticallayout-pathwaynode.v-verticallayout-multimodificationprotoform {
+	background-color: #fde8b4 !important;
+}
+
+.webpeptideshakertheme .pathwaynode.selectednode {
+	opacity: 1;
+	z-index: 10 !important;
+	position: absolute !important;
+}
+
+.webpeptideshakertheme .inframe.highlightedoptions {
+	border-color: #c19090;
+}
+
+.webpeptideshakertheme .v-verticallayout-node.v-verticallayout-pathwaynode {
+	cursor: -webkit-grab;
+	position: fixed !important;
+	-webkit-transition: all 0.5s ease-in-out;
+	-moz-transition: all 0.5s ease-in-out;
+	-o-transition: all 0.5s ease-in-out;
+	transition: all 0.5s ease-in-out;
+}
+
+.webpeptideshakertheme .isoform .v-label {
+	border: 3px solid black !important;
+	border-radius: 100%;
+}
+
+.webpeptideshakertheme .graylayout {
+	background-color: lightgray;
+	margin-top: 1px;
+}
+
+.webpeptideshakertheme .protoformlayout .peptidelayout {
+	background-color: whitesmoke;
+	border: 1px solid lightgray;
+	z-index: 1 !important;
+}
+
+.webpeptideshakertheme .protoformlayout .v-label font {
+	margin-left: -26px !important;
+	letter-spacing: -1px;
+	padding-left: 2px;
+	padding-right: 3px;
+	font-weight: 600;
+	font-family: sans-serif;
+	font-size: 12px;
+	border: 1px solid lightgray;
+	text-align: center;
+}
+
+.webpeptideshakertheme .v-absolutelayout-wrapper-peptidecoverage .v-absolutelayout-margin {
+	overflow: visible !important;
+}
+
+.webpeptideshakertheme .protoformmodstyle {
+	z-index: 3 !important;
+	position: absolute !important;
+	cursor: pointer;
+}
+
+.webpeptideshakertheme .heighlightcorrespondingpeptide.peptidelayout.v-absolutelayout-nodemodificationbackground, .webpeptideshakertheme .heighlightcorrespondingpeptide.selectedpeptide.peptidelayout.v-absolutelayout-nodemodificationbackground {
+	box-shadow: 3px 3px 1.5px grey;
+	z-index: 5 !important;
+}
+
+.webpeptideshakertheme .protoformmodstyle.heighlightcorrespondingpeptide {
+	box-shadow: 2px 2px 1px grey;
+	z-index: 5 !important;
+}
+
+.webpeptideshakertheme .selectedprotoform font {
+	border-color: gray !important;
+}
+
+.webpeptideshakertheme .selectedprotoform .graylayout {
+	background-color: gray !important;
+}
+
+.webpeptideshakertheme .selectedprotoform .peptidelayout {
+	border-color: gray !important;
+	background-color: lightgray;
+}
+
+.webpeptideshakertheme .v-image-reactomicon {
+	height: 12px;
+	margin-left: 2px;
+	margin-top: 0px;
+	position: absolute !important;
+	z-index: 10 !important;
+}
+
+.webpeptideshakertheme .v-absolutelayout-wrapper-reactomicon {
+	height: 13px !important;
+	left: 100%;
+	width: 15px;
+}
+
+.webpeptideshakertheme .reactomwindow .v-window-closebox {
+	color: white !important;
+	background-color: #57c3e5 !important;
+	width: 32px !important;
+	height: 32px !important;
+	border-radius: 100% !important;
+	right: 38px !important;
+	top: -6px;
+	text-align: center !important;
+	font-size: 30px !important;
+	line-height: 30px !important;
+	position: absolute !important;
+}
+
+.webpeptideshakertheme .reactomwindow .v-window-closebox {
+	color: white !important;
+	background-color: #57c3e5 !important;
+	width: 32px !important;
+	height: 32px !important;
+	border-radius: 100% !important;
+	right: 38px !important;
+	top: -6px;
+	text-align: center !important;
+	font-size: 30px !important;
+	line-height: 30px !important;
+	position: absolute !important;
+	-webkit-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75);
+	-moz-box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75);
+	box-shadow: 3px 3px 5px 0 rgba(50, 50, 50, 0.75);
+}
+
+.webpeptideshakertheme .reactomwindow .v-window-closebox:hover {
+	background-color: #2273a3 !important;
+}
+
+.webpeptideshakertheme .pathwaynode .v-link {
+	color: transparent !important;
+	border-color: transparent !important;
+}
+
+.webpeptideshakertheme .v-link-reactomicon .v-icon {
+	height: 12px;
+	margin-left: 12px;
+	position: absolute !important;
+	z-index: 10 !important;
+}
+
+.webpeptideshakertheme .v-absolutelayout-wrapper-reactomicon {
+	height: 15px !important;
+	left: 100% !important;
+	width: 15px;
+}
+
+.webpeptideshakertheme .v-disabled.v-image-reactomicon, .webpeptideshakertheme .v-disabled.v-link-reactomicon {
+	opacity: 0.2 !important;
+}
+
+.webpeptideshakertheme .inactivatelayout {
+	opacity: 0.2 !important;
+}
+
+.webpeptideshakertheme .edgeLabel {
+	text-decoration: none !important;
+	margin-top: -12px !important;
+	max-height: 15px !important;
+	padding-left: 5px !important;
+	padding-right: 5px;
+	padding-bottom: 17px !important;
+	background-color: white;
+	border: 1px solid #2273a3;
+	width: auto !important;
+	z-index: 10 !important;
+	position: absolute !important;
+	font-size: 12px !important;
+	font-weight: bold !important;
+	opacity: 1 !important;
+	cursor: pointer;
+}
+
+.webpeptideshakertheme .edgeLabel:hover {
+	border-color: orange;
+	font-weight: bold !important;
+}
+
+.webpeptideshakertheme .v-link-edgeLabel a {
+	white-space: nowrap !important;
+}
+
+.webpeptideshakertheme .clipboardcontainer .v-textarea {
+	z-index: 1;
+	display: none;
+}
+
+.webpeptideshakertheme .clipboardcontainer .v-button {
+	border: none !important;
+	background: transparent !important;
+	box-shadow: none;
+	margin-left: 100% !important;
+	top: 0px !important;
+	max-height: 26px;
+	padding-top: 3px !important;
+	padding-left: 30px;
+}
+
+.webpeptideshakertheme .clipboardcontainer .v-button .Vaadin-Icons {
+	background-color: transparent !important;
+	border: none !important;
+	color: black !important;
+	z-index: 3 !important;
+	width: 20px;
+	position: absolute !important;
+}
+
+.webpeptideshakertheme .clipboardcontainer .v-button .Vaadin-Icons:hover {
+	background-color: transparent !important;
+	color: #4c74ad !important;
+}
+
+.webpeptideshakertheme .clipboardcontainer {
+	background-color: white;
+}
+
+.webpeptideshakertheme .clipboardcontainer .v-button:after {
+	content: "";
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	border-radius: inherit;
+	-webkit-transition: box-shadow 180ms, border 180ms;
+	-moz-transition: box-shadow 180ms, border 180ms;
+	transition: box-shadow 180ms, border 180ms;
+	box-shadow: none !important;
+}
+
+.webpeptideshakertheme .clipboardcontainer .v-button-link:focus {
+	min-height: 30px !important;
+	background-color: transparent !important;
+	border: 1px solid blue !important;
+	margin-top: -2px !important;
+}
+
+.webpeptideshakertheme .integratedframe .v-panel .maxheight50per {
+	padding-top: 80px !important;
+	margin-bottom: -10px !important;
+	border-bottom: 1px solid lightgray;
+	z-index: 3 !important;
+	position: relative !important;
+}
+
+.webpeptideshakertheme .integratedframe .panelTableHeaders {
+	margin-top: 40px;
+}
+
+.webpeptideshakertheme .integratedframe .uploaderlayout {
+	margin-top: 10px;
+}
+
+.webpeptideshakertheme .integratedframe .uploaderlayout .v-button {
+	z-index: 3 !important;
+	position: relative !important;
+}
+
+.webpeptideshakertheme .integratedframe .uploaderlayout .v-button.smooth {
+	max-height: 25px;
+	margin-top: -2px !important;
+}
+
+.webpeptideshakertheme .v-absolutelayout-wrapper-smooth .v-verticallayout-smooth {
+	right: -70px !important;
+	position: relative !important;
+	top: 8px !important;
+}
+
+.webpeptideshakertheme .v-absolutelayout-wrapper-smooth .v-label {
+	color: black;
+	border: 1px solid gray;
+	height: 17px !important;
+	top: 6px !important;
+	left: 50% !important;
+	margin-left: -90px;
+	background-color: rgba(255, 255, 255, 0.6);
+	width: 180px !important;
+	text-align: center;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	line-height: 15px;
+	position: absolute;
 }

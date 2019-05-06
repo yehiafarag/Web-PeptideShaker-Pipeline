@@ -8,9 +8,9 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
-import java.awt.Color;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -28,11 +28,18 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
     private final ProteinCoverageLayout proteinCoverageLayout;
     private final AbsoluteLayout peptideDistributionLayout;
     private final AbsoluteLayout chainCoverage3dLayout;
+    private final AbsoluteLayout protoformCoverage;
     private final Set<PeptideLayout> peptideDistMap;
     private final Set<PeptideObject> peptideObjectsSet;
-    Map<String, Color> ModificationColorMap;
+    private final Map<String, Set<PeptideLayout>> modificationPeptideMap;
+    private final int layoutHeight;
+    private int layoutHeightProtoform;
+    private final int proteinSequenceLength;
+    private boolean protoformInit;
+    private final ProteinGroupObject mainProteinObject;
+    private final float resizeFactor;
 
-    public ProteinCoverageComponent(ProteinGroupObject protein, Map<String, PeptideObject> peptidesNodes,RangeColorGenerator colorScale) {
+    public ProteinCoverageComponent(ProteinGroupObject protein, Map<String, PeptideObject> peptidesNodes, RangeColorGenerator colorScale) {
         ProteinCoverageComponent.this.setWidth(100, Unit.PERCENTAGE);
         HashMap<String, String> styles = new HashMap<>();
         styles.put("Confident", "greenbackground");
@@ -45,18 +52,8 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
         styles.put("Predicted", "purplebackground");
         styles.put("Uncertain", "redbackground");
         styles.put("Not Applicable", "lightgraybackground");
-        ModificationColorMap = new LinkedHashMap<>();
-//        for(String key :peptidesNodes.keySet())
-//            System.out.println("at peptide modification "+key+"---->>"+peptidesNodes.get(key).getFixedModifications()+" -- "+peptidesNodes.get(key).getVariableModifications());
-//        ModificationMatrix modificationMatrix = peptideShakerVisualizationDataset.getModificationMatrix();
-//        modificationMatrix.getRows().keySet().forEach((mod) -> {
-//            if (PTM.containsPTM(mod)) {
-//                ModificationColorMap.put(mod, PTMFactory.getDefaultColor(mod));
-//            } else {
-//                ModificationColorMap.put(mod, Color.LIGHT_GRAY);
-//            }
-//        });
-
+        this.mainProteinObject = protein;
+        modificationPeptideMap = new LinkedHashMap<>();
         if (protein.getValidation() == null) {
             protein.setValidation("Not Available");
         }
@@ -87,18 +84,13 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
                     ProteinCoverageComponent.this.addComponent(peptideDistributionLayout, "left:0; top:25px;");
                 }
                 super.setVisible(v);
-
             }
-        ;
-
         };
-        
-        
 
         proteinCoverageLayout = new ProteinCoverageLayout(styles.get(protein.getValidation()), styles.get(protein.getProteinEvidence()));
         peptideDistMap = new TreeSet<>(Collections.reverseOrder());
         proteinCoverageLayout.addLayoutClickListener((LayoutEvents.LayoutClickEvent event) -> {
-
+            resetHeighlightedProtoforms();
             selectPeptide(protein.getAccession(), null);
         });
 
@@ -109,21 +101,28 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
 
         LayoutEvents.LayoutClickListener peptidesListener = (LayoutEvents.LayoutClickEvent event) -> {
             Component clickedComp = event.getClickedComponent();
-            if (clickedComp!=null && clickedComp.getStyleName().contains("peptidelayout")) {
+            if ((clickedComp != null) && (clickedComp.getStyleName().contains("protoformcoverage") || clickedComp.getStyleName().contains("protoformmodstyle") || (clickedComp.getStyleName().contains("peptidelayout") && (clickedComp instanceof VerticalLayout)))) {
+                System.out.println("action from protoform");
+//                resetHeighlightedProtoforms();
+            } else if (clickedComp != null && clickedComp.getStyleName().contains("peptidelayout")) {
                 PeptideLayout genPeptid = (PeptideLayout) clickedComp;
                 selectPeptide(protein.getAccession(), genPeptid.getPeptideId());
-            } else if(clickedComp instanceof Label){                
-                selectPeptide(protein.getAccession(), ((Label)clickedComp).getData());
-
-            }else if(clickedComp instanceof VerticalLayout){                
-                selectPeptide(protein.getAccession(), ((VerticalLayout)clickedComp).getData());
+                resetHeighlightedProtoforms();
+            } else if (clickedComp instanceof Label) {
+                Object data = ((Label) clickedComp).getData();
+                if (data != null) {
+                    selectPeptide(protein.getAccession(), ((Label) clickedComp).getData());
+                    resetHeighlightedProtoforms();
+                }
+            } else if (clickedComp instanceof VerticalLayout) {
+                selectPeptide(protein.getAccession(), ((VerticalLayout) clickedComp).getData());
+                resetHeighlightedProtoforms();
 
             }
         };
 
         peptideDistributionLayout.addLayoutClickListener(peptidesListener);
-
-        float factor = 100f / Float.valueOf(protein.getSequence().length());
+        resizeFactor = 100f / Float.valueOf(protein.getSequence().length());
         int[] distArr = new int[protein.getSequence().length()];
 
         peptidesNodes.values().forEach((peptide) -> {
@@ -137,8 +136,8 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
                         break;
                     }
                     int startIndex = index;
-                    float left = (index) * factor;
-                    float width = (peptide.getSequence().length() * factor);
+                    float left = (index) * resizeFactor;
+                    float width = (peptide.getSequence().length() * resizeFactor);
                     width = (width / (100f - left) * 100);
                     int topLevel = 0;
                     for (char c : peptide.getSequence().toCharArray()) {
@@ -146,17 +145,19 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
                         topLevel = Math.max(topLevel, distArr[index]);
                         index++;
                     }
-
-//                    System.out.println("at top level for " + peptide.getSequence() + "  " + topLevel);
-//                    index = startIndex;
-//                    for (char c : peptide.getSequence().toCharArray()) {
-//                        distArr[index] = topLevel;
-//                        index++;
-//                    }
-                    PeptideLayout genPeptide = new PeptideLayout(peptide, width, startIndex, left, styles.get(peptide.getValidation()), styles.get("Not Applicable"), protein.isEnymaticPeptide(peptide.getModifiedSequence()),colorScale.getColor(peptide.getPSMsNumber()));
-//                    genPeptide.addLayoutClickListener(peptidesListener);
+                    PeptideLayout genPeptide = new PeptideLayout(peptide, width, startIndex, left, styles.get(peptide.getValidation()), styles.get("Not Applicable"), protein.isEnymaticPeptide(peptide.getModifiedSequence()), colorScale.getColor(peptide.getPSMsNumber()));
                     peptideDistMap.add(genPeptide);
                     peptideObjectsSet.add(peptide);
+                    for (String mod : peptide.getVariableModifications().split(",")) {
+                        mod = mod.split("\\(")[0].trim();
+                        if (mod.equalsIgnoreCase("")) {
+                            continue;
+                        }
+                        if (!modificationPeptideMap.containsKey(mod)) {
+                            modificationPeptideMap.put(mod, new LinkedHashSet<>());
+                        }
+                        modificationPeptideMap.get(mod).add(genPeptide);
+                    }
 
                 }
 
@@ -172,8 +173,8 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
                         break;
                     }
                     int startIndex = index;
-                    float left = (index) * factor;
-                    float width = (tempPeptSeq.length() * factor);
+                    float left = (index) * resizeFactor;
+                    float width = (tempPeptSeq.length() * resizeFactor);
                     width = (width / (100f - left) * 100);
                     int topLevel = 0;
                     for (char c : tempPeptSeq.toCharArray()) {
@@ -181,15 +182,7 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
                         topLevel = Math.max(topLevel, distArr[index]);
                         index++;
                     }
-//                    System.out.println("at top level for " + peptide.getSequence() + "  " + topLevel);
-//                    index = startIndex;
-//                    for (char c : tempPeptSeq.toCharArray()) {
-//                        distArr[index] = topLevel;
-//                        index++;
-//                    }
-
-                    PeptideLayout genPeptide = new PeptideLayout(peptide, width, startIndex, left, styles.get(peptide.getValidation()), styles.get("Not Applicable"), protein.isEnymaticPeptide(peptide.getModifiedSequence()),colorScale.getColor(peptide.getPSMsNumber()));
-//                    genPeptide.addLayoutClickListener(peptidesListener);
+                    PeptideLayout genPeptide = new PeptideLayout(peptide, width, startIndex, left, styles.get(peptide.getValidation()), styles.get("Not Applicable"), protein.isEnymaticPeptide(peptide.getModifiedSequence()), colorScale.getColor(peptide.getPSMsNumber()));
                     peptideDistMap.add(genPeptide);
                     peptideObjectsSet.add(peptide);
 
@@ -197,54 +190,63 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
             }
         });
 
-        int levelNum = 1;
         for (int index = 0; index < distArr.length; index++) {
             if (distArr[index] > 0) {
-                VerticalLayout highlight = new VerticalLayout();
-                highlight.setHeight(100, Unit.PERCENTAGE);
-                highlight.setStyleName("lightgraylayout");
-                highlight.addStyleName("peptidelayout");
-                float left = index * factor;
+                float left = index * resizeFactor;
                 int start = index;
                 float w = 0;
                 for (; index < distArr.length && distArr[index] > 0; index++) {
                     w++;
                 }
-                highlight.setDescription(protein.getSequence().substring(start, (start + (int) w)));
-                w = w * factor;
+                String desc = protein.getSequence().substring(start, (start + (int) w));
+                w = w * resizeFactor;
                 w = (w / (100f - left) * 100);
-                highlight.setWidth(w, Unit.PERCENTAGE);
+                HighlightPeptide highlight = new HighlightPeptide(w, desc);
                 proteinCoverageLayout.addComponent(highlight, "left:" + left + "%; bottom:0px;");
             }
 
         }
-        int[] usedDistArr = new int[protein.getSequence().length()];
-        for (PeptideLayout pep : peptideDistMap) {
-            int level = 0;
-            int topLevel = 0;
-            for (int i = pep.getStartIndex(); i < pep.getEndIndex(); i++) {
-                level = Math.max(usedDistArr[i], level);
-                usedDistArr[i] = usedDistArr[i] + 1;
-                topLevel = Math.max(topLevel, usedDistArr[i]);
-            }
-            for (int i = pep.getStartIndex(); i < pep.getEndIndex(); i++) {
-                usedDistArr[i] = topLevel;
-            }
-            levelNum = Math.max(levelNum, topLevel);
-
-            level = level * 20;
-            peptideDistributionLayout.addComponent(pep, "left:" + pep.getX() + "%; top:" + level + "px;");
-
-        }
-        levelNum = 25 + (levelNum * 20) + 5;
-        ProteinCoverageComponent.this.setHeight(levelNum, Unit.PIXELS);
+        proteinSequenceLength = protein.getSequence().length();
+        int levelNum = initPeptideCoverageLayout();
+        layoutHeight = 25 + (levelNum * 20) + 5;
         chainCoverage3dLayout.setVisible(false);
+        ProteinCoverageComponent.this.setHeight(layoutHeight, Unit.PIXELS);
+        layoutHeightProtoform=layoutHeight;
+
+        protoformCoverage = new AbsoluteLayout();
+        protoformCoverage.setWidth(100, Unit.PERCENTAGE);
+        protoformCoverage.setHeight(100, Unit.PERCENTAGE);
+        protoformCoverage.setVisible(false);
+        protoformCoverage.addStyleName("protoformcoverage");
+        System.out.println("init peptide dist coverage");
+
     }
 
-    public void selectPeptides(Set<Object> peptidesId) {
+    public void selectSubComponents(Set<Object> peptidesId) {
         peptideDistMap.forEach((peptide) -> {
             peptide.setSelected(peptidesId.contains(peptide.getPeptideId()));
         });
+        if (!peptidesId.isEmpty() && peptidesId.iterator().next().toString().contains(";")) {
+            Iterator<Component> itr = protoformCoverage.iterator();
+            while (itr.hasNext()) {
+                ProteoformLayout proteform = ((ProteoformLayout) itr.next());
+                if (!peptidesId.contains(proteform.getData())) {
+                    proteform.addStyleName("inactivatelayout");
+                    proteform.setEnabled(false);
+                    for (ProtoformModificationLayout mod : proteform.getIncludedModifications()) {
+                        mod.addStyleName("inactivatelayout");
+                        mod.setEnabled(false);
+                    }
+                } else {
+                    proteform.removeStyleName("inactivatelayout");
+                    proteform.setEnabled(true);
+                    for (ProtoformModificationLayout mod : proteform.getIncludedModifications()) {
+                        mod.removeStyleName("inactivatelayout");
+                        mod.setEnabled(true);
+                    }
+                }
+            }
+        }
     }
 
     public Set<PeptideObject> getPeptideObjectsSet() {
@@ -256,6 +258,7 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
         peptideDistMap.forEach((peptide) -> {
             peptide.setSelected(selectAll || peptideId.equals(peptide.getPeptideId()));
         });
+
     }
 
     public void enable3D(Component view) {
@@ -271,10 +274,153 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
     public abstract void selectPeptide(Object proteinId, Object peptideId);
 
     public void updateStylingMode(String style) {
+         System.out.println("updating style mode "+style);
+
         proteinCoverageLayout.updateStylingMode(style);
+        final String updateStyle;
+        if (style.equalsIgnoreCase("Proteoform")) {
+            updateStyle = "Modification Status";
+            if (!protoformInit && mainProteinObject.getProtoformsNodes()!=null && !mainProteinObject.getProtoformsNodes().isEmpty()) {
+                protoformInit = true;
+//                int levelNum = initPeptideCoverageLayout(true);
+                int topCorrector = layoutHeight - 25;//((levelNum * 20) + 5);
+                peptideDistributionLayout.addComponent(protoformCoverage, "left:0px;top:" + topCorrector + "px;");
+                int protoformNum = 0;
+                int top = 0;
+                for (String protoformKey : mainProteinObject.getProtoformsNodes().keySet()) {
+//                    if (protoformKey.contains(":") || protoformKey.contains("-")) {                        
+                    Map<String, Integer> modificationMap = mainProteinObject.getProtoformsNodes().get(protoformKey).getModificationsLocationsMap();
+                    ProteoformLayout protolayout = new ProteoformLayout(++protoformNum, top, mainProteinObject.getProtoformsNodes().get(protoformKey).getFinalColor(), protoformKey, (mainProteinObject.getProtoformsNodes().get(protoformKey).getEdgesNumber() > 1)) {
+                        @Override
+                        public void selectProtoform(ProteoformLayout protoform) {
+                            selectProteinProteoform(protoform);
+                        }
+
+                    };
+                    protolayout.setData(protoformKey);
+                    protolayout.setDescription(mainProteinObject.getProtoformsNodes().get(protoformKey).getDescription());
+                    protoformCoverage.addComponent(protolayout, "left:0px;top:" + top + "px;");
+                    protolayout.updateHighlightedComponents(proteinCoverageLayout);//       
+
+                    for (String mod : modificationMap.keySet()) {
+                        ProtoformModificationLayout modLayout = new ProtoformModificationLayout(mod, modificationMap.get(mod)) {
+                            @Override
+                            public void selected(ProtoformModificationLayout protoformModificationLayout) {
+                                selectedProteoformModification(protoformModificationLayout);
+                            }
+
+                        };
+                        protolayout.addModificationLayout(modLayout);
+                        float left = (float) modificationMap.get(mod) * resizeFactor;
+                        peptideDistributionLayout.addComponent(modLayout, "left:" + left + "%; top:" + (top + topCorrector) + "px;");
+
+                        if (modificationPeptideMap.containsKey(mod)) {
+                            Set<PeptideLayout> peptides = modificationPeptideMap.get(mod);
+                            peptides.forEach((peptide) -> {
+                                String poStr = peptide.getPeptide().getPostion();
+                                for (String st : poStr.split(";")) {
+                                    int peptideStart = Integer.valueOf(st.trim());
+                                    int peptideLocation = peptideStart + peptide.getPeptide().getSequence().length();
+                                    int modLocation = modificationMap.get(mod);
+                                    if (modLocation >= peptideStart && modLocation < peptideLocation) {
+                                        modLayout.addCorrespondingPeptide(peptide);
+                                    }
+                                }
+                            });
+                        }
+
+                    }
+                    top += 20;
+//                    }
+//                
+                    layoutHeightProtoform = (layoutHeight) + (protoformNum * 20) + 25;
+//                for (String key : modificationPeptideMap.keySet()) {
+//                    for (PeptideLayout pep : modificationPeptideMap.get(key)) {
+//                        pep.addLocation(-100);
+//                    }
+//                }
+                }
+            }
+            System.out.println("at layout height "+ProteinCoverageComponent.this.getHeight()+"   "+layoutHeight);
+            ProteinCoverageComponent.this.setHeight(layoutHeightProtoform, Unit.PIXELS);
+            protoformCoverage.setVisible(true);
+//            reDistributePeptides(true);
+//            int levelNum = reOrganizePeptideCoverageLayout(true);
+//            peptideDistributionLayout.addComponent(protoformCoverage, "left:0px;top:" + ((levelNum * 20) + 5) + "px;");
+//            levelNum = ((levelNum * 20) + 5) + (protoformNum * 20)+50;
+//            ProteinCoverageComponent.this.setHeight(levelNum, Unit.PIXELS);
+//            protoformCoverage.setVisible(true);
+
+        } else if (style.equalsIgnoreCase("Protein-Peptide")) {
+            resetHeighlightedProtoforms();
+            ProteinCoverageComponent.this.setHeight(layoutHeight, Unit.PIXELS);
+            return;
+        } else {
+            updateStyle = style;
+            ProteinCoverageComponent.this.setHeight(layoutHeight, Unit.PIXELS);
+            protoformCoverage.setVisible(false);
+        }
         peptideDistMap.forEach((peptide) -> {
-            peptide.updateStylingMode(style);
+            peptide.updateStylingMode(updateStyle);
         });
+
+    }
+
+    private int initPeptideCoverageLayout() {
+        int levelNum = 1;
+        int[] usedDistArr = new int[proteinSequenceLength];
+        int level = 0;
+        int topLevel = 0;
+        for (PeptideLayout pep : peptideDistMap) {
+            level = 0;
+            topLevel = 0;
+            for (int i = pep.getStartIndex(); i < pep.getEndIndex(); i++) {
+                level = Math.max(usedDistArr[i], level);
+                usedDistArr[i] = usedDistArr[i] + 1;
+                topLevel = Math.max(topLevel, usedDistArr[i]);
+            }
+            for (int i = pep.getStartIndex(); i < pep.getEndIndex(); i++) {
+                usedDistArr[i] = topLevel;
+            }
+            levelNum = Math.max(levelNum, topLevel);
+            level = level * 20;
+            peptideDistributionLayout.addComponent(pep, "left:" + pep.getX() + "%; top:" + level + "px;");
+            pep.addLocation(level);
+
+        }
+        return levelNum;
+
+    }
+
+    private void selectedProteoformModification(ProtoformModificationLayout proteoformModification) {
+        if (!proteoformModification.isEnabled()) {
+            return;
+        }
+        resetHeighlightedProtoforms();
+        PeptideLayout genPeptid = proteoformModification.select();
+        if (genPeptid != null) {
+            selectPeptide(mainProteinObject.getAccession(), genPeptid.getPeptideId());
+        }
+    }
+
+    private void resetHeighlightedProtoforms() {
+        Iterator<Component> itr = peptideDistributionLayout.iterator();
+        while (itr.hasNext()) {
+            itr.next().removeStyleName("heighlightcorrespondingpeptide");
+        }
+        itr = protoformCoverage.iterator();
+        while (itr.hasNext()) {
+            itr.next().removeStyleName("selectedprotoform");
+        }
+
+    }
+
+    private void selectProteinProteoform(ProteoformLayout protoform) {
+        Iterator<Component> itr = protoformCoverage.iterator();
+        while (itr.hasNext()) {
+            itr.next().removeStyleName("selectedprotoform");
+        }
+        protoform.addStyleName("selectedprotoform");
     }
 
 }

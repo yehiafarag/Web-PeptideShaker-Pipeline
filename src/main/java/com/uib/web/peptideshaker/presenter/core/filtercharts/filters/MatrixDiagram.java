@@ -108,7 +108,7 @@ public abstract class MatrixDiagram extends AbsoluteLayout {
         this.barChartValues = new LinkedHashMap<>();
         this.fullItemsSet = new LinkedHashSet<>();
         this.selectedIndexes = new LinkedHashSet<>();
-        this.addStyleName("slowredraw");
+        MatrixDiagram.this.addStyleName("slowredraw");
         this.barListener = (LayoutEvents.LayoutClickEvent event) -> {
             Component clickedComponent = event.getClickedComponent();
             if (clickedComponent == null) {

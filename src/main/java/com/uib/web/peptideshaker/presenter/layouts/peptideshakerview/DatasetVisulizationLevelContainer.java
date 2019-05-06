@@ -28,8 +28,6 @@ public class DatasetVisulizationLevelContainer extends HorizontalLayout {
     private final AbsoluteLayout container;
     private final PopupWindow headerLabel;
     private final DatasetVisulizationLevelComponent datasetVisulizationLevelComponent;
-//    private final ThemeResource defaultThemeIcon;
-//    private final ThemeResource activeThemeIcon;
 
     /**
      * Constructor to initialise the main layout and variables.
@@ -44,8 +42,6 @@ public class DatasetVisulizationLevelContainer extends HorizontalLayout {
         DatasetVisulizationLevelContainer.this.setMargin(false);
         datasetsOverviewBtn.setDescription("Selected dataset overview and the proteins list");
 
-//        defaultThemeIcon = new ThemeResource("img/cluster.svg");//new ThemeResource("img/ds_filters_icon.png");
-//        activeThemeIcon = new ThemeResource("img/cluster.svg");
         datasetsOverviewBtn.updateIcon(VaadinIcons.CLUSTER.getHtml());
         datasetsOverviewBtn.updateIconResource(new ThemeResource("img/venn_color.png"));//img/vizicon.png
         container = new AbsoluteLayout();
@@ -72,6 +68,7 @@ public class DatasetVisulizationLevelContainer extends HorizontalLayout {
         topLeftLabelContainer.setSpacing(true);
         topLeftLabelContainer.addComponent(headerLabel);
 
+       
         FilterButton removeFilterIcon = new FilterButton() {
             @Override
             public void layoutClick(LayoutEvents.LayoutClickEvent event) {
@@ -90,31 +87,28 @@ public class DatasetVisulizationLevelContainer extends HorizontalLayout {
             @Override
             public void updateFilterSelection(Set<Comparable> selection, Set<Comparable> selectedCategories, boolean topFilter, boolean selectOnly, boolean selfAction) {
                 removeFilterIcon.setVisible(Selection_Manager.isDatasetFilterApplied());
-                super.updateFilterSelection(selection, selectedCategories, topFilter, selectOnly, selfAction);
-                if (Selection_Manager.isDatasetFilterApplied()) {
-//                    datasetsOverviewBtn.updateIconResource(activeThemeIcon);
-                } else {
-//                    datasetsOverviewBtn.updateIconResource(defaultThemeIcon);
-                }
+                super.updateFilterSelection(selection, selectedCategories, topFilter, selectOnly, selfAction);               
             }
         };
         container.addComponent(datasetVisulizationLevelComponent, "left:0px;top:40px;");
 
     }
+  
 
     public void selectDataset(PeptideShakerVisualizationDataset peptideShakerVisualizationDataset) {
         headerLabel.setLabelValue("Dataset: " + peptideShakerVisualizationDataset.getName().split("___")[0]);
-
-        SearchSettingsLayout dsOverview = new SearchSettingsLayout((PeptideShakerVisualizationDataset) peptideShakerVisualizationDataset) {
+       
+        SearchSettingsLayout dsOverview = new SearchSettingsLayout((PeptideShakerVisualizationDataset) peptideShakerVisualizationDataset,true) {
             @Override
             public void saveSearchingFile(SearchParameters searchParameters, boolean isNew) {
                 throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
+
             @Override
             public void cancel() {
                 headerLabel.setPopupVisible(false);
             }
-        };
+        }; 
         headerLabel.setContent(dsOverview);
         datasetVisulizationLevelComponent.updateData(peptideShakerVisualizationDataset);
 

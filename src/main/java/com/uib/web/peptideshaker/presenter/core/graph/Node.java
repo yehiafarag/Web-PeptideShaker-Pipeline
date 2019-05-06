@@ -12,7 +12,9 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import java.awt.Color;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This class represents Node for graph layout
@@ -31,16 +33,15 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
     private final String modificationStyleName = "nodemodificationbackground";
     private int edgesNumber;
     private boolean uniqueOnlyMode;
+    private final Set<Edge> edges;
 
     /**
      * The post translational modifications factory.
      */
     private final PTMFactory PTM = PTMFactory.getInstance();
 
-    public Node(String id,String tooltip, String modifications, String sequence, int psmNumber, String PSMNumberColor) {
+    public Node(String id, String tooltip, String modifications, String sequence, int psmNumber, String PSMNumberColor) {
 
-        Node.this.setWidth(20, Unit.PIXELS);
-        Node.this.setHeight(20, Unit.PIXELS);
         Node.this.setStyleName("node");
         Node.this.addLayoutClickListener(Node.this);
         this.nodeId = id;
@@ -99,6 +100,8 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
         tooltip += tooltipExt;
         Node.this.setDescription(tooltip);
 
+        this.edges = new LinkedHashSet<>();
+
     }
 
     public String getNodeId() {
@@ -117,7 +120,7 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
         return edgesNumber;
     }
 
-    public void addEdge() {        
+    public void addEdge() {
         this.edgesNumber++;
     }
 
@@ -170,6 +173,21 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
 
     public void setType(int type) {
         this.type = type;
+        switch (type) {
+            case 1:
+                Node.this.setWidth(28, Unit.PIXELS);
+                Node.this.setHeight(28, Unit.PIXELS);
+                break;
+            case 2:
+                Node.this.setWidth(20, Unit.PIXELS);
+                Node.this.setHeight(20, Unit.PIXELS);
+                break;
+            case 3:
+                Node.this.setWidth(10, Unit.PIXELS);
+                Node.this.setHeight(10, Unit.PIXELS);
+                Node.this.setSelected(false);
+
+        }
     }
     private int type;
 
@@ -219,9 +237,20 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
             Node.this.addStyleName("nodedisabled");
             Node.this.setEnabled(false);
         } else if (type == 1) {
-            Node.this.removeStyleName("nodedisabled"); 
+            Node.this.removeStyleName("nodedisabled");
             Node.this.setEnabled(true);
         }
+    }
+
+    public void addEdge(Edge e) {
+        edges.add(e);
+        addEdge();
+        this.setDescription(this.getDescription()+"("+edges.size()+")");
+    }
+
+    public Set<Edge> getRelatedEdges() {
+        
+        return edges;
     }
 
 }

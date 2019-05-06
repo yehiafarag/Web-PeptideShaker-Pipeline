@@ -1,8 +1,12 @@
 package com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects;
 
 import com.compomics.util.experiment.biology.Protein;
+import graphmatcher.NetworkGraphEdge;
+import graphmatcher.NetworkGraphNode;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
@@ -15,6 +19,8 @@ import java.util.Set;
  */
 public class ProteinGroupObject extends Protein {
 
+    private boolean protoformUpdated;
+
     private boolean availableOn_CSF_PR;
     /**
      * UniProt accession number.
@@ -24,6 +30,12 @@ public class ProteinGroupObject extends Protein {
      * UniProt protein group key.
      */
     private String proteinGroupKey;
+
+    private final Map<String, NetworkGraphNode> protoformsNodes;
+
+    private final Set<NetworkGraphEdge> localEdges;
+    
+    private double quantValue;
 
     public String getProteinGroupKey() {
         return proteinGroupKey;
@@ -156,6 +168,15 @@ public class ProteinGroupObject extends Protein {
      * List of peptides related to protein group.
      */
     private final Map<String, Boolean> relatedPeptidesList;
+    private NetworkGraphNode parentNode;
+
+    public NetworkGraphNode getParentNode() {
+        return parentNode;
+    }
+
+    public void setParentNode(NetworkGraphNode parentNode) {
+        this.parentNode = parentNode;
+    }
 
     /**
      * Get chromosome index
@@ -214,6 +235,8 @@ public class ProteinGroupObject extends Protein {
         this.secondaryAccessionSet = new LinkedHashSet<>();
         this.proteinGroupSet = new LinkedHashSet<>();
         this.relatedPeptidesList = new HashMap<>();
+        this.protoformsNodes = new LinkedHashMap<>();
+        this.localEdges = new HashSet<>();
     }
 
     /**
@@ -240,7 +263,7 @@ public class ProteinGroupObject extends Protein {
      * @param peptideKey peptides keys (modified sequence)
      * @param enzymatic enzymatic peptide
      */
-    public void updatePeptideType(String peptideKey, boolean enzymatic) {        
+    public void updatePeptideType(String peptideKey, boolean enzymatic) {
         relatedPeptidesList.put(peptideKey, enzymatic);
     }
 
@@ -251,7 +274,7 @@ public class ProteinGroupObject extends Protein {
      * @return is enzymatic peptide
      */
     public boolean isEnymaticPeptide(String peptideKey) {
-        if (relatedPeptidesList.containsKey(peptideKey)) {            
+        if (relatedPeptidesList.containsKey(peptideKey)) {
             return relatedPeptidesList.get(peptideKey);
         } else {
             return true;
@@ -542,7 +565,7 @@ public class ProteinGroupObject extends Protein {
      *
      * @param proteinGroup protein accessions
      */
-    public void setProteinGroup(String proteinGroup) {        
+    public void setProteinGroup(String proteinGroup) {
         this.proteinGroup = proteinGroup;
         for (String acc : proteinGroup.split(",")) {
             proteinGroupSet.add(acc.trim());
@@ -774,6 +797,42 @@ public class ProteinGroupObject extends Protein {
 
     public void setAvailableOn_CSF_PR(boolean availableOn_CSF_PR) {
         this.availableOn_CSF_PR = availableOn_CSF_PR;
+    }
+
+    public void addProtoformNode(NetworkGraphNode node) {
+        protoformsNodes.put(node.getNodeId(), node);
+
+    }
+
+    public Map<String, NetworkGraphNode> getProtoformsNodes() {
+        return protoformsNodes;
+    }
+
+    public boolean isProtoformUpdated() {
+        return protoformUpdated;
+    }
+
+    public void setProtoformUpdated(boolean protoformUpdated) {
+        this.protoformUpdated = protoformUpdated;
+        for (NetworkGraphNode node : protoformsNodes.values()) {
+            NetworkGraphEdge edge = new NetworkGraphEdge(parentNode, node, "","", "", "", true);
+              parentNode.addEdge(edge);
+            node.addEdge(edge);
+            localEdges.add(edge);
+
+        }
+    }
+
+    public Set<NetworkGraphEdge> getLocalEdges() {
+        return localEdges;
+    }
+
+    public double getQuantValue() {
+        return quantValue;
+    }
+
+    public void setQuantValue(double quantValue) {
+        this.quantValue = quantValue;
     }
 
 }

@@ -44,10 +44,10 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
     private final Map<String, Integer> inferenceMap;
     private final LayoutEvents.LayoutClickListener selectionListener;
     private PeptideShakerVisualizationDataset peptideShakerVisualizationDataset;
+   
 
     private final DecimalFormat df = new DecimalFormat("#.##");
     private final DecimalFormat df1 = new DecimalFormat("0.00E00");// new DecimalFormat("#.##");
-
     /**
      * The post translational modifications factory.
      */
@@ -61,6 +61,8 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
         this.datasetFiltersContainer = new FiltersContainer(Selection_Manager);
         DatasetVisulizationLevelComponent.this.addComponent(datasetFiltersContainer);
         DatasetVisulizationLevelComponent.this.setExpandRatio(datasetFiltersContainer, 0.60f);
+
+        
 
         this.inferenceMap = new HashMap<>();
         this.inferenceMap.put("Single Protein", 1);
@@ -143,7 +145,7 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
     }
 
     public void updateData(PeptideShakerVisualizationDataset peptideShakerVisualizationDataset) {
-        long start = System.currentTimeMillis();
+        
         this.peptideShakerVisualizationDataset = peptideShakerVisualizationDataset;
 
         peptideShakerVisualizationDataset.processDataFiles();
@@ -259,11 +261,10 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
                 String searchKey = protein.getAccession() + "_" + protein.getDescription() + "_" + protein.getProteinGroup().replace(",", "_");
                 proteinTableContainer.addTableItem(protein.getProteinGroupKey(), new Object[]{protein.getIndex(), piLabel, proteinAccLink, csfprLink, protein.getDescription(), protein.getProteinGroup(), protein.getGeneName(), new AlphanumComparator(protein.getChromosome()), coverageLabel, peptidesNumberLabelLabel, psmNumberLabelLabel, ms2QuantLabelLabel, mwLabel, confidentLabel, validation}, searchKey);
             } catch (Exception e) {
-               System.out.println("at prot acc "+protein.getAccession()+"  "+protein.getProteinInference()+"--"+protein.getProteinGroupKey()+" -- "+inferenceMap.containsKey(protein.getProteinInference()));
-                
+                System.out.println("at prot acc error " + protein.getAccession() + "  " + protein.getProteinInference() + "--" + protein.getProteinGroupKey() + " -- " + inferenceMap.containsKey(protein.getProteinInference()));
+
             }
         });
-        System.out.println("at prot table container to updat");
         this.proteinTableContainer.activateValueChangeListener();
         this.proteinTableContainer.updateLabel();
         Map<String, Color> ModificationColorMap = new LinkedHashMap<>();
@@ -275,7 +276,7 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
         mainTable.setSortEnabled(false);
         ModificationMatrix modificationMatrix = peptideShakerVisualizationDataset.getModificationMatrix();
         if (modificationMatrix == null || modificationMatrix.getRows() == null) {
-            System.out.println("modification matrix has an error ");
+            return;
         }
         modificationMatrix.getRows().keySet().forEach((mod) -> {
             if (PTM.containsPTM(mod)) {
@@ -285,19 +286,19 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
             }
         });
         datasetFiltersContainer.updateFiltersData(modificationMatrix, ModificationColorMap, peptideShakerVisualizationDataset.getChromosomeMap(), peptideShakerVisualizationDataset.getProteinInferenceMap(), peptideShakerVisualizationDataset.getProteinValidationMap(), peptideShakerVisualizationDataset.getProteinPeptidesNumberMap(), peptideShakerVisualizationDataset.getProteinPSMNumberMap(), peptideShakerVisualizationDataset.getProteinCoverageMap());
-
-        System.out.println("to test III : " + (System.currentTimeMillis() - start) + "ms");
+       
+        
     }
 
     @Override
     public void selectionChange(String type) {
 
-        if (type.equalsIgnoreCase("protein_selection")) {
-
-        }
-        if (type.equalsIgnoreCase("dataset_filter_selection")) {
-//            
-        }
+//        if (type.equalsIgnoreCase("protein_selection")) {
+//
+//        }
+//        if (type.equalsIgnoreCase("dataset_filter_selection")) {
+////            
+//        }
 
     }
 
@@ -327,9 +328,10 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
     }
 
     private String generateCaptionWithTooltio(String caption, String tooltip) {
-
         return "<div class='tooltip'>" + caption + "<span class='tooltiptext'>" + tooltip + "</span></div>";
 
     }
+
+ 
 
 }

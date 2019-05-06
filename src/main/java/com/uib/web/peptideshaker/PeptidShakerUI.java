@@ -58,7 +58,9 @@ public class PeptidShakerUI extends UI {
     protected void init(VaadinRequest vaadinRequest) {
 
         try {
+
             PeptidShakerUI.this.setSizeFull();
+
             notification = new Notification("Use the device in landscape mode :-)", Notification.Type.ERROR_MESSAGE);
             notification.setDelayMsec(10000);
             notification.setStyleName("mobilealertnotification");
@@ -78,6 +80,15 @@ public class PeptidShakerUI extends UI {
             String galaxyServerUrl = (scx.getInitParameter("galaxyServerUrl"));
             VaadinSession.getCurrent().setAttribute("galaxyServerUrl", galaxyServerUrl);
             String csfProteinsListURL = (scx.getInitParameter("csfprservice"));
+            String dbURL = (scx.getInitParameter("url"));
+            String dbDriver = (scx.getInitParameter("driver"));
+            String dbUserName = (scx.getInitParameter("userName"));
+            String dbPassword = (scx.getInitParameter("password"));
+            VaadinSession.getCurrent().setAttribute("dbURL", dbURL);
+            VaadinSession.getCurrent().setAttribute("dbDriver", dbDriver);
+            VaadinSession.getCurrent().setAttribute("dbUserName", dbUserName);
+            VaadinSession.getCurrent().setAttribute("dbPassword", dbPassword);
+
             updateCSFPRProteinsList(csfProteinsListURL);
             if (testUserAPIKey == null || galaxyServerUrl == null) {
                 notification = new Notification("Error in Galaxy server address, Contact administrator :-(", Notification.Type.ERROR_MESSAGE);
@@ -91,8 +102,6 @@ public class PeptidShakerUI extends UI {
                 notification.show(Page.getCurrent());
                 return;
             }
-//            this.setWidth(1000, Unit.PIXELS);
-//            this.setHeight(500, Unit.PIXELS);
             WebPeptideShakerApp webPeptideShakerApp = new WebPeptideShakerApp();
             PeptidShakerUI.this.setContent(webPeptideShakerApp);
 
@@ -103,6 +112,7 @@ public class PeptidShakerUI extends UI {
              * @todo: we need better optimisation to detect the window ratio.
              */
 //        if ((Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight()) || (Page.getCurrent().getBrowserWindowWidth() < 650) || (Page.getCurrent().getBrowserWindowHeight() < 600)) {
+            System.out.println("at browser app " + Page.getCurrent().getWebBrowser().getBrowserApplication() + "  " + Page.getCurrent().getWebBrowser().isIPad() + "  " + Page.getCurrent().getWebBrowser().isTouchDevice() + "  " + Page.getCurrent().getWebBrowser().isIPhone());
             if (Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile")) {
                 webPeptideShakerApp.addStyleName("mobilestyle");
                 webPeptideShakerApp.addStyleName("smallscreenstyle");
@@ -150,16 +160,8 @@ public class PeptidShakerUI extends UI {
             NeLS_Galaxy = new NeLSStorageInteractiveLayer();
             boolean isNelsGalaxyConnection = NeLS_Galaxy.isNelsGalaxyConnection(vaadinRequest);
             VaadinSession.getCurrent().setAttribute("nelsgalaxy", isNelsGalaxyConnection);
-
-            /**
-             * Auto-reconnect to galaxy server if the session is still valid.
-             */
-//            if (isNelsGalaxyConnection || (VaadinSession.getCurrent().getAttribute("ApiKey") != null && VaadinSession.getCurrent().getAttribute("galaxyUrl") != null)) {
-//                webPeptideShakerApp.reConnectToGalaxyServer(VaadinSession.getCurrent().getAttribute("ApiKey") + "", VaadinSession.getCurrent().getAttribute("galaxyUrl") + "");
-//            }
             Page.getCurrent().setTitle("PeptideShaker");
         } catch (Exception e) {
-            System.out.println("---------------------------error---------------------------");
             e.printStackTrace();
 
         }

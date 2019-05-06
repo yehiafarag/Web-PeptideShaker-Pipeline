@@ -97,8 +97,6 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
         this.Selection_Manager = new SelectionManager();
         this.initLayout();
         InteractivePSPRojectResultsPresenter.this.minimizeView();
-
-//         this.controlButton.addStyleName("hidetopbtn");
     }
 
     /**
@@ -118,7 +116,6 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
         viewControlButtonContainer.addComponent(datasetsOverviewBtn);
         viewControlButtonContainer.setComponentAlignment(datasetsOverviewBtn, Alignment.MIDDLE_CENTER);
         datasetsOverviewBtn.addLayoutClickListener(InteractivePSPRojectResultsPresenter.this);
-        Selection_Manager.addBtnLayout(datasetsOverviewBtn, datasetVisulizationLevelContainer);
         datasetVisulizationLevelContainer = new DatasetVisulizationLevelContainer(Selection_Manager, datasetsOverviewBtn);
         datasetVisulizationLevelContainer.setSizeFull();
         Selection_Manager.addBtnLayout(datasetsOverviewBtn, datasetVisulizationLevelContainer);
@@ -311,19 +308,20 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
             smallControlButton.setEnabled(peptideShakerVisualizationDataset != null);
             Selection_Manager.reset();
             Selection_Manager.selectBtn(0);
-            datasetVisulizationLevelContainer.selectDataset(peptideShakerVisualizationDataset);
-
+                datasetVisulizationLevelContainer.selectDataset(peptideShakerVisualizationDataset);
+           
         };
         Runnable runnableTask2 = () -> {
+
             proteinsVisulizationLevelContainer.selectDataset(peptideShakerVisualizationDataset);
 
         };
         Runnable runnableTask3 = () -> {
             peptideVisulizationLevelContainer.selectDataset(peptideShakerVisualizationDataset);
 
-        }; 
+        };
         dataprocessFuture = executorService.submit(runnableTask1);
-        executorService.submit(runnableTask);       
+        executorService.submit(runnableTask);
         executorService.submit(runnableTask2);
         executorService.submit(runnableTask3);
         executorService.shutdown();

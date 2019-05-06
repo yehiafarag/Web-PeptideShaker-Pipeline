@@ -1,6 +1,5 @@
 package com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects;
 
-import com.vaadin.server.VaadinSession;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -129,9 +128,9 @@ public class GalaxyTransferableFile extends GalaxyFileObject {
         if (galaxyFileObject.getType().equalsIgnoreCase("Search Parameters File (JSON)") && !zipped) {
             fileName += galaxyFileObject.getName();
         }
+        fileName = fileName.replace("760bf1f0e3f05bfb", "760bf1f0e3f05bfb.txt");
         File file = new File(user_folder, fileName);
         if (file.exists()) {
-
             return file;
         }
         if (zipped) {
@@ -180,6 +179,7 @@ public class GalaxyTransferableFile extends GalaxyFileObject {
                 System.out.println("to test reader : "+ file.getName()+"  "+ (System.currentTimeMillis() - start) + "ms");
 
             } catch (MalformedURLException ex) {
+                ex.printStackTrace();
             } finally {
                 if (fos != null) {
                     try {
@@ -192,17 +192,18 @@ public class GalaxyTransferableFile extends GalaxyFileObject {
 
         } else {
             FileOutputStream fos = null;
+             long start = System.currentTimeMillis();
             try {
                 URL downloadableFile = new URL(galaxyFileObject.getDownloadUrl());
                 URLConnection conn = downloadableFile.openConnection();
-                conn.addRequestProperty("Cookie", VaadinSession.getCurrent().getAttribute("cookies") + "");
-                conn.addRequestProperty("Accept", "*/*");
-                conn.addRequestProperty("Accept-Encoding", "gzip, deflate, sdch, br");
-                conn.addRequestProperty("Accept-Language", "ar,en-US;q=0.8,en;q=0.6,en-GB;q=0.4");
-                conn.addRequestProperty("Cache-Control", "no-cache");
-                conn.addRequestProperty("Connection", "keep-alive");
-                conn.addRequestProperty("DNT", "1");
-                conn.addRequestProperty("Pragma", "no-cache");
+//                conn.addRequestProperty("Cookie", VaadinSession.getCurrent().getAttribute("cookies") + "");
+//                conn.addRequestProperty("Accept", "*/*");
+//                conn.addRequestProperty("Accept-Encoding", "gzip, deflate");//, sdch, br
+//                conn.addRequestProperty("Accept-Language", "ar,en-US;q=0.8,en;q=0.6,en-GB;q=0.4");
+//                conn.addRequestProperty("Cache-Control", "no-cache");
+//                conn.addRequestProperty("Connection", "keep-alive");
+//                conn.addRequestProperty("DNT", "1");
+//                conn.addRequestProperty("Pragma", "no-cache");
                 conn.setDoInput(true);
                 InputStream in = conn.getInputStream();
                 try (ReadableByteChannel rbc = Channels.newChannel(in)) {
@@ -226,8 +227,10 @@ public class GalaxyTransferableFile extends GalaxyFileObject {
                 }
             } catch (MalformedURLException ex) {
                 ex.printStackTrace();
-            }
+            } 
+            System.out.println("to test reader : "+ galaxyFileObject.getDownloadUrl()+"  "+getType()+"  "+ (System.currentTimeMillis() - start) + "ms");
         }
+        
         return file;
     }
 

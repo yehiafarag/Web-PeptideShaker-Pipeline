@@ -1,6 +1,5 @@
 package com.uib.web.peptideshaker.galaxy;
 
-import static com.byteowls.vaadin.chartjs.data.PointStyle.line;
 import com.uib.web.peptideshaker.galaxy.utilities.GalaxyHistoryHandler;
 import com.uib.web.peptideshaker.galaxy.utilities.GalaxyToolsHandler;
 import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
@@ -63,15 +62,19 @@ public abstract class GalaxyInteractiveLayer {
 
     private Set<String> csf_pr_Accession_List;
 
+    public Set<String> getCsf_pr_Accession_List() {
+        return csf_pr_Accession_List;
+    }
+
     /**
      * Constructor to initialise the main Galaxy history handler.
      */
     public GalaxyInteractiveLayer() {
         this.userOverViewList = new ArrayList<>();
-         if (csf_pr_Accession_List == null) {
+        if (csf_pr_Accession_List == null) {
             csf_pr_Accession_List = initialiseCSFList();
-        }      
-        
+        }
+
         this.historyHandler = new GalaxyHistoryHandler(csf_pr_Accession_List) {
             @Override
             public void synchronizeDataWithGalaxyServer(Map<String, GalaxyFileObject> historyFilesMap, boolean jobsInProgress, boolean updatePresenterView) {
@@ -120,14 +123,14 @@ public abstract class GalaxyInteractiveLayer {
             userOverViewList.add(toolsHandler.getSearch_GUI_Tool().getVersion());
             userOverViewList.add(toolsHandler.getPeptideShaker_Tool().getVersion());
         } catch (Exception e) {
-            System.out.println("exception in galaxy connection cought "+e.getMessage());
+            System.out.println("exception in galaxy connection cought " + e.getMessage());
             if (VaadinSession.getCurrent().getSession() != null) {
                 VaadinSession.getCurrent().getSession().invalidate();
             }
             Page.getCurrent().reload();
             return false;
         }
-       
+
         return true;
     }
 
@@ -159,8 +162,7 @@ public abstract class GalaxyInteractiveLayer {
         toolsHandler.execute_SearchGUI_PeptideShaker_WorkFlow(projectName, fastaFileId, mgfMap, searchEnginesList, historyHandler.getWorkingHistoryId(), searchParameters);
         toolsHandler.synchronizeDataWithGalaxyServer(true);
     }
-    
-    
+
     /**
      * Run Online Peptide-Shaker & PathwayMatcher search and analysis work-flow
      *

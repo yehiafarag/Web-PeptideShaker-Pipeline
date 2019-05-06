@@ -393,7 +393,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
                                 peptide.put("color", initColorMap(new int[]{245, 245, 245}));
                                 peptide.put("color", initColorMap(Color.LIGHT_GRAY));
                             }
-                        } else {
+                        } else if(peptide.get("modifications")!=null){
                             Color c = Color.ORANGE;
                             if (peptide.get("modifications").toString().split(",").length == 1) {
                                 c = PTM.getColor(peptide.get("modifications").toString().trim());

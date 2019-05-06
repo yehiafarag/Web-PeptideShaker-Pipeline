@@ -88,6 +88,10 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
     private long endX = 0;
     private final Map<String, SmallSideBtn> presenterBtnsMap = new LinkedHashMap<>();
 
+    public AbsoluteLayout getSubViewButtonsActionContainer() {
+        return subViewButtonsActionContainer;
+    }
+
     /**
      * Constructor to initialise the layout.
      */
@@ -274,6 +278,10 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
             return;
         }
         this.viewLayout(selectedBtnData);
+    }
+
+    public Map<String, SmallSideBtn> getPresenterBtnsMap() {
+        return presenterBtnsMap;
     }
 
     private void reOrganizePresenterButtons() {

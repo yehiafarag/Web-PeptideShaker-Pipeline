@@ -358,7 +358,7 @@ public class SpectrumPlot extends AbsoluteLayout {
             }
 
         };
-        sc.setSize(w, h);
+        sc.setSize(w, h,false);
         return sc;
     }
 
@@ -374,7 +374,7 @@ public class SpectrumPlot extends AbsoluteLayout {
         }
         selectionCanvas = initSelectionCanvas(w, h);
         SpectrumPlot.this.addComponent(selectionCanvas, "left:0px;bottom:40px");
-        selectionCanvas.setSize(w, h);
+        selectionCanvas.setSize(w, h,false);
         if (spectrumPanel != null) {
             spectrumPanel.setSize(w, h);
             plot.setWidth(w, Unit.PIXELS);

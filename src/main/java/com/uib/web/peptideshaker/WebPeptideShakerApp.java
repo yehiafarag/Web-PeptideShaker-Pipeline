@@ -2,17 +2,21 @@ package com.uib.web.peptideshaker;
 
 import com.uib.web.peptideshaker.presenter.PresenterManager;
 import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
+import com.uib.web.peptideshaker.dal.ReactomeDatabase;
 import com.uib.web.peptideshaker.galaxy.GalaxyInteractiveLayer;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyFileObject;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyTransferableFile;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
+import com.uib.web.peptideshaker.model.core.LinkUtil;
 import com.uib.web.peptideshaker.presenter.FileSystemPresenter;
 import com.uib.web.peptideshaker.presenter.InteractivePSPRojectResultsPresenter;
 import com.uib.web.peptideshaker.presenter.SearchGUI_PeptideShaker_Tool_Presenter;
 import com.uib.web.peptideshaker.presenter.WelcomePagePresenter;
+import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.VerticalLayout;
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,7 +48,7 @@ public class WebPeptideShakerApp extends VerticalLayout {
      * The SearchGUI & PeptideShaker tools view component (frame to start
      * analysis).
      */
-    private final SearchGUI_PeptideShaker_Tool_Presenter SearchGUI_PeptideShaker_Tool_Presenter;
+    private SearchGUI_PeptideShaker_Tool_Presenter SearchGUI_PeptideShaker_Tool_Presenter;
 
     /**
      * The SearchGUI & PeptideShaker & PathwayMatcher tools view component
@@ -55,7 +59,7 @@ public class WebPeptideShakerApp extends VerticalLayout {
      * Container to view the main available datasets and files on galaxy server
      * or in other databases.
      */
-    private final FileSystemPresenter fileSystemPresenter;
+    private FileSystemPresenter fileSystemPresenter;
 
     /**
      * Constructor to initialise the application.
@@ -64,15 +68,24 @@ public class WebPeptideShakerApp extends VerticalLayout {
         WebPeptideShakerApp.this.setSizeFull();
         WebPeptideShakerApp.this.setMargin(new MarginInfo(true, true, true, true));
         WebPeptideShakerApp.this.addStyleName("frame");
+
         this.Galaxy_Interactive_Layer = new GalaxyInteractiveLayer() {
 
             @Override
             public void synchronizeDataWithGalaxyServer(Map<String, GalaxyFileObject> historyFilesMap, boolean jobsInProgress, boolean updatePresenterView) {
-                fileSystemPresenter.updateSystemData(historyFilesMap, jobsInProgress);
+                if (historyFilesMap.size() == 1 && historyFilesMap.keySet().iterator().next().contains("_ExternalDS")) {
+                    fileSystemPresenter.viewDataset((PeptideShakerVisualizationDataset) historyFilesMap.values().iterator().next());
+                    for (String btn : presentationManager.getPresenterBtnsMap().keySet()) {
+                        presentationManager.getPresenterBtnsMap().get(btn).setEnabled(false);
+                    }
+                } else {
+                    fileSystemPresenter.updateSystemData(historyFilesMap, jobsInProgress);
+                }
             }
         };
         presentationManager = new PresenterManager();
         WebPeptideShakerApp.this.addComponent(presentationManager);
+
         /**
          * landing page initialisation.
          *
@@ -98,8 +111,8 @@ public class WebPeptideShakerApp extends VerticalLayout {
             }
 
         };
-
         welcomePage.setPresenterControlButtonContainer(presentationManager.getPresenterButtonsContainerLayout());
+
         SearchGUI_PeptideShaker_Tool_Presenter = new SearchGUI_PeptideShaker_Tool_Presenter() {
             @Override
             public void execute_SearchGUI_PeptideShaker_WorkFlow(String projectName, String fastaFileId, Set<String> mgfIdsList, Set<String> searchEnginesList, SearchParameters searchParameters) {
@@ -139,7 +152,6 @@ public class WebPeptideShakerApp extends VerticalLayout {
                 interactivePSPRojectResultsPresenter = new InteractivePSPRojectResultsPresenter();
                 presentationManager.registerView(interactivePSPRojectResultsPresenter);
                 interactivePSPRojectResultsPresenter.setSelectedDataset(peptideShakerVisualizationDataset);
-
                 presentationManager.viewLayout(interactivePSPRojectResultsPresenter.getViewId());
 
             }
@@ -173,12 +185,11 @@ public class WebPeptideShakerApp extends VerticalLayout {
             }
 
         };
-
-        interactivePSPRojectResultsPresenter = new InteractivePSPRojectResultsPresenter();
         presentationManager.registerView(welcomePage);
         presentationManager.viewLayout(welcomePage.getViewId());
         presentationManager.registerView(fileSystemPresenter);
         presentationManager.registerView(SearchGUI_PeptideShaker_Tool_Presenter);
+        interactivePSPRojectResultsPresenter = new InteractivePSPRojectResultsPresenter();
         presentationManager.registerView(interactivePSPRojectResultsPresenter);
 
     }

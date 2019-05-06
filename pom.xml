@@ -103,6 +103,8 @@
             <artifactId>vaadin-icons</artifactId>
             <version>2.0.0</version>
         </dependency>
+        
+       
         <dependency>
             <groupId>com.compomics</groupId>
             <artifactId>utilities</artifactId>
@@ -147,119 +149,45 @@
             <artifactId>jung-graph-impl</artifactId>
             <version>2.0.1</version>
         </dependency>
-        <dependency>
-            <groupId>com.byteowls</groupId>
-            <artifactId>vaadin-chartjs</artifactId>
-            <version>0.4.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>22.0</version>
-        </dependency>
+       
+       
         <dependency>
             <groupId>com.itextpdf</groupId>
             <artifactId>itextpdf</artifactId>
             <version>5.5.9</version>
         </dependency>
-        
-        <dependency>
-            <groupId>org.vaadin.addons</groupId>
-            <artifactId>leapgestures</artifactId>
-            <version>0.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jsoup</groupId>
-            <artifactId>jsoup</artifactId>
-            <version>1.8.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-core-asl</artifactId>
-            <version>1.9.12</version>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-mapper-asl</artifactId>
-            <version>1.9.12</version>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-jaxrs</artifactId>
-            <version>1.9.12</version>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-xc</artifactId>
-            <version>1.9.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-core</artifactId>
-            <version>1.19.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-client</artifactId>
-            <version>1.19.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-json</artifactId>
-            <version>1.19.1</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>jsr311-api</artifactId>
-            <version>1.1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jvnet.mimepull</groupId>
-            <artifactId>mimepull</artifactId>
-            <version>1.9.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.vaadin.marcus</groupId>
-            <artifactId>mouse-events</artifactId>
-            <version>1.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.codehaus.jettison</groupId>
-            <artifactId>jettison</artifactId>
-            <version>1.1</version>
-            <exclusions> 
-                <exclusion> 
-                    <groupId>stax</groupId> 
-                    <artifactId>stax-api</artifactId> 
-                </exclusion> 
-            </exclusions> 
-            <type>jar</type>
-        </dependency>  
-
-
-        <!-- https://mvnrepository.com/artifact/de.schlichtherle.truezip/truezip-path -->
-        <dependency>
-            <groupId>de.schlichtherle.truezip</groupId>
-            <artifactId>truezip-path</artifactId>
-            <version>7.7.10</version>
-        </dependency>      
-
         <dependency>
             <groupId>org.biojava</groupId>
             <artifactId>biojava-core</artifactId>
             <version>5.0.2</version>
         </dependency>
+        
         <dependency>
             <groupId>pl.exsio</groupId>
             <artifactId>plupload-vaadin</artifactId>
             <version>2.1.0</version>
-        </dependency>        
-        <!-- https://mvnrepository.com/artifact/org.jfree/jfreesvg -->
+        </dependency>  
+        
+         
+
         <dependency>
             <groupId>org.jfree</groupId>
             <artifactId>jfreesvg</artifactId>
             <version>3.3</version>
-        </dependency>        
+        </dependency>         
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.35</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.vaadin4qbanos</groupId>
+            <artifactId>jsclipboard</artifactId>
+            <version>1.0.12</version>
+        </dependency>
+
+
+  
     </dependencies>
 
    

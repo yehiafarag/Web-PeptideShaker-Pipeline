@@ -8,7 +8,7 @@ import elemental.json.JsonArray;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-@JavaScript({"venn.js", "myD3library.js", "myD3component-connector.js", "https://d3js.org/d3.v5.min.js", "lastfm.jsonp"}) //,  "https://cdnjs.cloudflare.com/ajax/libs/jquery.touch/1.1.0/jquery.touch.min.js"
+@JavaScript({"venn.js", "myD3library.js", "myD3component-connector.js", "https://d3js.org/d3.v5.min.js"}) //,  "https://cdnjs.cloudflare.com/ajax/libs/jquery.touch/1.1.0/jquery.touch.min.js"
 public abstract class VennDiagramComponent extends AbstractJavaScriptComponent {
 
     private final SizeReporter report;

@@ -31,7 +31,7 @@ public abstract class Uploader extends AbsoluteLayout {
     private final ProgressBar bar;
 
     public Uploader() {
-        Uploader.this.setHeight(40, Unit.PIXELS);
+        Uploader.this.setHeight(25, Unit.PIXELS);
         Uploader.this.setWidth(100, Unit.PERCENTAGE);
         Uploader.this.setStyleName("uploaderlayout");
 
@@ -60,9 +60,11 @@ public abstract class Uploader extends AbsoluteLayout {
         uploaderComponent.addStyleName("hidebywidth");
 
         uploaderBtn = new Button("Upload", FontAwesome.UPLOAD);
-        uploaderBtn.setWidth(88, Unit.PIXELS);
+        uploaderBtn.setWidth(25, Unit.PIXELS);
+        uploaderBtn.setHeight(25, Unit.PIXELS);
         uploaderBtn.addStyleName(ValoTheme.BUTTON_TINY);
-        Uploader.this.addComponent(uploaderBtn, "right:2px;top:2px");
+        uploaderBtn.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+        Uploader.this.addComponent(uploaderBtn, "right:0px;top:0px");
         uploaderBtn.addClickListener((Button.ClickEvent event) -> {
             if (userUploadFolder == null) {
                 String userDataFolderUrl = VaadinSession.getCurrent().getAttribute("userDataFolderUrl") + "";
@@ -101,6 +103,7 @@ public abstract class Uploader extends AbsoluteLayout {
         uploaderComponent = new Plupload("Browse", FontAwesome.FILES_O);
         uploaderComponent.setMaxFileSize("1gb");
         uploaderComponent.addStyleName(ValoTheme.BUTTON_TINY);
+        uploaderComponent.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
         uploaderComponent.addStyleName("smooth");
         Uploader.this.addComponent(uploaderComponent, "right:35px;top:2px");
         //show notification after file is uploaded

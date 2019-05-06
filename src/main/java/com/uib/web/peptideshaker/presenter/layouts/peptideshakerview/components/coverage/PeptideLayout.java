@@ -2,14 +2,14 @@ package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components
 
 import com.compomics.util.experiment.biology.PTMFactory;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideObject;
-import com.uib.web.peptideshaker.presenter.core.graph.Node;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbsoluteLayout;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,15 +23,20 @@ public class PeptideLayout extends AbsoluteLayout implements Comparable<PeptideL
     private final PeptideObject peptide;
     private final String validationStatuesStyle;
     private final String proteinEvidenceStyle;
-    private boolean selected;
+    private boolean modifiedPeptide;
     private VerticalLayout modificationLayout;
     private VerticalLayout psmNumberLayout;
+    private List<Float>postionsList;
 
     private final String modificationStyleName = "nodemodificationbackground";
     /**
      * The post translational modifications factory.
      */
     private final PTMFactory PTM = PTMFactory.getInstance();
+
+    public PeptideObject getPeptide() {
+        return peptide;
+    }
 
     public PeptideLayout(PeptideObject peptide, float width, int startIndex, float x, String validationStatuesStyle, String proteinEvidenceStyle, boolean enzymatic, String PSMNumberColor) {
 
@@ -62,7 +67,7 @@ public class PeptideLayout extends AbsoluteLayout implements Comparable<PeptideL
         Map<String, String> modificationsTooltip = new HashMap<>();
 
         for (String mod : peptide.getVariableModifications().split("\\),")) {
-            if (mod.trim().equalsIgnoreCase("") || mod.contains("Pyrolidone") || mod.contains("Acetylation of protein N-term")) {
+            if (mod.trim().equalsIgnoreCase("")){// || mod.contains("Pyrolidone") || mod.contains("Acetylation of protein N-term")) {
                 continue;
             }
             String[] tmod = mod.split("\\(");
@@ -71,6 +76,7 @@ public class PeptideLayout extends AbsoluteLayout implements Comparable<PeptideL
             modification.setSizeFull();
             modification.setData(peptide.getModifiedSequence());
             modificationLayout.addComponent(modification);
+            modifiedPeptide=true;
             String[] indexArr = tmod[1].replace(")", "").replace(" ", "").split(",");
             for (String indexStr : indexArr) {
                 int i = Integer.valueOf(indexStr) - 1;
@@ -116,7 +122,12 @@ public class PeptideLayout extends AbsoluteLayout implements Comparable<PeptideL
         psmNumberLayout.setVisible(false);
         peptide.setTooltip(tooltip);
         PeptideLayout.this.setDescription(tooltip);
+        this.postionsList = new ArrayList<>();
 
+    }
+
+    public boolean isModifiedPeptide() {
+        return modifiedPeptide;
     }
 
     public Object getPeptideId() {
@@ -134,15 +145,15 @@ public class PeptideLayout extends AbsoluteLayout implements Comparable<PeptideL
     public float getX() {
         return x;
     }
+    public void addLocation(float location){
+        postionsList.add(location);
+    }
 
     public void setSelected(boolean selected) {
-        this.selected = selected;
         if (selected) {
-//            PeptideLayout.this.removeStyleName("lightgraylayout");
             PeptideLayout.this.addStyleName("selectedpeptide");
         } else {
             PeptideLayout.this.removeStyleName("selectedpeptide");
-//            PeptideLayout.this.addStyleName("lightgraylayout");
         }
     }
 
@@ -184,6 +195,10 @@ public class PeptideLayout extends AbsoluteLayout implements Comparable<PeptideL
         this.modificationLayout.setVisible(false);
         this.psmNumberLayout.setVisible(false);
 
+    }
+
+    public List<Float> getPostionsList() {
+        return postionsList;
     }
 
 }

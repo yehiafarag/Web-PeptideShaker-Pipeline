@@ -3,6 +3,8 @@ package com.uib.web.peptideshaker.presenter.layouts;
 import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyFileObject;
+import com.uib.web.peptideshaker.model.core.ClipboardUtil;
+import com.uib.web.peptideshaker.model.core.LinkUtil;
 import com.uib.web.peptideshaker.presenter.core.ActionLabel;
 import com.uib.web.peptideshaker.presenter.core.FileOverviewLayout;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
@@ -10,13 +12,14 @@ import com.uib.web.peptideshaker.presenter.core.StatusLabel;
 import com.uib.web.peptideshaker.presenter.core.Uploader;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.jsclipboard.JSClipboard;
 import com.vaadin.server.Page;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinSession;
-import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -41,8 +44,9 @@ public abstract class DataViewLayout extends Panel {
 
     private final Panel bottomPanelLayout;
     private final VerticalLayout bottomDataTable;
-
-    private final float[] expandingRatio = new float[]{5f, 32f, 9f, 9f, 9f, 9f, 9f, 9f, 9f};
+    private final LinkUtil linkUtil;
+    private final float[] expandingRatio = new float[]{5f, 31f, 8f, 8f, 8f, 8f, 8f, 8f, 8f, 8f};
+    private final AbsoluteLayout panelsContainers;
 
     /**
      * Constructor to initialise the main layout and attributes.
@@ -51,7 +55,8 @@ public abstract class DataViewLayout extends Panel {
         DataViewLayout.this.setWidth(100, Unit.PERCENTAGE);
         DataViewLayout.this.setHeight(100, Unit.PERCENTAGE);
         DataViewLayout.this.setStyleName("integratedframe");
-        AbsoluteLayout panelsContainers = new AbsoluteLayout();
+        this.linkUtil = new LinkUtil();
+        panelsContainers = new AbsoluteLayout();
 //        panelsContainers.setMargin(new MarginInfo(true, true, true, true));
         panelsContainers.setWidth(100, Unit.PERCENTAGE);
         panelsContainers.setHeight(100, Unit.PERCENTAGE);
@@ -66,13 +71,15 @@ public abstract class DataViewLayout extends Panel {
 
         };
 
+        Label psProjectsLabel = new Label("<font style='color: rgb(71, 71, 71); font-size: 14px;font-weight: 400; line-height:40px !important;'>PeptideShaker Projects</font>", ContentMode.HTML);
+        panelsContainers.addComponent(psProjectsLabel, "top:0px;left:10px;right:10px;bottom:50%;");
+        psProjectsLabel.setHeight(20, Unit.PIXELS);
         topPanelLayout = new Panel();
         topPanelLayout.setStyleName(ValoTheme.PANEL_BORDERLESS);
         topPanelLayout.setWidth(100, Unit.PERCENTAGE);
         topPanelLayout.setHeight(100, Unit.PERCENTAGE);
         topPanelLayout.addStyleName("maxheight50per");
-        topPanelLayout.setCaption("PeptideShaker Projects");
-        panelsContainers.addComponent(topPanelLayout, "top:10px;left:10px;right:10px;bottom:50%;");
+        panelsContainers.addComponent(topPanelLayout, "top:0px;left:10px;right:10px;bottom:50%;");
 //        panelsContainers.setExpandRatio(topPanelLayout,0.5f);
 
         topDataTable = new VerticalLayout();
@@ -86,31 +93,29 @@ public abstract class DataViewLayout extends Panel {
         spacer.setWidth(100, Unit.PERCENTAGE);
 //        panelsContainers.addComponent(spacer);
 
+        Label inputFilesLabel = new Label("<font style='color: rgb(71, 71, 71); font-size: 14px;font-weight: 400; line-height:40px !important;'>Input Files</font>", ContentMode.HTML);
+        panelsContainers.addComponent(inputFilesLabel, "top:50%;left:10px;right:10px;bottom:50%;");
         bottomPanelLayout = new Panel();
         bottomPanelLayout.setStyleName(ValoTheme.PANEL_BORDERLESS);
         bottomPanelLayout.setWidth(100, Unit.PERCENTAGE);
         bottomPanelLayout.setHeight(100, Unit.PERCENTAGE);
 //        bottomPanelLayout.setSpacing(true);
-        bottomPanelLayout.setCaption("Input Files");
         bottomPanelLayout.addStyleName("maxheight50per");
 //        bottomPanelLayout.setMargin(new MarginInfo(false, false, true, false));
         panelsContainers.addComponent(bottomPanelLayout, "top: 50%;left: 10px;right: 10px;bottom: 10px;");
-        panelsContainers.addComponent(uploader, "top: 50%;right: 30px;");
+        panelsContainers.addComponent(uploader, "top: 50%;right: 10px;");
         bottomDataTable = new VerticalLayout();
         bottomDataTable.setWidth(100, Unit.PERCENTAGE);
         bottomDataTable.setHeightUndefined();
         bottomDataTable.setSpacing(true);
         bottomPanelLayout.setContent(bottomDataTable);
+        initHeaders();
 
     }
     private Component nameLabel;
     private boolean nelsSupported;
 
-    public void updateDatasetsTable(Map<String, GalaxyFileObject> historyFilesMap) {
-
-        nelsSupported = (boolean) VaadinSession.getCurrent().getAttribute("nelsgalaxy");
-        topDataTable.removeAllComponents();
-        bottomDataTable.removeAllComponents();
+    private void initHeaders() {
         Label headerName = new Label("Name");
         Label headerType = new Label("Type");
         Label headerStatus = new Label("Valid");
@@ -118,6 +123,9 @@ public abstract class DataViewLayout extends Panel {
 
         Label headerView = new Label("Information");
         headerView.addStyleName("textalignmiddle");
+
+        Label headerShare = new Label("Share");
+        headerShare.addStyleName("textalignmiddle");
 
         Label headerNeLS = new Label("Backup");
         headerNeLS.addStyleName("textalignmiddle");
@@ -134,14 +142,17 @@ public abstract class DataViewLayout extends Panel {
         Label headerDelete = new Label("Delete");
         headerDelete.addStyleName("textalignmiddle");
         headerDelete.setVisible(!nelsSupported);
-        HorizontalLayout headerRow = initializeRowData(new Component[]{new Label(""), headerName, headerType, headerView, headerGalaxy, headerNeLS, headerDownload, headerDelete, headerStatus}, true);
-
+        HorizontalLayout headerRow = initializeRowData(new Component[]{new Label(""), headerName, headerType, headerView, headerShare, headerGalaxy, headerNeLS, headerDownload, headerDelete, headerStatus}, true);
+        headerRow.addStyleName("panelTableHeaders");
+        panelsContainers.addComponent(headerRow, "top:0px;left:10px;right:10px;bottom:50%;");
         headerName = new Label("Name");
         headerType = new Label("Type");
         headerStatus = new Label("Valid");
         headerStatus.addStyleName("textalignmiddle");
         headerView = new Label("Information");
         headerView.addStyleName("textalignmiddle");
+        headerShare = new Label("Share");
+        headerShare.addStyleName("textalignmiddle");
         headerNeLS = new Label("Backup");
         headerNeLS.addStyleName("textalignmiddle");
         headerNeLS.addStyleName("nelslogo");
@@ -158,10 +169,18 @@ public abstract class DataViewLayout extends Panel {
         headerDelete.addStyleName("textalignmiddle");
         headerDelete.setVisible(!nelsSupported);
 
-        HorizontalLayout headerRow2 = initializeRowData(new Component[]{new Label(""), headerName, headerType, headerView, headerGalaxy, headerNeLS, headerDownload, headerDelete, headerStatus}, true);
+        HorizontalLayout headerRow2 = initializeRowData(new Component[]{new Label(""), headerName, headerType, headerView, headerShare, headerGalaxy, headerNeLS, headerDownload, headerDelete, headerStatus}, true);
+        headerRow2.addStyleName("panelTableHeaders");
+        panelsContainers.addComponent(headerRow2, "top:50%;left:10px;right:10px;bottom:50%;");
 
-        bottomDataTable.addComponent(headerRow2);
-        topDataTable.addComponent(headerRow);
+    }
+
+    public void updateDatasetsTable(Map<String, GalaxyFileObject> historyFilesMap) {
+
+        nelsSupported = (boolean) VaadinSession.getCurrent().getAttribute("nelsgalaxy");
+        topDataTable.removeAllComponents();
+        bottomDataTable.removeAllComponents();
+
         int i = 1;
         for (GalaxyFileObject ds : historyFilesMap.values()) {
             if (ds.getName() == null || ds.getType().equalsIgnoreCase("FASTA File")) {
@@ -272,6 +291,23 @@ public abstract class DataViewLayout extends Panel {
 
                 };
                 infoLabel.setIcon(VaadinIcons.INFO_CIRCLE_O);
+
+//                ActionLabel shareLabel = new ActionLabel(VaadinIcons.LINK, "Share as link") {
+//                    @Override
+//                    public void layoutClick(LayoutEvents.LayoutClickEvent event) {
+//                        String link = ((PeptideShakerVisualizationDataset) ds).getLinkToShare();
+//                        link = "http://localhost:8084/web-peptide-shaker/toShare_-_" + linkUtil.encrypt(link);
+//                        clipboardUtil.CopyToClipboard(link);
+//                    }
+//
+//                };
+                String link = ((PeptideShakerVisualizationDataset) ds).getLinkToShare();
+                if (link != null) {
+                    link = "http://localhost:8084/web-peptide-shaker/toShare_-_" + linkUtil.encrypt(link);
+
+                }
+                ClipboardUtil shareLabel = new ClipboardUtil(link);
+
 //                DatasetOverviewLayout dsOverview = new DatasetOverviewLayout((PeptideShakerVisualizationDataset) ds) {
 //                    private final PopupWindow tDsOverview = (PopupWindow) infoLabel;
 //
@@ -281,7 +317,7 @@ public abstract class DataViewLayout extends Panel {
 //                    }
 //
 //                };
-                SearchSettingsLayout dsOverview = new SearchSettingsLayout((PeptideShakerVisualizationDataset) ds) {
+                SearchSettingsLayout dsOverview = new SearchSettingsLayout((PeptideShakerVisualizationDataset) ds,false) {
                     private final PopupWindow tDsOverview = (PopupWindow) infoLabel;
 
                     @Override
@@ -319,7 +355,7 @@ public abstract class DataViewLayout extends Panel {
                 type.setDescription(ds.getType());
                 type.setStyleName("smalliconlabel");
 
-                rowLayout = initializeRowData(new Component[]{new Label(i + ""), nameLabel, type, infoLabel, getToGalaxyLabel, nelsLabel, downloadLabel, deleteLabel, statusLabel}, false);
+                rowLayout = initializeRowData(new Component[]{new Label(i + ""), nameLabel, type, infoLabel, shareLabel, getToGalaxyLabel, nelsLabel, downloadLabel, deleteLabel, statusLabel}, false);
                 topDataTable.addComponent(rowLayout);
             } else {
                 infoLabel = new PopupWindow("   ") {
@@ -352,8 +388,16 @@ public abstract class DataViewLayout extends Panel {
                 }
                 type.setContentMode(ContentMode.HTML);
                 type.setDescription(ds.getType());
+                ActionLabel shareLabel = new ActionLabel(VaadinIcons.LINK, "Share as link") {
+                    @Override
+                    public void layoutClick(LayoutEvents.LayoutClickEvent event) {
+                        System.out.println("copy as link ?? ");
+                    }
+
+                };
+                shareLabel.setEnabled(false);
 //                ((Label) nameLabel).setDescription(ds.getName());
-                rowLayout = initializeRowData(new Component[]{new Label(i + ""), nameLabel, type, infoLabel, getToGalaxyLabel, nelsLabel, downloadLabel, deleteLabel, statusLabel}, false);
+                rowLayout = initializeRowData(new Component[]{new Label(i + ""), nameLabel, type, infoLabel, shareLabel, getToGalaxyLabel, nelsLabel, downloadLabel, deleteLabel, statusLabel}, false);
                 bottomDataTable.addComponent(rowLayout);
             }
 

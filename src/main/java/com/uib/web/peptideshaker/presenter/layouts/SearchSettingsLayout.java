@@ -218,8 +218,8 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         HorizontalLayout titleLayout = new HorizontalLayout();
         titleLayout.setSizeFull();
         titleLayout.setHeight(40, Unit.PIXELS);
-//        titleLayout.addStyleName("subpanelframe");
 
+//        titleLayout.addStyleName("subpanelframe");
         this.commonModificationIds = new HashSet<>();
         String mod = "Acetylation of K//Acetylation of protein N-term//Carbamidomethylation of C//Oxidation of M//Phosphorylation of S//Phosphorylation of T//Phosphorylation of Y//Arginine 13C6//Lysine 13C6//iTRAQ 4-plex of peptide N-term//iTRAQ 4-plex of K//iTRAQ 4-plex of Y//iTRAQ 8-plex of peptide N-term//iTRAQ 8-plex of K//iTRAQ 8-plex of Y//TMT 6-plex of peptide N-term//TMT 6-plex of K//TMT 10-plex of peptide N-term//TMT 10-plex of K//Pyrolidone from E//Pyrolidone from Q//Pyrolidone from carbamidomethylated C//Deamidation of N//Deamidation of Q";
         commonModificationIds.addAll(Arrays.asList(mod.split("//")));
@@ -282,6 +282,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
 
             }
         };
+
         fastaFileList.addStyleName("v-caption-on-left");
         protDatabaseContainer.addComponent(fastaFileList);
         protDatabaseContainer.setExpandRatio(fastaFileList, 0.82f);
@@ -422,18 +423,19 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
      * Constructor to initialise the main setting parameters.
      *
      * @param dataset PeptideShakerVisulization dataset object
+     * @param visibleByDefault the layout will be visible by default(for paining error handling)
      */
-    public SearchSettingsLayout(PeptideShakerVisualizationDataset dataset) {
-
+    public SearchSettingsLayout(PeptideShakerVisualizationDataset dataset,boolean visibleByDefault) {
         this(true);
         if (!dataset.getStatus().equalsIgnoreCase("ok")) {
             return;
         }
         dataset.getFixedModification();
         dataset.getVariableModification();
+        SearchSettingsLayout.this.setVisible(visibleByDefault);
         SearchSettingsLayout.this.addStyleName("dsoverview");
         SearchSettingsLayout.this.updateForms(dataset.getSearchingParameters().getSearchParameters(), null);
-        titleLabel.setValue(dataset.getName().split("___")[0] + " <i style='color: gray;font-size: 12px;'>(" + dataset.getCreateTime() + ")</i>");
+        titleLabel.setValue(dataset.getName().split("___")[0] + (" <i style='color: gray;font-size: 12px;'>(" + dataset.getCreateTime() + ")</i>").replace("(null)", ""));
         searchsettingsContainer.setVisible(false);
         fastaFileList.addStyleName("dropdowntolabel");
 //        fastaFileList.setEnabled(false);
@@ -957,7 +959,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
             }
 
         };
-       
+
         proteaseFragmentationWindow.setClosable(true);
 
         proteaseFragmentationWindow.setContent(popupproteaseFragmentationContainer);
@@ -1023,22 +1025,25 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
             }
         }
         if (searchParameters.getDigestionPreferences() != null) {
-            digestionList.setSelected(searchParameters.getDigestionPreferences().getCleavagePreference().toString());
-            enzymeList.setSelected(searchParameters.getDigestionPreferences().getEnzymes().get(0).getName());
-             enzyme = enzymeList.getSelectedValue();
-            specificityList.setSelected(searchParameters.getDigestionPreferences().getSpecificity(searchParameters.getDigestionPreferences().getEnzymes().get(0).getName()));
-            maxMissCleavages.setSelectedValue(searchParameters.getDigestionPreferences().getnMissedCleavages(searchParameters.getDigestionPreferences().getEnzymes().get(0).getName()));
-            fragmentIonTypes.setSelectedI(ions.get(searchParameters.getForwardIons().get(0)));
-            fragmentIonTypes.setSelectedII(ions.get(searchParameters.getRewindIons().get(0)));
-            precursorTolerance.setTextValue(searchParameters.getPrecursorAccuracy());
-            precursorTolerance.setSelected(searchParameters.getPrecursorAccuracyType().toString());
-            fragmentTolerance.setTextValue(searchParameters.getFragmentIonAccuracy());
-            fragmentTolerance.setSelected(searchParameters.getFragmentAccuracyType().toString());
-            precursorCharge.setFirstSelectedValue(searchParameters.getMinChargeSearched().value);
-            precursorCharge.setSecondSelectedValue(searchParameters.getMaxChargeSearched().value);
-            isotopes.setFirstSelectedValue(searchParameters.getMinIsotopicCorrection());
-            isotopes.setSecondSelectedValue(searchParameters.getMaxIsotopicCorrection());
 
+          
+
+                digestionList.setSelected(searchParameters.getDigestionPreferences().getCleavagePreference().toString());
+                enzymeList.setSelected(searchParameters.getDigestionPreferences().getEnzymes().get(0).getName());
+                enzyme = enzymeList.getSelectedValue();
+                specificityList.setSelected(searchParameters.getDigestionPreferences().getSpecificity(searchParameters.getDigestionPreferences().getEnzymes().get(0).getName()));
+                maxMissCleavages.setSelectedValue(searchParameters.getDigestionPreferences().getnMissedCleavages(searchParameters.getDigestionPreferences().getEnzymes().get(0).getName()));
+                fragmentIonTypes.setSelectedI(ions.get(searchParameters.getForwardIons().get(0)));
+                fragmentIonTypes.setSelectedII(ions.get(searchParameters.getRewindIons().get(0)));
+                precursorTolerance.setTextValue(searchParameters.getPrecursorAccuracy());
+                precursorTolerance.setSelected(searchParameters.getPrecursorAccuracyType().toString());
+                fragmentTolerance.setTextValue(searchParameters.getFragmentIonAccuracy());
+                fragmentTolerance.setSelected(searchParameters.getFragmentAccuracyType().toString());
+                precursorCharge.setFirstSelectedValue(searchParameters.getMinChargeSearched().value);
+                precursorCharge.setSecondSelectedValue(searchParameters.getMaxChargeSearched().value);
+                isotopes.setFirstSelectedValue(searchParameters.getMinIsotopicCorrection());
+                isotopes.setSecondSelectedValue(searchParameters.getMaxIsotopicCorrection());
+            
             mostUsedModificationsTable.removeAllItems();
             variableModificationTable.removeAllItems();
             fixedModificationTable.removeAllItems();
@@ -1061,7 +1066,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
                 mostUsedModificationsTable.addItem(completeModificationItems.get(id), id);
             });
             enzymeList.setSelected("Trypsin");
-             enzyme = enzymeList.getSelectedValue();
+            enzyme = enzymeList.getSelectedValue();
             digestionList.setSelected("Enzyme");
             specificityList.setSelected("Specific");
             fragmentIonTypes.setSelectedI("b");

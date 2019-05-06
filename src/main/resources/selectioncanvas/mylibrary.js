@@ -15,11 +15,16 @@ mylibrary.SelectioncanvasComponent = function (element) {
     this.getValue = function () {
         return element.getElementsByTagName("input")[0].value;
     };
+    var freeYAccess;
     this.setValue = function (value) {
+
         var res = value.split(",");
-        if (res.length === 2) {
+        if (res.length === 3) {
             theCanvas.width = parseInt(res[0], 10);
             theCanvas.height = parseInt(res[1], 10);
+            freeYAccess = ('true' === res[2]);
+
+
         }
     };
     // Default implementation of the click handler
@@ -76,16 +81,22 @@ mylibrary.SelectioncanvasComponent = function (element) {
         cnvs.lineWidth = 0.3;
         cnvs.beginPath();
         cnvs.fillStyle = "rgba(184, 207, 224,0.1)";
-        cnvs.rect(startPos.x, 5, (finalPos.x - startPos.x), (theCanvas.height-10));
+        if (freeYAccess) {
+            cnvs.rect(startPos.x, startPos.y, (finalPos.x - startPos.x), (finalPos.y - startPos.y));
+            ctx.fillRect(startPos.x, startPos.y, (finalPos.x - startPos.x), (finalPos.y - startPos.y));
+
+        } else {
+            cnvs.rect(startPos.x, 5, (finalPos.x - startPos.x), (theCanvas.height - 10));
+            ctx.fillRect(startPos.x, 5, (finalPos.x - startPos.x), (theCanvas.height - 10));
+        }
 //        cnvs.moveTo(startPos.x, startPos.y);
 //        cnvs.lineTo(finalPos.x, startPos.y);   
-        ctx.fillRect(startPos.x, 5, (finalPos.x - startPos.x), (theCanvas.height-10));
 
         cnvs.stroke();
     }
 
     function rect(cnvs) {
-        clearCanvas();       
+        clearCanvas();
         cnvs.lineWidth = 0.3;
         cnvs.fillStyle = "rgba(184, 207, 224,0.1)";
         cnvs.beginPath();
@@ -104,11 +115,19 @@ mylibrary.SelectioncanvasComponent = function (element) {
 //        }
 //        cnvs.moveTo(startTouchII.x, startTouchII.y);
 //        cnvs.lineTo(finalTouchII.x + 10, startTouchII.y);
-        var startX = Math.min( finalTouchI.x,  finalTouchII.x);
-        var finalX = Math.max(finalTouchI.x,  finalTouchII.x);
-        
-        cnvs.rect(startX, 5, (finalX - startX), (theCanvas.height-10));
-        ctx.fillRect(startX, 5, (finalX - startX), (theCanvas.height-10));
+        var startX = Math.min(finalTouchI.x, finalTouchII.x);
+        var finalX = Math.max(finalTouchI.x, finalTouchII.x);
+
+        var startY = Math.min(finalTouchI.y, finalTouchII.y);
+        var finalY = Math.max(finalTouchI.y, finalTouchII.y);
+        if (freeYAccess) {
+            cnvs.rect(startX, startY, (finalX - startX), (finalY - startY));
+            ctx.fillRect(startX, startY, (finalX - startX), (finalY - startY));
+
+        } else {
+            cnvs.rect(startX, 5, (finalX - startX), (theCanvas.height - 10));
+            ctx.fillRect(startX, 5, (finalX - startX), (theCanvas.height - 10));
+        }
         cnvs.stroke();
     }
 
@@ -120,7 +139,11 @@ mylibrary.SelectioncanvasComponent = function (element) {
         if (touchevent)
             return;
         if (drawLine === true && mouseevent) {
-            finalPos = {x: e.pageX - canvasOffset.left, y: startPos.y};
+            if (freeYAccess) {
+                finalPos = {x: e.pageX - canvasOffset.left, y: e.pageY - canvasOffset.top};
+            } else {
+                finalPos = {x: e.pageX - canvasOffset.left, y: startPos.y};
+            }
             clearCanvas();
             line(ctx);
         }

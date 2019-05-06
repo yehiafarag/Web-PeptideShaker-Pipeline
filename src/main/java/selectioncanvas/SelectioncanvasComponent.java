@@ -85,10 +85,10 @@ public abstract class SelectioncanvasComponent extends AbstractJavaScriptCompone
         return getState().getValue();
     }
 
-    public void setSize(int width, int height) {
+    public void setSize(int width, int height,boolean freeYSelection) {
         this.setWidth(width, Unit.PIXELS);
         this.setHeight(height, Unit.PIXELS);
-        this.setValue(width + "," + height);
+        this.setValue(width + "," + height+","+freeYSelection);
 
     }
 

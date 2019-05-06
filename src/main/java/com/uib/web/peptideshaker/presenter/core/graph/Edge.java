@@ -46,19 +46,75 @@ public class Edge {
     }
 
     public double getStartX() {
-        return n1.getX() + 8;
+        int n1Type = (int) n1.getType();
+        switch (n1Type) {
+            case 1:
+                return n1.getX() + 8;
+            case 0:
+                return n1.getX() + 8;
+            case 3:
+                if (n1.isEnabled()) {
+                    return n1.getX() + 10;
+                }
+                return n1.getX() + 5;
+            default:
+                return n1.getX();
+
+        }
     }
 
     public double getStartY() {
-        return n1.getY() + 8;
+        int n1Type = (int) n1.getType();
+        switch (n1Type) {
+            case 1:
+                return n1.getY() + 8;
+            case 0:
+                return n1.getY() + 8;
+            case 3:
+                if (n1.isEnabled()) {
+                    return n1.getY() + 10;
+                }
+                return n1.getY() + 5;
+            default:
+                return n1.getY();
+
+        }
     }
 
     public double getEndX() {
-        return n2.getX() + 15;
+        int n1Type = (int) n2.getType();
+        switch (n1Type) {
+            case 1:
+                return n2.getX() + 15;
+            case 0:
+                return n2.getX() + 15;
+            case 3:
+                if (n1.isEnabled()) {
+                    return n1.getX() + 10;
+                }
+                return n2.getX() + 5;
+            default:
+                return n2.getX();
+
+        }
     }
 
     public double getEndY() {
-        return n2.getY() + 15;
+        int n1Type = (int) n2.getType();
+        switch (n1Type) {
+            case 1:
+                return n2.getY() + 15;
+            case 0:
+                return n2.getY() + 15;
+            case 3:
+                if (n1.isEnabled()) {
+                    return n1.getY() + 10;
+                }
+                return n2.getY() + 5;
+            default:
+                return n2.getY();
+
+        }
     }
 
     public Node getN1() {
@@ -84,6 +140,13 @@ public class Edge {
     public boolean isBelongToNode(String nodeId) {
 
         return n1.getNodeId().equalsIgnoreCase(nodeId) || n2.getNodeId().equalsIgnoreCase(nodeId);
+    }
+
+    public boolean isActive() {
+        if (n1.getType() != 3) {
+            return false;
+        }
+        return n1.isEnabled() && n2.isEnabled();
     }
 
 }
