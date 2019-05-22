@@ -42,12 +42,13 @@ public class PeptideVisulizationLevelContainer extends HorizontalLayout implemen
      * @param psmViewBtn
      */
     public PeptideVisulizationLevelContainer(SelectionManager Selection_Manager, BigSideBtn psmViewBtn) {
+        
         PeptideVisulizationLevelContainer.this.setSizeFull();
         PeptideVisulizationLevelContainer.this.setSpacing(true);
         PeptideVisulizationLevelContainer.this.setMargin(false);
         PeptideVisulizationLevelContainer.this.setStyleName("psmView");
         PeptideVisulizationLevelContainer.this.addStyleName("transitionallayout");
-
+        
         this.Selection_Manager = Selection_Manager;
         this.psmViewBtn = psmViewBtn;
 
@@ -175,7 +176,7 @@ public class PeptideVisulizationLevelContainer extends HorizontalLayout implemen
         if (type.equalsIgnoreCase("peptide_selection")) {
             if (Selection_Manager.getSelectedPeptide() != null) {
                 headerLabel.setValue("Peptide Spectrum Matches (" + Selection_Manager.getSelectedPeptide().getModifiedSequence() + ")");
-                this.psmViewComponent.updateView(peptideShakerVisualizationDataset.getPSM(Selection_Manager.getSelectedPeptide().getModifiedSequence()), Selection_Manager.getSelectedPeptide().getTooltip(), Selection_Manager.getSelectedPeptide().getModifiedSequence().length());
+                this.psmViewComponent.updateView(peptideShakerVisualizationDataset.getPSM(Selection_Manager.getSelectedPeptide().getModifiedSequence()), Selection_Manager.getSelectedPeptide().getTooltip(), Selection_Manager.getSelectedPeptide().getModifiedSequence().length(),peptideShakerVisualizationDataset.isQuantDataset());
             } else {
                 headerLabel.setValue("Peptide Spectrum Matches");
                 this.psmViewBtn.updateIconResource(null);

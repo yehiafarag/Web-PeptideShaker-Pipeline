@@ -9,6 +9,7 @@ import com.vaadin.shared.ui.MultiSelectMode;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
@@ -35,25 +36,22 @@ public abstract class SearchableTable extends AbsoluteLayout implements Property
     private final Map<String, String> tableSearchingMap;
     private final Table mainTable;
     private Button searchBtn;
+    private final HorizontalLayout serachComponent;
 
     public SearchableTable(String title, String defaultSearchingMessage, TableColumnHeader[] tableHeaders) {
         SearchableTable.this.setSizeFull();
-
         this.tableMainTitle = title;
         this.tableSearchingResults = new TreeMap<>();
         this.tableSearchingMap = new LinkedHashMap<>();
-
         this.mainTable = initTable(tableHeaders);
         SearchableTable.this.addComponent(mainTable, "top: 35px;left: 0px;");
-
-        HorizontalLayout serachComponent = initSearchComponentLayout(defaultSearchingMessage);
+        serachComponent = initSearchComponentLayout(defaultSearchingMessage);
         SearchableTable.this.addComponent(serachComponent, "top: 10px;right: 0px;");
-
         this.tableData = new LinkedHashMap<>();
-
     }
 
     private HorizontalLayout initSearchComponentLayout(String defaultSearchingMessage) {
+        
         HorizontalLayout searchContainer = new HorizontalLayout();
         searchContainer.setSpacing(false);
         searchContainer.setStyleName("searchtablecontainer");
@@ -372,8 +370,6 @@ public abstract class SearchableTable extends AbsoluteLayout implements Property
             objectIds.forEach((data) -> {
                 if (tableData.containsKey(data)) {
                     this.mainTable.addItem(tableData.get(data), data);
-                } else {
-                    System.out.println("at data " + data + "   " + tableData.keySet().size());
                 }
             });
         } else if ((objectIds == null || objectIds.isEmpty()) && this.mainTable.getItemIds().size() != tableData.size()) {
@@ -392,6 +388,10 @@ public abstract class SearchableTable extends AbsoluteLayout implements Property
         }
         searchBtn.click();
 
+    }
+
+    public void addServiceButton(Component serviceBtnView) {        
+        serachComponent.addComponent(serviceBtnView, 0);
     }
 
 }

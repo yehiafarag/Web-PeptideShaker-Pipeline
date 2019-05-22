@@ -108,10 +108,10 @@ public abstract class Legend extends VerticalLayout {
 
         VerticalLayout proteinValidationContainer = new VerticalLayout();
         proteinValidationContainer.setHeight(170, Unit.PIXELS);
-        proteinValidationContainer.setCaption("<b>Validation Status</b>");
+        proteinValidationContainer.setCaption("<b>Validation</b>");
         proteinValidationContainer.setCaptionAsHtml(true);
         proteinValidationContainer.setVisible(false);
-        layoutMap.put("Validation Status", proteinValidationContainer);
+        layoutMap.put("Validation", proteinValidationContainer);
         lowerContainer.addComponent(proteinValidationContainer);
         Node confedent = generateNode("proteinnode");
         confedent.addStyleName("greenbackground");
@@ -143,7 +143,7 @@ public abstract class Legend extends VerticalLayout {
         proteinModificationContainer.addStyleName("modificationlegendconatiner");
         proteinModificationContainer.setCaption("<b>Modifications</b>");
         proteinModificationContainer.setCaptionAsHtml(true);
-        layoutMap.put("Modification Status", proteinModificationContainer);
+        layoutMap.put("Modification", proteinModificationContainer);
         lowerContainer.addComponent(proteinModificationContainer);
         Legend.this.updateModificationLayout("No Modifications");
         Legend.this.updateModificationLayout("Two or More Modifications");
@@ -151,7 +151,7 @@ public abstract class Legend extends VerticalLayout {
     }
 
     private Node generateNode(String defaultStyleName) {
-        Node node = new Node("prot","prot", "", "", -1, "") {
+        Node node = new Node("prot","prot", "", "", -1, "",-1000,"") {
             @Override
             public void selected(String id) {
 
@@ -167,7 +167,7 @@ public abstract class Legend extends VerticalLayout {
         layoutMap.values().forEach((c) -> {
             c.setVisible(false);
         });
-        if (mode.equals("Molecule Type")) {
+        if (mode.equals("Molecule Type") || mode.equals("Intensity")) {
             return;
         }
 
@@ -188,7 +188,7 @@ public abstract class Legend extends VerticalLayout {
 
         currentModifications += modifications.split("\\(")[0] + ";";
 
-        Node node = new Node("prot","prot", modifications, null, -1, "red") {
+        Node node = new Node("prot","prot", modifications, null, -1, "red",-1000,"") {
             @Override
             public void selected(String id) {
 
@@ -197,9 +197,9 @@ public abstract class Legend extends VerticalLayout {
         node.setDefaultStyleName("peptidenode");
         node.setSelected(true);
         node.addStyleName("defaultcursor");
-        node.setNodeStatues("Modification Status");         
+        node.setNodeStatues("Modification");         
         node.setDescription(modifications.split("\\(")[0]);
-        layoutMap.get("Modification Status").addComponent(generateLabel(node, modifications.split("\\(")[0]));
+        layoutMap.get("Modification").addComponent(generateLabel(node, modifications.split("\\(")[0]));
 
     }
 

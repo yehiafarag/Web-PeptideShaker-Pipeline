@@ -246,7 +246,7 @@ public abstract class ProteinCoverageComponent1 extends AbsoluteLayout {
         proteinCoverageLayout.updateStylingMode(style);
         final String updateStyle;
         if (style.equalsIgnoreCase("Proteoform")) {
-            updateStyle = "Modification Status";
+            updateStyle = "Modification";
             if (!protoformInit) {
                 protoformInit = true;
                 int levelNum = initPeptideCoverageLayout(true);

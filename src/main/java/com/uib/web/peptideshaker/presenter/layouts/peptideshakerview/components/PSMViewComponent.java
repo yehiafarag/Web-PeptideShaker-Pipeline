@@ -6,10 +6,9 @@
 package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components;
 
 import com.ejt.vaadin.sizereporter.ComponentResizeEvent;
-import com.ejt.vaadin.sizereporter.ComponentResizeListener;
 import com.ejt.vaadin.sizereporter.SizeReporter;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PSMObject;
-import com.uib.web.peptideshaker.presenter.core.ResizeTableControlButtons;
+import com.uib.web.peptideshaker.presenter.core.ColorLabelWithPopupTooltip;
 import com.uib.web.peptideshaker.presenter.core.SparkLineLabel;
 import com.uib.web.peptideshaker.presenter.core.ValidationLabel;
 import com.uib.web.peptideshaker.presenter.pscomponents.SecondarySpectraChartsGenerator;
@@ -39,7 +38,8 @@ public abstract class PSMViewComponent extends VerticalLayout {
     private final VerticalLayout chartContainer;
     private final SpectrumPlot spectrumPlot;
     private int index = 0;
-    private final DecimalFormat df = new DecimalFormat("0.00E00");//new DecimalFormat("#.##");
+    private int intensityColumnWidth = 120;
+//    private final DecimalFormat df = new DecimalFormat("0.00E00");//new DecimalFormat("#.##");
     private final DecimalFormat df1 = new DecimalFormat("#.##");
 
     public SpectrumPlot getSpectrumPlot() {
@@ -112,6 +112,7 @@ public abstract class PSMViewComponent extends VerticalLayout {
 //        psmOverviewTable.addContainerProperty("id", ColorLabel.class, null, "ID", null, Table.Align.CENTER);
         psmOverviewTable.addContainerProperty("sequenceFrag", VerticalLayout.class, null, generateCaptionWithTooltio("Fragmentation", "Sequence Fragmentation"), null, Table.Align.LEFT);
         psmOverviewTable.addContainerProperty("massErrorPlot", VerticalLayout.class, null, generateCaptionWithTooltio("Mass Error Plot", "Mass Error Plot"), null, Table.Align.LEFT);
+        psmOverviewTable.addContainerProperty("Intensity", ColorLabelWithPopupTooltip.class, null, "Intensity", null, Table.Align.LEFT);
         psmOverviewTable.addContainerProperty("charge", SparkLineLabel.class, null, generateCaptionWithTooltio("Charge", "Charge"), null, Table.Align.LEFT);
         psmOverviewTable.addContainerProperty("mzError", SparkLineLabel.class, null, generateCaptionWithTooltio("Mass Error", "Mass Error"), null, Table.Align.LEFT);
 
@@ -120,10 +121,11 @@ public abstract class PSMViewComponent extends VerticalLayout {
         psmOverviewTable.setColumnWidth("index", 50);
 //        psmOverviewTable.setColumnWidth("id", 37);
         psmOverviewTable.setColumnWidth("validation", 32);
-        psmOverviewTable.setColumnWidth("confidence", 170);
-        psmOverviewTable.setColumnWidth("charge", 130);
-        psmOverviewTable.setColumnWidth("mzError", 180);
-        psmOverviewTable.setColumnWidth("massErrorPlot", 300);
+        psmOverviewTable.setColumnWidth("confidence", 100);
+        psmOverviewTable.setColumnWidth("Intensity", intensityColumnWidth);
+        psmOverviewTable.setColumnWidth("charge", 100);
+        psmOverviewTable.setColumnWidth("mzError", 100);
+        psmOverviewTable.setColumnWidth("massErrorPlot", 350);
         psmOverviewTable.setSortContainerPropertyId("charge");
 
         splitpanel.setStyleName("nonscrollsplitpanel");
@@ -156,7 +158,7 @@ public abstract class PSMViewComponent extends VerticalLayout {
         tableResporter.addResizeListener((ComponentResizeEvent event) -> {
             int height = event.getHeight();
             int actH = 37 + (74 * psmOverviewTable.getItemIds().size());
-            int fragWidth = event.getWidth() - (862) - 9-20;
+            int fragWidth = event.getWidth() - (732) - 9 - 20 - intensityColumnWidth;
 //            if ((actH > height)) {
 //                fragWidth -= 20;
 //            }
@@ -167,10 +169,11 @@ public abstract class PSMViewComponent extends VerticalLayout {
             psmOverviewTable.setColumnWidth("index", 50);
             psmOverviewTable.setColumnWidth("sequenceFrag", fragWidth);
             psmOverviewTable.setColumnWidth("validation", 32);
-            psmOverviewTable.setColumnWidth("confidence", 170);
-            psmOverviewTable.setColumnWidth("charge", 130);
-            psmOverviewTable.setColumnWidth("mzError", 180);
-            psmOverviewTable.setColumnWidth("massErrorPlot", 300);
+            psmOverviewTable.setColumnWidth("confidence", 100);
+            psmOverviewTable.setColumnWidth("charge", 100);
+            psmOverviewTable.setColumnWidth("mzError", 100);
+            psmOverviewTable.setColumnWidth("massErrorPlot", 350);
+            psmOverviewTable.setColumnWidth("Intensity", intensityColumnWidth);
             psmOverviewTable.addColumnResizeListener(columnResizeListener);
         });
 
@@ -178,10 +181,18 @@ public abstract class PSMViewComponent extends VerticalLayout {
 //        resizeControlBtn.resize(2);
     }
 
-    public void updateView(List<PSMObject> psms, String tooltip, int peptideLength) {
+    public void updateView(List<PSMObject> psms, String tooltip, int peptideLength,boolean quantDataset) {
         this.psmOverviewTable.removeValueChangeListener(psmlistener);
         this.psmOverviewTable.removeAllItems();
         index = 1;
+        if (!quantDataset) {
+            psmOverviewTable.setColumnWidth("sequenceFrag", psmOverviewTable.getColumnWidth("sequenceFrag")+120);
+            psmOverviewTable.setColumnCollapsingAllowed(true);
+            psmOverviewTable.setColumnCollapsible("Intensity", true);
+            psmOverviewTable.setColumnCollapsed("Intensity", true);
+            intensityColumnWidth=0;
+        }
+        
         spectrumInformationMap = getSpectrumData(psms);
         if (spectrumInformationMap == null) {
             return;
@@ -205,7 +216,6 @@ public abstract class PSMViewComponent extends VerticalLayout {
             double mzError = Math.abs(psm.getPrecursorMZError_PPM());
             Map<String, Number> mzErrorValues = new LinkedHashMap<>();
             mzErrorValues.put("greenlayout", (float) mzError / ((float) spectrumInformationMap.get(psm.getIndex()).getMzError() * 2.0f));
-
             SparkLineLabel mzErrorLabel = new SparkLineLabel(df1.format(mzError) + "", mzErrorValues, psm.getIndex()) {
                 @Override
                 public void selected(Object itemId) {
@@ -222,7 +232,7 @@ public abstract class PSMViewComponent extends VerticalLayout {
                 }
             };
             ValidationLabel validation = new ValidationLabel(psm.getValidation());
-            this.psmOverviewTable.addItem(new Object[]{index++, chartGenerator.getSequenceFragmentationChart(), chartGenerator.getMassErrorPlot(), chargeLabel, mzErrorLabel, confidentLabel, validation}, psm.getIndex());
+            this.psmOverviewTable.addItem(new Object[]{index++, chartGenerator.getSequenceFragmentationChart(), chartGenerator.getMassErrorPlot(), new ColorLabelWithPopupTooltip(psm.getIntensity(), psm.getIntensityColor(),psm.getIntensityPercentage()), chargeLabel, mzErrorLabel, confidentLabel, validation}, psm.getIndex());
         });
         this.psmOverviewTable.setSortContainerPropertyId("confidence");
         this.psmOverviewTable.setSortAscending(false);
@@ -235,7 +245,6 @@ public abstract class PSMViewComponent extends VerticalLayout {
         spectrumPlot.setDisableSizeReporter(false);
         psmOverviewTable.setValue(psmOverviewTable.firstItemId());
         psmOverviewTable.commit();
-//        
 
     }
 
@@ -246,9 +255,7 @@ public abstract class PSMViewComponent extends VerticalLayout {
     }
 
     private String generateCaptionWithTooltio(String caption, String tooltip) {
-
         return "<div class='tooltip'>" + caption + "<span class='tooltiptext'>" + tooltip + "</span></div>";
-
     }
 }
 /**

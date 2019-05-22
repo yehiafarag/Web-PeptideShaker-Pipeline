@@ -36,6 +36,47 @@ public class ProteinGroupObject extends Protein {
     private final Set<NetworkGraphEdge> localEdges;
     
     private double quantValue;
+     /**
+     * Intensity value of the quantification using average of all related peptides.
+     */
+    private double allPeptidesIntensity=0;
+      /**
+     * The intensity value as percentage of the quantification using average of all related peptides.
+     */
+    private double percentageAllPeptidesIntensity=0;
+     /**
+     * Intensity hash-code colour of the quantification using average of all related peptides.
+     */
+    private String allPeptideIintensityColor="RGB(" + 255 + "," + 255 + "," + 255 + ")";
+    
+     /**
+     * Intensity value of the quantification using average of unique related peptides.
+     */
+    private double uniquePeptidesIntensity=0;
+      /**
+     * The intensity value as percentage of the quantification using average of unique related peptides.
+     */
+    private double percentageUniquePeptidesIntensity=0;
+     /**
+     * Intensity hash-code colour of the quantification using average of unique related peptides.
+     */
+    private String uniquePeptideIintensityColor="RGB(" + 255 + "," + 255 + "," + 255 + ")";
+
+    public String getAllPeptideIintensityColor() {
+        return allPeptideIintensityColor;
+    }
+
+    public void setAllPeptideIintensityColor(String allPeptideIintensityColor) {
+        this.allPeptideIintensityColor = allPeptideIintensityColor;
+    }
+
+    public double getAllPeptidesIntensity() {
+        return allPeptidesIntensity;
+    }
+
+    public void setAllPeptidesIntensity(double allPeptidesIntensity) {
+        this.allPeptidesIntensity = allPeptidesIntensity;
+    }
 
     public String getProteinGroupKey() {
         return proteinGroupKey;
@@ -833,6 +874,38 @@ public class ProteinGroupObject extends Protein {
 
     public void setQuantValue(double quantValue) {
         this.quantValue = quantValue;
+    }
+
+    public double getUniquePeptidesIntensity() {
+        return uniquePeptidesIntensity;
+    }
+
+    public void setUniquePeptidesIntensity(double uniquePeptidesIntensity) {
+        this.uniquePeptidesIntensity = uniquePeptidesIntensity;
+    }
+
+    public String getUniquePeptideIintensityColor() {
+        return uniquePeptideIintensityColor;
+    }
+
+    public void setUniquePeptideIintensityColor(String uniquePeptideIintensityColor) {
+        this.uniquePeptideIintensityColor = uniquePeptideIintensityColor;
+    }
+
+    public double getPercentageAllPeptidesIntensity() {
+        return percentageAllPeptidesIntensity;
+    }
+
+    public void setPercentageAllPeptidesIntensity(double percentageAllPeptidesIntensity) {
+        this.percentageAllPeptidesIntensity = percentageAllPeptidesIntensity;
+    }
+
+    public double getPercentageUniquePeptidesIntensity() {
+        return percentageUniquePeptidesIntensity;
+    }
+
+    public void setPercentageUniquePeptidesIntensity(double percentageUniquePeptidesIntensity) {
+        this.percentageUniquePeptidesIntensity = percentageUniquePeptidesIntensity;
     }
 
 }

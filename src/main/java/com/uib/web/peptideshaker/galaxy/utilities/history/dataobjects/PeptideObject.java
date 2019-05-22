@@ -106,6 +106,22 @@ public class PeptideObject extends Peptide {
      * The modifications carried by the peptide.
      */
     private ArrayList<ModificationMatch> modificationMatches = null;
+    /**
+     * Intensity value of the quantification.
+     */
+    private double intensity=0;
+     /**
+     * Intensity hash-code colour of the quantification.
+     */
+    private String intensityColor;
+
+    public double getIntensity() {
+        return intensity;
+    }
+
+    public void setIntensity(double intensity) {
+        this.intensity = intensity;
+    }
 
     /**
      * Constructor to initialise the main data structure.
@@ -495,6 +511,14 @@ public class PeptideObject extends Peptide {
     @Override
     public ArrayList<ModificationMatch> getModificationMatches() {
         return modificationMatches;
+    }
+
+    public String getIntensityColor() {
+        return intensityColor;
+    }
+
+    public void setIntensityColor(String intensityColor) {
+        this.intensityColor = intensityColor;
     }
 
 }

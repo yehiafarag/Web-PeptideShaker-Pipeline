@@ -132,10 +132,10 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
                 proteinCoverageContainer.updateProteinsMode(modeType);
                 int mode = 1;
                 switch (modeType) {
-                    case "Validation Status":
+                    case "Validation":
                         mode = 2;
                         break;
-                    case "Modification Status":
+                    case "Modification":
                         mode = 3;
                         break;
                     case "Proteoform":
@@ -162,9 +162,7 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
                 peptideSelection(peptideId, proteinId);
                 proteinStructurePanel.selectPeptide(peptideId + "");
                 graphsContainerComponent.selectPeptide(proteinId, peptideId);
-
             }
-
         };
         proteinCoverageContainer.setSizeFull();
         subContainer.addComponent(proteinCoverageContainer);
@@ -188,14 +186,10 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
     @Override
     public void selectionChange(String type) {
         if (type.equalsIgnoreCase("protein_selection")) {
-            long start = System.currentTimeMillis();
-
             String proteinsId = Selection_Manager.getSelectedProteinId();
-            System.out.println("at strt init graphs layout " + proteinsId);
             String imgUrl = graphsContainerComponent.updateGraphData(proteinsId);
             this.colorScale = graphsContainerComponent.getColorScale();
-            System.out.println("to test dataset graphs no table loade time : " + (System.currentTimeMillis() - start) + "ms");
-            proteinCoverageContainer.selectDataset(graphsContainerComponent.getProteinNodes(), graphsContainerComponent.getPeptidesNodes(), graphsContainerComponent.getSelectedProteins(), graphsContainerComponent.getSelectedPeptides(), colorScale);
+            proteinCoverageContainer.selectDataset(graphsContainerComponent.getProteinNodes(), graphsContainerComponent.getPeptidesNodes(), graphsContainerComponent.getSelectedProteins(), graphsContainerComponent.getSelectedPeptides(), colorScale, graphsContainerComponent.isQuantDataSet());
             if (imgUrl != null) {
                 this.proteinoverviewBtn.updateIconResource(new ExternalResource(imgUrl));
             } else {
@@ -235,7 +229,6 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
     }
 
     public void reset3DProteinView() {
-//        proteinStructurePanel.reset();
     }
 
     public void activate3DProteinView() {

@@ -5,7 +5,6 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
-import java.awt.Color;
 import java.util.Map;
 
 /**
@@ -24,9 +23,9 @@ public abstract class SparkLineLabel extends AbsoluteLayout implements Comparabl
         SparkLineLabel.this.setStyleName("sparkline");
         textLabel = new Label(labelValue, ContentMode.HTML);
         textLabel.setStyleName("sparklinelabel");
-        SparkLineLabel.this.addComponent(textLabel,"left:10px;top:0px");
+        SparkLineLabel.this.addComponent(textLabel,"left:5px;top:0px");
         HorizontalLayout sparkLineContainer = initSparkLine(values);
-        SparkLineLabel.this.addComponent(sparkLineContainer,"left:60px;top:0px");
+        SparkLineLabel.this.addComponent(sparkLineContainer,"left:45px;top:0px");
         SparkLineLabel.this.addLayoutClickListener((event) -> {
             selected(itemId);
         });

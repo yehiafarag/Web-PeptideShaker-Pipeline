@@ -25,8 +25,9 @@ public class PeptideLayout extends AbsoluteLayout implements Comparable<PeptideL
     private final String proteinEvidenceStyle;
     private boolean modifiedPeptide;
     private VerticalLayout modificationLayout;
-    private VerticalLayout psmNumberLayout;
-    private List<Float>postionsList;
+    private final VerticalLayout psmNumberLayout;
+    private final VerticalLayout intensityLayout;
+    private final List<Float>postionsList;
 
     private final String modificationStyleName = "nodemodificationbackground";
     /**
@@ -38,7 +39,7 @@ public class PeptideLayout extends AbsoluteLayout implements Comparable<PeptideL
         return peptide;
     }
 
-    public PeptideLayout(PeptideObject peptide, float width, int startIndex, float x, String validationStatuesStyle, String proteinEvidenceStyle, boolean enzymatic, String PSMNumberColor) {
+    public PeptideLayout(PeptideObject peptide, float width, int startIndex, float x, String validationStatuesStyle, String proteinEvidenceStyle, boolean enzymatic, String PSMNumberColor ) {
 
         PeptideLayout.this.setHeight(15, Unit.PIXELS);
         PeptideLayout.this.setWidth(width, Unit.PERCENTAGE);
@@ -120,6 +121,22 @@ public class PeptideLayout extends AbsoluteLayout implements Comparable<PeptideL
         psmsColorLabel.setData(peptide.getModifiedSequence());
         psmNumberLayout.addComponent(psmsColorLabel);
         psmNumberLayout.setVisible(false);
+        
+         intensityLayout = new VerticalLayout();
+        intensityLayout.setSizeFull();
+        PeptideLayout.this.addComponent(intensityLayout);
+        intensityLayout.setData(peptide.getModifiedSequence());
+//        psmNumberLayout.setStyleName("basicpeptidemodification");
+
+        tooltip += "</br>Intensity: " + peptide.getIntensity()+ "";
+
+        Label intensityColorLabel = new Label("<div style='background:" + peptide.getIntensityColor() + "; width:100%;height:100%;'></div>", ContentMode.HTML);
+        intensityColorLabel.setSizeFull();
+        intensityColorLabel.setData(peptide.getModifiedSequence());
+        intensityLayout.addComponent(intensityColorLabel);
+        intensityLayout.setVisible(false);
+        
+        
         peptide.setTooltip(tooltip);
         PeptideLayout.this.setDescription(tooltip);
         this.postionsList = new ArrayList<>();
@@ -168,15 +185,18 @@ public class PeptideLayout extends AbsoluteLayout implements Comparable<PeptideL
 
     public void updateStylingMode(String statues) {
         resetStyle();
-        if (statues.equalsIgnoreCase("Validation Status")) {
+        if (statues.equalsIgnoreCase("Validation")) {
             this.addStyleName(validationStatuesStyle);
         } else if (statues.equalsIgnoreCase("Protein Evidence")) {
             this.addStyleName(proteinEvidenceStyle);
-        } else if (statues.equalsIgnoreCase("Modification Status")) {
+        } else if (statues.equalsIgnoreCase("Modification")) {
             this.modificationLayout.setVisible(true);
             this.addStyleName(modificationStyleName);
         } else if (statues.equalsIgnoreCase("PSMNumber")) {
             this.psmNumberLayout.setVisible(true);
+            this.addStyleName(modificationStyleName);
+        }else if (statues.equalsIgnoreCase("Intensity")) {
+            this.intensityLayout.setVisible(true);
             this.addStyleName(modificationStyleName);
         }
 
@@ -194,6 +214,7 @@ public class PeptideLayout extends AbsoluteLayout implements Comparable<PeptideL
         }
         this.modificationLayout.setVisible(false);
         this.psmNumberLayout.setVisible(false);
+        this.intensityLayout.setVisible(false);
 
     }
 

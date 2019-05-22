@@ -317,7 +317,7 @@ public abstract class DataViewLayout extends Panel {
 //                    }
 //
 //                };
-                SearchSettingsLayout dsOverview = new SearchSettingsLayout((PeptideShakerVisualizationDataset) ds,false) {
+                SearchSettingsLayout dsOverview = new SearchSettingsLayout((PeptideShakerVisualizationDataset) ds, false) {
                     private final PopupWindow tDsOverview = (PopupWindow) infoLabel;
 
                     @Override
@@ -349,10 +349,15 @@ public abstract class DataViewLayout extends Panel {
 //                };
                 infoLabel.addStyleName("centeredicon");
 
+                System.out.println("at ((PeptideShakerVisualizationDataset) ds).isQuantDataset() "+((PeptideShakerVisualizationDataset) ds).isQuantDataset());
                 //0psiconHRNS
-                Label type = new Label();
+                String quant = null;
+                if (((PeptideShakerVisualizationDataset) ds).isQuantDataset()) {
+                    quant = "Quant";
+                }
+                Label type = new Label(quant);
                 type.setIcon(new ThemeResource("img/psiconHRNS.png"));
-                type.setDescription(ds.getType());
+                type.setDescription(ds.getType()+" "+quant);
                 type.setStyleName("smalliconlabel");
 
                 rowLayout = initializeRowData(new Component[]{new Label(i + ""), nameLabel, type, infoLabel, shareLabel, getToGalaxyLabel, nelsLabel, downloadLabel, deleteLabel, statusLabel}, false);

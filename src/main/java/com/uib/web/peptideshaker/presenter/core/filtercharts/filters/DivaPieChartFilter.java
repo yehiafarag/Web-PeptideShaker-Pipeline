@@ -146,6 +146,7 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
         rightLayout.setWidth(120, Unit.PIXELS);
         rightLayout.setHeight(100, Unit.PERCENTAGE);
         rightLayout.addStyleName("autooverflow");
+        rightLayout.addStyleName("piechartlegend");
         frame.addComponent(rightLayout, "top: 10px; right: 0px; bottom: 0px;");
 
         mainChartContainer = new AbsoluteLayout();

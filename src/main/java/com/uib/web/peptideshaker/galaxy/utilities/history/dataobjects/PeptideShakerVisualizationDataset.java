@@ -17,6 +17,7 @@ import com.compomics.util.preferences.IdentificationParameters;
 import com.compomics.util.preferences.SequenceMatchingPreferences;
 import com.uib.web.peptideshaker.galaxy.utilities.history.GalaxyDatasetServingUtil;
 import com.uib.web.peptideshaker.model.core.ModificationMatrix;
+import com.uib.web.peptideshaker.presenter.core.filtercharts.components.RangeColorGenerator;
 import com.uib.web.peptideshaker.presenter.pscomponents.SpectrumInformation;
 import graphmatcher.NetworkGraphEdge;
 import graphmatcher.NetworkGraphNode;
@@ -38,6 +39,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
@@ -123,6 +125,23 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
      * Input search parameter enzyme.
      */
     private String enzyme;
+    private RangeColorGenerator colorGenerator;
+
+    /**
+     * Output MOFF quant file representation on Online PeptideShaker.
+     */
+    private GalaxyTransferableFile moff_quant_file;
+
+    private boolean quantDataset = false;
+
+    public GalaxyTransferableFile getMoff_quant_file() {
+        return moff_quant_file;
+    }
+
+    public void setMoff_quant_file(GalaxyTransferableFile moff_quant_file) {
+        this.quantDataset = true;
+        this.moff_quant_file = moff_quant_file;
+    }
     /**
      * FASTA utilities that allow getting protein FASTA information using the
      * UniProt web service.
@@ -225,9 +244,9 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
 //protoform_file.getGalaxyId()
             String mgfMap = "";
             for (String str : inputMGFFiles.keySet()) {
-                mgfMap += "\\+" + str + "(API:" + inputMGFFiles.get(str).getGalaxyId()+")";
+                mgfMap += "\\+" + str + "(API:" + inputMGFFiles.get(str).getGalaxyId() + ")";
             }
-            mgfMap=mgfMap.replaceFirst("\\+", "");
+            mgfMap = mgfMap.replaceFirst("\\+", "");
             linkToShare = this.getProjectName() + "-_-sgi:" + SearchGUIResultFile.getGalaxyId() + "-_-pszip:" + PeptideShakerResultsFileId + "-_-mgf:" + mgfMap + "-_-ptotoform:760bf1f0e3f05bfb-_-sgioverview:" + SearchGUIResultFile.getOverview();
 
         }
@@ -496,6 +515,7 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
         ds.setType("PSM File");
         ds.setGalaxyId(PeptideShakerResultsFileId + "__reports/Default_PSM_Report_with_non-validated_matches.txt");
         ds.setDownloadUrl(galaxyLink + "/api/histories/" + this.getHistoryId() + "/contents/" + PeptideShakerResultsFileId + "/display?key=" + apiKey);
+
         psm_file = new GalaxyTransferableFile(user_folder, ds, true);
         psm_file.setDownloadUrl("to_ext=" + file_ext);
 
@@ -560,6 +580,7 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
         ds.setType("PSM File");
         ds.setGalaxyId(PeptideShakerResultsFileId + "__reports/Default_PSM_Report_with_non-validated_matches.txt");
         ds.setDownloadUrl(galaxyLink + "/datasets/" + PeptideShakerResultsFileId + "/display?to_ext=zip");
+
         psm_file = new GalaxyTransferableFile(user_folder, ds, true);
         psm_file.setDownloadUrl("to_ext=" + file_ext);
 
@@ -782,16 +803,18 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
             ex.printStackTrace();
         }
         peptideProcessFuture = executorService.submit(processPeptidesTask);
-
         processPathwayMatcherFilesTask = new ProcessPathwayMatcherFilesTask(protoform_file);
         pathwayMatcherProcessFuture = executorService.submit(processPathwayMatcherFilesTask);
         executorService.shutdown();
+        processPSMFile();
+        while (PSMFileThread.isAlive()) {
+        }
     }
 
     /**
      * Process output PSM file.
      */
-    public void processPSMFile() {
+    private void processPSMFile() {
         while (!peptideProcessFuture.isDone()) {
             try {
                 Thread.sleep(1000);
@@ -888,81 +911,181 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
                 ex.printStackTrace();
             }
         }
+        System.out.println("is quant data " + isQuantDataset() + "  " + moff_quant_file);
 
-        BufferedReader bufferedReader = null;
-        try {//     
-            File f = psm_file.getFile();
-            bufferedReader = new BufferedReader(new FileReader(f), 1024 * 100);
-            String line;
-            /**
-             * escape header
-             */
-            bufferedReader.readLine();
-            while ((line = bufferedReader.readLine()) != null) {
-                String[] arr = line.split("\\t");
-                PSMObject psm = new PSMObject();
-                psm.setIndex(Integer.parseInt(arr[0]));
-                for (String acc : arr[1].split(",")) {
-                    psm.addProtein(acc);
-                }
-                psm.setSequence(arr[2]);
-                psm.setAasBefore(arr[3]);
-                psm.setAasAfter((arr[4]));
-                psm.setPostions(arr[5]);
-                psm.setModifiedSequence(arr[6]);
-                for (String mod : arr[7].split(",")) {
-                    psm.addVariableModification(mod);
-                }
-                for (String mod : arr[8].split(",")) {
-                    psm.addFixedModification(mod);
-                }
-                psm.setSpectrumFile(arr[9]);
-                psm.setSpectrumTitle(arr[10]);
-                psm.setSpectrumScanNumber(arr[11]);
-                psm.setRT(arr[12]);
-                psm.setMZ(arr[13]);
-                psm.setMeasuredCharge((arr[14]));
+        if (isQuantDataset()) {
+            BufferedReader bufferedReader = null;
+            TreeSet<Double> treeSet = new TreeSet<>();
+            List<PSMObject> innerPSMList = new ArrayList<>();
+            try {//     
+                File f = moff_quant_file.getFile();
+                bufferedReader = new BufferedReader(new FileReader(f), 1024 * 100);
+                String line;
+                /**
+                 * escape header
+                 */
+                String[] arr1 = bufferedReader.readLine().split("\\t");
+                int index = 1;
+                while ((line = bufferedReader.readLine()) != null) {
+                    String[] arr = line.split("\\t");
+                    PSMObject psm = new PSMObject();
+                    innerPSMList.add(psm);
+                    psm.setIndex(index++);
+                    for (String acc : arr[0].split(",")) {
+                        psm.addProtein(acc);
+                    }
+                    psm.setSequence(arr[1]);
+                    psm.setAasBefore(arr[2]);
+                    psm.setAasAfter((arr[3]));
+                    psm.setPostions(arr[4]);
+                    psm.setModifiedSequence(arr[5]);
+                    for (String mod : arr[6].split(",")) {
+                        psm.addVariableModification(mod);
+                    }
+                    for (String mod : arr[7].split(",")) {
+                        psm.addFixedModification(mod);
+                    }
+                    psm.setSpectrumFile(arr[8]);
+                    psm.setSpectrumTitle(arr[9]);
+                    psm.setSpectrumScanNumber(arr[10]);
+                    psm.setRT(arr[11]);
+                    psm.setMZ(arr[12]);
+                    psm.setMeasuredCharge((arr[13]));
 
-                psm.setIdentificationCharge((arr[15]));
-                if (psm.getMeasuredCharge().trim().equalsIgnoreCase("")) {
-//                    psm.setMeasuredCharge(psm.getIdentificationCharge());
-//                    System.out.println("measuredcharge was empty " + psm.getIndex() + "  " + psm.getIdentificationCharge());
-                }
-                if (!arr[16].equalsIgnoreCase("")) {
-                    psm.setTheoreticalMass(Double.parseDouble(arr[16]));
-                }
-                if (!arr[17].equalsIgnoreCase("")) {
-                    psm.setIsotopeNumber(Integer.parseInt(arr[17]));
-                }
-                if (!arr[18].equalsIgnoreCase("")) {
-                    psm.setPrecursorMZError_PPM(Double.parseDouble(arr[18]));
-                }
-                psm.setLocalizationConfidence(arr[19]);
+                    psm.setIdentificationCharge((arr[14]));
+//                if (psm.getMeasuredCharge().trim().equalsIgnoreCase("")) {
+////                    psm.setMeasuredCharge(psm.getIdentificationCharge());
+////                    System.out.println("measuredcharge was empty " + psm.getIndex() + "  " + psm.getIdentificationCharge());
+//                }
+                    if (!arr[15].equalsIgnoreCase("")) {
+                        psm.setTheoreticalMass(Double.parseDouble(arr[15]));
+                    }
+                    if (!arr[16].equalsIgnoreCase("")) {
+                        psm.setIsotopeNumber(Integer.parseInt(arr[16]));
+                    }
+                    if (!arr[17].equalsIgnoreCase("")) {
+                        psm.setPrecursorMZError_PPM(Double.parseDouble(arr[17]));
+                    }
+                    psm.setLocalizationConfidence(arr[18]);
 
-                psm.setProbabilisticPTMScore((arr[20]));
+                    psm.setProbabilisticPTMScore((arr[19]));
 
-                psm.setD_Score((arr[21]));
+                    psm.setD_Score((arr[20]));
 
-                if (!arr[22].equalsIgnoreCase("")) {
-                    psm.setConfidence(Double.parseDouble(arr[22]));
+                    if (!arr[21].equalsIgnoreCase("")) {
+                        psm.setConfidence(Double.parseDouble(arr[21]));
+                    }
+                    psm.setValidation(arr[22]);
+                    double quant = Double.parseDouble(arr[23]);
+                    if (quant > 0) {
+                        psm.setIntensity(quant);
+                        treeSet.add(psm.getIntensity());
+                    }
+                    if (processPeptidesTask.getPSMsMap().containsKey(psm.getModifiedSequence())) {
+                        processPeptidesTask.getPSMsMap().get(psm.getModifiedSequence()).add(psm);
+                    } else if (processPeptidesTask.getPSMsMap().containsKey(psm.getModifiedSequence().replace("L", "I"))) {
+
+                    } else if (processPeptidesTask.getPSMsMap().containsKey(psm.getModifiedSequence().replace("I", "L"))) {
+                        System.out.println("at Error for psm I mapping...not exist peptide need to replace I" + psm.getModifiedSequence());
+                    } else {
+                        System.out.println("at Error for psm II mapping...not exist peptide " + psm.getModifiedSequence());
+                    }
                 }
-                psm.setValidation(arr[23]);
-
-                if (processPeptidesTask.getPSMsMap().containsKey(psm.getModifiedSequence())) {
-                    processPeptidesTask.getPSMsMap().get(psm.getModifiedSequence()).add(psm);
-                } else if (processPeptidesTask.getPSMsMap().containsKey(psm.getModifiedSequence().replace("L", "I"))) {
-                } else if (processPeptidesTask.getPSMsMap().containsKey(psm.getModifiedSequence().replace("I", "L"))) {
-                    System.out.println("at Error for psm I mapping...not exist peptide need to replace I" + psm.getModifiedSequence());
-                } else {
-                    System.out.println("at Error for psm II mapping...not exist peptide " + psm.getModifiedSequence());
+                processPeptidesTask.calculateQuant();
+                colorGenerator = new RangeColorGenerator(treeSet.last());
+                innerPSMList.forEach((psm) -> {
+                    int per = (int) Math.round((psm.getIntensity() / treeSet.last()) * 100.0);
+                    psm.setIntensityPercentage(per);
+                    psm.setIntensityColor(colorGenerator.getGradeColor(psm.getIntensity(), treeSet.last(), treeSet.first()));
+                });
+            } catch (IOException | NumberFormatException ex) {
+                ex.printStackTrace();
+                if (bufferedReader != null) {
+                    try {
+                        bufferedReader.close();
+                    } catch (IOException ex1) {
+                    }
                 }
             }
-        } catch (IOException | NumberFormatException ex) {
-            ex.printStackTrace();
-            if (bufferedReader != null) {
-                try {
-                    bufferedReader.close();
-                } catch (IOException ex1) {
+
+        } else {
+            BufferedReader bufferedReader = null;
+            try {//     
+                File f = psm_file.getFile();
+                bufferedReader = new BufferedReader(new FileReader(f), 1024 * 100);
+                String line;
+                /**
+                 * escape header
+                 */
+                String[] arr1 = bufferedReader.readLine().split("\\t");
+                System.out.println("at psm line " + arr1.length + "<-->" + psm_file.getName());
+                while ((line = bufferedReader.readLine()) != null) {
+                    String[] arr = line.split("\\t");
+                    PSMObject psm = new PSMObject();
+                    ;
+                    psm.setIndex(Integer.parseInt(arr[0]));
+                    for (String acc : arr[1].split(",")) {
+                        psm.addProtein(acc);
+                    }
+                    psm.setSequence(arr[2]);
+                    psm.setAasBefore(arr[3]);
+                    psm.setAasAfter((arr[4]));
+                    psm.setPostions(arr[5]);
+                    psm.setModifiedSequence(arr[6]);
+                    for (String mod : arr[7].split(",")) {
+                        psm.addVariableModification(mod);
+                    }
+                    for (String mod : arr[8].split(",")) {
+                        psm.addFixedModification(mod);
+                    }
+                    psm.setSpectrumFile(arr[9]);
+                    psm.setSpectrumTitle(arr[10]);
+                    psm.setSpectrumScanNumber(arr[11]);
+                    psm.setRT(arr[12]);
+                    psm.setMZ(arr[13]);
+                    psm.setMeasuredCharge((arr[14]));
+
+                    psm.setIdentificationCharge((arr[15]));
+                    if (psm.getMeasuredCharge().trim().equalsIgnoreCase("")) {
+//                    psm.setMeasuredCharge(psm.getIdentificationCharge());
+//                    System.out.println("measuredcharge was empty " + psm.getIndex() + "  " + psm.getIdentificationCharge());
+                    }
+                    if (!arr[16].equalsIgnoreCase("")) {
+                        psm.setTheoreticalMass(Double.parseDouble(arr[16]));
+                    }
+                    if (!arr[17].equalsIgnoreCase("")) {
+                        psm.setIsotopeNumber(Integer.parseInt(arr[17]));
+                    }
+                    if (!arr[18].equalsIgnoreCase("")) {
+                        psm.setPrecursorMZError_PPM(Double.parseDouble(arr[18]));
+                    }
+                    psm.setLocalizationConfidence(arr[19]);
+
+                    psm.setProbabilisticPTMScore((arr[20]));
+
+                    psm.setD_Score((arr[21]));
+
+                    if (!arr[22].equalsIgnoreCase("")) {
+                        psm.setConfidence(Double.parseDouble(arr[22]));
+                    }
+                    psm.setValidation(arr[23]);
+
+                    if (processPeptidesTask.getPSMsMap().containsKey(psm.getModifiedSequence())) {
+                        processPeptidesTask.getPSMsMap().get(psm.getModifiedSequence()).add(psm);
+                    } else if (processPeptidesTask.getPSMsMap().containsKey(psm.getModifiedSequence().replace("L", "I"))) {
+                    } else if (processPeptidesTask.getPSMsMap().containsKey(psm.getModifiedSequence().replace("I", "L"))) {
+                        System.out.println("at Error for psm I mapping...not exist peptide need to replace I" + psm.getModifiedSequence());
+                    } else {
+                        System.out.println("at Error for psm II mapping...not exist peptide " + psm.getModifiedSequence());
+                    }
+                }
+            } catch (IOException | NumberFormatException ex) {
+                ex.printStackTrace();
+                if (bufferedReader != null) {
+                    try {
+                        bufferedReader.close();
+                    } catch (IOException ex1) {
+                    }
                 }
             }
         }
@@ -1040,6 +1163,24 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
      */
     public TreeMap<Comparable, Set<Comparable>> getProteinCoverageMap() {
         return processProteinsTask.getProteinCoverageMap();
+    }
+
+    /**
+     * Get protein to intensity (all peptides intensity) value map
+     *
+     * @return map of intensity percent to proteins
+     */
+    public TreeMap<Comparable, Set<Comparable>> getProteinIntensityAllPeptideMap() {
+        return processPeptidesTask.getProteinIntensityAllPeptideMap();
+    }
+
+    /**
+     * Get protein to intensity (unique peptides intensity) value map
+     *
+     * @return map of intensity percent to proteins
+     */
+    public TreeMap<Comparable, Set<Comparable>> getProteinIntensityUniquePeptideMap() {
+        return processPeptidesTask.getProteinIntensityUniquePeptideMap();
     }
 
     /**
@@ -1408,6 +1549,10 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
         return this.createTime.compareTo(peptideShakerVisualizationDataset.createTime);
     }
 
+    public boolean isQuantDataset() {
+        return quantDataset;
+    }
+
     /**
      * This class is used to create task that is used to process output peptide
      * file.
@@ -1435,6 +1580,16 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
          */
         private final Map<Object, PeptideObject> peptidesMap;
         private final Map<String, Set<String>> unMappedProteinMap;
+        private final Map<String, ProteinGroupObject> proteinsGroupMap;
+        /**
+         * Protein to intensity based on all peptides intensity value map.
+         */
+        private final TreeMap<Comparable, Set<Comparable>> proteinIntensityAllPeptideMap;
+
+        /**
+         * Protein to intensity based on unique peptides intensity value map.
+         */
+        private final TreeMap<Comparable, Set<Comparable>> proteinIntensityUniquePeptideMap;
 
         public Map<String, Set<String>> getUnMappedProteinMap() {
             return unMappedProteinMap;
@@ -1449,6 +1604,7 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
          */
         public ProcessPeptidesTask(GalaxyTransferableFile peptides_file, Map<String, ProteinGroupObject> proteinsGroupMap, Map<String, Set<String>> protein_ProteinGroup_Map, ConcurrentHashMap<String, Set<Comparable>> modificationMap) {
 
+            this.proteinsGroupMap = proteinsGroupMap;
             this.modificationMap = new ConcurrentHashMap<>();
             this.modificationMap.put("No Modification", new LinkedHashSet<>());
             this.modificationMap.putAll(modificationMap);
@@ -1456,6 +1612,8 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
             protein_peptide_Map = new HashMap<>();
             PSMsMap = new LinkedHashMap<>();
             unMappedProteinMap = new HashMap<>();
+            this.proteinIntensityAllPeptideMap = new TreeMap<>();
+            this.proteinIntensityUniquePeptideMap = new TreeMap<>();
             BufferedReader bufferedReader = null;
             try {//           
 //                System.out.println("start loading peptides");
@@ -1613,6 +1771,84 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
             return this.modificationMatrix;
         }
 
+        public void calculateQuant() {
+            final TreeSet<Double> treeSet = new TreeSet<>();
+            PSMsMap.keySet().forEach((modSeq) -> {
+                PeptideObject peptide = peptidesMap.get(modSeq);
+                double quant = 0d;
+                quant = PSMsMap.get(modSeq).stream().map((psm) -> psm.getIntensity()).reduce(quant, (accumulator, _item) -> accumulator + _item);
+                if (quant > 0) {
+                    double finalquant = quant / (double) PSMsMap.get(modSeq).size();
+                    peptide.setIntensity(finalquant);
+                    treeSet.add(finalquant);
+                }
+            });
+            final RangeColorGenerator colorGenerator = new RangeColorGenerator(treeSet.last());
+            PSMsMap.keySet().forEach((modSeq) -> {
+                PeptideObject peptide = peptidesMap.get(modSeq);
+                peptide.setIntensityColor(colorGenerator.getGradeColor(peptide.getIntensity(), treeSet.last(), treeSet.first()));
+            });
+
+            //calc quant for proteins?
+            double quant = 0.0;
+            TreeSet<Double> treeSet2 = new TreeSet<>();
+            double quant2 = 0.0;
+            TreeSet<Double> treeSet3 = new TreeSet<>();;
+            for (String protGroupKey : proteinsGroupMap.keySet()) {
+                ProteinGroupObject proteinGroup = proteinsGroupMap.get(protGroupKey);
+                double counter = 0.0;
+                double counter2 = 0.0;
+                for (String modSeq : proteinGroup.getRelatedPeptidesList()) {
+                    if (peptidesMap.get(modSeq).getIntensity() > 0) {
+                        quant += peptidesMap.get(modSeq).getIntensity();
+                        counter++;
+                        if (!peptidesMap.get(modSeq).getProteinGroupKey().contains("-_-")) {
+                            quant2 += peptidesMap.get(modSeq).getIntensity();
+                            counter2++;
+                        }
+                    }
+                }
+                if (counter > 0) {
+                    quant = quant / counter;
+                    proteinGroup.setAllPeptidesIntensity(quant);
+                    treeSet2.add(quant);
+                }
+                if (counter2 > 0) {
+                    quant2 = quant2 / counter2;
+                    proteinGroup.setUniquePeptidesIntensity(quant2);
+                    treeSet3.add(quant2);
+                }
+            }
+            RangeColorGenerator colorGenerator2 = new RangeColorGenerator(treeSet2.last());
+            RangeColorGenerator colorGenerator3 = new RangeColorGenerator(treeSet3.last());
+            proteinsGroupMap.values().stream().map((proteinGroup) -> {
+                proteinGroup.setAllPeptideIintensityColor(colorGenerator2.getGradeColor(proteinGroup.getAllPeptidesIntensity(), treeSet2.last(), treeSet2.first()));
+
+                int per = (int) Math.round((proteinGroup.getAllPeptidesIntensity() / treeSet2.last()) * 100.0);
+                proteinGroup.setPercentageAllPeptidesIntensity(per);
+                if (!this.proteinIntensityAllPeptideMap.containsKey(per)) {
+                    this.proteinIntensityAllPeptideMap.put(per, new LinkedHashSet<>());
+                }
+                this.proteinIntensityAllPeptideMap.get(per).add(proteinGroup.getProteinGroupKey());
+                return proteinGroup;
+            }).forEachOrdered((proteinGroup) -> {
+                proteinGroup.setUniquePeptideIintensityColor(colorGenerator3.getGradeColor(proteinGroup.getUniquePeptidesIntensity(), treeSet3.last(), treeSet3.first()));
+                int per = (int) Math.round((proteinGroup.getUniquePeptidesIntensity() / treeSet3.last()) * 100.0);
+                proteinGroup.setPercentageUniquePeptidesIntensity(per);
+                if (!this.proteinIntensityUniquePeptideMap.containsKey(per)) {
+                    this.proteinIntensityUniquePeptideMap.put(per, new LinkedHashSet<>());
+                }
+                this.proteinIntensityUniquePeptideMap.get(per).add(proteinGroup.getProteinGroupKey());
+            });
+        }
+
+        public TreeMap<Comparable, Set<Comparable>> getProteinIntensityAllPeptideMap() {
+            return proteinIntensityAllPeptideMap;
+        }
+
+        public TreeMap<Comparable, Set<Comparable>> getProteinIntensityUniquePeptideMap() {
+            return proteinIntensityUniquePeptideMap;
+        }
     }
 
     /**
@@ -2255,9 +2491,9 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
     }
 
     public abstract Set<String[]> getPathwayEdges(Set<String> proteinAcc);
-    
-    private double generateQuantValue(){
-    return (Math.random()*1000000.0);
+
+    private double generateQuantValue() {
+        return (Math.random() * 1000000.0);
     }
 
 }

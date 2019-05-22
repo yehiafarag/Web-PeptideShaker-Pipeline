@@ -28,18 +28,9 @@ public class SelectionManager {
     private final Set<Comparable> fullProteinSet;
     private FilteredProteins filteredProteinsSet;
     private final List<String> datasetFilterOrderList;
-
-    public String getSelectedProteinId() {
-        return selectedProteinId;
-    }
     private String selectedProteinId;
     private PeptideObject selectedPeptide;
-
     private boolean singleProteinsFilter = false;
-
-    public Set<Comparable> getFullProteinSet() {
-        return fullProteinSet;
-    }
     private ModificationMatrix modificationMatrix;
     private Map<Integer, Set<Comparable>> chromosomeMap;
 
@@ -56,6 +47,23 @@ public class SelectionManager {
     private TreeMap<Comparable, Set<Comparable>> proteinPeptidesNumberMap;
     private TreeMap<Comparable, Set<Comparable>> proteinPSMNumberMap;
     private TreeMap<Comparable, Set<Comparable>> proteinCoverageMap;
+
+    private TreeMap<Comparable, Set<Comparable>> proteinIntinsityAllPepMap;
+    private TreeMap<Comparable, Set<Comparable>> proteinIntinsityUniquePepMap;
+    
+    private final TreeMap<Comparable, Set<Comparable>> selectedProteinPeptidesNumberMap;
+    private final TreeMap<Comparable, Set<Comparable>> selectedProteinPSMNumberMap;
+    private final TreeMap<Comparable, Set<Comparable>> selectedProteinCoverageMap;
+    private final TreeMap<Comparable, Set<Comparable>> selectedProteinInteinsityAllPepMap;
+    private final TreeMap<Comparable, Set<Comparable>> selectedProteinInteinsityUniquePepMap;
+
+    public String getSelectedProteinId() {
+        return selectedProteinId;
+    }
+
+    public Set<Comparable> getFullProteinSet() {
+        return fullProteinSet;
+    }
 
     public void setProteinPeptidesNumberMap(TreeMap<Comparable, Set<Comparable>> proteinPeptidesNumberMap) {
         this.selectedProteinPeptidesNumberMap.clear();
@@ -96,10 +104,6 @@ public class SelectionManager {
         }
     }
 
-    private final TreeMap<Comparable, Set<Comparable>> selectedProteinPeptidesNumberMap;
-    private final TreeMap<Comparable, Set<Comparable>> selectedProteinPSMNumberMap;
-    private final TreeMap<Comparable, Set<Comparable>> selectedProteinCoverageMap;
-
     public void setChromosomeMap(Map<Integer, Set<Comparable>> chromosomeMap) {
         this.selectedChromosomeMap.clear();
         this.chromosomeMap = chromosomeMap;
@@ -139,13 +143,6 @@ public class SelectionManager {
         }
     }
 
-//    public ModificationMatrix getModificationsMap() {
-//        if (selectedModificationsMap.isEmpty()) {
-//            return modificationMatrix;
-//        } else {
-//            return selectedModificationsMap;
-//        }
-//    }
     public void reset() {
         fullProteinSet.clear();
         selectedChromosomeMap.clear();
@@ -194,6 +191,8 @@ public class SelectionManager {
         this.selectedProteinCoverageMap = new TreeMap<>();
         this.selectedProteinPeptidesNumberMap = new TreeMap<>();
         this.selectedProteinPSMNumberMap = new TreeMap<>();
+        this.selectedProteinInteinsityAllPepMap = new TreeMap<>();
+        this.selectedProteinInteinsityUniquePepMap = new TreeMap<>();
         this.datasetFilterOrderList = new ArrayList<>();
     }
 
@@ -397,6 +396,44 @@ public class SelectionManager {
             filteredProtenSet.removeAll(tempProtenSet);
             tempProtenSet.clear();
 
+        } else if (filterId.equalsIgnoreCase("intensityAllPep_filter") && !selectedCategories.isEmpty()) {
+            Set<Comparable> selectedData = new LinkedHashSet<>();
+            double min = (double) selectedCategories.toArray()[0];
+            double max;//= (double) selectedCategories.toArray()[1];
+            if (selectedCategories.size() == 1) {
+                max = min;
+            } else {
+                max = (double) selectedCategories.toArray()[1];
+            }
+            proteinIntinsityAllPepMap.keySet().forEach((cat) -> {
+                int key = (int) cat;
+                if (key >= min && key <= max) {
+                    selectedData.addAll(Sets.intersection(proteinIntinsityAllPepMap.get(cat), filteredProtenSet));
+                }
+            });
+            tempProtenSet.addAll(Sets.difference(filteredProtenSet, selectedData));
+            filteredProtenSet.removeAll(tempProtenSet);
+            tempProtenSet.clear();
+
+        } else if (filterId.equalsIgnoreCase("intensityUniquePep_filter") && !selectedCategories.isEmpty()) {
+            Set<Comparable> selectedData = new LinkedHashSet<>();
+            double min = (double) selectedCategories.toArray()[0];
+            double max;//= (double) selectedCategories.toArray()[1];
+            if (selectedCategories.size() == 1) {
+                max = min;
+            } else {
+                max = (double) selectedCategories.toArray()[1];
+            }
+            proteinIntinsityUniquePepMap.keySet().forEach((cat) -> {
+                int key = (int) cat;
+                if (key >= min && key <= max) {
+                    selectedData.addAll(Sets.intersection(proteinIntinsityUniquePepMap.get(cat), filteredProtenSet));
+                }
+            });
+            tempProtenSet.addAll(Sets.difference(filteredProtenSet, selectedData));
+            filteredProtenSet.removeAll(tempProtenSet);
+            tempProtenSet.clear();
+
         }
 
     }
@@ -448,4 +485,28 @@ public class SelectionManager {
 //        }
 //        return filteredProteinsSet;
 //    }
+    public TreeMap<Comparable, Set<Comparable>> getProteinIntinsityAllPepMap() {
+        if (selectedProteinInteinsityAllPepMap.isEmpty()) {
+            return selectedProteinInteinsityAllPepMap;
+        }
+        return proteinIntinsityAllPepMap;
+    }
+
+    public void setProteinIntinsityAllPepMap(TreeMap<Comparable, Set<Comparable>> proteinIntinsityAllPepMap) {
+        this.selectedProteinInteinsityAllPepMap.clear();
+        this.proteinIntinsityAllPepMap = proteinIntinsityAllPepMap;
+
+    }
+
+    public TreeMap<Comparable, Set<Comparable>> getProteinIntinsityUniquePepMap() {
+        if (selectedProteinInteinsityUniquePepMap.isEmpty()) {
+            return selectedProteinInteinsityUniquePepMap;
+        }
+        return proteinIntinsityUniquePepMap;
+    }
+
+    public void setProteinIntinsityUniquePepMap(TreeMap<Comparable, Set<Comparable>> proteinIntinsityUniquePepMap) {
+        this.selectedProteinInteinsityUniquePepMap.clear();
+        this.proteinIntinsityUniquePepMap = proteinIntinsityUniquePepMap;
+    }
 }

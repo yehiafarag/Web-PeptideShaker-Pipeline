@@ -26,6 +26,7 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
     private final String nodeId;
     private final VerticalLayout modificationLayout;
     private final VerticalLayout psmNumberLayout;
+    private final VerticalLayout intensityLayout;
     private boolean selected;
     private String defaultStyleName;
     private String validationStatuesStyle;
@@ -40,7 +41,7 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
      */
     private final PTMFactory PTM = PTMFactory.getInstance();
 
-    public Node(String id, String tooltip, String modifications, String sequence, int psmNumber, String PSMNumberColor) {
+    public Node(String id, String tooltip, String modifications, String sequence, int psmNumber, String PSMNumberColor,double inteinsity,String inteinsityColor) {
 
         Node.this.setStyleName("node");
         Node.this.addLayoutClickListener(Node.this);
@@ -97,7 +98,23 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
         psmsColorLabel.setSizeFull();
         psmNumberLayout.addComponent(psmsColorLabel);
         psmNumberLayout.setVisible(false);
+        
+        
+        this.intensityLayout = new VerticalLayout();
+        this.intensityLayout.setSizeFull();
+        Node.this.addComponent(intensityLayout);
+        String tooltipExt2 = "</br>Intinsity: " + inteinsity + "";
+        if (inteinsity == -10000) {           
+            tooltipExt2 = "";
+        }
+        Label intensityColorLabel = new Label("<div  style='background:" + inteinsityColor + ";border-radius:100%;width: 100%;height: 100%;opacity:0.2;'></div>", ContentMode.HTML);
+        intensityColorLabel.setSizeFull();
+        intensityLayout.addComponent(intensityColorLabel);
+        intensityLayout.setVisible(false);
+        
+        
         tooltip += tooltipExt;
+        tooltip += tooltipExt2;
         Node.this.setDescription(tooltip);
 
         this.edges = new LinkedHashSet<>();
@@ -132,15 +149,18 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
         this.resetStyle();
         if (statues.equalsIgnoreCase("Molecule Type")) {
             this.addStyleName(defaultStyleName);
-        } else if (statues.equalsIgnoreCase("Validation Status")) {
+        } else if (statues.equalsIgnoreCase("Validation")) {
             this.addStyleName(validationStatuesStyle);
         } else if (statues.equalsIgnoreCase("Protein Evidence")) {
             this.addStyleName(proteinEvidenceStyle);
-        } else if (statues.equalsIgnoreCase("Modification Status")) {
+        } else if (statues.equalsIgnoreCase("Modification")) {
             modificationLayout.setVisible(true);
             this.addStyleName(modificationStyleName);
         } else if (statues.equalsIgnoreCase("PSMNumber")) {
             this.psmNumberLayout.setVisible(true);
+            this.addStyleName(modificationStyleName);
+        } else if (statues.equalsIgnoreCase("Intensity")) {
+            this.intensityLayout.setVisible(true);
             this.addStyleName(modificationStyleName);
         }
 
@@ -169,6 +189,7 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
         this.setSelected(selected);
         this.modificationLayout.setVisible(false);
         this.psmNumberLayout.setVisible(false);
+        this.intensityLayout.setVisible(false);
     }
 
     public void setType(int type) {

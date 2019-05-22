@@ -6,8 +6,12 @@ import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.SelectionMa
 import com.uib.web.peptideshaker.presenter.core.filtercharts.filters.DivaPieChartFilter;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.filters.DivaRangeFilter;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.filters.ModificationsFilter;
+import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import java.awt.Color;
@@ -39,6 +43,11 @@ public class FiltersContainer extends HorizontalLayout {
     private final DivaRangeFilter prptidesNumberFilter;
     private final DivaRangeFilter coverageFilter;
     private final DivaRangeFilter psmNumberFilter;
+
+    private final AbsoluteLayout intinsityContainer;
+    private final DivaRangeFilter intensityAllPeptidesRange;
+    private final DivaRangeFilter intensityUniquePeptidesRange;
+
     private final Map<String, Color> PIColorMap;// new Color[]{Color.DARK_GRAY, new Color(4, 180, 95), new Color(245, 226, 80), new Color(213, 8, 8), Color.ORANGE};
 //    private final SelectionGraph proteinsPathwayNewtorkGraph;
     private final List<Color> colorList;
@@ -152,7 +161,33 @@ public class FiltersContainer extends HorizontalLayout {
         FiltersContainer.this.setComponentAlignment(filterRightPanelContainer, Alignment.TOP_LEFT);
         FiltersContainer.this.setExpandRatio(filterRightPanelContainer, 1);
 
-//add range filter
+        //add range filter
+        intensityAllPeptidesRange = new DivaRangeFilter("Intensity (% - All peptides)", "intensityAllPep_filter", this.Selection_Manager) {
+            @Override
+            public void selectionChange(String type) {
+
+            }
+
+            @Override
+            public void setVisible(boolean visible) {
+                intensityUniquePeptidesRange.setVisible(!visible);
+                super.setVisible(visible);
+            }
+
+        };
+
+        intensityUniquePeptidesRange = new DivaRangeFilter("Intensity (% - Unique peptides)", "intensityUniquePep_filter", this.Selection_Manager) {
+            @Override
+            public void selectionChange(String type) {
+
+            }
+        };
+        intinsityContainer = new AbsoluteLayout();
+        intinsityContainer.setSizeFull();
+        intinsityContainer.addComponent(intensityAllPeptidesRange, "left:0px;top:5px;bottom:0px !important;right:0px;");
+        intensityAllPeptidesRange.setVisible(true);
+        intinsityContainer.addComponent(intensityUniquePeptidesRange, "left:0px;top:5px;bottom:0px;right:0px;");
+
         prptidesNumberFilter = new DivaRangeFilter("#Peptides", "peptidesNum_filter", this.Selection_Manager) {
             @Override
             public void selectionChange(String type) {
@@ -169,46 +204,66 @@ public class FiltersContainer extends HorizontalLayout {
 
         };
 
+        filterRightPanelContainer.addComponent(psmNumberFilter);
+        filterRightPanelContainer.setComponentAlignment(psmNumberFilter, Alignment.TOP_CENTER);
+//        TabSheet tabFilterContainer = new TabSheet();
+//        tabFilterContainer.setHeight(100.0f, Unit.PERCENTAGE);
+//        tabFilterContainer.addStyleName(ValoTheme.TABSHEET_COMPACT_TABBAR);
+//        tabFilterContainer.addStyleName(ValoTheme.TABSHEET_FRAMED);
+//        tabFilterContainer.addStyleName(ValoTheme.TABSHEET_PADDED_TABBAR);
+//        tabFilterContainer.addStyleName("tabsheetinfilter");
+//        tabFilterContainer.setTabCaptionsAsHtml(true);
+//        tabFilterContainer.addTab(psmNumberFilter,psmNumberFilter.externalTitle());
+//        filterRightPanelContainer.addComponent(tabFilterContainer);
+//        filterRightPanelContainer.setComponentAlignment(tabFilterContainer, Alignment.TOP_CENTER);
         coverageFilter = new DivaRangeFilter("Coverage (%)", "possibleCoverage_filter", this.Selection_Manager) {
             @Override
             public void selectionChange(String type) {
             }
 
         };
-        filterRightPanelContainer.addComponent(psmNumberFilter);
-        filterRightPanelContainer.setComponentAlignment(psmNumberFilter, Alignment.TOP_CENTER);
-
         filterRightPanelContainer.addComponent(coverageFilter);
         coverageFilter.addStyleName("bottomfilter");
         coverageFilter.addStyleName("correctresetbtn");
-        filterRightPanelContainer.setComponentAlignment(coverageFilter, Alignment.TOP_RIGHT);
+        filterRightPanelContainer.setComponentAlignment(coverageFilter, Alignment.TOP_CENTER);
 
-//        proteinsPathwayNewtorkGraph = new SelectionGraph();
-//        proteinsPathwayNewtorkGraph.setSizeFull();
-//        filterMiddlePanelContainer.addComponent(proteinsPathwayNewtorkGraph);
+        filterRightPanelContainer.addComponent(intinsityContainer);
+        filterRightPanelContainer.setComponentAlignment(intinsityContainer, Alignment.BOTTOM_RIGHT);
+
     }
     private final Color[] colorsArrII = new Color[]{Color.DARK_GRAY, new Color(4, 180, 95), Color.ORANGE, new Color(213, 8, 8)};
 
-    public void updateFiltersData(ModificationMatrix modificationMatrix, Map<String, Color> modificationsColorMap, Map<Integer, Set<Comparable>> chromosomeMap, Map<String, Set<Comparable>> piMap, Map<String, Set<Comparable>> proteinValidationMap, TreeMap<Comparable, Set<Comparable>> proteinPeptidesNumberMap, TreeMap<Comparable, Set<Comparable>> proteinPSMNumberMap, TreeMap<Comparable, Set<Comparable>> proteinCoverageMap) {
+    public void updateFiltersData(ModificationMatrix modificationMatrix, Map<String, Color> modificationsColorMap, Map<Integer, Set<Comparable>> chromosomeMap, Map<String, Set<Comparable>> piMap, Map<String, Set<Comparable>> proteinValidationMap, TreeMap<Comparable, Set<Comparable>> proteinPeptidesNumberMap, TreeMap<Comparable, Set<Comparable>> proteinPSMNumberMap, TreeMap<Comparable, Set<Comparable>> proteinCoverageMap, TreeMap<Comparable, Set<Comparable>> proteinIntinsityAllPepMap, TreeMap<Comparable, Set<Comparable>> proteinIntinsityUniquePepMap) {
         Selection_Manager.reset();
         Selection_Manager.setModificationsMap(modificationMatrix);
         modificationFilter.initializeFilterData(modificationMatrix, modificationsColorMap, new HashSet<>(), Selection_Manager.getFullProteinSet().size());
-
         chromosomeFilter.initializeFilterData(chromosomeMap);
         Selection_Manager.setChromosomeMap(chromosomeMap);
-
         ProteinInferenceFilter.initializeFilterData(piMap, PIColorMap);//colorList.subList(0, piMap.size()).toArray(new Color[piMap.size()])
         Selection_Manager.setPiMap(piMap);
         Selection_Manager.setProteinValidationMap(proteinValidationMap);
-
         validationFilter.initializeFilterData(proteinValidationMap, new ArrayList<>(Arrays.asList(colorsArrII)));//colorList.subList(0, proteinValidationMap.size()).toArray(new Color[proteinValidationMap.size()])
         Selection_Manager.setProteinCoverageMap(proteinCoverageMap);
+        Selection_Manager.setProteinIntinsityAllPepMap(proteinIntinsityAllPepMap);
+        Selection_Manager.setProteinIntinsityUniquePepMap(proteinIntinsityUniquePepMap);
         Selection_Manager.setProteinPSMNumberMap(proteinPSMNumberMap);
         Selection_Manager.setProteinPeptidesNumberMap(proteinPeptidesNumberMap);
         prptidesNumberFilter.initializeFilterData(proteinPeptidesNumberMap);
         psmNumberFilter.initializeFilterData(proteinPSMNumberMap);
         coverageFilter.initializeFilterData(proteinCoverageMap);
-        
+        if (proteinIntinsityAllPepMap.isEmpty()) {
+            Label noquant = new Label("<center> No quant data available </center>",ContentMode.HTML);
+            noquant.setSizeFull();
+            noquant.setStyleName("noquantlabel");
+            intensityAllPeptidesRange.addComponent(noquant);
+            intensityUniquePeptidesRange.suspendFilter(true);
+             intensityAllPeptidesRange.suspendFilter(true);
+            
+        } else {
+            intensityAllPeptidesRange.initializeFilterData(proteinIntinsityAllPepMap);
+            intensityUniquePeptidesRange.initializeFilterData(proteinIntinsityUniquePepMap);
+        }
+
 //         Thread t = new Thread(new Runnable() {
 //            @Override
 //            public void run() {
@@ -231,21 +286,9 @@ public class FiltersContainer extends HorizontalLayout {
                 Integer.valueOf(colorStr.substring(5, 7), 16));
     }
 
-    /**
-     * Converts the value from linear scale to log scale. The log scale numbers
-     * are limited by the range of the type float. The linear scale numbers can
-     * be any double value.
-     *
-     * @param linearValue the value to be converted to log scale
-     * @param max The upper limit number for the input numbers
-     * @param lowerLimit the lower limit for the input numbers
-     * @return the value in log scale
-     */
-    private double scaleValues(double linearValue, double max, double lowerLimit) {
-        double logMax = (Math.log(max) / Math.log(2));
-        double logValue = (Math.log(linearValue + 1) / Math.log(2));
-        logValue = (logValue * 2 / logMax) + lowerLimit;
-        return Math.min(logValue, max);
+    public void updateQuantFilter(boolean allPeptideInteinsity) {
+        this.intensityAllPeptidesRange.setVisible(allPeptideInteinsity);
+
     }
 
 }

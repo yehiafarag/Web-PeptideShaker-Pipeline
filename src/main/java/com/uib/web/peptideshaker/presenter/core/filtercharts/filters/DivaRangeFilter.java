@@ -57,6 +57,7 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
     private double positionIndexFactro;
     private final String title;
     private final String sign;
+    private boolean suspendFilter;
 
     public DivaRangeFilter(String title, String filterId, SelectionManager Selection_Manager) {
 
@@ -114,22 +115,14 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
             chartImage.setValue(saveToFile(mainChart, chartWidth, chartHeight));
         });
 
-        frame.addComponent(chartContainer, "top: 30px;left: 10px;right: 10px;bottom: 30px;");
+        frame.addComponent(chartContainer, "top: 22px;left: 1px;right: 9px;bottom: 18px;");
         slidersContainer = new AbsoluteLayout();
         slidersContainer.setStyleName("maxhight20");
         slidersContainer.addStyleName("visibleoverflow");
-//        slidersContainer.addStyleName("marginleft-5");
         slidersContainer.setWidth(100, Unit.PERCENTAGE);
         slidersContainer.setHeight(20, Unit.PIXELS);
-        frame.addComponent(slidersContainer, "left:13px;bottom:0px; ;right:7px");
+        frame.addComponent(slidersContainer, "left:1px;bottom:-4px; ;right:7px");
 
-//        lowerLableValueComponent = initLabel("");
-//        lowerLableValueComponent.addStyleName("leftrangebarlabel");
-//
-//        slidersContainer.addComponent(lowerLableValueComponent, "left:0px; top:0px;");
-//        selectedRangeValueLabelComponent = initLabel("");
-//        selectedRangeValueLabelComponent.addStyleName("rightrangebarlabel");
-//        slidersContainer.addComponent(selectedRangeValueLabelComponent, "right:0px; top:0px;");
         lowerRangeSlider = new Slider();
         lowerRangeSlider.setWidth(100, Unit.PERCENTAGE);
         lowerRangeSlider.setStyleName("rangeslider");
@@ -164,7 +157,6 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
             upperRangeSlider.setEnabled(false);
             lowerRangeSlider.setEnabled(false);
             chartContainer.removeAllComponents();
-
             return;
         }
 
@@ -324,7 +316,7 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
 
     @Override
     public void updateFilterSelection(Set<Comparable> selectedItems, Set<Comparable> selectedCategories, boolean topFilter, boolean singleProteinsFilter, boolean selfAction) {
-        if (selectedItems == null || selectedCategories == null || (lastselectedItems.containsAll(selectedItems) && lastselectedCategories.containsAll(selectedCategories) && selectedCategories.size() == lastselectedCategories.size() && selectedItems.size() == lastselectedItems.size())) {
+        if (suspendFilter || selectedItems == null || selectedCategories == null || (lastselectedItems.containsAll(selectedItems) && lastselectedCategories.containsAll(selectedCategories) && selectedCategories.size() == lastselectedCategories.size() && selectedItems.size() == lastselectedItems.size())) {
             return;
         }
         lastselectedItems = selectedItems;
@@ -348,7 +340,7 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
                 initializeFilterData(tPieChartValues);
             }
         }
-        if ( selectedCategories.isEmpty()) {
+        if (selectedCategories.isEmpty()) {
             if (chartWidth <= 0 || chartHeight <= 0) {
                 return;
             }
@@ -375,8 +367,6 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
         redrawRangeOnChart(min, max, true);
         setMainAppliedFilter(topFilter);
     }
-
-  
 
     private void redrawRangeOnChart(double start, double end, boolean highlight) {
         if (start != -1 && end != -1) {
@@ -429,7 +419,6 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
 
     @Override
     public void valueChange(Property.ValueChangeEvent event) {
-
         valueChange();
     }
 
@@ -459,8 +448,10 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
         return logValue;
     }
 
+    
     @Override
-    public void suspendFilter(boolean suspend) {
+    public void suspendFilter(boolean suspendFilter) {
+        this.suspendFilter=suspendFilter;
     }
 
     private void setMainAppliedFilter(boolean mainAppliedFilter) {
@@ -468,8 +459,9 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
         if (mainAppliedFilter) {
             this.addStyleName("highlightfilter");
         } else {
+            
             this.removeStyleName("highlightfilter");
-
+            
             upperRangeSlider.removeValueChangeListener(DivaRangeFilter.this);
             lowerRangeSlider.removeValueChangeListener(DivaRangeFilter.this);
             lowerRangeSlider.setValue(lowerRangeSlider.getMin());
@@ -479,6 +471,11 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
             lowerRangeSlider.addValueChangeListener(DivaRangeFilter.this);
         }
 
+    }
+
+    public String externalTitle() {
+        chartTitle.setVisible(false);
+        return chartTitle.getValue();
     }
 
 }

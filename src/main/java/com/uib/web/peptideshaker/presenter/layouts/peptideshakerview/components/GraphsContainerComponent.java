@@ -21,7 +21,7 @@ import java.util.Set;
  * @author Yehia Farag
  */
 public abstract class GraphsContainerComponent extends VerticalLayout {
-    
+
     private final GraphComponent graphComponent;
     private final Map<String, ProteinGroupObject> proteinNodes;
     private final Map<String, PeptideObject> peptidesNodes;
@@ -34,71 +34,75 @@ public abstract class GraphsContainerComponent extends VerticalLayout {
     private int maxPsms;
     private RangeColorGenerator colorScale;
     private final NetworkGraphComponent proteinsPathwayNewtorkGraph;
-    
+
     public RangeColorGenerator getColorScale() {
         return colorScale;
     }
-    
+
     public GraphsContainerComponent() {
-        
+
         GraphsContainerComponent.this.setSizeFull();
         graphComponent = new GraphComponent() {
             @Override
             public void selectedItem(Set<Object> selectedItems, Set<Object> selectedChildsItems) {
 //                if (graphComponent.isVisible()) {
-                    GraphsContainerComponent.this.selectedItem(selectedItems, selectedChildsItems, false);
-                    GraphsContainerComponent.this.updateProtoformGraphData(selectedItems);
+                GraphsContainerComponent.this.selectedItem(selectedItems, selectedChildsItems, false);
+                GraphsContainerComponent.this.updateProtoformGraphData(selectedItems);
 //                }
             }
-            
+
             @Override
             public void updateProteinsMode(String modeType) {
                 GraphsContainerComponent.this.updateProteinsMode(modeType);
             }
-            
+
         };
         GraphsContainerComponent.this.addComponent(graphComponent);
         proteinNodes = new LinkedHashMap<>();
         peptidesNodes = new LinkedHashMap<>();
         peptides = new LinkedHashSet<>();
         edges = new HashMap<>();
-        
+
         proteinsPathwayNewtorkGraph = new NetworkGraphComponent() {
             @Override
             public void selectedItem(Set<Object> selectedParentItems, Set<Object> selectedChildItems) {//               
-                if (proteinsPathwayNewtorkGraph.isVisible()) {                    
+                if (proteinsPathwayNewtorkGraph.isVisible()) {
                     GraphsContainerComponent.this.selectedItem(selectedParentItems, selectedChildItems, true);
                     graphComponent.selectParentItem(selectedParentItems);
                 }
             }
-            
+
         };
         proteinsPathwayNewtorkGraph.setSizeFull();
         graphComponent.addProtoformGraphComponent(proteinsPathwayNewtorkGraph);
-        
+
     }
-    
+
     public void selectDataset(PeptideShakerVisualizationDataset peptideShakerVisualizationDataset) {
         this.peptideShakerVisualizationDataset = peptideShakerVisualizationDataset;
     }
-    
+
     public Map<String, ProteinGroupObject> getProteinNodes() {
         return proteinNodes;
     }
-    
+
     public Map<String, PeptideObject> getPeptidesNodes() {
         return peptidesNodes;
     }
-    
+
     public void selectPeptide(Object proteinId, Object peptideId) {
         if (peptideId == null) {
-            
+
             graphComponent.selectParentItem(proteinId);
         } else {
             graphComponent.selectChildItem(proteinId, peptideId);
         }
     }
-    
+
+    public boolean isQuantDataSet() {
+        return peptideShakerVisualizationDataset.isQuantDataset();
+    }
+
     public String updateGraphData(String selectedProteinId) {
         proteinNodes.clear();
         peptidesNodes.clear();
@@ -107,13 +111,13 @@ public abstract class GraphsContainerComponent extends VerticalLayout {
         unrelatedPeptides.clear();
         edges.clear();
         if (peptideShakerVisualizationDataset == null || selectedProteinId == null || selectedProteinId.trim().equalsIgnoreCase("null") || peptideShakerVisualizationDataset.getProtein(selectedProteinId) == null) {
-            graphComponent.updateGraphData(null, null, null, null, null);
+            graphComponent.updateGraphData(null, null, null, null, null, peptideShakerVisualizationDataset.isQuantDataset());
             thumbURL = null;
             return thumbURL;
         }
         ProteinGroupObject protein = peptideShakerVisualizationDataset.getProtein(selectedProteinId);
         peptides.addAll(peptideShakerVisualizationDataset.getPeptides(selectedProteinId));
-        
+
         Set<String> tunrelatedProt = new LinkedHashSet<>();
         maxPsms = 0;
         peptides.stream().map((peptide) -> {
@@ -130,24 +134,24 @@ public abstract class GraphsContainerComponent extends VerticalLayout {
             });
             edges.put(peptide.getModifiedSequence(), tEd);
         });
-        
+
         tunrelatedProt.forEach((unrelated) -> {
             fillUnrelatedProteinsAndPeptides(unrelated, peptideShakerVisualizationDataset.getProtein(unrelated));
         });
         proteinNodes.putAll(unrelatedProt);
         peptidesNodes.putAll(unrelatedPeptides);
-        
+
         Map<String, ProteinGroupObject> tempProteinNodes = new LinkedHashMap<>(proteinNodes);
         tempProteinNodes.keySet().forEach((accession) -> {
             proteinNodes.replace(accession, peptideShakerVisualizationDataset.updateProteinInformation(tempProteinNodes.get(accession), accession));
         });
         colorScale = new RangeColorGenerator(maxPsms);//update pathway information
-        graphComponent.updateGraphData(protein, proteinNodes, peptidesNodes, edges, colorScale);
+        graphComponent.updateGraphData(protein, proteinNodes, peptidesNodes, edges, colorScale, peptideShakerVisualizationDataset.isQuantDataset());
         thumbURL = graphComponent.getThumbImgeUrl();
         return thumbURL;
-        
+
     }
-    
+
     private void updateProtoformGraphData(Set<Object> proteinsIds) {
         if (proteinsPathwayNewtorkGraph == null) {
             return;
@@ -164,13 +168,13 @@ public abstract class GraphsContainerComponent extends VerticalLayout {
                 protoformProteinNodes.put(protein.getAccession(), protein);
             }
         }
-        
+
         Set<NetworkGraphEdge> pathwayEdges = peptideShakerVisualizationDataset.updateProteinPathwayInformation(protoformProteinNodes);
         proteinsPathwayNewtorkGraph.updateGraphData(protoformProteinNodes.keySet(), pathwayEdges);
         graphComponent.setEnablePathway(proteinsPathwayNewtorkGraph.isEnabled());
-        
+
     }
-    
+
     private void fillUnrelatedProteinsAndPeptides(String proteinAccession, ProteinGroupObject protein) {
         if (unrelatedProt.containsKey(proteinAccession)) {
             return;
@@ -200,23 +204,23 @@ public abstract class GraphsContainerComponent extends VerticalLayout {
                 });
             });
         }
-        
+
     }
-    
+
     public Set<Object> getSelectedProteins() {
         return graphComponent.getSelectedProteins();
     }
-    
+
     public Set<Object> getSelectedPeptides() {
         return graphComponent.getSelectedPeptides();
     }
-    
+
     public abstract void selectedItem(Set<Object> selectedItems, Set<Object> selectedChildsItems, boolean isProteform);
-    
+
     public abstract void updateProteinsMode(String modeType);
-    
+
     public void updateMode() {
         this.graphComponent.updateMode();
     }
-    
+
 }

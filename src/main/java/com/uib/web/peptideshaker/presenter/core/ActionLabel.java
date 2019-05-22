@@ -6,8 +6,6 @@
 package com.uib.web.peptideshaker.presenter.core;
 
 import com.vaadin.event.LayoutEvents;
-import com.vaadin.icons.VaadinIcons;
-import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 import com.vaadin.shared.ui.label.ContentMode;

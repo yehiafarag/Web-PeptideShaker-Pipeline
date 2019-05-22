@@ -5,6 +5,8 @@ import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideObj
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.ProteinGroupObject;
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components.coverage.ProteinCoverageComponent;
 import com.uib.web.peptideshaker.presenter.core.ActionLabel;
+import com.uib.web.peptideshaker.presenter.core.ColorLabelWithPopupTooltip;
+import com.uib.web.peptideshaker.presenter.core.TableColumnHeader;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.components.RangeColorGenerator;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
@@ -48,10 +50,13 @@ public abstract class ProteinCoverageTable extends VerticalLayout {
         proteinCoverageTable.addContainerProperty("index", Integer.class, null, "", null, Table.Align.LEFT);
         proteinCoverageTable.addContainerProperty("acc", Link.class, null, generateCaptionWithTooltio("Accession", "Protein accession"), null, Table.Align.CENTER);
         proteinCoverageTable.addContainerProperty("name", String.class, null, generateCaptionWithTooltio("Name", "Protein name"), null, Table.Align.LEFT);
+        proteinCoverageTable.addContainerProperty("proteinIntensity", ColorLabelWithPopupTooltip.class, null, generateCaptionWithTooltio("Intensity", "Protein intinsity"), null, Table.Align.LEFT);
+
         proteinCoverageTable.addContainerProperty("coverage", ProteinCoverageComponent.class, null, generateCaptionWithTooltio("Coverage", "Protein sequence coverage"), null, Table.Align.LEFT);
         proteinCoverageTable.setColumnWidth("index", 37);
-        proteinCoverageTable.setColumnWidth("acc", 100);
+        proteinCoverageTable.setColumnWidth("acc", 80);
         proteinCoverageTable.setColumnWidth("name", 300);
+        proteinCoverageTable.setColumnWidth("proteinIntensity", 120);
         proteinCoverageTable.setCacheRate(1);
         proteinCoverageTable.setBuffered(true);
         ProteinCoverageTable.this.addComponent(proteinCoverageTable);
@@ -71,7 +76,7 @@ public abstract class ProteinCoverageTable extends VerticalLayout {
             tableData.get(id)[0] = reIndex++;
             this.proteinCoverageTable.addItem(tableData.get(id), id);
             return id;
-        }).map((id) -> ((ProteinCoverageComponent) tableData.get(id)[3])).map((pcov) -> {
+        }).map((id) -> ((ProteinCoverageComponent) tableData.get(id)[4])).map((pcov) -> {
             pcov.selectSubComponents(selectedPeptidesItems);
             return pcov;
         }).filter((pcov) -> (selectedProteinsItems.size() == 1)).map((pcov) -> {
@@ -89,19 +94,40 @@ public abstract class ProteinCoverageTable extends VerticalLayout {
     }
 
     public void updateProteinsMode(String mode) {
+        if (mode.contains("Unique Only")) {
+            if (mode.contains("true")) {
+                tableData.keySet().forEach((id) -> {
+                    ((ColorLabelWithPopupTooltip) tableData.get(id)[3]).updateValues(proteinNodes.get(id).getUniquePeptidesIntensity(), proteinNodes.get(id).getUniquePeptideIintensityColor(), proteinNodes.get(id).getPercentageUniquePeptidesIntensity());
+                });
+            } else {
+                tableData.keySet().forEach((id) -> {
+                    ((ColorLabelWithPopupTooltip) tableData.get(id)[3]).updateValues(proteinNodes.get(id).getAllPeptidesIntensity(), proteinNodes.get(id).getAllPeptideIintensityColor(), proteinNodes.get(id).getPercentageAllPeptidesIntensity());
+                });
+            }
+            return;
+
+        }
         tableData.keySet().forEach((id) -> {
-            ((ProteinCoverageComponent) tableData.get(id)[3]).updateStylingMode(mode);
+            ((ProteinCoverageComponent) tableData.get(id)[4]).updateStylingMode(mode);
+
         });
 
     }
 
     public Map<Object, Object[]> getTableData() {
         return tableData;
-    }   
-    
-    public void selectDataset(Map<String, ProteinGroupObject> proteinNodes, Map<String, PeptideObject> peptidesNodes, Set<Object> defaultSelectedProteinsItems, Set<Object> defaultSelectedPeptidesItems, RangeColorGenerator colorScale) {
+    }
+    private Map<String, ProteinGroupObject> proteinNodes;
+
+    public void selectDataset(Map<String, ProteinGroupObject> proteinNodes, Map<String, PeptideObject> peptidesNodes, Set<Object> defaultSelectedProteinsItems, Set<Object> defaultSelectedPeptidesItems, RangeColorGenerator colorScale, boolean quantDataset) {
         tableData.clear();
         rowIndex = 1;
+        this.proteinNodes = proteinNodes;
+        if (!quantDataset) {
+            proteinCoverageTable.setColumnCollapsingAllowed(true);
+            proteinCoverageTable.setColumnCollapsible("proteinIntensity", true);
+            proteinCoverageTable.setColumnCollapsed("proteinIntensity", true);
+        }
         proteinNodes.values().forEach((protein) -> {
             ProteinCoverageComponent proteinLayout = new ProteinCoverageComponent(protein, peptidesNodes, colorScale) {
                 @Override
@@ -109,9 +135,9 @@ public abstract class ProteinCoverageTable extends VerticalLayout {
                     ProteinCoverageTable.this.selectPeptide(proteinId, peptideId);
                     tableData.keySet().forEach((id) -> {
                         if (id.equals(proteinId)) {
-                            ((ProteinCoverageComponent) tableData.get(id)[3]).selectPeptides(peptideId);
+                            ((ProteinCoverageComponent) tableData.get(id)[4]).selectPeptides(peptideId);
                         } else {
-                            ((ProteinCoverageComponent) tableData.get(id)[3]).selectPeptides("");
+                            ((ProteinCoverageComponent) tableData.get(id)[4]).selectPeptides("");
                         }
                     });
                 }
@@ -120,13 +146,15 @@ public abstract class ProteinCoverageTable extends VerticalLayout {
             ActionLabel info = new ActionLabel(VaadinIcons.INFO, "Click to view protein information") {
                 @Override
                 public void layoutClick(LayoutEvents.LayoutClickEvent event) {
-
                 }
             };
+            ColorLabelWithPopupTooltip intinsity = new ColorLabelWithPopupTooltip(protein.getAllPeptidesIntensity(), protein.getAllPeptideIintensityColor(), protein.getPercentageAllPeptidesIntensity());
+
             Link proteinAccLink = new Link(protein.getAccession(), new ExternalResource("http://www.uniprot.org/uniprot/" + protein.getAccession()));
             proteinAccLink.setTargetName("_blank");
             proteinAccLink.setStyleName("tablelink");
-            tableData.put(protein.getAccession(), new Object[]{rowIndex++, proteinAccLink, protein.getDescription(), proteinLayout});
+
+            tableData.put(protein.getAccession(), new Object[]{rowIndex++, proteinAccLink, protein.getDescription(), intinsity, proteinLayout});
         });
         setSelectedItems(defaultSelectedProteinsItems, defaultSelectedPeptidesItems);
     }

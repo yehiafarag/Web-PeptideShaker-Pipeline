@@ -84,6 +84,42 @@ public class PSMObject {
      * Precursor error value in ppm (parts-per-million).
      */
     private double precursorMZError_PPM;
+      /**
+     * Intensity value of the quantification.
+     */
+    private double intensity=-10000;
+    /**
+     * Intensity hash-code colour of the quantification.
+     */
+    private String intensityColor;
+     /**
+     * The intensity value as percentage of the quantification using average of all related peptides.
+     */
+    private double intensityPercentage=0;
+
+    public double getIntensityPercentage() {
+        return intensityPercentage;
+    }
+
+    public void setIntensityPercentage(double intensityPercentage) {
+        this.intensityPercentage = intensityPercentage;
+    }
+
+    public String getIntensityColor() {
+        return intensityColor;
+    }
+
+    public void setIntensityColor(String intensityColor) {
+        this.intensityColor = intensityColor;
+    }
+
+    public double getIntensity() {
+        return intensity;
+    }
+
+    public void setIntensity(double intensity) {
+        this.intensity = intensity;
+    }
     /**
      * Localisation confidence.
      */

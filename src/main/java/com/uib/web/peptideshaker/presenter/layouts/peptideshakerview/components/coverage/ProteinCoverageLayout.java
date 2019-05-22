@@ -24,7 +24,7 @@ public class ProteinCoverageLayout extends AbsoluteLayout {
 
     public void updateStylingMode(String statues) {
         resetStyle();
-        if (statues.equalsIgnoreCase("Validation Status")) {
+        if (statues.equalsIgnoreCase("Validation")) {
             this.addStyleName(validationStatuesStyle);
         } else if (statues.equalsIgnoreCase("Protein Evidence")) {
             this.addStyleName(proteinEvidenceStyle);

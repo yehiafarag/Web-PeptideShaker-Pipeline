@@ -60,6 +60,8 @@ public class PeptidShakerUI extends UI {
         try {
 
             PeptidShakerUI.this.setSizeFull();
+//             PeptidShakerUI.this.setWidth(1024,Unit.PIXELS);            
+//             PeptidShakerUI.this.setHeight(600,Unit.PIXELS);
 
             notification = new Notification("Use the device in landscape mode :-)", Notification.Type.ERROR_MESSAGE);
             notification.setDelayMsec(10000);
@@ -69,7 +71,6 @@ public class PeptidShakerUI extends UI {
              * VaadinSession.
              *
              */
-
             ServletContext scx = VaadinServlet.getCurrent().getServletContext();
             String localFileSystemFolderPath = (scx.getInitParameter("filesURL"));
             VaadinSession.getCurrent().setAttribute("userDataFolderUrl", localFileSystemFolderPath);
@@ -88,7 +89,6 @@ public class PeptidShakerUI extends UI {
             VaadinSession.getCurrent().setAttribute("dbDriver", dbDriver);
             VaadinSession.getCurrent().setAttribute("dbUserName", dbUserName);
             VaadinSession.getCurrent().setAttribute("dbPassword", dbPassword);
-
             updateCSFPRProteinsList(csfProteinsListURL);
             if (testUserAPIKey == null || galaxyServerUrl == null) {
                 notification = new Notification("Error in Galaxy server address, Contact administrator :-(", Notification.Type.ERROR_MESSAGE);
@@ -121,7 +121,7 @@ public class PeptidShakerUI extends UI {
                 webPeptideShakerApp.removeStyleName("mobilestyle");
                 VaadinSession.getCurrent().setAttribute("smallscreenstyle", false);
             }
-            if ((Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight()) || (Page.getCurrent().getBrowserWindowWidth() < 1000) || (Page.getCurrent().getBrowserWindowHeight() < 500)) {
+            if ((Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight()) || (Page.getCurrent().getBrowserWindowWidth() < 1024) || (Page.getCurrent().getBrowserWindowHeight() < 600)) {
                 webPeptideShakerApp.addStyleName("smallscreenstyle");
                 VaadinSession.getCurrent().setAttribute("smallscreenstyle", true);
             } else {

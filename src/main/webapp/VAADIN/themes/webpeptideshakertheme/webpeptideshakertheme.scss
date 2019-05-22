@@ -1662,9 +1662,10 @@
 
 
     .rangeslider .v-slider-handle:before {
-        height: 20px !important;
-        width: 5px !important;
-        cursor:pointer;
+        height: 10px !important;
+        width: 10px !important;
+        margin-top:13px;
+        cursor: pointer;
     }
 
     .rangeslider .v-slider-handle:before, .rangeslider .v-slider-handle:after {
@@ -1735,17 +1736,20 @@
         border-top-left-radius:0px;
         border-bottom-left-radius:0px;
         position:relative;
+        max-height:4px;
     }
 
 
     .rangeslider.lower .v-slider-base{   
         background:lightgray !important;
         border-color:lightgray;
+        max-height:4px;
     }
     .rangeslider.lower .v-slider-base:after {
-        background: #197de1;
-        margin-left:1px;
-        border-color:#197de1;
+        background: #bad5f2;
+        margin-left: 1px;
+        border-color: #bad5f2;
+        max-height:4px;
     }
     .scatterchartcontainer{
         margin-left:1px;
@@ -2058,6 +2062,10 @@
         z-index:2 !important;
         position:relative !important;
     }
+    .v-verticallayout-inframe .v-checkbox{
+        margin-top:7px !important;
+    }
+
 
     .v-verticallayout-inframe .v-select-optiongroup  label{
         line-height:15px !important;	
@@ -3000,8 +3008,9 @@
     }
 
     .v-label-sparklinelabel {
-        width:50px !important;
+        width:35px !important;
         height:20px !important;
+        text-align: right;
     }
     .v-absolutelayout-sparkline .v-absolutelayout-margin{
         overflow:visible !important;
@@ -3302,19 +3311,26 @@
         position:absolute !important;
     }
     .smallscreenstyle .logocontainer img {
-        height: 140px !important;
-        overflow: visible;
-        margin-top: 30px;
-        position: fixed;
-        z-index: 5 !important;
-        margin-left:50%;
-        left:-53px;
+        margin-left: 50% !important;
+        left: -180px;
+        position:absolute;
+        /*        height: 140px !important;
+                overflow: visible;
+                margin-top: 30px;
+                position: fixed;
+                z-index: 5 !important;
+                margin-left:50%;
+                left:-53px;*/
     }
     .v-verticallayout-hidepanel img{
         visibility:hidden;
     }
     .smallscreenstyle .v-link-headerlogo {
-        visibility:hidden;
+        /*visibility:hidden;*/
+        margin-left: 50% !important;
+        left: -97.5px;
+        position:absolute;
+        margin-top:-10px;
     }
 
     .smallscreenstyle .selectedsmallbtn {
@@ -5113,6 +5129,14 @@
         height:20px !important;
 
     }
+    .v-label-smalliconlabel{
+        margin-top:-23px;
+        margin-left:30px;
+        font-size:12px;
+        color:orange;
+        font-weight:bold;
+
+    }
     .row .v-label b{
         color:gray ;
         font-size:12px;
@@ -5441,27 +5465,16 @@
         z-index:1;
         display:none;
     }
-    .clipboardcontainer .v-button{
-        border:none !important;
-        background:transparent !important;
-        box-shadow:none;
-        margin-left:100% !important;
-        top:0px !important;
-        max-height:26px;
-        padding-top:3px !important;
-        padding-left:30px;
+    .clipboardcontainer div{
+        width:100% !important;
     }
-    .clipboardcontainer .v-button .Vaadin-Icons {
-        background-color:transparent !important;
-        border:none !important;
-        color:black !important;
-        z-index:3 !important;
-        width:20px;
-        position:absolute !important;
 
-    }
-    .clipboardcontainer .v-button-link:focus {
-
+    .clipboardcontainer .v-button  {
+        border: none !important;
+        color: #000255 !important;
+        width:100%;
+        position:relative !important;
+        margin-top:-5px;
 
     }
     .clipboardcontainer .v-button .Vaadin-Icons:hover{
@@ -5503,7 +5516,7 @@
     .integratedframe .panelTableHeaders{
         margin-top:40px;
     }
- 
+
     .integratedframe .uploaderlayout {
         margin-top:10px;
     }
@@ -5537,5 +5550,139 @@
         overflow:hidden;
         line-height:15px;
         position:absolute;
+    }
+    .piechartlegend {
+        width:auto !important;
+        padding-right:10px;
+    }
+    .piechartlegend {
+        width:auto !important;
+        padding-right:10px;
+    }
+    .colorrangelabel {
+        width: 100% !important;
+        margin: 0px !important;
+        padding: 0px !important;
+        max-height: 20px;
+        max-width:20px;
+        left:50% !important;
+        position:relative !important;
+        margin-left:-10px !important;
+
+    }
+    .colorrangelabel .v-label{
+        border:1px solid lightgray;
+    }
+
+    .colorrangelabel .v-label div{
+        min-height:100%;
+        max-height:100%;
+        overflow:visible !important;
+        position:relative !important;
+
+    }
+
+    .popuptooltip{
+        background-color:whitesmoke;
+        padding:3px 10px;
+        font-size:13px;
+        font-weight:bold;
+        border:1px solid lightgray;
+    }
+    .v-popupview-popupwithicon{
+        max-width: 150px;
+        max-height:20px;
+        font-size: 13px !important;
+        color: gray !important;
+        text-decoration:none !important;
+        margin-left:-93px !important;
+        position:absolute !important;
+        margin-top:-1px;
+        left:15px;
+    }
+    .v-popupview-popupwithicon .v-icon{
+        padding-top:1px !important;
+        left:-15px;
+        position:absolute !important;
+    }
+    .popupclosablecontent {
+        border: 1px solid lightgray;
+        border-radius: 5px;
+        background-color:whitesmoke;
+    }
+
+    .popupclosablecontent .v-label{
+        font-size:13.5px;
+        font-weight:bold;
+        margin-top:2px;
+    }
+    .popupclosablecontent .v-radiobutton{
+        font-size:12px !important;
+        padding-bottom:5px;
+    }
+    .popupclosablecontent div{
+        background-color:whitesmoke !important;
+
+    }
+
+    .tabsheetinfilter .v-captiontext{
+        font-size:9.27px !important;
+    }
+    .v-tabsheet-tabcontainer-tabsheetinfilter{
+        height:25px;
+        padding:0px !important;
+        border:0px solid white !important;
+        background-color:transparent !important;
+    }
+    .v-tabsheet-content-tabsheetinfilter{
+        border-color:white !important;
+    }
+    .tabsheetinfilter .v-tabsheet-tabitem .v-caption{
+        line-height:15px !important;
+    }
+    .tabsheetinfilter .v-tabsheet-tabsheetpanel{
+        background-color:white !important; 
+    }
+    .v-tabsheet-tabcontainer-tabsheetinfilter{
+        border:1px solid transparent !important
+    }
+
+
+    .v-align-bottom .v-absolutelayout-wrapper-innerborderframe {
+        top:5px !important;
+        bottom:0px !important;
+        left: 0px !important;
+        right: 0px !important;
+    }
+    .sparklinecolorrange{
+        min-height:20px; 
+        padding-left:5px;        
+        text-align: right !important;
+    }
+    .sparklinecolorrange .v-absolutelayout-margin{
+        min-height:20px;
+        padding-top:5px;;
+
+    }
+    .sparklinecolorrange .v-label div{
+        min-height:12px;
+        border:1px solid white;
+    }
+    .noquantlabel{
+        background-color:whitesmoke;
+        border:1px solid lightgray;
+        border-radius:5px;
+        line-height:200% !important;
+        color:gray;
+        font-size:13px;
+        font-weight:bold;
+        position:relative;
+        z-index:5 !important;
+
+    }
+    .noquantlabel center{
+        top:50%;
+        position:relative;
+        margin-top:-15px;
     }
 }
