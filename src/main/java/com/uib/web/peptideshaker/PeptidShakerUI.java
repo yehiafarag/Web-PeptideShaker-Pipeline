@@ -112,7 +112,6 @@ public class PeptidShakerUI extends UI {
              * @todo: we need better optimisation to detect the window ratio.
              */
 //        if ((Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight()) || (Page.getCurrent().getBrowserWindowWidth() < 650) || (Page.getCurrent().getBrowserWindowHeight() < 600)) {
-            System.out.println("at browser app " + Page.getCurrent().getWebBrowser().getBrowserApplication() + "  " + Page.getCurrent().getWebBrowser().isIPad() + "  " + Page.getCurrent().getWebBrowser().isTouchDevice() + "  " + Page.getCurrent().getWebBrowser().isIPhone());
             if (Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile")) {
                 webPeptideShakerApp.addStyleName("mobilestyle");
                 webPeptideShakerApp.addStyleName("smallscreenstyle");

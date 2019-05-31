@@ -115,13 +115,13 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
             chartImage.setValue(saveToFile(mainChart, chartWidth, chartHeight));
         });
 
-        frame.addComponent(chartContainer, "top: 22px;left: 1px;right: 9px;bottom: 18px;");
+        frame.addComponent(chartContainer, "top: 22px;left: 21px;right: 9px;bottom: 18px;");
         slidersContainer = new AbsoluteLayout();
         slidersContainer.setStyleName("maxhight20");
         slidersContainer.addStyleName("visibleoverflow");
         slidersContainer.setWidth(100, Unit.PERCENTAGE);
         slidersContainer.setHeight(20, Unit.PIXELS);
-        frame.addComponent(slidersContainer, "left:1px;bottom:-4px; ;right:7px");
+        frame.addComponent(slidersContainer, "left:21px;bottom:-4px; ;right:7px");
 
         lowerRangeSlider = new Slider();
         lowerRangeSlider.setWidth(100, Unit.PERCENTAGE);
@@ -148,6 +148,13 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
         resetFilterBtn.setVisible(false);
         resetFilterBtn.addStyleName("btninframe");
         DivaRangeFilter.this.addComponent(resetFilterBtn, "top:0px;right:0px;");
+        
+        Label label = new Label("<center>#Proteins</center>",ContentMode.HTML);
+        label.setStyleName("verticallabel");
+        label.setWidth(20,Unit.PIXELS);
+        label.setHeight(100,Unit.PERCENTAGE);
+         frame.addComponent(label, "top: 22px;left: 1px;bottom: 18px;");
+        
 
     }
 

@@ -113,7 +113,7 @@ public class ColorLabelWithPopupTooltip extends AbsoluteLayout implements Compar
     public void updateValues(double value, String color, double percentage) {
         this.value = value;
         caption.setValue(df1.format(value));
-        description.setValue("Intensity: " + value);
+        description.setValue("Intensity: " + df1.format(value));
         colorLabel.setValue("<div style='background:" + color + ";'>");
         double right = scaleValues(100.0 - percentage, 100, 20);
         sparkContainer.getPosition(colorLabel).setCSSString("left:0px; right:" + (right) + "%;");
@@ -131,12 +131,11 @@ public class ColorLabelWithPopupTooltip extends AbsoluteLayout implements Compar
      * @return the value in log scale
      */
     private double scaleValues(double linearValue, double max, double lowerLimit) {
+
         if (linearValue <= 0) {
             return 0;
-        } 
-         if (linearValue ==100) {
-            return 100;
-        } 
+        }
+
         if (linearValue > 85) {
             return 85;
         }

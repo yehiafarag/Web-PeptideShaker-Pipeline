@@ -5685,4 +5685,59 @@
         position:relative;
         margin-top:-15px;
     }
+    
+    
+.verticallabel{
+    font-size:10px;
+    color:gray;
+    font-weight:bold;
+ writing-mode: vertical-lr;
+ 
+transform: rotate(-180deg);
+
+
+  /* Legacy vendor prefixes that you probably don't need... */
+
+  /* Safari */
+  -webkit-transform: rotate(-180deg);
+
+  /* Firefox */
+  -moz-transform: rotate(-180deg);
+
+  /* IE */
+  -ms-transform: rotate(-180deg);
+
+  /* Opera */
+  -o-transform: rotate(-180deg);
+
+  /* Internet Explorer */
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+}
+.selectednode.proteinnode .intensitycolornode div{
+    min-width:20px;
+    min-height:20px;
+    opacity:1 !important;
+    position:absolute !important;
+    z-index:5 !important;
+}
+.proteinnode .intensitycolornode div{
+    min-width:20px;
+    min-height:20px;
+    opacity:1 !important;
+    position:absolute !important;
+    z-index:5 !important;
+}
+
+.verticalgradescal{
+}
+.verticalgradescal .v-label div{
+    background-color:white !important;
+    position:absolute ;
+    margin-left:-10px;
+    font-size:9px;
+    text-align:center;
+    min-width:30px;
+    font-weight:bold;
+
+}
 }

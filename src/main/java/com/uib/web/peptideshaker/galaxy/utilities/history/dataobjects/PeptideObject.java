@@ -114,6 +114,18 @@ public class PeptideObject extends Peptide {
      * Intensity hash-code colour of the quantification.
      */
     private String intensityColor;
+    /**
+     * Intensity hash-code colour of the psmNumber.
+     */
+    private String psmColor="RGB(120,120,120)";
+
+    public String getPsmColor() {
+        return psmColor;
+    }
+
+    public void setPsmColor(String psmColor) {
+        this.psmColor = psmColor;
+    }
 
     public double getIntensity() {
         return intensity;

@@ -46,6 +46,7 @@ public abstract class NetworkGraphNode extends VerticalLayout implements LayoutE
     private final ModificationFactory PSIModificationFactory = new ModificationFactory();
     private final Map<String, Integer> modificationsLocationsMap;
     private final Color finalColor;
+    private Label modificationLabel;
 
     /**
      * The post translational modifications factory.
@@ -99,7 +100,6 @@ public abstract class NetworkGraphNode extends VerticalLayout implements LayoutE
 
         if (nodeId.contains("-")) {
             NetworkGraphNode.this.addStyleName("isoform");
-            System.out.println("its isoform " + nodeId);
         }
 
         if (internal) {
@@ -152,16 +152,23 @@ public abstract class NetworkGraphNode extends VerticalLayout implements LayoutE
                 tooltip = tooltip.replace(key, subtooltip) + "<br/>";
             }
             if (colorsSet.size() == 1) {
+
                 finalColor = colorsSet.values().iterator().next();
-                Label modificationLabel = new Label("<div  style='background:rgb(" + finalColor.getRed() + "," + finalColor.getGreen() + "," + finalColor.getBlue() + "); border-radius:100%;width: 100%;height: 100%;'></div>", ContentMode.HTML);
+                modificationLabel = new Label("<div  style='background:rgb(" + finalColor.getRed() + "," + finalColor.getGreen() + "," + finalColor.getBlue() + "); border-radius:100%;width: 100%;height: 100%;    color: white; line-height: 17px; text-align: center;font-size: 12px;  font-weight: 700;'>ModIndex</div>", ContentMode.HTML);
                 modificationLabel.setSizeFull();
                 subContainer.addComponent(modificationLabel);
+
             } else {
                 finalColor = Color.ORANGE;
                 NetworkGraphNode.this.addStyleName("multimodificationprotoform");
             }
         } else {
             finalColor = Color.GRAY;
+            if (id.contains(";") && internal) {
+                modificationLabel = new Label("<div  style='background:rgb(" + finalColor.getRed() + "," + finalColor.getGreen() + "," + finalColor.getBlue() + "); border-radius:100%;width: 100%;height: 100%;    color: white; line-height: 17px; text-align: center;font-size: 12px;  font-weight: 700;'>ModIndex</div>", ContentMode.HTML);
+                modificationLabel.setSizeFull();
+                subContainer.addComponent(modificationLabel);
+            }
         }
         tooltip = tooltip.replace("(null)", "");
         NetworkGraphNode.this.setDescription(tooltip);
@@ -297,6 +304,12 @@ public abstract class NetworkGraphNode extends VerticalLayout implements LayoutE
 
     public Color getFinalColor() {
         return finalColor;
+    }
+
+    public void updateProteformIndex(String proteformIndex) {
+        if (modificationLabel != null) {
+            modificationLabel.setValue(modificationLabel.getValue().replace("ModIndex", proteformIndex));
+        }
     }
 
 }

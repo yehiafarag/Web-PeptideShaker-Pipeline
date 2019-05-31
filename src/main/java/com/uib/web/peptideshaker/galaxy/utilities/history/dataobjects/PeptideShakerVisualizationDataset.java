@@ -126,6 +126,9 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
      */
     private String enzyme;
     private RangeColorGenerator colorGenerator;
+    private TreeSet<Double> intensitySet;
+    private TreeSet<Double> logIntensitySet;
+    private double topIntensityValue;
 
     /**
      * Output MOFF quant file representation on Online PeptideShaker.
@@ -243,11 +246,13 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
         if (linkToShare == null) {
 //protoform_file.getGalaxyId()
             String mgfMap = "";
-            for (String str : inputMGFFiles.keySet()) {
-                mgfMap += "\\+" + str + "(API:" + inputMGFFiles.get(str).getGalaxyId() + ")";
-            }
+            mgfMap = inputMGFFiles.keySet().stream().map((str) -> "\\+" + str + "(API:" + inputMGFFiles.get(str).getGalaxyId() + ")").reduce(mgfMap, String::concat);
             mgfMap = mgfMap.replaceFirst("\\+", "");
-            linkToShare = this.getProjectName() + "-_-sgi:" + SearchGUIResultFile.getGalaxyId() + "-_-pszip:" + PeptideShakerResultsFileId + "-_-mgf:" + mgfMap + "-_-ptotoform:760bf1f0e3f05bfb-_-sgioverview:" + SearchGUIResultFile.getOverview();
+            if (moff_quant_file != null) {
+                linkToShare = this.getProjectName() + "-_-sgi:" + SearchGUIResultFile.getGalaxyId() + "-_-pszip:" + PeptideShakerResultsFileId + "-_-mgf:" + mgfMap + "-_-ptotoform:760bf1f0e3f05bfb-_-sgioverview:" + SearchGUIResultFile.getOverview() + "-_-quant:" + this.moff_quant_file.getGalaxyId();
+            } else {
+                linkToShare = this.getProjectName() + "-_-sgi:" + SearchGUIResultFile.getGalaxyId() + "-_-pszip:" + PeptideShakerResultsFileId + "-_-mgf:" + mgfMap + "-_-ptotoform:760bf1f0e3f05bfb-_-sgioverview:" + SearchGUIResultFile.getOverview();
+            }
 
         }
         return linkToShare;
@@ -384,7 +389,7 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
         for (String str : SearchGUIResultFile.getOverview().split("Spectrums:")) {
             if (str.contains("API:")) {
                 String mgfFileName = str.split("\\(API:")[0].trim();
-                String key = "";
+                String key;
                 if (mgfFileName.endsWith(".mgf")) {
                     key = "data/" + mgfFileName + ".cui";
                 } else {
@@ -454,6 +459,7 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
      *
      * @param PeptideShakerResultsFileId PeptideShaker Results File Id on Galaxy
      * Server
+     * @param external shared dataset with other users
      */
     public void setPeptideShakerResultsFileId(String PeptideShakerResultsFileId, final boolean external) {
         this.PeptideShakerResultsFileId = PeptideShakerResultsFileId;
@@ -842,7 +848,7 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
                 Thread.sleep(1000);
             }
             return processProteinsTask.getProteinsMap();
-        } catch (Exception ex) {
+        } catch (InterruptedException ex) {
             ex.printStackTrace();
         }
         return null;
@@ -911,11 +917,10 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
                 ex.printStackTrace();
             }
         }
-        System.out.println("is quant data " + isQuantDataset() + "  " + moff_quant_file);
-
         if (isQuantDataset()) {
             BufferedReader bufferedReader = null;
-            TreeSet<Double> treeSet = new TreeSet<>();
+            intensitySet = new TreeSet<>();
+            logIntensitySet = new TreeSet<>();
             List<PSMObject> innerPSMList = new ArrayList<>();
             try {//     
                 File f = moff_quant_file.getFile();
@@ -951,12 +956,7 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
                     psm.setRT(arr[11]);
                     psm.setMZ(arr[12]);
                     psm.setMeasuredCharge((arr[13]));
-
                     psm.setIdentificationCharge((arr[14]));
-//                if (psm.getMeasuredCharge().trim().equalsIgnoreCase("")) {
-////                    psm.setMeasuredCharge(psm.getIdentificationCharge());
-////                    System.out.println("measuredcharge was empty " + psm.getIndex() + "  " + psm.getIdentificationCharge());
-//                }
                     if (!arr[15].equalsIgnoreCase("")) {
                         psm.setTheoreticalMass(Double.parseDouble(arr[15]));
                     }
@@ -979,7 +979,8 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
                     double quant = Double.parseDouble(arr[23]);
                     if (quant > 0) {
                         psm.setIntensity(quant);
-                        treeSet.add(psm.getIntensity());
+                        intensitySet.add(psm.getIntensity());
+                        logIntensitySet.add(scaleValues(psm.getIntensity(), 100, 0));
                     }
                     if (processPeptidesTask.getPSMsMap().containsKey(psm.getModifiedSequence())) {
                         processPeptidesTask.getPSMsMap().get(psm.getModifiedSequence()).add(psm);
@@ -991,12 +992,13 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
                         System.out.println("at Error for psm II mapping...not exist peptide " + psm.getModifiedSequence());
                     }
                 }
+                topIntensityValue = handleOutlier(logIntensitySet);
                 processPeptidesTask.calculateQuant();
-                colorGenerator = new RangeColorGenerator(treeSet.last());
+
                 innerPSMList.forEach((psm) -> {
-                    int per = (int) Math.round((psm.getIntensity() / treeSet.last()) * 100.0);
+                    int per = (int) Math.round((psm.getIntensity() / intensitySet.last()) * 100.0);
                     psm.setIntensityPercentage(per);
-                    psm.setIntensityColor(colorGenerator.getGradeColor(psm.getIntensity(), treeSet.last(), treeSet.first()));
+                    psm.setIntensityColor(colorGenerator.getGradeColor(scaleValues(psm.getIntensity(), 100, 0), topIntensityValue, logIntensitySet.first()));
                 });
             } catch (IOException | NumberFormatException ex) {
                 ex.printStackTrace();
@@ -1017,12 +1019,12 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
                 /**
                  * escape header
                  */
-                String[] arr1 = bufferedReader.readLine().split("\\t");
-                System.out.println("at psm line " + arr1.length + "<-->" + psm_file.getName());
+                String[] arr1;
+                arr1 = bufferedReader.readLine().split("\\t");
                 while ((line = bufferedReader.readLine()) != null) {
                     String[] arr = line.split("\\t");
                     PSMObject psm = new PSMObject();
-                    ;
+
                     psm.setIndex(Integer.parseInt(arr[0]));
                     for (String acc : arr[1].split(",")) {
                         psm.addProtein(acc);
@@ -1047,8 +1049,7 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
 
                     psm.setIdentificationCharge((arr[15]));
                     if (psm.getMeasuredCharge().trim().equalsIgnoreCase("")) {
-//                    psm.setMeasuredCharge(psm.getIdentificationCharge());
-//                    System.out.println("measuredcharge was empty " + psm.getIndex() + "  " + psm.getIdentificationCharge());
+
                     }
                     if (!arr[16].equalsIgnoreCase("")) {
                         psm.setTheoreticalMass(Double.parseDouble(arr[16]));
@@ -1098,12 +1099,10 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
      * @return Modification matrix object
      */
     public ModificationMatrix getModificationMatrix() {
-        System.out.println("get mod matricx");
         try {
             while (!peptideProcessFuture.isDone()) {
                 Thread.sleep(1000);
             }
-            System.out.println("pep futu is done " + peptideProcessFuture.isDone());
             return (ModificationMatrix) peptideProcessFuture.get();
         } catch (InterruptedException | ExecutionException ex) {
             ex.printStackTrace();
@@ -1231,6 +1230,32 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
             proteinGroupObject.addPeptideSequence(peptideKey);
             proteinGroupObject.updatePeptideType(peptideKey, isEnzymaticPeptide(proteinGroupObject.getSequence(), processPeptidesTask.getPeptidesMap().get(peptideKey).getSequence(), enzymeFactory.getEnzyme(enzyme), sequenceMatchingPreferences));
         }
+        if (proteinGroupObject.getProteinGroupKey() == null && processProteinsTask.getAccToGroupKeyMap().containsKey(proteinGroupObject.getAccession())) {
+            ProteinGroupObject mainGropProt = processProteinsTask.getAccToGroupKeyMap().get(proteinGroupObject.getAccession());
+            proteinGroupObject.setAllPeptidesIntensity(mainGropProt.getAllPeptidesIntensity());
+            proteinGroupObject.setPercentageAllPeptidesIntensity(mainGropProt.getPercentageAllPeptidesIntensity());
+            proteinGroupObject.setAllPeptideIintensityColor(mainGropProt.getAllPeptideIintensityColor());
+            proteinGroupObject.setUniquePeptidesIntensity(mainGropProt.getUniquePeptidesIntensity());
+            proteinGroupObject.setPercentageUniquePeptidesIntensity(mainGropProt.getPercentageUniquePeptidesIntensity());
+            proteinGroupObject.setUniquePeptideIintensityColor(mainGropProt.getUniquePeptideIintensityColor());
+        } else if (!processProteinsTask.getAccToGroupKeyMap().containsKey(proteinGroupObject.getAccession())) {
+            double quant = 0.0;
+            double counter = 0;
+            for (String pepKey : proteinGroupObject.getRelatedPeptidesList()) {
+                PeptideObject peptide = processPeptidesTask.getPeptidesMap().get(pepKey);
+                quant += peptide.getIntensity();
+                counter++;
+
+            }
+            if (counter > 0) {
+                quant = quant / counter;
+                proteinGroupObject.setAllPeptidesIntensity(quant);
+                proteinGroupObject.setAllPeptideIintensityColor(processPeptidesTask.getProteinIntensityColorGenerator().getGradeColor(scaleValues(proteinGroupObject.getAllPeptidesIntensity(), 100, 0), topIntensityValue, logIntensitySet.first()));
+                int per = (int) Math.round((proteinGroupObject.getAllPeptidesIntensity() / processPeptidesTask.getProteinIntensityValuesSet().last()) * 100.0);
+                proteinGroupObject.setPercentageAllPeptidesIntensity(per);
+            }
+
+        }
 
         return proteinGroupObject;
 
@@ -1300,13 +1325,10 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
         for (int index : surroundingAminoAcids.keySet()) {
             String before = surroundingAminoAcids.get(index)[0];
             String after = surroundingAminoAcids.get(index)[1];
-
             // @TODO: how to handle semi-specific enzymes??
-            if ((enzyme.isCleavageSite(before, firstAA) && enzyme.isCleavageSite(lastAA, after)
-                    || (before.length() == 0 && enzyme.isCleavageSite(lastAA, after)
-                    || (enzyme.isCleavageSite(before, firstAA) && after.length() == 0)))) {
+            if (!enzyme.isCleavageSite(before, firstAA) || !enzyme.isCleavageSite(lastAA, after) && before.length() != 0 || !enzyme.isCleavageSite(lastAA, after) && (!enzyme.isCleavageSite(before, firstAA) || after.length() != 0)) {
+            } else {
                 return true;
-
             }
         }
 
@@ -1413,6 +1435,10 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
 
     }
 
+    public RangeColorGenerator getProteinIntensityColorGenerator() {
+        return colorGenerator;
+    }
+
     /**
      * Initialise identification parameters from identification parameter file
      * (.par).
@@ -1425,7 +1451,7 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
         ds.setDownloadUrl(SearchGUIResultFile.getDownloadUrl());
         GalaxyTransferableFile file = new GalaxyTransferableFile(user_folder, ds, true);
         file.setDownloadUrl("to_ext=" + file_ext);
-        SearchParameters searchParameters = null;
+        SearchParameters searchParameters;
         try {
             File f = file.getFile();
             searchParameters = SearchParameters.getIdentificationParameters(f);
@@ -1551,6 +1577,7 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
 
     public boolean isQuantDataset() {
         return quantDataset;
+
     }
 
     /**
@@ -1590,6 +1617,8 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
          * Protein to intensity based on unique peptides intensity value map.
          */
         private final TreeMap<Comparable, Set<Comparable>> proteinIntensityUniquePeptideMap;
+//        private RangeColorGenerator proteinIntensityColorGenerator;
+//        private TreeSet<Double> proteinIntensityValuesSet;
 
         public Map<String, Set<String>> getUnMappedProteinMap() {
             return unMappedProteinMap;
@@ -1771,8 +1800,16 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
             return this.modificationMatrix;
         }
 
+        public RangeColorGenerator getProteinIntensityColorGenerator() {
+            return colorGenerator;
+        }
+
+        public TreeSet<Double> getProteinIntensityValuesSet() {
+            return proteinIntensityValuesSet;
+        }
+        private TreeSet<Double> proteinIntensityValuesSet;
+
         public void calculateQuant() {
-            final TreeSet<Double> treeSet = new TreeSet<>();
             PSMsMap.keySet().forEach((modSeq) -> {
                 PeptideObject peptide = peptidesMap.get(modSeq);
                 double quant = 0d;
@@ -1780,20 +1817,20 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
                 if (quant > 0) {
                     double finalquant = quant / (double) PSMsMap.get(modSeq).size();
                     peptide.setIntensity(finalquant);
-                    treeSet.add(finalquant);
                 }
             });
-            final RangeColorGenerator colorGenerator = new RangeColorGenerator(treeSet.last());
+            //calc outliers
+
+            colorGenerator = new RangeColorGenerator(topIntensityValue);
             PSMsMap.keySet().forEach((modSeq) -> {
                 PeptideObject peptide = peptidesMap.get(modSeq);
-                peptide.setIntensityColor(colorGenerator.getGradeColor(peptide.getIntensity(), treeSet.last(), treeSet.first()));
+                peptide.setIntensityColor(colorGenerator.getGradeColor(scaleValues(peptide.getIntensity(), 100, 0), topIntensityValue, logIntensitySet.first()));
             });
-
-            //calc quant for proteins?
+            //calc quant for proteins
             double quant = 0.0;
-            TreeSet<Double> treeSet2 = new TreeSet<>();
+            proteinIntensityValuesSet = new TreeSet<>();
             double quant2 = 0.0;
-            TreeSet<Double> treeSet3 = new TreeSet<>();;
+            TreeSet<Double> treeSet3 = new TreeSet<>();
             for (String protGroupKey : proteinsGroupMap.keySet()) {
                 ProteinGroupObject proteinGroup = proteinsGroupMap.get(protGroupKey);
                 double counter = 0.0;
@@ -1811,7 +1848,7 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
                 if (counter > 0) {
                     quant = quant / counter;
                     proteinGroup.setAllPeptidesIntensity(quant);
-                    treeSet2.add(quant);
+                    proteinIntensityValuesSet.add(quant);
                 }
                 if (counter2 > 0) {
                     quant2 = quant2 / counter2;
@@ -1819,12 +1856,11 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
                     treeSet3.add(quant2);
                 }
             }
-            RangeColorGenerator colorGenerator2 = new RangeColorGenerator(treeSet2.last());
-            RangeColorGenerator colorGenerator3 = new RangeColorGenerator(treeSet3.last());
-            proteinsGroupMap.values().stream().map((proteinGroup) -> {
-                proteinGroup.setAllPeptideIintensityColor(colorGenerator2.getGradeColor(proteinGroup.getAllPeptidesIntensity(), treeSet2.last(), treeSet2.first()));
 
-                int per = (int) Math.round((proteinGroup.getAllPeptidesIntensity() / treeSet2.last()) * 100.0);
+            proteinsGroupMap.values().stream().map((proteinGroup) -> {
+                proteinGroup.setAllPeptideIintensityColor(colorGenerator.getGradeColor(scaleValues(proteinGroup.getAllPeptidesIntensity(), 100, 0), topIntensityValue, logIntensitySet.first()));
+
+                int per = (int) Math.round((proteinGroup.getAllPeptidesIntensity() / proteinIntensityValuesSet.last()) * 100.0);
                 proteinGroup.setPercentageAllPeptidesIntensity(per);
                 if (!this.proteinIntensityAllPeptideMap.containsKey(per)) {
                     this.proteinIntensityAllPeptideMap.put(per, new LinkedHashSet<>());
@@ -1832,7 +1868,7 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
                 this.proteinIntensityAllPeptideMap.get(per).add(proteinGroup.getProteinGroupKey());
                 return proteinGroup;
             }).forEachOrdered((proteinGroup) -> {
-                proteinGroup.setUniquePeptideIintensityColor(colorGenerator3.getGradeColor(proteinGroup.getUniquePeptidesIntensity(), treeSet3.last(), treeSet3.first()));
+                proteinGroup.setUniquePeptideIintensityColor(colorGenerator.getGradeColor(scaleValues(proteinGroup.getUniquePeptidesIntensity(), 100, 0), topIntensityValue, logIntensitySet.first()));
                 int per = (int) Math.round((proteinGroup.getUniquePeptidesIntensity() / treeSet3.last()) * 100.0);
                 proteinGroup.setPercentageUniquePeptidesIntensity(per);
                 if (!this.proteinIntensityUniquePeptideMap.containsKey(per)) {
@@ -1878,6 +1914,10 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
          * Protein validation map.
          */
         private final Map<String, Set<Comparable>> proteinValidationMap;
+        /**
+         * Protein to gropKey.
+         */
+        private final Map<String, ProteinGroupObject> accToGroupKeyMap;
         /**
          * Map of proteins to the chromosome index.
          */
@@ -1931,6 +1971,7 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
             this.proteinCoverageMap = new TreeMap<>();
             this.proteinPSMNumberMap = new TreeMap<>();
             this.protein_ProteinGroup_Map = new HashMap<>();
+            this.accToGroupKeyMap = new HashMap<>();
 
             BufferedReader bufferedReader = null;
             try {
@@ -2077,6 +2118,18 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
                     }
                 }
             }
+            proteinsMap.keySet().forEach((String key) -> {
+                String[] accs;
+                accs = key.split("-_-");
+                ProteinGroupObject pgo = proteinsMap.get(key);
+                for (String acc : accs) {
+                    accToGroupKeyMap.put(acc.trim(), pgo);
+                }
+            });
+        }
+
+        public Map<String, ProteinGroupObject> getAccToGroupKeyMap() {
+            return accToGroupKeyMap;
         }
 
 //         /**
@@ -2322,7 +2375,7 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
                         if (!nodes.containsKey(accession)) {
                             nodes.put(accession, new LinkedHashMap<>());
                         }
-                        NetworkGraphNode node = null;
+                        NetworkGraphNode node;
                         if (!nodes.get(accession).containsKey(protoformId)) {
                             node = new NetworkGraphNode(protoformId, true, false) {
                                 @Override
@@ -2336,7 +2389,6 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
                     });
                     is.close();
                     bufferedReader.close();
-                    System.out.println("at readerSet " + readerSet.size() + "  " + nodes.size());
                     // Always close files.
                 }
             } catch (FileNotFoundException ex) {
@@ -2365,10 +2417,7 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
     }
 
     public Set<NetworkGraphEdge> updateProteinPathwayInformation(Map<String, ProteinGroupObject> proteinNodes) {
-        for (ProteinGroupObject protein : proteinNodes.values()) {
-            if (protein.isProtoformUpdated()) {
-                continue;
-            }
+        proteinNodes.values().stream().filter((protein) -> !(protein.isProtoformUpdated())).forEachOrdered((protein) -> {
             try {
 
                 Map<String, NetworkGraphNode> subNodes = processPathwayMatcherFilesTask.call().get(protein.getAccession());
@@ -2391,10 +2440,12 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
                     singleNode.setParentNode(parentNode);
                     protein.addProtoformNode(singleNode);
                 } else {
-                    for (NetworkGraphNode n : subNodes.values()) {
+                    subNodes.values().stream().map((n) -> {
                         n.setParentNode(parentNode);
+                        return n;
+                    }).forEachOrdered((n) -> {
                         protein.addProtoformNode(n);
-                    }
+                    });
 
                 }
 
@@ -2403,17 +2454,15 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-
-        }
+        });
 
         //get all edges
         Set<String[]> edgesData = getPathwayEdges(proteinNodes.keySet());
         Set<NetworkGraphEdge> edges = new HashSet<>();
         Map<String, NetworkGraphNode> tNodes = new HashMap<>();
-        for (String[] arr : edgesData) {
+        edgesData.stream().map((arr) -> {
             ProteinGroupObject p1 = proteinNodes.get(arr[0].split(";")[0].split("-")[0]);
             ProteinGroupObject p2 = proteinNodes.get(arr[1].split(";")[0].split("-")[0]);
-
             NetworkGraphNode n1, n2;
             if ((p1 == null || !(p1.getProtoformsNodes().containsKey(arr[0].trim()))) && !tNodes.containsKey(arr[0].trim())) {
                 n1 = new NetworkGraphNode(arr[0], false, false) {
@@ -2468,9 +2517,10 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
             NetworkGraphEdge edge = new NetworkGraphEdge(n1, n2, arr[2], arr[3], arr[4], arr[5], false);
             n1.addEdge(edge);
             n2.addEdge(edge);
+            return edge;
+        }).forEachOrdered((edge) -> {
             edges.add(edge);
-
-        }
+        });
 
         proteinNodes.values().forEach((protein) -> {
             edges.addAll(protein.getLocalEdges());
@@ -2494,6 +2544,89 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
 
     private double generateQuantValue() {
         return (Math.random() * 1000000.0);
+    }
+
+    private double handleOutlier(TreeSet<Double> intensitySet) {
+        double value = intensitySet.last();
+        double median;
+
+        Object[] numArray = intensitySet.toArray();
+        int endPointI;
+        int startPointII;
+        if (intensitySet.size() % 2 == 0) {
+            median = ((double) numArray[numArray.length / 2] + ((double) (numArray[(numArray.length / 2) - 1]))) / 2;
+            endPointI = (numArray.length / 2) - 1;
+            startPointII = (numArray.length / 2);
+
+        } else {
+            median = (double) numArray[numArray.length / 2];
+            endPointI = (numArray.length / 2) - 1;
+            startPointII = (numArray.length / 2) + 1;
+
+        }
+        TreeSet<Double> lowerQuartile = new TreeSet<>();
+        TreeSet<Double> upperQuartile = new TreeSet<>();
+        int counter = 0;
+        for (double d : intensitySet) {
+            lowerQuartile.add(d);
+            counter++;
+            if (counter == endPointI) {
+                break;
+            }
+        }
+        for (double d : intensitySet) {
+            counter++;
+            if (counter >= startPointII) {
+                upperQuartile.add(d);
+            }
+        }
+        double Q1;
+        Double[] lowerQuartileArray = new Double[lowerQuartile.size()];
+        int ii = 0;
+        for (double d : lowerQuartile) {
+            lowerQuartileArray[ii++] = d;
+        }
+        if (lowerQuartile.size() % 2 == 0) {
+            Q1 = ((double) lowerQuartileArray[(lowerQuartileArray.length) / 2] + (double) lowerQuartileArray[(lowerQuartileArray.length) / 2]) / 2;
+        } else {
+            Q1 = (double) lowerQuartileArray[(lowerQuartileArray.length - 1) / 2];
+        }
+        double Q3;
+        Double[] upperQuartileArray = new Double[upperQuartile.size()];
+        int i = 0;
+        for (double d : upperQuartile) {
+            upperQuartileArray[i++] = d;
+        }
+
+        if (upperQuartile.size() % 2 == 0) {
+            Q3 = ((double) upperQuartileArray[upperQuartileArray.length / 2] + (double) upperQuartileArray[upperQuartileArray.length / 2 - 1]) / 2;
+        } else {
+            Q3 = (double) upperQuartileArray[upperQuartileArray.length / 2];
+        }
+        double interquartileRange = Q3 - Q1;
+        interquartileRange = interquartileRange * 3;
+        double upperLimit = Q3 + interquartileRange;
+        return upperLimit;
+    }
+
+    /**
+     * Converts the value from linear scale to log scale. The log scale numbers
+     * are limited by the range of the type float. The linear scale numbers can
+     * be any double value.
+     *
+     * @param linearValue the value to be converted to log scale
+     * @param max The upper limit number for the input numbers
+     * @param lowerLimit the lower limit for the input numbers
+     * @return the value in log scale
+     */
+    private double scaleValues(double linearValue, double max, double lowerLimit) {
+        if (linearValue == 0) {
+            return 0;
+        }
+        double logMax = (Math.log(max) / Math.log(2));
+        double logValue = (Math.log(linearValue) / Math.log(2));
+        logValue = ((max / logMax) * logValue) + lowerLimit;
+        return logValue;
     }
 
 }

@@ -238,8 +238,6 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
 
             }
         }
-        System.out.println("to test threads : " + (System.currentTimeMillis() - start) + "ms");
-
         this.removeStyleName("hidepanel");
 
     }
@@ -258,11 +256,6 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
             if (comp.getBtnId() == 2 && lastSelectedBtn != 2) {
                 proteinsVisulizationLevelContainer.activate3DProteinView();
             }
-//            else if (lastSelectedBtn == 1) {
-//                proteinsVisulizationLevelContainer.reset3DProteinView();
-//            } else {
-//                proteinsVisulizationLevelContainer.reset3DProteinView();
-//            }
         }
         lastSelectedBtn = comp.getBtnId();
 

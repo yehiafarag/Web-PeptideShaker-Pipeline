@@ -11,6 +11,7 @@ import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import java.awt.Color;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -34,6 +35,7 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
     private final String modificationStyleName = "nodemodificationbackground";
     private int edgesNumber;
     private boolean uniqueOnlyMode;
+     private final DecimalFormat df1 = new DecimalFormat("0.00E00");// new DecimalFormat("#.##");
     private final Set<Edge> edges;
 
     /**
@@ -103,12 +105,13 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
         this.intensityLayout = new VerticalLayout();
         this.intensityLayout.setSizeFull();
         Node.this.addComponent(intensityLayout);
-        String tooltipExt2 = "</br>Intinsity: " + inteinsity + "";
+        String tooltipExt2 = "</br>Intinsity: " + df1.format(inteinsity) + "";
         if (inteinsity == -10000) {           
             tooltipExt2 = "";
         }
         Label intensityColorLabel = new Label("<div  style='background:" + inteinsityColor + ";border-radius:100%;width: 100%;height: 100%;opacity:0.2;'></div>", ContentMode.HTML);
         intensityColorLabel.setSizeFull();
+        intensityColorLabel.setStyleName("intensitycolornode");
         intensityLayout.addComponent(intensityColorLabel);
         intensityLayout.setVisible(false);
         
@@ -162,6 +165,7 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
         } else if (statues.equalsIgnoreCase("Intensity")) {
             this.intensityLayout.setVisible(true);
             this.addStyleName(modificationStyleName);
+            
         }
 
     }

@@ -28,7 +28,7 @@ import java.util.Set;
  *
  * @author Yehia Farag
  */
-public class ProteinStructurePanel extends AbsoluteLayout {
+public class Protein3DStructurePanel extends AbsoluteLayout {
 
     private final VerticalLayout LiteMolPanel;
     private AbsoluteLayout chainCoverageLayout;
@@ -65,9 +65,9 @@ public class ProteinStructurePanel extends AbsoluteLayout {
     private final PdbHandler pdbHandler = new PdbHandler();
     private PDBMatch lastSelectedMatch;
 
-    public ProteinStructurePanel() {
-        ProteinStructurePanel.this.setSizeFull();
-        ProteinStructurePanel.this.setStyleName("proteinStructiorpanel");
+    public Protein3DStructurePanel() {
+        Protein3DStructurePanel.this.setSizeFull();
+        Protein3DStructurePanel.this.setStyleName("proteinStructiorpanel");
 
         this.pdbBlockMap = new HashMap<>();
         this.peptidesQueryMap = new LinkedHashMap<>();
@@ -91,7 +91,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
         };
         chainCoverageLayout.setSizeFull();
         LiteMolPanel.addComponent(liteMOL3DComponent);
-        ProteinStructurePanel.this.addComponent(LiteMolPanel);
+        Protein3DStructurePanel.this.addComponent(LiteMolPanel);
 
         uniprotLabel = new Label("UniProt:");
         uniprotLabel.addStyleName("selectchain3dMenue");
@@ -108,7 +108,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
         dropdownMenuesContainer.setHeight(25, Unit.PIXELS);
         dropdownMenuesContainer.setStyleName("select3dMenue");
 
-        ProteinStructurePanel.this.addComponent(dropdownMenuesContainer, "left: 10px; bottom:-12.5px");
+        Protein3DStructurePanel.this.addComponent(dropdownMenuesContainer, "left: 10px; bottom:-12.5px");
         this.pdbChainsSelectlistener = ((Property.ValueChangeEvent event) -> {
             LiteMolPanel.setVisible(pdbChainsSelect.getValue() != null);
             if (LiteMolPanel.isVisible()) {
@@ -203,15 +203,14 @@ public class ProteinStructurePanel extends AbsoluteLayout {
             reset();
             return;
         }
-        
+
         pdbMatchesSelect.setVisible(true);
         pdbChainsSelect.setVisible(true);
         chainCoverageLayout.setVisible(true);
         uniprotLabel.setVisible(true);
-//        loadData(lastSelectedAccession, lastSelectedProteinSequence);
     }
 
-    public void updatePanel(Object accession, String proteinSequence, Collection<PeptideObject> proteinPeptides) {        
+    public void updatePanel(Object accession, String proteinSequence, Collection<PeptideObject> proteinPeptides) {
         this.lastSelectedAccession = accession;
         this.lastSelectedProteinSequence = proteinSequence;
         this.uniprotLabel.setValue("UniProt: " + lastSelectedAccession);
@@ -282,7 +281,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
             chains.stream().map((selectedBlock) -> {
                 int start = selectedBlock.getStart_residue_number();
                 int end = selectedBlock.getEnd_residue_number();//we need color               
-                HashMap chainSeq = initSequenceMap(selectedBlock.getChain_id(), lastSelectedMatch.getEntity_id(selectedBlock.getChain_id()), start, end, "valid", false, null, selectedBlock.getUniprot_chain_sequence());
+                HashMap chainSeq = initSequenceMap(selectedBlock.getChain_id(), lastSelectedMatch.getEntity_id(selectedBlock.getChain_id()), start, end, "valid", false, null, selectedBlock.getUniprot_chain_sequence(), "", "");
                 return chainSeq;
             }).map((chainSeq) -> {
                 chainSeq.put("color", initColorMap(Color.WHITE));//selectedChainColor
@@ -388,12 +387,12 @@ public class ProteinStructurePanel extends AbsoluteLayout {
                         if (!(boolean) peptide.get("modified")) {
                             if (peptideKey == null) { //select all
                                 peptide.put("color", initColorMap(new int[]{211, 211, 211}));
-                                peptide.put("color", initColorMap(Color.GRAY.darker()));
+//                                peptide.put("color", initColorMap(Color.GRAY.darker()));
                             } else {
                                 peptide.put("color", initColorMap(new int[]{245, 245, 245}));
-                                peptide.put("color", initColorMap(Color.LIGHT_GRAY));
+//                                peptide.put("color", initColorMap(Color.LIGHT_GRAY));
                             }
-                        } else if(peptide.get("modifications")!=null){
+                        } else if (peptide.get("modifications") != null) {
                             Color c = Color.ORANGE;
                             if (peptide.get("modifications").toString().split(",").length == 1) {
                                 c = PTM.getColor(peptide.get("modifications").toString().trim());
@@ -449,6 +448,106 @@ public class ProteinStructurePanel extends AbsoluteLayout {
                 }
                 break;
             }
+
+            case 4: {
+
+                peptidesQueryMap.keySet().forEach((key) -> {
+                    peptidesQueryMap.get(key).stream().map((peptide) -> {
+
+                        if (peptideKey == null) {
+                            int[] colorArr = new int[3];
+                            String psmColor = peptide.get("psm").toString().substring(4, peptide.get("psm").toString().length() - 1);
+                            int index = 0;
+                            for (String c : psmColor.split(",")) {
+                                colorArr[index++] = Integer.parseInt(c);
+                            }
+                            peptide.put("color", initColorMap(colorArr));
+
+                        } else {
+                            int[] colorArr = new int[3];
+                            String psmColor = peptide.get("psm").toString().substring(4, peptide.get("psm").toString().length() - 1);
+                            int index = 0;
+                            for (String c : psmColor.split(",")) {
+                                colorArr[index++] = Integer.parseInt(c);
+                            }
+                            Color unselected = new Color(colorArr[0], colorArr[1], colorArr[2]).brighter();
+
+                            peptide.put("color", initColorMap(unselected));
+
+                        }
+
+                        return peptide;
+                    }).forEachOrdered((peptide) -> {
+                        entriesSet.add(peptide);
+                    });
+
+                });
+                if (peptideKey != null) {
+                    peptidesQueryMap.get(peptideKey).stream().map((peptide) -> {
+                        int[] colorArr = new int[3];
+                        String psmColor = peptide.get("psm").toString().substring(4, peptide.get("psm").toString().length() - 1);
+                        int index = 0;
+                        for (String c : psmColor.split(",")) {
+                            colorArr[index++] = Integer.parseInt(c);
+                        }
+                        peptide.put("color", initColorMap(colorArr));
+
+                        return peptide;
+                    }).forEachOrdered((peptide) -> {
+                        entriesSet.add(peptide);
+                    });
+                }
+                break;
+            }
+
+            case 5: {
+                peptidesQueryMap.keySet().forEach((key) -> {
+                    peptidesQueryMap.get(key).stream().map((peptide) -> {
+
+                        if (peptideKey == null) {
+                            int[] colorArr = new int[3];
+                            String intensityColor = peptide.get("intensity").toString().substring(4, peptide.get("intensity").toString().length() - 1);
+                            int index = 0;
+                            for (String c : intensityColor.split(",")) {
+                                colorArr[index++] = Integer.parseInt(c);
+                            }
+                            peptide.put("color", initColorMap(colorArr));
+
+                        } else {
+                            int[] colorArr = new int[3];
+                            String intensityColor = peptide.get("intensity").toString().substring(4, peptide.get("intensity").toString().length() - 1);
+                            int index = 0;
+                            for (String c : intensityColor.split(",")) {
+                                colorArr[index++] = Integer.parseInt(c);
+                            }
+                            Color unselected = new Color(colorArr[0], colorArr[1], colorArr[2]).brighter();
+                            peptide.put("color", initColorMap(unselected));
+
+                        }
+                        return peptide;
+                    }).forEachOrdered((peptide) -> {
+                        entriesSet.add(peptide);
+                    });
+                });
+
+                if (peptideKey != null) {
+                    peptidesQueryMap.get(peptideKey).stream().map((peptide) -> {
+                        int[] colorArr = new int[3];
+                        String intensityColor = peptide.get("intensity").toString().substring(4, peptide.get("intensity").toString().length() - 1);
+                        int index = 0;
+                        for (String c : intensityColor.split(",")) {
+                            colorArr[index++] = Integer.parseInt(c);
+                        }
+                        peptide.put("color", initColorMap(colorArr));
+                        return peptide;
+                    }).forEachOrdered((peptide) -> {
+                        entriesSet.add(peptide);
+                    });
+                }
+
+                break;
+            }
+
         }
         String pdbAccession = (pdbMatchesSelect.getValue() + "").toLowerCase();
         liteMOL3DComponent.excuteQuery(pdbAccession, lastSelectedMatch.getEntity_id(chainId), chainId.toUpperCase(), initColorMap(basicColor), entriesSet);
@@ -487,7 +586,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
                             if (!peptide.getVariableModifications().trim().equalsIgnoreCase("")) {
                                 varMod = peptide.getVariableModifications();
                             }
-                            peptidesQueryMap.get(peptide.getModifiedSequence()).add(initSequenceMap(chainId, lastSelectedMatch.getEntity_id(chainId), start, end, peptide.getValidation(), peptide.getModifiedSequence().contains("<"), varMod, peptide.getSequence()));
+                            peptidesQueryMap.get(peptide.getModifiedSequence()).add(initSequenceMap(chainId, lastSelectedMatch.getEntity_id(chainId), start, end, peptide.getValidation(), peptide.getModifiedSequence().contains("<"), varMod, peptide.getSequence(), peptide.getPsmColor(), peptide.getIntensityColor()));
                             break;
                         }
 
@@ -498,7 +597,7 @@ public class ProteinStructurePanel extends AbsoluteLayout {
 
     }
 
-    private HashMap<String, Object> initSequenceMap(String chainId, int entity_id, int start, int end, String validation, boolean modified, String modifications, String sequence) {
+    private HashMap<String, Object> initSequenceMap(String chainId, int entity_id, int start, int end, String validation, boolean modified, String modifications, String sequence, String psmNumberColor, String intensityColor) {
         HashMap<String, Object> sequenceMap = new HashMap<>();
         sequenceMap.put("entity_id", entity_id + "");
         sequenceMap.put("struct_asym_id", chainId.toUpperCase());
@@ -509,6 +608,8 @@ public class ProteinStructurePanel extends AbsoluteLayout {
         sequenceMap.put("modified", modified);
         sequenceMap.put("modifications", modifications);
         sequenceMap.put("sequence", sequence);
+        sequenceMap.put("psm", psmNumberColor);
+        sequenceMap.put("intensity", intensityColor);
         return sequenceMap;
 
     }

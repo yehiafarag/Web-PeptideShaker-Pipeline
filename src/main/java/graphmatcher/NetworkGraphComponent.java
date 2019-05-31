@@ -277,7 +277,7 @@ public abstract class NetworkGraphComponent extends VerticalLayout {
         nodeControl.select("Proteoform");
         nodeControl.select("External");
         nodeControl.addValueChangeListener((Property.ValueChangeEvent event) -> {
-            System.out.println("at event "+event.getProperty().getValue());
+            System.out.println("at event " + event.getProperty().getValue());
 //            if()
 //                setShowLabels(nodeControl.getValue().toString().contains("Labels"));
 //            else
@@ -351,6 +351,7 @@ public abstract class NetworkGraphComponent extends VerticalLayout {
         mainContainer.addComponent(legendLayout, "left: " + 50 + "%; top: " + 50 + "%");
         canvasWrapper.addComponent(selectionCanavas);
     }
+    int counter = 0;
 
     public void updateGraphData(Set<String> selectedIds, Set<NetworkGraphEdge> edges) {//Map<String, Map<String, Node>> graphNodes
         this.canvas.removeAllComponents();
@@ -364,17 +365,28 @@ public abstract class NetworkGraphComponent extends VerticalLayout {
             NetworkGraphNode n2 = edge.getN2();
             if (!graphNodes.containsKey(n1.getAccession())) {
                 this.graphNodes.put(n1.getAccession(), new LinkedHashMap<>());
+
             }
 
             if (!graphNodes.containsKey(n2.getAccession())) {
                 this.graphNodes.put(n2.getAccession(), new LinkedHashMap<>());
             }
+
             this.graphNodes.get(n1.getAccession()).put(n1.getNodeId(), n1);
             this.graphNodes.get(n2.getAccession()).put(n2.getNodeId(), n2);
             this.activeGraphNodes.put(n1.getNodeId(), n1);
             this.activeGraphNodes.put(n2.getNodeId(), n2);
 
         });
+        for (String key : graphNodes.keySet()) {
+            int counter = 1;
+            for (String subKey : graphNodes.get(key).keySet()) {
+                if (subKey.contains(";")) {
+                    graphNodes.get(key).get(subKey).updateProteformIndex("P"+counter++);
+                }
+            }
+
+        }
         selectedIds.forEach((id) -> {
             if (this.graphNodes.containsKey(id)) {
                 this.graphNodes.get(id).values().forEach((n) -> {
@@ -399,7 +411,7 @@ public abstract class NetworkGraphComponent extends VerticalLayout {
         if (!nodeControl.getValue().toString().contains("Proteoform") || !nodeControl.getValue().toString().contains("External") || nodeControl.getValue().toString().contains("Reactom Only")) {
             nodeControlAction(!nodeControl.getValue().toString().contains("Proteoform"), !nodeControl.getValue().toString().contains("External"), nodeControl.getValue().toString().contains("Reactom Only"));
         }
-        this.setEnabled((boolean)graphInfo.getData());
+        this.setEnabled((boolean) graphInfo.getData());
 
     }
 
@@ -430,9 +442,9 @@ public abstract class NetworkGraphComponent extends VerticalLayout {
         drawEdges();
         setShowLabels(nodeControl.getValue().toString().contains("Labels"));
     }
-    
-    private void setShowLabels(boolean showLables){
-     activeGraphEdges.forEach((edge) -> {
+
+    private void setShowLabels(boolean showLables) {
+        activeGraphEdges.forEach((edge) -> {
             edge.getEdgeLabel().setVisible(false);
             if (edge.isSelected()) {
                 if (showLables) {
@@ -445,7 +457,7 @@ public abstract class NetworkGraphComponent extends VerticalLayout {
                 }
             }
         });
-    
+
     }
 
     private void nodeControlAction(boolean hideProteoform, boolean hideExternal, boolean showReactomDataOnly) {
@@ -752,7 +764,7 @@ public abstract class NetworkGraphComponent extends VerticalLayout {
     }
 
     public void selectParentItem(Object parentId) {
-        System.out.println("at select parent "+parentId);
+        System.out.println("at select parent " + parentId);
         redrawSelection(new Object[]{parentId});
 
     }

@@ -334,7 +334,7 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
             } else {
                 updatedValue = protein.getUniquePeptidesIntensity();
                 color = protein.getUniquePeptideIintensityColor();
-                per = protein.getUniquePeptidesIntensity();
+                per = protein.getPercentageUniquePeptidesIntensity();
             }
             Item item = proteinTableContainer.getMainTable().getItem(id);
             ((ColorLabelWithPopupTooltip) item.getItemProperty("proteinIntensity").getValue()).updateValues(updatedValue, color, per);

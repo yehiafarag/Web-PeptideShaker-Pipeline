@@ -68,14 +68,15 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
                     ProteinCoverageComponent.this.addComponent(chainCoverage3dLayout, "left:0; top:0px;");
                     ProteinCoverageComponent.this.addComponent(proteinCoverageLayout, "left:0; top:30px;");
                     ProteinCoverageComponent.this.addComponent(peptideDistributionLayout, "left:0; top:45px;");
-                    ProteinCoverageComponent.this.setHeight(ProteinCoverageComponent.this.getHeight() + 30, Unit.PIXELS);
+                    ProteinCoverageComponent.this.setHeight(ProteinCoverageComponent.this.getHeight() + 20, Unit.PIXELS);
                     expanded = true;
+                    
                 } else if (!v && expanded) {
                     ProteinCoverageComponent.this.removeAllComponents();
                     ProteinCoverageComponent.this.addComponent(chainCoverage3dLayout, "left:0; top:0px;");
                     ProteinCoverageComponent.this.addComponent(proteinCoverageLayout, "left:0; top:10px;");
                     ProteinCoverageComponent.this.addComponent(peptideDistributionLayout, "left:0; top:25px;");
-                    ProteinCoverageComponent.this.setHeight(ProteinCoverageComponent.this.getHeight() - 30, Unit.PIXELS);
+                    ProteinCoverageComponent.this.setHeight(ProteinCoverageComponent.this.getHeight() - 20, Unit.PIXELS);
                     expanded = false;
                 } else if (!v) {
                     ProteinCoverageComponent.this.removeAllComponents();
@@ -218,7 +219,6 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
         protoformCoverage.setHeight(100, Unit.PERCENTAGE);
         protoformCoverage.setVisible(false);
         protoformCoverage.addStyleName("protoformcoverage");
-        System.out.println("init peptide dist coverage");
 
     }
 

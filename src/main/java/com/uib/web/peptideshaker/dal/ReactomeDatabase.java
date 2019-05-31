@@ -48,7 +48,6 @@ public class ReactomeDatabase {
         this.dbUserName = VaadinSession.getCurrent().getAttribute("dbUserName").toString();
         this.dbPassword = VaadinSession.getCurrent().getAttribute("dbPassword").toString();
         this.dbName = this.getDBName();
-        System.out.println("database name " + dbName);
 
     }
 

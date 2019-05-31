@@ -1,12 +1,10 @@
 package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components;
 
-import com.google.common.collect.Range;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideObject;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.ProteinGroupObject;
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components.coverage.ProteinCoverageComponent;
 import com.uib.web.peptideshaker.presenter.core.ActionLabel;
 import com.uib.web.peptideshaker.presenter.core.ColorLabelWithPopupTooltip;
-import com.uib.web.peptideshaker.presenter.core.TableColumnHeader;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.components.RangeColorGenerator;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
