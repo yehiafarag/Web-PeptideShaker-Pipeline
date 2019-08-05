@@ -175,7 +175,7 @@ public abstract class GalaxyToolsHandler {
             if (e.toString().contains("Service Temporarily Unavailable")) {
                 Notification.show("Service Temporarily Unavailable", Notification.Type.ERROR_MESSAGE);
                 UI.getCurrent().getSession().close();
-                VaadinSession.getCurrent().getSession().invalidate();
+//                VaadinSession.getCurrent().getSession().invalidate();
 
             } else {
                 System.out.println("at tools are not available");
@@ -231,7 +231,6 @@ public abstract class GalaxyToolsHandler {
         return null;
 
     }
-
     /**
      * Save search settings file into galaxy
      *
@@ -246,10 +245,10 @@ public abstract class GalaxyToolsHandler {
      */
     public Map<String, GalaxyTransferableFile> saveSearchGUIParameters(String galaxyURL, File user_folder, Map<String, GalaxyTransferableFile> searchParametersFilesMap, String workHistoryId, SearchParameters searchParameters, boolean isNew) {
 
-        String fileName = searchParameters.getFastaFile().getName().split("__")[1].replace(".", "_") + ".par";
+        String fileName ="";// searchParameters.getFastaFile().getName().split("__")[1].replace(".", "_") + ".par";
         String fileId;
         if (!isNew) {
-            fileId = searchParameters.getFastaFile().getName().split("__")[3];
+            fileId = "";//searchParameters.getFastaFile().getName().split("__")[3];
             searchParametersFilesMap.remove(fileId);
             //delete the file and make new one 
             this.deleteDataset(galaxyURL, workHistoryId, fileId, false);
@@ -264,7 +263,7 @@ public abstract class GalaxyToolsHandler {
         }
         try {
             file.createNewFile();
-            SearchParameters.saveIdentificationParameters(searchParameters, file);
+            searchParameters.saveIdentificationParameters(searchParameters, file);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -402,60 +401,60 @@ public abstract class GalaxyToolsHandler {
         json = json.replace("3.3.5", search_GUI_Tool.getVersion().trim()); 
 //            json = json.replace("3.3.3.0", search_GUI_Tool.getVersion().trim()); //for multi mgf workflow
         json = json.replace("SearchGUI_Label", projectName + "-SearchGUI Results").replace("ZIP_Label", projectName + "-ZIP");
-        String createDecoy = searchParameters.getFastaFile().getName().split("__")[2];
+        String createDecoy = "";//searchParameters.getFastaFile().getName().split("__")[2];
         json = json.replace("\\\\\\\"create_decoy\\\\\\\": \\\\\\\"true\\\\\\\"", "\\\\\\\"create_decoy\\\\\\\": \\\\\\\"" + createDecoy + "\\\\\\\"");
-        /**
-         * Protein_digest_options.
-         */
-        switch (searchParameters.getDigestionPreferences().getCleavagePreference().index) {
-            case 0:
-                if (searchParameters.getDigestionPreferences().getEnzymes().get(0).getName().equalsIgnoreCase("Trypsin")) {//
-                    json = json.replace("{\\\\\\\"cleavage\\\\\\\": \\\\\\\"default\\\\\\\", \\\\\\\"missed_cleavages\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 0}}\\\",", "{\\\\\\\"cleavage\\\\\\\": \\\\\\\"default\\\\\\\", \\\\\\\"missed_cleavages\\\\\\\": \\\\\\\"" + searchParameters.getDigestionPreferences().getnMissedCleavages(searchParameters.getDigestionPreferences().getEnzymes().get(0).getName()) + "\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 0}}\\\",");
-                } else {
-                    json = json.replace("{\\\\\\\"cleavage\\\\\\\": \\\\\\\"default\\\\\\\", \\\\\\\"missed_cleavages\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 0}}\\\",", "{\\\\\\\"cleavage\\\\\\\": \\\\\\\"0\\\\\\\", \\\\\\\"digests\\\\\\\": [{\\\\\\\"__index__\\\\\\\": 0, \\\\\\\"enzyme\\\\\\\": \\\\\\\"" + searchParameters.getDigestionPreferences().getEnzymes().get(0).getName() + "\\\\\\\", \\\\\\\"missed_cleavages\\\\\\\": \\\\\\\"" + searchParameters.getDigestionPreferences().getnMissedCleavages(searchParameters.getDigestionPreferences().getEnzymes().get(0).getName()) + "\\\\\\\"}], \\\\\\\"__current_case__\\\\\\\": 1}}\\\",");
-                }
-                break;
-            case 1:
-                json = json.replace("{\\\\\\\"cleavage\\\\\\\": \\\\\\\"default\\\\\\\", \\\\\\\"missed_cleavages\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 0}}\\\",", "{\\\\\\\"cleavage\\\\\\\": \\\\\\\"1\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 2}}\\\",");
-                break;
-            case 2:
-                json = json.replace("{\\\\\\\"cleavage\\\\\\\": \\\\\\\"default\\\\\\\", \\\\\\\"missed_cleavages\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 0}}\\\",", "{\\\\\\\"cleavage\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 3}}\\\",");
-                break;
-        }
-        /**
-         * Protein_modification_options.
-         */
-        if (!searchParameters.getPtmSettings().getVariableModifications().isEmpty()) {
-            Set<String> modifications = new HashSet<>();
-            searchParameters.getPtmSettings().getVariableModifications().forEach((modification) -> {
-                modifications.add("\\\\\\\"" + modification + "\\\\\\\"");
-            });
-            json = json.replace("\\\\\\\"variable_modifications\\\\\\\": null", "\\\\\\\"variable_modifications\\\\\\\": " + modifications.toString());
-        }
-        /**
-         * Fixed_modifications.
-         */
-        if (!searchParameters.getPtmSettings().getFixedModifications().isEmpty()) {
-            Set<String> modifications = new HashSet<>();
-            searchParameters.getPtmSettings().getFixedModifications().forEach((modification) -> {
-                modifications.add("\\\\\\\"" + modification + "\\\\\\\"");
-            });
-            json = json.replace("\\\\\\\"fixed_modifications\\\\\\\": null", "\\\\\\\"fixed_modifications\\\\\\\": " + modifications.toString());
-        }
-        /**
-         * Search engines options.
-         */
-        Set<String> search_engines = new HashSet<>();
-        searchEnginesList.forEach((searchEng) -> {
-            search_engines.add(("\\\\\\\"" + searchEng + "\\\\\\\"").replace(" (Select for noncommercial use only)", "").replace("+", "").replace("-", ""));
-        });
-        json = json.replace("{\\\\\\\"engines\\\\\\\": null}", "{\\\\\\\"engines\\\\\\\": " + search_engines.toString() + "}");
-        /**
-         * Precursor Options.
-         */
-        String updated = "\"{\\\\\\\"forward_ion\\\\\\\": \\\\\\\"" + ions.get(searchParameters.getForwardIons().get(0)) + "\\\\\\\", \\\\\\\"max_charge\\\\\\\": \\\\\\\"" + searchParameters.getMaxChargeSearched().value + "\\\\\\\", \\\\\\\"fragment_tol_units\\\\\\\": \\\\\\\"" + (searchParameters.getFragmentAccuracyType().ordinal() - 1) + "\\\\\\\", \\\\\\\"max_isotope\\\\\\\": \\\\\\\"" + (searchParameters.getMaxIsotopicCorrection()) + "\\\\\\\", \\\\\\\"precursor_ion_tol_units\\\\\\\": \\\\\\\"" + (searchParameters.getPrecursorAccuracyType().ordinal() + 1) + "\\\\\\\", \\\\\\\"min_isotope\\\\\\\": \\\\\\\"" + searchParameters.getMinIsotopicCorrection() + "\\\\\\\", \\\\\\\"fragment_tol\\\\\\\": \\\\\\\"" + searchParameters.getFragmentIonAccuracyInDaltons() + "\\\\\\\", \\\\\\\"min_charge\\\\\\\": \\\\\\\"" + searchParameters.getMinChargeSearched().value + "\\\\\\\", \\\\\\\"reverse_ion\\\\\\\": \\\\\\\"" + ions.get(searchParameters.getRewindIons().get(0)) + "\\\\\\\", \\\\\\\"precursor_ion_tol\\\\\\\": \\\\\\\"" + searchParameters.getPrecursorAccuracy() + "\\\\\\\"}\\\",";
-        json = json.replace("\"{\\\\\\\"forward_ion\\\\\\\": \\\\\\\"b\\\\\\\", \\\\\\\"max_charge\\\\\\\": \\\\\\\"4\\\\\\\", \\\\\\\"fragment_tol_units\\\\\\\": \\\\\\\"0\\\\\\\", \\\\\\\"max_isotope\\\\\\\": \\\\\\\"1\\\\\\\", \\\\\\\"precursor_ion_tol_units\\\\\\\": \\\\\\\"1\\\\\\\", \\\\\\\"min_isotope\\\\\\\": \\\\\\\"0\\\\\\\", \\\\\\\"fragment_tol\\\\\\\": \\\\\\\"0.5\\\\\\\", \\\\\\\"min_charge\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"reverse_ion\\\\\\\": \\\\\\\"y\\\\\\\", \\\\\\\"precursor_ion_tol\\\\\\\": \\\\\\\"10.0\\\\\\\"}\\\",", updated);
-        json = json.replace("1.16.31", peptideShaker_Tool.getVersion());
+//        /**
+//         * Protein_digest_options.
+//         */
+////        switch (searchParameters.getDigestionPreferences().getCleavagePreference().index) {
+////            case 0:
+////                if (searchParameters.getDigestionPreferences().getEnzymes().get(0).getName().equalsIgnoreCase("Trypsin")) {//
+////                    json = json.replace("{\\\\\\\"cleavage\\\\\\\": \\\\\\\"default\\\\\\\", \\\\\\\"missed_cleavages\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 0}}\\\",", "{\\\\\\\"cleavage\\\\\\\": \\\\\\\"default\\\\\\\", \\\\\\\"missed_cleavages\\\\\\\": \\\\\\\"" + searchParameters.getDigestionPreferences().getnMissedCleavages(searchParameters.getDigestionPreferences().getEnzymes().get(0).getName()) + "\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 0}}\\\",");
+////                } else {
+////                    json = json.replace("{\\\\\\\"cleavage\\\\\\\": \\\\\\\"default\\\\\\\", \\\\\\\"missed_cleavages\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 0}}\\\",", "{\\\\\\\"cleavage\\\\\\\": \\\\\\\"0\\\\\\\", \\\\\\\"digests\\\\\\\": [{\\\\\\\"__index__\\\\\\\": 0, \\\\\\\"enzyme\\\\\\\": \\\\\\\"" + searchParameters.getDigestionPreferences().getEnzymes().get(0).getName() + "\\\\\\\", \\\\\\\"missed_cleavages\\\\\\\": \\\\\\\"" + searchParameters.getDigestionPreferences().getnMissedCleavages(searchParameters.getDigestionPreferences().getEnzymes().get(0).getName()) + "\\\\\\\"}], \\\\\\\"__current_case__\\\\\\\": 1}}\\\",");
+////                }
+////                break;
+////            case 1:
+////                json = json.replace("{\\\\\\\"cleavage\\\\\\\": \\\\\\\"default\\\\\\\", \\\\\\\"missed_cleavages\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 0}}\\\",", "{\\\\\\\"cleavage\\\\\\\": \\\\\\\"1\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 2}}\\\",");
+////                break;
+////            case 2:
+////                json = json.replace("{\\\\\\\"cleavage\\\\\\\": \\\\\\\"default\\\\\\\", \\\\\\\"missed_cleavages\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 0}}\\\",", "{\\\\\\\"cleavage\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 3}}\\\",");
+////                break;
+////        }
+//        /**
+//         * Protein_modification_options.
+//         */
+//        if (!searchParameters.getPtmSettings().getVariableModifications().isEmpty()) {
+//            Set<String> modifications = new HashSet<>();
+//            searchParameters.getPtmSettings().getVariableModifications().forEach((modification) -> {
+//                modifications.add("\\\\\\\"" + modification + "\\\\\\\"");
+//            });
+//            json = json.replace("\\\\\\\"variable_modifications\\\\\\\": null", "\\\\\\\"variable_modifications\\\\\\\": " + modifications.toString());
+//        }
+//        /**
+//         * Fixed_modifications.
+//         */
+//        if (!searchParameters.getPtmSettings().getFixedModifications().isEmpty()) {
+//            Set<String> modifications = new HashSet<>();
+//            searchParameters.getPtmSettings().getFixedModifications().forEach((modification) -> {
+//                modifications.add("\\\\\\\"" + modification + "\\\\\\\"");
+//            });
+//            json = json.replace("\\\\\\\"fixed_modifications\\\\\\\": null", "\\\\\\\"fixed_modifications\\\\\\\": " + modifications.toString());
+//        }
+//        /**
+//         * Search engines options.
+//         */
+//        Set<String> search_engines = new HashSet<>();
+//        searchEnginesList.forEach((searchEng) -> {
+//            search_engines.add(("\\\\\\\"" + searchEng + "\\\\\\\"").replace(" (Select for noncommercial use only)", "").replace("+", "").replace("-", ""));
+//        });
+//        json = json.replace("{\\\\\\\"engines\\\\\\\": null}", "{\\\\\\\"engines\\\\\\\": " + search_engines.toString() + "}");
+//        /**
+//         * Precursor Options.
+//         */
+//        String updated = "\"{\\\\\\\"forward_ion\\\\\\\": \\\\\\\"" + ions.get(searchParameters.getForwardIons().get(0)) + "\\\\\\\", \\\\\\\"max_charge\\\\\\\": \\\\\\\"" + searchParameters.getMaxChargeSearched().value + "\\\\\\\", \\\\\\\"fragment_tol_units\\\\\\\": \\\\\\\"" + (searchParameters.getFragmentAccuracyType().ordinal() - 1) + "\\\\\\\", \\\\\\\"max_isotope\\\\\\\": \\\\\\\"" + (searchParameters.getMaxIsotopicCorrection()) + "\\\\\\\", \\\\\\\"precursor_ion_tol_units\\\\\\\": \\\\\\\"" + (searchParameters.getPrecursorAccuracyType().ordinal() + 1) + "\\\\\\\", \\\\\\\"min_isotope\\\\\\\": \\\\\\\"" + searchParameters.getMinIsotopicCorrection() + "\\\\\\\", \\\\\\\"fragment_tol\\\\\\\": \\\\\\\"" + searchParameters.getFragmentIonAccuracyInDaltons() + "\\\\\\\", \\\\\\\"min_charge\\\\\\\": \\\\\\\"" + searchParameters.getMinChargeSearched().value + "\\\\\\\", \\\\\\\"reverse_ion\\\\\\\": \\\\\\\"" + ions.get(searchParameters.getRewindIons().get(0)) + "\\\\\\\", \\\\\\\"precursor_ion_tol\\\\\\\": \\\\\\\"" + searchParameters.getPrecursorAccuracy() + "\\\\\\\"}\\\",";
+//        json = json.replace("\"{\\\\\\\"forward_ion\\\\\\\": \\\\\\\"b\\\\\\\", \\\\\\\"max_charge\\\\\\\": \\\\\\\"4\\\\\\\", \\\\\\\"fragment_tol_units\\\\\\\": \\\\\\\"0\\\\\\\", \\\\\\\"max_isotope\\\\\\\": \\\\\\\"1\\\\\\\", \\\\\\\"precursor_ion_tol_units\\\\\\\": \\\\\\\"1\\\\\\\", \\\\\\\"min_isotope\\\\\\\": \\\\\\\"0\\\\\\\", \\\\\\\"fragment_tol\\\\\\\": \\\\\\\"0.5\\\\\\\", \\\\\\\"min_charge\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"reverse_ion\\\\\\\": \\\\\\\"y\\\\\\\", \\\\\\\"precursor_ion_tol\\\\\\\": \\\\\\\"10.0\\\\\\\"}\\\",", updated);
+//        json = json.replace("1.16.31", peptideShaker_Tool.getVersion());
 //            json = json.replace("1.16.4", peptideShaker_Tool.getVersion());
 
         return json;
@@ -492,36 +491,36 @@ public abstract class GalaxyToolsHandler {
             json = json.replace("3.3.5", search_GUI_Tool.getVersion().trim());
 //            json = json.replace("3.3.3.0", search_GUI_Tool.getVersion().trim()); //for multi mgf workflow
             json = json.replace("SearchGUI_Label", projectName + "-SearchGUI Results").replace("ZIP_Label", projectName + "-ZIP");
-            String createDecoy = searchParameters.getFastaFile().getName().split("__")[2];
-            json = json.replace("\\\\\\\"create_decoy\\\\\\\": \\\\\\\"true\\\\\\\"", "\\\\\\\"create_decoy\\\\\\\": \\\\\\\"" + createDecoy + "\\\\\\\"");
+//            String createDecoy = searchParameters.getFastaFile().getName().split("__")[2];
+//            json = json.replace("\\\\\\\"create_decoy\\\\\\\": \\\\\\\"true\\\\\\\"", "\\\\\\\"create_decoy\\\\\\\": \\\\\\\"" + createDecoy + "\\\\\\\"");
             /**
              * Protein_digest_options.
-             */
-            switch (searchParameters.getDigestionPreferences().getCleavagePreference().index) {
-                case 0:
-                    if (searchParameters.getDigestionPreferences().getEnzymes().get(0).getName().equalsIgnoreCase("Trypsin")) {//
-                        json = json.replace("{\\\\\\\"cleavage\\\\\\\": \\\\\\\"default\\\\\\\", \\\\\\\"missed_cleavages\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 0}}\\\",", "{\\\\\\\"cleavage\\\\\\\": \\\\\\\"default\\\\\\\", \\\\\\\"missed_cleavages\\\\\\\": \\\\\\\"" + searchParameters.getDigestionPreferences().getnMissedCleavages(searchParameters.getDigestionPreferences().getEnzymes().get(0).getName()) + "\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 0}}\\\",");
-                    } else {
-                        json = json.replace("{\\\\\\\"cleavage\\\\\\\": \\\\\\\"default\\\\\\\", \\\\\\\"missed_cleavages\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 0}}\\\",", "{\\\\\\\"cleavage\\\\\\\": \\\\\\\"0\\\\\\\", \\\\\\\"digests\\\\\\\": [{\\\\\\\"__index__\\\\\\\": 0, \\\\\\\"enzyme\\\\\\\": \\\\\\\"" + searchParameters.getDigestionPreferences().getEnzymes().get(0).getName() + "\\\\\\\", \\\\\\\"missed_cleavages\\\\\\\": \\\\\\\"" + searchParameters.getDigestionPreferences().getnMissedCleavages(searchParameters.getDigestionPreferences().getEnzymes().get(0).getName()) + "\\\\\\\"}], \\\\\\\"__current_case__\\\\\\\": 1}}\\\",");
-                    }
-                    break;
-                case 1:
-                    json = json.replace("{\\\\\\\"cleavage\\\\\\\": \\\\\\\"default\\\\\\\", \\\\\\\"missed_cleavages\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 0}}\\\",", "{\\\\\\\"cleavage\\\\\\\": \\\\\\\"1\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 2}}\\\",");
-                    break;
-                case 2:
-                    json = json.replace("{\\\\\\\"cleavage\\\\\\\": \\\\\\\"default\\\\\\\", \\\\\\\"missed_cleavages\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 0}}\\\",", "{\\\\\\\"cleavage\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 3}}\\\",");
-                    break;
-            }
-            /**
-             * Protein_modification_options.
-             */
-            if (!searchParameters.getPtmSettings().getVariableModifications().isEmpty()) {
-                Set<String> modifications = new HashSet<>();
-                searchParameters.getPtmSettings().getVariableModifications().forEach((modification) -> {
-                    modifications.add("\\\\\\\"" + modification + "\\\\\\\"");
-                });
-                json = json.replace("\\\\\\\"variable_modifications\\\\\\\": null", "\\\\\\\"variable_modifications\\\\\\\": " + modifications.toString());
-            }
+//             */
+////            switch (searchParameters.getDigestionPreferences().getCleavagePreference().index) {
+////                case 0:
+////                    if (searchParameters.getDigestionPreferences().getEnzymes().get(0).getName().equalsIgnoreCase("Trypsin")) {//
+////                        json = json.replace("{\\\\\\\"cleavage\\\\\\\": \\\\\\\"default\\\\\\\", \\\\\\\"missed_cleavages\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 0}}\\\",", "{\\\\\\\"cleavage\\\\\\\": \\\\\\\"default\\\\\\\", \\\\\\\"missed_cleavages\\\\\\\": \\\\\\\"" + searchParameters.getDigestionPreferences().getnMissedCleavages(searchParameters.getDigestionPreferences().getEnzymes().get(0).getName()) + "\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 0}}\\\",");
+////                    } else {
+////                        json = json.replace("{\\\\\\\"cleavage\\\\\\\": \\\\\\\"default\\\\\\\", \\\\\\\"missed_cleavages\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 0}}\\\",", "{\\\\\\\"cleavage\\\\\\\": \\\\\\\"0\\\\\\\", \\\\\\\"digests\\\\\\\": [{\\\\\\\"__index__\\\\\\\": 0, \\\\\\\"enzyme\\\\\\\": \\\\\\\"" + searchParameters.getDigestionPreferences().getEnzymes().get(0).getName() + "\\\\\\\", \\\\\\\"missed_cleavages\\\\\\\": \\\\\\\"" + searchParameters.getDigestionPreferences().getnMissedCleavages(searchParameters.getDigestionPreferences().getEnzymes().get(0).getName()) + "\\\\\\\"}], \\\\\\\"__current_case__\\\\\\\": 1}}\\\",");
+////                    }
+////                    break;
+////                case 1:
+////                    json = json.replace("{\\\\\\\"cleavage\\\\\\\": \\\\\\\"default\\\\\\\", \\\\\\\"missed_cleavages\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 0}}\\\",", "{\\\\\\\"cleavage\\\\\\\": \\\\\\\"1\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 2}}\\\",");
+////                    break;
+////                case 2:
+////                    json = json.replace("{\\\\\\\"cleavage\\\\\\\": \\\\\\\"default\\\\\\\", \\\\\\\"missed_cleavages\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 0}}\\\",", "{\\\\\\\"cleavage\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 3}}\\\",");
+////                    break;
+////            }
+//            /**
+//             * Protein_modification_options.
+//             */
+//            if (!searchParameters.getPtmSettings().getVariableModifications().isEmpty()) {
+//                Set<String> modifications = new HashSet<>();
+//                searchParameters.getPtmSettings().getVariableModifications().forEach((modification) -> {
+//                    modifications.add("\\\\\\\"" + modification + "\\\\\\\"");
+//                });
+//                json = json.replace("\\\\\\\"variable_modifications\\\\\\\": null", "\\\\\\\"variable_modifications\\\\\\\": " + modifications.toString());
+//            }
             
             String jsonWorkflow = get_json_for_SearchGUI_PeptideShaker_WorkFlow(workflowFile, projectName, searchParameters, searchEnginesList);
             
@@ -719,6 +718,7 @@ public abstract class GalaxyToolsHandler {
      */
     private int[] getVersionNumbers(String ver) {
         Matcher m;
+        ver = ver.replace("_SNAPSHOT.", ".");
         if (ver.split("\\.").length == 4) {
             m = Pattern.compile("(\\d+)\\.(\\d+)\\.(\\d+).(\\d+)").matcher(ver);
             if (m != null && !m.matches()) {

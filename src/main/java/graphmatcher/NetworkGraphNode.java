@@ -108,8 +108,8 @@ public abstract class NetworkGraphNode extends VerticalLayout implements LayoutE
             NetworkGraphNode.this.addStyleName("externalNode");
         }
 
-        NetworkGraphNode.this.setWidth(10, Unit.PIXELS);
-        NetworkGraphNode.this.setHeight(10, Unit.PIXELS);
+        NetworkGraphNode.this.setWidth(15, Unit.PIXELS);
+        NetworkGraphNode.this.setHeight(15, Unit.PIXELS);
         NetworkGraphNode.this.setSelected(false);
         this.edges = new LinkedHashSet<>();
         String newIds = nodeId;

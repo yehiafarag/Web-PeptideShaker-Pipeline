@@ -1,4 +1,3 @@
-
 package litemol;
 
 import com.vaadin.annotations.JavaScript;
@@ -11,17 +10,15 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-@StyleSheet({"mylitemolstyle.css","LiteMol-plugin.css"})
-@JavaScript({"LiteMol-plugin.js", "mylitemol-connector.js","mylitemollibrary.js", "https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js", "https://cdnjs.cloudflare.com/ajax/libs/jquery.touch/1.1.0/jquery.touch.min.js"})
+
+@StyleSheet({"mylitemolstyle.css", "LiteMol-plugin.css"})
+@JavaScript({"LiteMol-plugin.js", "mylitemol-connector.js", "mylitemollibrary.js", "https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js", "https://cdnjs.cloudflare.com/ajax/libs/jquery.touch/1.1.0/jquery.touch.min.js"})
 public class LiteMolComponent extends AbstractJavaScriptComponent {
 
-
-
     public LiteMolComponent() {
-        
+
 //        LiteMolComponent.this.setWidth(500, Unit.PIXELS);
 //        LiteMolComponent.this.setHeight(500, Unit.PIXELS);
-
         LiteMolComponent.this.addFunction("onClick", (JsonArray arguments) -> {
             getState().setValue(arguments.getString(0));
             listeners.forEach((listener) -> {
@@ -29,12 +26,10 @@ public class LiteMolComponent extends AbstractJavaScriptComponent {
             });
         });
 
-        LiteMolComponent.this.addValueChangeListener(() -> {           
+        LiteMolComponent.this.addValueChangeListener(() -> {
             String value = LiteMolComponent.this.getValue();
         });
     }
-
-   
 
     public interface ValueChangeListener extends Serializable {
 
@@ -72,8 +67,5 @@ public class LiteMolComponent extends AbstractJavaScriptComponent {
     protected LiteMolComponentState getState() {
         return (LiteMolComponentState) super.getState();
     }
-
- 
-    
 
 }

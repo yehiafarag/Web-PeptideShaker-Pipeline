@@ -9,6 +9,7 @@ import com.uib.web.peptideshaker.presenter.core.filtercharts.components.RangeCol
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ExternalResource;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.Table;
@@ -51,10 +52,17 @@ public abstract class ProteinCoverageTable extends VerticalLayout {
         proteinCoverageTable.addContainerProperty("proteinIntensity", ColorLabelWithPopupTooltip.class, null, generateCaptionWithTooltio("Intensity", "Protein intinsity"), null, Table.Align.LEFT);
 
         proteinCoverageTable.addContainerProperty("coverage", ProteinCoverageComponent.class, null, generateCaptionWithTooltio("Coverage", "Protein sequence coverage"), null, Table.Align.LEFT);
-        proteinCoverageTable.setColumnWidth("index", 37);
-        proteinCoverageTable.setColumnWidth("acc", 80);
-        proteinCoverageTable.setColumnWidth("name", 300);
-        proteinCoverageTable.setColumnWidth("proteinIntensity", 120);
+
+        if ((boolean) VaadinSession.getCurrent().getAttribute("mobilescreenstyle")) {
+            proteinCoverageTable.setColumnWidth("coverage", 600);
+            proteinCoverageTable.setColumnWidth("proteinIntensity", 120);
+        } else {
+            proteinCoverageTable.setColumnWidth("index", 37);
+            proteinCoverageTable.setColumnWidth("acc", 80);
+            proteinCoverageTable.setColumnWidth("name", 300);
+            proteinCoverageTable.setColumnWidth("proteinIntensity", 120);
+        }
+
         proteinCoverageTable.setCacheRate(1);
         proteinCoverageTable.setBuffered(true);
         ProteinCoverageTable.this.addComponent(proteinCoverageTable);

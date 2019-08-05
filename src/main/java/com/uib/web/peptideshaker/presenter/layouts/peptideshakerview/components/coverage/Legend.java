@@ -9,6 +9,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import graphmatcher.NetworkGraphNode;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -20,8 +21,9 @@ import java.util.Map;
 public abstract class Legend extends VerticalLayout {
 
     private final Map<String, VerticalLayout> layoutMap;
+    private String currentModifications = "";
 
-    public Legend() {
+    public Legend(boolean proteoform) {
         Legend.this.setSpacing(true);
         Legend.this.setStyleName("viewframecontent");
         Legend.this.addStyleName("whitelayout");
@@ -45,12 +47,16 @@ public abstract class Legend extends VerticalLayout {
 
 //        Legend.this.addComponent(title);
         HorizontalLayout container = new HorizontalLayout();
-        container.setCaption("<b>Proteins & Peptides</b>");
+        if (proteoform) {
+            container.setCaption("<b>Proteoforms</b>");
+        } else {
+            container.setCaption("<b>Proteins & Peptides</b>");
+        }
         container.setCaptionAsHtml(true);
         container.setSpacing(true);
         Legend.this.addComponent(container);
         Legend.this.setExpandRatio(container, 0.5f);
-        container.setHeight(90, Unit.PIXELS);
+        container.setHeight(130, Unit.PIXELS);
         container.setWidth(100, Unit.PERCENTAGE);
 
         VerticalLayout mTContainer = new VerticalLayout();
@@ -58,100 +64,288 @@ public abstract class Legend extends VerticalLayout {
         container.addComponent(mTContainer);
         container.setExpandRatio(mTContainer, 30);
 
-        Node protreinMT = generateNode("proteinnode");
-        mTContainer.addComponent(generateLabel(protreinMT, "Protein"));
-        Node peptideMT = generateNode("peptidenode");
-        mTContainer.addComponent(generateLabel(peptideMT, "Peptide"));
+        if (!proteoform) {
+            Node protreinMT = generateNode("proteinnode");
+            mTContainer.addComponent(generateLabel(protreinMT, "Protein"));
+            Node peptideMT = generateNode("peptidenode");
+            mTContainer.addComponent(generateLabel(peptideMT, "Peptide"));
 
-        VerticalLayout enzymaticContainer = new VerticalLayout();
-        enzymaticContainer.setSizeFull();
-        container.addComponent(enzymaticContainer);
-        container.setExpandRatio(enzymaticContainer, 70);
-        Node proteinNodeEnzimatic = generateNode("proteinnode");
-        Node peptideNodeEnzimatic = generateNode("peptidenode");
-        HorizontalLayout enzymaticEdge = generateEdgeLabel(proteinNodeEnzimatic, peptideNodeEnzimatic, "Enzymatic");
-        enzymaticContainer.addComponent(enzymaticEdge);
+            VerticalLayout enzymaticContainer = new VerticalLayout();
+            enzymaticContainer.setSizeFull();
+            container.addComponent(enzymaticContainer);
+            container.setExpandRatio(enzymaticContainer, 70);
+            Node proteinNodeEnzimatic = generateNode("proteinnode");
+            Node peptideNodeEnzimatic = generateNode("peptidenode");
+            HorizontalLayout enzymaticEdge = generateEdgeLabel(proteinNodeEnzimatic, peptideNodeEnzimatic, "Enzymatic");
+            enzymaticContainer.addComponent(enzymaticEdge);
 
-        Node proteinNodeNonEnzimatic = generateNode("proteinnode");
-        Node peptideNodeNonEnzimatic = generateNode("peptidenode");
-        enzymaticContainer.addComponent(generateEdgeLabel(proteinNodeNonEnzimatic, peptideNodeNonEnzimatic, "Non Enzymatic"));
+            Node proteinNodeNonEnzimatic = generateNode("proteinnode");
+            Node peptideNodeNonEnzimatic = generateNode("peptidenode");
+            enzymaticContainer.addComponent(generateEdgeLabel(proteinNodeNonEnzimatic, peptideNodeNonEnzimatic, "Non Enzymatic"));
 
-        HorizontalLayout lowerContainer = new HorizontalLayout();
-        lowerContainer.setWidth(100, Unit.PERCENTAGE);
-        Legend.this.addComponent(lowerContainer);
-        Legend.this.setExpandRatio(lowerContainer, 0.5f);
-        VerticalLayout proteinEvidenceContainer = new VerticalLayout();
-        proteinEvidenceContainer.setHeight(240, Unit.PIXELS);
-        proteinEvidenceContainer.setCaption("<b>Protein Evidence</b>");
-        proteinEvidenceContainer.setCaptionAsHtml(true);
-        proteinEvidenceContainer.setVisible(false);
-        layoutMap.put("Protein Evidence", proteinEvidenceContainer);
-        lowerContainer.addComponent(proteinEvidenceContainer);
-        Node protein = generateNode("proteinnode");
-        protein.addStyleName("greenbackground");
-        proteinEvidenceContainer.addComponent(generateLabel(protein, "Protein"));
-        Node transcript = generateNode("proteinnode");
-        transcript.addStyleName("orangebackground");
-        proteinEvidenceContainer.addComponent(generateLabel(transcript, "Transcript"));
-        Node homology = generateNode("proteinnode");
-        homology.addStyleName("seabluebackground");
-        proteinEvidenceContainer.addComponent(generateLabel(homology, "Homology"));
-        Node predect = generateNode("proteinnode");
-        predect.addStyleName("purplebackground");
-        proteinEvidenceContainer.addComponent(generateLabel(predect, "Predicted"));
-        Node uncertain = generateNode("proteinnode");
-        uncertain.addStyleName("redbackground");
-        proteinEvidenceContainer.addComponent(generateLabel(uncertain, "Uncertain"));
-        Node notAvailable = generateNode("proteinnode");
-        notAvailable.addStyleName("graybackground");
-        proteinEvidenceContainer.addComponent(generateLabel(notAvailable, "Not Available"));
+            HorizontalLayout lowerContainer = new HorizontalLayout();
+            lowerContainer.setWidth(100, Unit.PERCENTAGE);
+            Legend.this.addComponent(lowerContainer);
+            Legend.this.setExpandRatio(lowerContainer, 0.5f);
+            VerticalLayout proteinEvidenceContainer = new VerticalLayout();
+            proteinEvidenceContainer.setHeight(240, Unit.PIXELS);
+            proteinEvidenceContainer.setCaption("<b>Protein Evidence</b>");
+            proteinEvidenceContainer.setCaptionAsHtml(true);
+            proteinEvidenceContainer.setVisible(false);
+            layoutMap.put("Protein Evidence", proteinEvidenceContainer);
+            lowerContainer.addComponent(proteinEvidenceContainer);
+            Node protein = generateNode("proteinnode");
+            protein.addStyleName("greenbackground");
+            proteinEvidenceContainer.addComponent(generateLabel(protein, "Protein"));
+            Node transcript = generateNode("proteinnode");
+            transcript.addStyleName("orangebackground");
+            proteinEvidenceContainer.addComponent(generateLabel(transcript, "Transcript"));
+            Node homology = generateNode("proteinnode");
+            homology.addStyleName("seabluebackground");
+            proteinEvidenceContainer.addComponent(generateLabel(homology, "Homology"));
+            Node predect = generateNode("proteinnode");
+            predect.addStyleName("purplebackground");
+            proteinEvidenceContainer.addComponent(generateLabel(predect, "Predicted"));
+            Node uncertain = generateNode("proteinnode");
+            uncertain.addStyleName("redbackground");
+            proteinEvidenceContainer.addComponent(generateLabel(uncertain, "Uncertain"));
+            Node notAvailable = generateNode("proteinnode");
+            notAvailable.addStyleName("graybackground");
+            proteinEvidenceContainer.addComponent(generateLabel(notAvailable, "Not Available"));
 
-        VerticalLayout proteinValidationContainer = new VerticalLayout();
-        proteinValidationContainer.setHeight(170, Unit.PIXELS);
-        proteinValidationContainer.setCaption("<b>Validation</b>");
-        proteinValidationContainer.setCaptionAsHtml(true);
-        proteinValidationContainer.setVisible(false);
-        layoutMap.put("Validation", proteinValidationContainer);
-        lowerContainer.addComponent(proteinValidationContainer);
-        Node confedent = generateNode("proteinnode");
-        confedent.addStyleName("greenbackground");
-        proteinValidationContainer.addComponent(generateLabel(confedent, "Confident"));
-        Node doubtful = generateNode("proteinnode");
-        doubtful.addStyleName("orangebackground");
-        proteinValidationContainer.addComponent(generateLabel(doubtful, "Doubtful"));
+            VerticalLayout proteinValidationContainer = new VerticalLayout();
+            proteinValidationContainer.setHeight(170, Unit.PIXELS);
+            proteinValidationContainer.setCaption("<b>Validation</b>");
+            proteinValidationContainer.setCaptionAsHtml(true);
+            proteinValidationContainer.setVisible(false);
+            layoutMap.put("Validation", proteinValidationContainer);
+            lowerContainer.addComponent(proteinValidationContainer);
+            Node confedent = generateNode("proteinnode");
+            confedent.addStyleName("greenbackground");
+            proteinValidationContainer.addComponent(generateLabel(confedent, "Confident"));
+            Node doubtful = generateNode("proteinnode");
+            doubtful.addStyleName("orangebackground");
+            proteinValidationContainer.addComponent(generateLabel(doubtful, "Doubtful"));
 
-        Node notValidated = generateNode("proteinnode");
-        notValidated.addStyleName("redbackground");
-        proteinValidationContainer.addComponent(generateLabel(notValidated, "Not Validated"));
-        Node notAvailable2 = generateNode("proteinnode");
-        notAvailable2.addStyleName("graybackground");
-        proteinValidationContainer.addComponent(generateLabel(notAvailable2, "Not Available"));
+            Node notValidated = generateNode("proteinnode");
+            notValidated.addStyleName("redbackground");
+            proteinValidationContainer.addComponent(generateLabel(notValidated, "Not Validated"));
+            Node notAvailable2 = generateNode("proteinnode");
+            notAvailable2.addStyleName("graybackground");
+            proteinValidationContainer.addComponent(generateLabel(notAvailable2, "Not Available"));
 
-        VerticalLayout psmNumberContainer = new VerticalLayout();
-        psmNumberContainer.setHeightUndefined();
-        psmNumberContainer.setVisible(false);
-        psmNumberContainer.addStyleName("psmlegendrangeconatainer");
-        psmNumberContainer.setCaption("<b>#PSMs</b>");
-        psmNumberContainer.setCaptionAsHtml(true);
-        layoutMap.put("PSMNumber", psmNumberContainer);
-        lowerContainer.addComponent(psmNumberContainer);
+            VerticalLayout psmNumberContainer = new VerticalLayout();
+            psmNumberContainer.setHeightUndefined();
+            psmNumberContainer.setVisible(false);
+            psmNumberContainer.addStyleName("psmlegendrangeconatainer");
+            psmNumberContainer.setCaption("<b>#PSMs</b>");
+            psmNumberContainer.setCaptionAsHtml(true);
+            layoutMap.put("PSMNumber", psmNumberContainer);
+            lowerContainer.addComponent(psmNumberContainer);
 
-        VerticalLayout proteinModificationContainer = new VerticalLayout();
-        proteinModificationContainer.setHeightUndefined();
-        proteinModificationContainer.setSpacing(true);
-        proteinModificationContainer.setVisible(false);
-        proteinModificationContainer.addStyleName("modificationlegendconatiner");
-        proteinModificationContainer.setCaption("<b>Modifications</b>");
-        proteinModificationContainer.setCaptionAsHtml(true);
-        layoutMap.put("Modification", proteinModificationContainer);
-        lowerContainer.addComponent(proteinModificationContainer);
-        Legend.this.updateModificationLayout("No Modifications");
-        Legend.this.updateModificationLayout("Two or More Modifications");
+            VerticalLayout proteinModificationContainer = new VerticalLayout();
+            proteinModificationContainer.setHeightUndefined();
+            proteinModificationContainer.setSpacing(true);
+            proteinModificationContainer.setVisible(false);
+            proteinModificationContainer.addStyleName("modificationlegendconatiner");
+            proteinModificationContainer.setCaption("<b>Modifications</b>");
+            proteinModificationContainer.setCaptionAsHtml(true);
+            layoutMap.put("Modification", proteinModificationContainer);
+            lowerContainer.addComponent(proteinModificationContainer);
+            Legend.this.updateModificationLayout("No Modifications");
+            Legend.this.updateModificationLayout("Two or More Modifications");
+
+            VerticalLayout proteinIntensityContainer = new VerticalLayout();
+            proteinIntensityContainer.setHeightUndefined();
+            proteinIntensityContainer.setVisible(false);
+            proteinIntensityContainer.addStyleName("psmlegendrangeconatainer");
+            proteinIntensityContainer.addStyleName("intensitylegendrangeconatainer");
+            proteinIntensityContainer.setCaption("<b>Intensity</b>");
+            proteinIntensityContainer.setCaptionAsHtml(true);
+            layoutMap.put("Intensity", proteinIntensityContainer);
+            lowerContainer.addComponent(proteinIntensityContainer);
+
+//            VerticalLayout proteoformModificationsContainer = new VerticalLayout();
+//            proteoformModificationsContainer.setHeightUndefined();
+//            proteoformModificationsContainer.setSpacing(true);
+//            proteoformModificationsContainer.setVisible(false);
+//            proteoformModificationsContainer.addStyleName("modificationlegendconatiner");
+//            proteoformModificationsContainer.setCaption("<b>Proteoform Type</b>");
+//            proteoformModificationsContainer.setCaptionAsHtml(true);
+//            layoutMap.put("proteoformType", proteoformModificationsContainer);
+//            lowerContainer.addComponent(proteoformModificationsContainer);
+//            Legend.this.updateModificationLayout("No Modifications");
+//            Legend.this.updateModificationLayout("Two or More Modifications");
+
+        } else {
+
+            this.addStyleName("proteoformslegend");
+            NetworkGraphNode node = new NetworkGraphNode("", true, true) {
+                @Override
+                public void selected(String id) {
+                }
+            };
+            node.addStyleName("legend");
+            node.addStyleName("protoformparentnode");
+            mTContainer.addComponent(generateLabel(node, "Protein"));
+
+            NetworkGraphNode proteoformnode = new NetworkGraphNode("", true, false) {
+                @Override
+                public void selected(String id) {
+                }
+            };
+            proteoformnode.addStyleName("legend");
+            mTContainer.addComponent(generateLabel(proteoformnode, "Internal Proteoform"));
+
+            NetworkGraphNode externalproteoformnode = new NetworkGraphNode("", false, false) {
+                @Override
+                public void selected(String id) {
+                }
+            };
+            externalproteoformnode.addStyleName("legend");
+            mTContainer.addComponent(generateLabel(externalproteoformnode, "External Proteoform"));
+
+            VerticalLayout connectionEdgesContainer = new VerticalLayout();
+            connectionEdgesContainer.setSizeFull();
+            connectionEdgesContainer.addStyleName("proteoformedges");
+            container.addComponent(connectionEdgesContainer);
+            container.setExpandRatio(connectionEdgesContainer, 70);
+            NetworkGraphNode proteinEdge = new NetworkGraphNode("", true, true) {
+                @Override
+                public void selected(String id) {
+                }
+            };
+            proteinEdge.addStyleName("legend");
+            proteinEdge.addStyleName("protoformparentnode");
+
+            NetworkGraphNode proteoformEdge = new NetworkGraphNode("", true, false) {
+                @Override
+                public void selected(String id) {
+                }
+            };
+            proteoformEdge.addStyleName("legend");
+            proteoformEdge.addStyleName("edgeside");
+            HorizontalLayout internalEdge = generateEdgeLabel(proteinEdge, proteoformEdge, "Internal  Interaction");
+            connectionEdgesContainer.addComponent(internalEdge);
+
+            NetworkGraphNode proteoformEdge2 = new NetworkGraphNode("", true, false) {
+                @Override
+                public void selected(String id) {
+                }
+            };
+            proteoformEdge2.addStyleName("legend");
+
+            NetworkGraphNode proteoformExternalEdge2 = new NetworkGraphNode("", false, false) {
+                @Override
+                public void selected(String id) {
+                }
+            };
+            proteoformExternalEdge2.addStyleName("legend");
+            proteoformExternalEdge2.addStyleName("edgeside");
+            HorizontalLayout externalEdge = generateEdgeLabel(proteoformEdge2, proteoformExternalEdge2, "External Interaction");
+            connectionEdgesContainer.addComponent(externalEdge);
+
+            HorizontalLayout lowerContainer = new HorizontalLayout();
+            lowerContainer.setWidth(100, Unit.PERCENTAGE);
+            Legend.this.addComponent(lowerContainer);
+            Legend.this.setExpandRatio(lowerContainer, 0.5f);
+//            VerticalLayout proteinEvidenceContainer = new VerticalLayout();
+//            proteinEvidenceContainer.setHeight(240, Unit.PIXELS);
+//            proteinEvidenceContainer.setCaption("<b>Protein Evidence</b>");
+//            proteinEvidenceContainer.setCaptionAsHtml(true);
+//            proteinEvidenceContainer.setVisible(false);
+//            layoutMap.put("Protein Evidence", proteinEvidenceContainer);
+//            lowerContainer.addComponent(proteinEvidenceContainer);
+//            Node protein = generateNode("proteinnode");
+//            protein.addStyleName("greenbackground");
+//            proteinEvidenceContainer.addComponent(generateLabel(protein, "Protein"));
+//            Node transcript = generateNode("proteinnode");
+//            transcript.addStyleName("orangebackground");
+//            proteinEvidenceContainer.addComponent(generateLabel(transcript, "Transcript"));
+//            Node homology = generateNode("proteinnode");
+//            homology.addStyleName("seabluebackground");
+//            proteinEvidenceContainer.addComponent(generateLabel(homology, "Homology"));
+//            Node predect = generateNode("proteinnode");
+//            predect.addStyleName("purplebackground");
+//            proteinEvidenceContainer.addComponent(generateLabel(predect, "Predicted"));
+//            Node uncertain = generateNode("proteinnode");
+//            uncertain.addStyleName("redbackground");
+//            proteinEvidenceContainer.addComponent(generateLabel(uncertain, "Uncertain"));
+//            Node notAvailable = generateNode("proteinnode");
+//            notAvailable.addStyleName("graybackground");
+//            proteinEvidenceContainer.addComponent(generateLabel(notAvailable, "Not Available"));
+//
+//            VerticalLayout proteinValidationContainer = new VerticalLayout();
+//            proteinValidationContainer.setHeight(170, Unit.PIXELS);
+//            proteinValidationContainer.setCaption("<b>Validation</b>");
+//            proteinValidationContainer.setCaptionAsHtml(true);
+//            proteinValidationContainer.setVisible(false);
+//            layoutMap.put("Validation", proteinValidationContainer);
+//            lowerContainer.addComponent(proteinValidationContainer);
+//            Node confedent = generateNode("proteinnode");
+//            confedent.addStyleName("greenbackground");
+//            proteinValidationContainer.addComponent(generateLabel(confedent, "Confident"));
+//            Node doubtful = generateNode("proteinnode");
+//            doubtful.addStyleName("orangebackground");
+//            proteinValidationContainer.addComponent(generateLabel(doubtful, "Doubtful"));
+//
+//            Node notValidated = generateNode("proteinnode");
+//            notValidated.addStyleName("redbackground");
+//            proteinValidationContainer.addComponent(generateLabel(notValidated, "Not Validated"));
+//            Node notAvailable2 = generateNode("proteinnode");
+//            notAvailable2.addStyleName("graybackground");
+//            proteinValidationContainer.addComponent(generateLabel(notAvailable2, "Not Available"));
+//
+//            VerticalLayout psmNumberContainer = new VerticalLayout();
+//            psmNumberContainer.setHeightUndefined();
+//            psmNumberContainer.setVisible(false);
+//            psmNumberContainer.addStyleName("psmlegendrangeconatainer");
+//            psmNumberContainer.setCaption("<b>#PSMs</b>");
+//            psmNumberContainer.setCaptionAsHtml(true);
+//            layoutMap.put("PSMNumber", psmNumberContainer);
+//            lowerContainer.addComponent(psmNumberContainer);
+
+            VerticalLayout proteinModificationContainer = new VerticalLayout();
+            proteinModificationContainer.setHeightUndefined();
+            proteinModificationContainer.setSpacing(true);
+            proteinModificationContainer.setVisible(true);
+            proteinModificationContainer.addStyleName("modificationlegendconatiner");
+            proteinModificationContainer.addStyleName("proteoformconatiner");
+            proteinModificationContainer.setCaption("<b>Proteoform Types</b>");
+            proteinModificationContainer.setCaptionAsHtml(true);
+            layoutMap.put("Modification", proteinModificationContainer);
+            lowerContainer.addComponent(proteinModificationContainer);
+            Legend.this.updateModificationLayout("No Modifications");
+            Legend.this.updateModificationLayout("Two or More Modifications");
+
+//            VerticalLayout proteinIntensityContainer = new VerticalLayout();
+//            proteinIntensityContainer.setHeightUndefined();
+//            proteinIntensityContainer.setVisible(false);
+//            proteinIntensityContainer.addStyleName("psmlegendrangeconatainer");
+//            proteinIntensityContainer.addStyleName("intensitylegendrangeconatainer");
+//            proteinIntensityContainer.setCaption("<b>Intensity</b>");
+//            proteinIntensityContainer.setCaptionAsHtml(true);
+//            layoutMap.put("Intensity", proteinIntensityContainer);
+//            lowerContainer.addComponent(proteinIntensityContainer);
+//
+//            VerticalLayout proteoformModificationsContainer = new VerticalLayout();
+//            proteoformModificationsContainer.setHeightUndefined();
+//            proteoformModificationsContainer.setSpacing(true);
+//            proteoformModificationsContainer.setVisible(true);
+//            proteoformModificationsContainer.addStyleName("modificationlegendconatiner");
+//            proteoformModificationsContainer.setCaption("<b>Proteoform Type</b>");
+//            proteoformModificationsContainer.setCaptionAsHtml(true);
+//            layoutMap.put("proteoformType", proteoformModificationsContainer);
+//            lowerContainer.addComponent(proteoformModificationsContainer);
+//            Legend.this.updateModificationLayout("No Modifications");
+//            Legend.this.updateModificationLayout("Two or More Modifications");
+
+        }
 
     }
 
     private Node generateNode(String defaultStyleName) {
-        Node node = new Node("prot","prot", "", "", -1, "",-1000,"") {
+        Node node = new Node("prot", "prot", "", "", -1, "", -1000, "") {
             @Override
             public void selected(String id) {
 
@@ -164,23 +358,25 @@ public abstract class Legend extends VerticalLayout {
     }
 
     public void updateLegend(String mode) {
+        this.removeStyleName("intensitycontainer");
         layoutMap.values().forEach((c) -> {
             c.setVisible(false);
         });
-        if (mode.equals("Molecule Type") || mode.equals("Intensity")) {
+        if (mode.equals("Molecule Type")) {
             return;
+        }
+        if (mode.equals("Intensity")) {
+            this.addStyleName("intensitycontainer");
         }
 
         layoutMap.get(mode).setVisible(true);
 
     }
 
-    String currentModifications = "";
-
     public void updateModificationLayout(String modifications) {
 //        modifications = modifications.split("\\(")[0];
-        if (modifications.split("\\(")[0].trim().equalsIgnoreCase("") || modifications.split("\\(")[0].contains("Pyrolidone") || modifications.split("\\(")[0].contains("Acetylation of protein N-term")) {
-          return;
+        if (modifications.split("\\(")[0].trim().equalsIgnoreCase("")){// || modifications.split("\\(")[0].contains("Pyrolidone") || modifications.split("\\(")[0].contains("Acetylation of protein N-term")) {
+            return;
         }
         if (currentModifications.contains(modifications.split("\\(")[0])) {
             return;
@@ -188,7 +384,7 @@ public abstract class Legend extends VerticalLayout {
 
         currentModifications += modifications.split("\\(")[0] + ";";
 
-        Node node = new Node("prot","prot", modifications, null, -1, "red",-1000,"") {
+        Node node = new Node("prot", "prot", modifications, null, -1, "red", -1000, "") {
             @Override
             public void selected(String id) {
 
@@ -197,15 +393,38 @@ public abstract class Legend extends VerticalLayout {
         node.setDefaultStyleName("peptidenode");
         node.setSelected(true);
         node.addStyleName("defaultcursor");
-        node.setNodeStatues("Modification");         
+        node.setNodeStatues("Modification");
         node.setDescription(modifications.split("\\(")[0]);
         layoutMap.get("Modification").addComponent(generateLabel(node, modifications.split("\\(")[0]));
-
+//
+//        Node node2 = new Node("prot", "prot", modifications, null, -1, "red", -1000, "") {
+//            @Override
+//            public void selected(String id) {
+//
+//            }
+//        };
+//        node2.setDefaultStyleName("peptidenode");
+//        node2.setSelected(true);
+//        node2.addStyleName("defaultcursor");
+//        node2.setNodeStatues("Modification");
+//        node2.setDescription(modifications.split("\\(")[0]);
+//        node2.addStyleName("proteoformnode");
+//        if (layoutMap.containsKey("proteoformType")) {
+//            layoutMap.get("proteoformType").addComponent(generateLabel(node2, modifications.split("\\(")[0]));
+//        } else {
+//            System.out.println("at layourt map " + layoutMap.keySet());
+//        }
     }
 
     public void updatePSMNumberLayout(Component range) {
         layoutMap.get("PSMNumber").removeAllComponents();
         layoutMap.get("PSMNumber").addComponent(range);
+
+    }
+
+    public void updateIntensityLayout(Component range) {
+        layoutMap.get("Intensity").removeAllComponents();
+        layoutMap.get("Intensity").addComponent(range);
 
     }
 
@@ -238,10 +457,13 @@ public abstract class Legend extends VerticalLayout {
 
         VerticalLayout edge = new VerticalLayout();
         edge.setHeight(2, Unit.PIXELS);
-        if (text.contains("Non")) {
+        if (text.contains("Non") || text.contains("External")) {
             edge.addStyleName("dottedborder");
         } else {
             edge.addStyleName("solidborder");
+        }
+        if (text.contains("Internal")) {
+            edge.addStyleName("bluelayout");
         }
         row.addComponent(edge);
         row.setExpandRatio(edge, 20);

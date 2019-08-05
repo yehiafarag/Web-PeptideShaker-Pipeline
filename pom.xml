@@ -91,7 +91,7 @@
             <groupId>com.github.jmchilton.blend4j</groupId>
             <artifactId>blend4j</artifactId>
             <version>0.2.0-SNAPSHOT</version>
-            <!--<version>3-SNAPSHOT</version>-->
+          
         </dependency>
         <dependency>
             <groupId>org.vaadin.addons</groupId>
@@ -106,9 +106,9 @@
         
        
         <dependency>
-            <groupId>com.compomics</groupId>
+            <groupId>com.compomics</groupId>          
             <artifactId>utilities</artifactId>
-            <version>4.12.13</version>
+            <version>4.12.15</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
@@ -129,6 +129,7 @@
            
             </exclusions>
         </dependency>
+       
         <dependency>
             <groupId>org.vaadin.addons</groupId>
             <artifactId>canvas</artifactId>
@@ -186,8 +187,11 @@
             <version>1.0.12</version>
         </dependency>
 
-
-  
+        <dependency>
+            <groupId>web.com.uib.probe</groupId>
+            <artifactId>SearchParameterWRLight</artifactId>
+            <version>1.0</version>          
+        </dependency>  
     </dependencies>
 
    

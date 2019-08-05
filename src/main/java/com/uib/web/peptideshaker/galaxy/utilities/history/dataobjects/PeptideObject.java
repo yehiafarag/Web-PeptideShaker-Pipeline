@@ -5,7 +5,6 @@ import com.compomics.util.experiment.biology.PTMFactory;
 import com.compomics.util.experiment.biology.Peptide;
 import com.compomics.util.experiment.identification.matches.ModificationMatch;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -109,15 +108,27 @@ public class PeptideObject extends Peptide {
     /**
      * Intensity value of the quantification.
      */
-    private double intensity=0;
-     /**
+    private double intensity = 0;
+    /**
      * Intensity hash-code colour of the quantification.
      */
     private String intensityColor;
     /**
      * Intensity hash-code colour of the psmNumber.
      */
-    private String psmColor="RGB(120,120,120)";
+    private String psmColor = "RGB(120,120,120)";
+    /**
+     * Peptide not mapped to 3dView.
+     */
+    private boolean invisibleOn3d;
+
+    public boolean isInvisibleOn3d() {
+        return invisibleOn3d;
+    }
+
+    public void setInvisibleOn3d(boolean invisibleOn3d) {
+        this.invisibleOn3d = invisibleOn3d;
+    }
 
     public String getPsmColor() {
         return psmColor;

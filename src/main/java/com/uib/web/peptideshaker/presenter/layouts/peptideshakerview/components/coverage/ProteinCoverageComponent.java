@@ -70,7 +70,7 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
                     ProteinCoverageComponent.this.addComponent(peptideDistributionLayout, "left:0; top:45px;");
                     ProteinCoverageComponent.this.setHeight(ProteinCoverageComponent.this.getHeight() + 20, Unit.PIXELS);
                     expanded = true;
-                    
+
                 } else if (!v && expanded) {
                     ProteinCoverageComponent.this.removeAllComponents();
                     ProteinCoverageComponent.this.addComponent(chainCoverage3dLayout, "left:0; top:0px;");
@@ -83,6 +83,11 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
                     ProteinCoverageComponent.this.addComponent(chainCoverage3dLayout, "left:0; top:0px;");
                     ProteinCoverageComponent.this.addComponent(proteinCoverageLayout, "left:0; top:10px;");
                     ProteinCoverageComponent.this.addComponent(peptideDistributionLayout, "left:0; top:25px;");
+                }
+                if (v) {
+                    proteinCoverageLayout.removeStyleName("hideinvisible");
+                } else {
+                    proteinCoverageLayout.addStyleName("hideinvisible");
                 }
                 super.setVisible(v);
             }
@@ -103,7 +108,7 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
         LayoutEvents.LayoutClickListener peptidesListener = (LayoutEvents.LayoutClickEvent event) -> {
             Component clickedComp = event.getClickedComponent();
             if ((clickedComp != null) && (clickedComp.getStyleName().contains("protoformcoverage") || clickedComp.getStyleName().contains("protoformmodstyle") || (clickedComp.getStyleName().contains("peptidelayout") && (clickedComp instanceof VerticalLayout)))) {
-           
+
             } else if (clickedComp != null && clickedComp.getStyleName().contains("peptidelayout")) {
                 PeptideLayout genPeptid = (PeptideLayout) clickedComp;
                 selectPeptide(protein.getAccession(), genPeptid.getPeptideId());
@@ -370,6 +375,20 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
             level = level * 20;
             peptideDistributionLayout.addComponent(pep, "left:" + pep.getX() + "%; top:" + level + "px;");
             pep.addLocation(level);
+            if (pep.getPeptide().isInvisibleOn3d()) {
+
+                AbsoluteLayout unmapped3dPeptide = new AbsoluteLayout();
+                unmapped3dPeptide.setWidth(pep.getWidth(), pep.getWidthUnits());
+                unmapped3dPeptide.setStyleName("invisiblepeptideon3d");
+                unmapped3dPeptide.setHeight(15, Unit.PIXELS);
+                VerticalLayout blackLine = new VerticalLayout();
+                blackLine.setStyleName("graymiddleline");
+                blackLine.setWidth(100, Unit.PERCENTAGE);
+                blackLine.setHeight(2, Unit.PIXELS);
+                unmapped3dPeptide.addComponent(blackLine, "left:0px;top:50%;");
+
+                this.proteinCoverageLayout.addComponent(unmapped3dPeptide, "left:" + pep.getX() + "%; top:-24px;");
+            }
 
         }
         return levelNum;

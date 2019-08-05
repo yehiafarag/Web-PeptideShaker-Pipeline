@@ -1,8 +1,8 @@
 package com.uib.web.peptideshaker.galaxy;
 
+import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
 import com.uib.web.peptideshaker.galaxy.utilities.GalaxyHistoryHandler;
 import com.uib.web.peptideshaker.galaxy.utilities.GalaxyToolsHandler;
-import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
 import com.github.jmchilton.blend4j.galaxy.GalaxyInstance;
 import com.github.jmchilton.blend4j.galaxy.GalaxyInstanceFactory;
 import com.github.jmchilton.blend4j.galaxy.UsersClient;
@@ -95,10 +95,9 @@ public abstract class GalaxyInteractiveLayer {
      */
     public boolean connectToGalaxyServer(String galaxyServerUrl, String userAPI, String userDataFolderUrl) {
         try {
-
             userOverViewList.clear();
             Galaxy_Instance = GalaxyInstanceFactory.get(galaxyServerUrl, userAPI);
-            Galaxy_Instance.getHistoriesClient().getHistories();
+            Galaxy_Instance.getHistoriesClient().getHistories(); 
 
             user_folder = new File(userDataFolderUrl, Galaxy_Instance.getApiKey() + "");
             user_folder.mkdir();
@@ -177,7 +176,6 @@ public abstract class GalaxyInteractiveLayer {
         mgfIdsList.forEach((mgfId) -> {
             mgfMap.put(mgfId, historyHandler.getMgfFilesMap().get(mgfId).getName());
         });
-        System.out.println("execute_SearchGUI_PeptideShaker_PathwayMatcher_WorkFlow ");
         toolsHandler.execute_SearchGUI_PeptideShaker_PathwayMatcher_WorkFlow(projectName, fastaFileId, mgfMap, searchEnginesList, historyHandler.getWorkingHistoryId(), searchParameters);
         toolsHandler.synchronizeDataWithGalaxyServer(true);
     }

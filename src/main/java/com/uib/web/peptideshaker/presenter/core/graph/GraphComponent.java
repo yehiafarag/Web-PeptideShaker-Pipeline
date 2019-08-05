@@ -123,7 +123,7 @@ public abstract class GraphComponent extends VerticalLayout {
     private final AbsoluteLayout scaleContainer;
     private VerticalLayout psmColorScaleLayout;
     private VerticalLayout intensityColorScaleLayout;
-
+    private NetworkGraphComponent proteinsPathwayNewtorkGraph;
     private final Property.ValueChangeListener proteinsControlListener;
 
     public String getThumbImgeUrl() {
@@ -195,7 +195,7 @@ public abstract class GraphComponent extends VerticalLayout {
             selectAll();
         });
 
-        informationLegend = new Legend() {
+        informationLegend = new Legend(false) {
             @Override
             public void close() {
                 legendLayout.setPopupVisible(false);
@@ -230,6 +230,7 @@ public abstract class GraphComponent extends VerticalLayout {
         bottomRightPanel.setComponentAlignment(updateLayoutBtn, Alignment.TOP_CENTER);
         bottomRightPanel.addComponent(legendLayoutBtn);
         bottomRightPanel.setComponentAlignment(legendLayoutBtn, Alignment.TOP_CENTER);
+        bottomRightPanel.addStyleName("righttbottompanelstyle");
         mainContainer.addComponent(legendLayout, "left: " + 50 + "%; top: " + 50 + "%");
         lefTtopPanel = new VerticalLayout();
         lefTtopPanel.setSpacing(false);
@@ -249,6 +250,7 @@ public abstract class GraphComponent extends VerticalLayout {
         proteinsControl.setItemCaption("PSMNumber", "#PSMs");
         proteinsControl.addItem("Intensity");
         lefTtopPanel.addComponent(proteinsControl);
+        lefTtopPanel.addStyleName("lefttoppanelstyle");
 
         proteinsControlListener = (Property.ValueChangeEvent event) -> {
             if (proteinsControl.getValue() == null) {
@@ -256,7 +258,9 @@ public abstract class GraphComponent extends VerticalLayout {
             }
             informationLegend.updateLegend(proteinsControl.getValue() + "");
             updateNodeColourType(proteinsControl.getValue() + "");
-            intensityColorScaleLayout.setVisible((proteinsControl.getValue() + "").equalsIgnoreCase("Intensity"));
+            if (intensityColorScaleLayout != null) {
+                intensityColorScaleLayout.setVisible((proteinsControl.getValue() + "").equalsIgnoreCase("Intensity"));
+            }
             psmColorScaleLayout.setVisible((proteinsControl.getValue() + "").equalsIgnoreCase("PSMNumber"));
         };
         proteinsControl.addValueChangeListener(proteinsControlListener);
@@ -265,6 +269,7 @@ public abstract class GraphComponent extends VerticalLayout {
         leftBottomPanel.setSpacing(false);
         leftBottomPanel.setWidthUndefined();
         leftBottomPanel.addStyleName("inframe");
+        leftBottomPanel.addStyleName("leftbottompanelstyle");
         nodeControl = new OptionGroup();
         nodeControl.setMultiSelect(true);
         nodeControl.setStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
@@ -393,6 +398,7 @@ public abstract class GraphComponent extends VerticalLayout {
         graphsControl.setStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
         graphsControl.addStyleName(ValoTheme.OPTIONGROUP_SMALL);
         graphsControl.addStyleName("smallertext");
+        graphsControl.addStyleName("graphcontrolstyle");
 
         graphsControl.addItem("Protein-Peptide");
         graphsControl.addItem("Proteoform");
@@ -426,6 +432,7 @@ public abstract class GraphComponent extends VerticalLayout {
     }
 
     public void addProtoformGraphComponent(NetworkGraphComponent proteinsPathwayNewtorkGraph) {
+        this.proteinsPathwayNewtorkGraph = proteinsPathwayNewtorkGraph;
         protoformLayerContainer.addComponent(proteinsPathwayNewtorkGraph);
 
     }
@@ -502,6 +509,7 @@ public abstract class GraphComponent extends VerticalLayout {
                 }
             };
             informationLegend.updateModificationLayout(modifications);
+            this.proteinsPathwayNewtorkGraph.getInformationLegend().updateModificationLayout(modifications);
             n.setX(graphLayout.getX(node));
             n.setY(graphLayout.getY(node));
             nodesMap.put(node, n);
@@ -564,12 +572,16 @@ public abstract class GraphComponent extends VerticalLayout {
             lastSelectedModeType = ("PSMNumber");
         }
         thumbImgeUrl = generateThumbImg();
-        this.psmColorScaleLayout = psmColorScale.getVerticalScale(false);
-        this.intensityColorScaleLayout = intensityColorScale.getVerticalScale(true);
+        this.psmColorScaleLayout = psmColorScale.getVerticalScale(true);
         informationLegend.updatePSMNumberLayout(psmColorScale.getColorScale());
         scaleContainer.addComponent(psmColorScaleLayout);
-        scaleContainer.addComponent(intensityColorScaleLayout);
-        intensityColorScaleLayout.setVisible(false);
+        if (quantDs) {
+            this.intensityColorScaleLayout = intensityColorScale.getVerticalScale(true);
+            scaleContainer.addComponent(intensityColorScaleLayout);
+            intensityColorScaleLayout.setVisible(false);
+            informationLegend.updateIntensityLayout(intensityColorScale.getColorScale());
+        }
+
     }
 
     private void reDrawGraph() {

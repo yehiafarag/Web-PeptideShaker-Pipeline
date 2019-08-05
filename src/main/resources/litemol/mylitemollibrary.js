@@ -59,7 +59,7 @@ mylitemollibrary.LiteMolComponent = function (element) {
                 }
                 excutequery(newid);
             } else if (value.includes("update-_-")) {
-                latestValue = "";               
+                latestValue = "";
                 redraw();
             }
         } catch (exp) {
@@ -123,16 +123,6 @@ mylitemollibrary.LiteMolComponent = function (element) {
 
     function excutequery(newId) {
         try {
-
-//        document.getElementById('pdbid').value = tquery;
-//        if (newId) {
-//            reset();
-//            controlBtns[14].click();
-//            setTimeout(update, 5000);
-//        } else {
-//            update();
-//        }
-
             document.getElementById('pdbid').value = tquery;
             if (newId === true) {
                 reset();
@@ -162,14 +152,6 @@ mylitemollibrary.LiteMolComponent = function (element) {
     function reset() {
         controlBtns[26].click();
     }
-
-//    function hideWater() {
-//        document.getElementById('showWB').value = hideWaterVar;
-//        hideWaterVar = !hideWaterVar;
-//        excutequery(tquery, false);
-////        alert("hide water calling"+hideWaterVar)
-//        controlBtns[14].click();
-//    }
     function hideWater() {
         controlBtns[26].click();
         document.getElementById('showWB').value = hideWaterVar;

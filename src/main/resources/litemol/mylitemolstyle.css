@@ -99,3 +99,9 @@ html,body,.litemolbody,center{
 .lm-icon-reset-scene{
     margin-left:-20px !important;
 }
+
+
+.mobilestyle .lm-viewport-host3d canvas{
+    height:100% !important;
+    width: auto !important;
+}

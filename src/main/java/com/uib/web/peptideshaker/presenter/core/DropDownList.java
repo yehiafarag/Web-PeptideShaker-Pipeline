@@ -114,7 +114,7 @@ public class DropDownList extends VerticalLayout {
             lastSelectedId = objectId;
         } catch (Exception e) {
 
-//        Page.getCurrent().reload();
+        Page.getCurrent().reload();
         }
 
     }

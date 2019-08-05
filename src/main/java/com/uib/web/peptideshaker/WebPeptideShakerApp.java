@@ -2,21 +2,18 @@ package com.uib.web.peptideshaker;
 
 import com.uib.web.peptideshaker.presenter.PresenterManager;
 import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
-import com.uib.web.peptideshaker.dal.ReactomeDatabase;
 import com.uib.web.peptideshaker.galaxy.GalaxyInteractiveLayer;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyFileObject;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyTransferableFile;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
-import com.uib.web.peptideshaker.model.core.LinkUtil;
 import com.uib.web.peptideshaker.presenter.FileSystemPresenter;
 import com.uib.web.peptideshaker.presenter.InteractivePSPRojectResultsPresenter;
 import com.uib.web.peptideshaker.presenter.SearchGUI_PeptideShaker_Tool_Presenter;
 import com.uib.web.peptideshaker.presenter.WelcomePagePresenter;
-import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.VerticalLayout;
-import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -67,6 +64,7 @@ public class WebPeptideShakerApp extends VerticalLayout {
     public WebPeptideShakerApp() {
         WebPeptideShakerApp.this.setSizeFull();
         WebPeptideShakerApp.this.setMargin(new MarginInfo(true, true, true, true));
+         WebPeptideShakerApp.this.addStyleName("mainapplicationframe");
         WebPeptideShakerApp.this.addStyleName("frame");
 
         this.Galaxy_Interactive_Layer = new GalaxyInteractiveLayer() {
@@ -84,7 +82,9 @@ public class WebPeptideShakerApp extends VerticalLayout {
             }
         };
         presentationManager = new PresenterManager();
+        presentationManager.addStyleName("mainapplicationframe");
         WebPeptideShakerApp.this.addComponent(presentationManager);
+         WebPeptideShakerApp.this.setComponentAlignment(presentationManager, Alignment.TOP_CENTER);
 
         /**
          * landing page initialisation.

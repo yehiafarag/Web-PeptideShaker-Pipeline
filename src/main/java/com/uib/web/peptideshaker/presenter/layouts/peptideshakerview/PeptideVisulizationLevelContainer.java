@@ -6,15 +6,9 @@ import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.charts.RegistrableFilter;
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components.PSMViewComponent;
 import com.uib.web.peptideshaker.presenter.pscomponents.SpectrumInformation;
-import com.vaadin.icons.VaadinIcons;
-import com.vaadin.server.VaadinSession;
-import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
+import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.themes.ValoTheme;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,7 +22,7 @@ import java.util.Set;
  */
 public class PeptideVisulizationLevelContainer extends HorizontalLayout implements RegistrableFilter {
 
-    private final VerticalLayout container;
+    private final AbsoluteLayout container;
     private final Label headerLabel;
     private final SelectionManager Selection_Manager;
     private final BigSideBtn psmViewBtn;
@@ -52,16 +46,15 @@ public class PeptideVisulizationLevelContainer extends HorizontalLayout implemen
         this.Selection_Manager = Selection_Manager;
         this.psmViewBtn = psmViewBtn;
 
-        container = new VerticalLayout();
+        container = new AbsoluteLayout();
         container.setSizeFull();
-        container.setSpacing(false);
         PeptideVisulizationLevelContainer.this.addComponent(container);
 
         HorizontalLayout topLabelContainer = new HorizontalLayout();
-        topLabelContainer.setSizeFull();
+        topLabelContainer.setHeight(30,Unit.PIXELS);
+        topLabelContainer.setWidth(100,Unit.PERCENTAGE);
         topLabelContainer.addStyleName("minhight30");
         container.addComponent(topLabelContainer);
-        container.setExpandRatio(topLabelContainer, 0.01f);
 
         HorizontalLayout topLeftLabelContainer = new HorizontalLayout();
         topLeftLabelContainer.setWidth(100, Unit.PERCENTAGE);
@@ -74,34 +67,33 @@ public class PeptideVisulizationLevelContainer extends HorizontalLayout implemen
         topLeftLabelContainer.setSpacing(true);
         topLeftLabelContainer.addComponent(headerLabel);
 
-        HorizontalLayout topControllerBtnContainer = new HorizontalLayout();
-        topControllerBtnContainer.setWidth(100, Unit.PIXELS);
-        topControllerBtnContainer.setHeight(100, Unit.PERCENTAGE);
-        topLeftLabelContainer.addComponent(topControllerBtnContainer);
-        topLeftLabelContainer.setComponentAlignment(topControllerBtnContainer, Alignment.TOP_RIGHT);
-        topControllerBtnContainer.setMargin(new MarginInfo(false, false, false, false));
-        topControllerBtnContainer.setSpacing(true);
-        topControllerBtnContainer.setStyleName("buttoncontainerstyle");
+//        HorizontalLayout topControllerBtnContainer = new HorizontalLayout();
+//        topControllerBtnContainer.setWidth(100, Unit.PIXELS);
+//        topControllerBtnContainer.setHeight(100, Unit.PERCENTAGE);
+//        topLeftLabelContainer.addComponent(topControllerBtnContainer);
+//        topLeftLabelContainer.setComponentAlignment(topControllerBtnContainer, Alignment.TOP_RIGHT);
+//        topControllerBtnContainer.setMargin(new MarginInfo(false, false, false, false));
+//        topControllerBtnContainer.setSpacing(true);
+//        topControllerBtnContainer.setStyleName("buttoncontainerstyle");
 
-        final Button viewTableBtn = new Button(VaadinIcons.TABLE);
-        topControllerBtnContainer.addComponent(viewTableBtn);
-        viewTableBtn.setStyleName(ValoTheme.BUTTON_TINY);
-        viewTableBtn.addStyleName("selectedBtn");
-        viewTableBtn.setSizeFull();
-        viewTableBtn.setData("table");
-
-        Button viewSpectraChartBtn = new Button(VaadinIcons.BAR_CHART_H);
-        topControllerBtnContainer.addComponent(viewSpectraChartBtn);
-        viewSpectraChartBtn.setStyleName(ValoTheme.BUTTON_TINY);
-        viewSpectraChartBtn.addStyleName("selectedBtn");
-        viewSpectraChartBtn.setSizeFull();
-        viewSpectraChartBtn.setData("plot");
+//        final Button viewTableBtn = new Button(VaadinIcons.TABLE);
+//        topControllerBtnContainer.addComponent(viewTableBtn);
+//        viewTableBtn.setStyleName(ValoTheme.BUTTON_TINY);
+//        viewTableBtn.addStyleName("selectedBtn");
+//        viewTableBtn.setSizeFull();
+//        viewTableBtn.setData("table");
+//
+//        Button viewSpectraChartBtn = new Button(VaadinIcons.BAR_CHART_H);
+//        topControllerBtnContainer.addComponent(viewSpectraChartBtn);
+//        viewSpectraChartBtn.setStyleName(ValoTheme.BUTTON_TINY);
+//        viewSpectraChartBtn.addStyleName("selectedBtn");
+//        viewSpectraChartBtn.setSizeFull();
+//        viewSpectraChartBtn.setData("plot");
 
         HorizontalLayout middleContainer = new HorizontalLayout();
         middleContainer.setSizeFull();
         middleContainer.setSpacing(true);
-        container.addComponent(middleContainer);
-        container.setExpandRatio(middleContainer, 1f);
+        container.addComponent(middleContainer,"left:0px ; top:30px");
 
         psmViewComponent = new PSMViewComponent() {
             @Override
@@ -114,47 +106,47 @@ public class PeptideVisulizationLevelContainer extends HorizontalLayout implemen
         middleContainer.addComponent(psmViewComponent);
         Selection_Manager.RegistrProteinInformationComponent(PeptideVisulizationLevelContainer.this);
 
-        Button.ClickListener viewControlListener = (Button.ClickEvent event) -> {
-            Button actionBtn = event.getButton();
-            boolean isSmallScreenMods = (boolean) VaadinSession.getCurrent().getAttribute("smallscreenstyle");
-            
-            if (actionBtn.getStyleName().contains("selectedBtn")) {
-                actionBtn.removeStyleName("selectedBtn");
-                if (actionBtn.getData().toString().equalsIgnoreCase("plot")) {
-                    psmViewComponent.viewSpectraPlot(false);
-                    if (isSmallScreenMods) {
-                        psmViewComponent.viewPSMTable(true);
-                        viewTableBtn.addStyleName("selectedBtn");
-                    }
-                } else {
-                    psmViewComponent.viewPSMTable(false);
-                    if (isSmallScreenMods) {
-                        psmViewComponent.viewSpectraPlot(true);
-                        viewSpectraChartBtn.addStyleName("selectedBtn");
-                    }
-
-                }
-            } else {
-                actionBtn.addStyleName("selectedBtn");
-                if (actionBtn.getData().toString().equalsIgnoreCase("plot")) {
-                    psmViewComponent.viewSpectraPlot(true);
-                    if (isSmallScreenMods) {
-                        psmViewComponent.viewPSMTable(false);
-                        viewTableBtn.removeStyleName("selectedBtn");
-                    }
-
-                } else {
-                    psmViewComponent.viewPSMTable(true);
-                    if (isSmallScreenMods) {
-                        psmViewComponent.viewSpectraPlot(false);
-                        viewSpectraChartBtn.removeStyleName("selectedBtn");
-                    }
-                }
-            }
-
-        };
-        viewTableBtn.addClickListener(viewControlListener);
-        viewSpectraChartBtn.addClickListener(viewControlListener);
+//        Button.ClickListener viewControlListener = (Button.ClickEvent event) -> {
+//            Button actionBtn = event.getButton();
+//            boolean isSmallScreenMods = (boolean) VaadinSession.getCurrent().getAttribute("smallscreenstyle");
+//            
+//            if (actionBtn.getStyleName().contains("selectedBtn")) {
+//                actionBtn.removeStyleName("selectedBtn");
+//                if (actionBtn.getData().toString().equalsIgnoreCase("plot")) {
+//                    psmViewComponent.viewSpectraPlot(false);
+//                    if (isSmallScreenMods) {
+//                        psmViewComponent.viewPSMTable(true);
+//                        viewTableBtn.addStyleName("selectedBtn");
+//                    }
+//                } else {
+//                    psmViewComponent.viewPSMTable(false);
+//                    if (isSmallScreenMods) {
+//                        psmViewComponent.viewSpectraPlot(true);
+//                        viewSpectraChartBtn.addStyleName("selectedBtn");
+//                    }
+//
+//                }
+//            } else {
+//                actionBtn.addStyleName("selectedBtn");
+//                if (actionBtn.getData().toString().equalsIgnoreCase("plot")) {
+//                    psmViewComponent.viewSpectraPlot(true);
+//                    if (isSmallScreenMods) {
+//                        psmViewComponent.viewPSMTable(false);
+//                        viewTableBtn.removeStyleName("selectedBtn");
+//                    }
+//
+//                } else {
+//                    psmViewComponent.viewPSMTable(true);
+//                    if (isSmallScreenMods) {
+//                        psmViewComponent.viewSpectraPlot(false);
+//                        viewSpectraChartBtn.removeStyleName("selectedBtn");
+//                    }
+//                }
+//            }
+//
+//        };
+//        viewTableBtn.addClickListener(viewControlListener);
+//        viewSpectraChartBtn.addClickListener(viewControlListener);
     }
 
     public void selectDataset(PeptideShakerVisualizationDataset peptideShakerVisualizationDataset) {

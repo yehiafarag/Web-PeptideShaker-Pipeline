@@ -22,7 +22,7 @@ public class ButtonWithLabel extends HorizontalLayout {
     private final Label textLabel;
 
     public ButtonWithLabel(String text, int btnId) {
-        ButtonWithLabel.this.setHeight(100, Unit.PERCENTAGE);
+        ButtonWithLabel.this.setHeight(80, Unit.PIXELS);
         ButtonWithLabel.this.setWidthUndefined();
         ButtonWithLabel.this.setSpacing(true);
         ButtonWithLabel.this.addStyleName("btnwithtext");

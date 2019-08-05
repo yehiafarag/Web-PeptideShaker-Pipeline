@@ -48,6 +48,8 @@ public class PeptidShakerUI extends UI {
      */
     private NeLSStorageInteractiveLayer NeLS_Galaxy;
     private Notification notification;
+    private boolean mobileScreenComp;
+    private boolean verticalScreenMode;
 
     /**
      * The entry point for the application .
@@ -60,16 +62,14 @@ public class PeptidShakerUI extends UI {
         try {
 
             PeptidShakerUI.this.setSizeFull();
-//             PeptidShakerUI.this.setWidth(1024,Unit.PIXELS);            
-//             PeptidShakerUI.this.setHeight(600,Unit.PIXELS);
-
-            notification = new Notification("Use the device in landscape mode :-)", Notification.Type.ERROR_MESSAGE);
+            notification = new Notification("Use the device in landscape mode <center><i>(recommended)</i></center>", Notification.Type.ERROR_MESSAGE);
             notification.setDelayMsec(10000);
+            notification.setHtmlContentAllowed(true);
             notification.setStyleName("mobilealertnotification");
+
             /**
              * Initialise the context parameters and store them in
              * VaadinSession.
-             *
              */
             ServletContext scx = VaadinServlet.getCurrent().getServletContext();
             String localFileSystemFolderPath = (scx.getInitParameter("filesURL"));
@@ -89,19 +89,30 @@ public class PeptidShakerUI extends UI {
             VaadinSession.getCurrent().setAttribute("dbDriver", dbDriver);
             VaadinSession.getCurrent().setAttribute("dbUserName", dbUserName);
             VaadinSession.getCurrent().setAttribute("dbPassword", dbPassword);
+            System.out.println("---->>>csfProteinsListURL---->>"+csfProteinsListURL);
             updateCSFPRProteinsList(csfProteinsListURL);
-            if (testUserAPIKey == null || galaxyServerUrl == null) {
-                notification = new Notification("Error in Galaxy server address, Contact administrator :-(", Notification.Type.ERROR_MESSAGE);
+            if (testUserAPIKey == null || galaxyServerUrl == null || !checkConnectionToGalaxy(galaxyServerUrl)) {
+                notification = new Notification("<center style=' color: black;>'><font style='font-size: 14px;font-weight: 600;line-height: 31px;word-spacing: 4px; letter-spacing: 1px;'>Contact administrator !</font><br>Galaxy server is not available</center>", Notification.Type.WARNING_MESSAGE);
+                notification.setHtmlContentAllowed(true);
                 notification.setDelayMsec(-1);
                 notification.show(Page.getCurrent());
                 return;
             }
-            if (!checkConnectionToGalaxy(galaxyServerUrl)) {
-                notification = new Notification("Error, Galaxy server is not available , Contact administrator :-(", Notification.Type.ERROR_MESSAGE);
-                notification.setDelayMsec(-1);
-                notification.show(Page.getCurrent());
-                return;
-            }
+
+            int screenH = Page.getCurrent().getWebBrowser().getScreenHeight();
+            int screenW = Page.getCurrent().getWebBrowser().getScreenWidth();
+            mobileScreenComp = (Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile")) || (screenW < 1349 || screenH < 1000);
+            verticalScreenMode = (Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight());
+            
+           
+            
+            
+            
+//            if (mobileScreenComp) {
+            VaadinSession.getCurrent().setAttribute("smallscreenstyle", false);
+            VaadinSession.getCurrent().setAttribute("mobilescreenstyle", mobileScreenComp);
+//            }
+
             WebPeptideShakerApp webPeptideShakerApp = new WebPeptideShakerApp();
             PeptidShakerUI.this.setContent(webPeptideShakerApp);
 
@@ -112,44 +123,47 @@ public class PeptidShakerUI extends UI {
              * @todo: we need better optimisation to detect the window ratio.
              */
 //        if ((Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight()) || (Page.getCurrent().getBrowserWindowWidth() < 650) || (Page.getCurrent().getBrowserWindowHeight() < 600)) {
-            if (Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile")) {
+            if (mobileScreenComp) {
                 webPeptideShakerApp.addStyleName("mobilestyle");
-                webPeptideShakerApp.addStyleName("smallscreenstyle");
-                VaadinSession.getCurrent().setAttribute("smallscreenstyle", true);
-            } else {
-                webPeptideShakerApp.removeStyleName("mobilestyle");
-                VaadinSession.getCurrent().setAttribute("smallscreenstyle", false);
             }
-            if ((Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight()) || (Page.getCurrent().getBrowserWindowWidth() < 1024) || (Page.getCurrent().getBrowserWindowHeight() < 600)) {
-                webPeptideShakerApp.addStyleName("smallscreenstyle");
-                VaadinSession.getCurrent().setAttribute("smallscreenstyle", true);
-            } else {
-                webPeptideShakerApp.removeStyleName("smallscreenstyle");
-                VaadinSession.getCurrent().setAttribute("smallscreenstyle", false);
+             if(mobileScreenComp && !(Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile"))){
+                webPeptideShakerApp.addStyleName("smallpcscreen");
             }
-
+//            if (smallscreen && verticalScreenMode) {
+//                webPeptideShakerApp.addStyleName("verticalmode");
+//            }
             /**
              * On resize the browser re-arrange all the created pop-up windows
              * to the page center.
              */
             Page.getCurrent().addBrowserWindowResizeListener((Page.BrowserWindowResizeEvent event) -> {
-                if (Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile") && (Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight())) {
-                    notification.show(Page.getCurrent());
-                    webPeptideShakerApp.addStyleName("hidemode");
+                if (mobileScreenComp && (Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight())) {
+                    if (Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile")) {
+                        notification.show(Page.getCurrent());
+                    }
+                    webPeptideShakerApp.addStyleName("verticalmode");
+//                    webPeptideShakerApp.addStyleName("hidemode");
                 } else if (Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile") && (Page.getCurrent().getBrowserWindowWidth() >= Page.getCurrent().getBrowserWindowHeight())) {
-                    webPeptideShakerApp.removeStyleName("hidemode");
+//                    webPeptideShakerApp.removeStyleName("hidemode");
+                    webPeptideShakerApp.removeStyleName("verticalmode");
 
-                } else if ((Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight()) || (Page.getCurrent().getBrowserWindowWidth() < 1000) || (Page.getCurrent().getBrowserWindowHeight() < 500)) {
-                    webPeptideShakerApp.addStyleName("smallscreenstyle");
-                    VaadinSession.getCurrent().setAttribute("smallscreenstyle", true);
-                } else {
-                    webPeptideShakerApp.removeStyleName("smallscreenstyle");
-                    VaadinSession.getCurrent().setAttribute("smallscreenstyle", false);
                 }
                 UI.getCurrent().getWindows().forEach((w) -> {
                     w.center();
                 });
             });
+
+            if (mobileScreenComp && verticalScreenMode) {
+                if (Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile")) {
+                    notification.show(Page.getCurrent());
+                }
+                webPeptideShakerApp.addStyleName("verticalmode");
+//                    webPeptideShakerApp.addStyleName("hidemode");
+            } else if (mobileScreenComp && !verticalScreenMode) {
+//                    webPeptideShakerApp.removeStyleName("hidemode");
+                webPeptideShakerApp.removeStyleName("verticalmode");
+
+            }
 
             /**
              * for future use to integrate with NeLS.
@@ -183,7 +197,6 @@ public class PeptidShakerUI extends UI {
             if (code == 404) {
                 return false;
             }
-
         } catch (MalformedURLException ex) {
             return false;
         } catch (IOException ex) {

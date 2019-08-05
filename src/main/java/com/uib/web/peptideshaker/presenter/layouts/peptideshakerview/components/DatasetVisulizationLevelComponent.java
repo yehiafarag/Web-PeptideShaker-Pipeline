@@ -25,11 +25,12 @@ import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.VaadinSession;
+import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.AbstractOrderedLayout;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import java.awt.Color;
 import java.text.DecimalFormat;
@@ -44,7 +45,7 @@ import java.util.Set;
  *
  * @author Yehia Farag
  */
-public class DatasetVisulizationLevelComponent extends VerticalLayout implements RegistrableFilter {
+public class DatasetVisulizationLevelComponent extends AbsoluteLayout implements RegistrableFilter {
 
     private final SearchableTable proteinTableContainer;
     private final FiltersContainer datasetFiltersContainer;
@@ -53,9 +54,11 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
     private PeptideShakerVisualizationDataset peptideShakerVisualizationDataset;
     private Map<String, ProteinGroupObject> proteinTableMap;
     private double intensityColumnWidth = 120.0;
-
+    private final Map<Integer, Component> filterComponentsMap;
+    private int currentFilterView = 0;
     private final DecimalFormat df = new DecimalFormat("#.##");
     private final DecimalFormat df1 = new DecimalFormat("0.00E00");// new DecimalFormat("#.##");
+    
     /**
      * The post translational modifications factory.
      */
@@ -63,12 +66,10 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
 
     public DatasetVisulizationLevelComponent(SelectionManager Selection_Manager) {
         DatasetVisulizationLevelComponent.this.setSizeFull();
-        DatasetVisulizationLevelComponent.this.setSpacing(false);
         DatasetVisulizationLevelComponent.this.addStyleName("scrollinsideframe");
 
         this.datasetFiltersContainer = new FiltersContainer(Selection_Manager);
         DatasetVisulizationLevelComponent.this.addComponent(datasetFiltersContainer);
-        DatasetVisulizationLevelComponent.this.setExpandRatio(datasetFiltersContainer, 0.60f);
 
         this.inferenceMap = new HashMap<>();
         this.inferenceMap.put("Single Protein", 1);
@@ -110,15 +111,13 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
         };
         this.proteinTableContainer.setStyleName("datasetproteinstablestyle");
         DatasetVisulizationLevelComponent.this.addComponent(proteinTableContainer);
-        DatasetVisulizationLevelComponent.this.setExpandRatio(proteinTableContainer, 0.40f);
         Selection_Manager.RegistrDatasetsFilter(DatasetVisulizationLevelComponent.this);
         selectionListener = (event) -> {
             proteinTableContainer.getMainTable().setValue(((AbstractOrderedLayout) event.getComponent()).getData());
         };
         SizeReporter reporter = new SizeReporter(proteinTableContainer.getMainTable());
-        reporter.addResizeListener(new ComponentResizeListener() {
+        reporter.addResizeListener(new ComponentResizeListener() {            
             private int lastWidth = -1;
-
             @Override
             public void sizeChanged(ComponentResizeEvent event) {
                 Table mainTable = proteinTableContainer.getMainTable();
@@ -132,24 +131,34 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
                     corrector = (double) lastWidth / (770.0 + intensityColumnWidth);
                 }
                 proteinTableContainer.suspendColumnResizeListener();
-                mainTable.setColumnWidth("index", (int) (50 * corrector));
-                mainTable.setColumnWidth("proteinIntensity", (int) (intensityColumnWidth * corrector));
-                mainTable.setColumnWidth("proteinInference", (int) (37 * corrector));
-                mainTable.setColumnWidth("Accession", (int) (60 * corrector));
-                mainTable.setColumnWidth("csf", (int) (50 * corrector));
-                mainTable.setColumnWidth("coverage", (int) (120 * corrector));
-                mainTable.setColumnWidth("peptides_number", (int) (120 * corrector));
-                mainTable.setColumnWidth("psm_number", (int) (120 * corrector));
-                mainTable.setColumnWidth("ms2Quant", (int) (120 * corrector));
-                mainTable.setColumnWidth("mwkDa", (int) (120 * corrector));
-                mainTable.setColumnWidth("chromosom", (int) (50 * corrector));
-                mainTable.setColumnWidth("validation", (int) (32 * corrector));
-                mainTable.setColumnWidth("confidence", (int) (120 * corrector));
-                mainTable.setColumnWidth("chromosom", (int) (37 * corrector));
-                mainTable.setColumnWidth("Name", lastWidth - ((int) ((775 + intensityColumnWidth) * corrector)));
+                mainTable.setColumnWidth("index",Math.max(50,(int) (50 * corrector)));
+                mainTable.setColumnWidth("proteinIntensity",Math.max(120, (int) (intensityColumnWidth * corrector)));
+                mainTable.setColumnWidth("proteinInference",Math.max(37, (int) (37 * corrector)));
+                mainTable.setColumnWidth("Accession",Math.max(60, (int) (60 * corrector)));
+                mainTable.setColumnWidth("csf", Math.max(50,(int) (50 * corrector)));
+                mainTable.setColumnWidth("coverage",Math.max(120, (int) (120 * corrector)));
+                mainTable.setColumnWidth("peptides_number",Math.max(120, (int) (120 * corrector)));
+                mainTable.setColumnWidth("psm_number",Math.max(120, (int) (120 * corrector)));
+                mainTable.setColumnWidth("ms2Quant", Math.max(120,(int) (120 * corrector)));
+                mainTable.setColumnWidth("mwkDa", Math.max(120,(int) (120 * corrector)));
+                mainTable.setColumnWidth("chromosom", Math.max(50,(int) (50 * corrector)));
+                mainTable.setColumnWidth("validation",Math.max(32, (int) (32 * corrector)));
+                mainTable.setColumnWidth("confidence", Math.max(120,(int) (120 * corrector)));
+                mainTable.setColumnWidth("chromosom", Math.max(37,(int) (37 * corrector)));
+                mainTable.setColumnWidth("Name",Math.max(282, lastWidth - ((int) ((775 + intensityColumnWidth) * corrector))));
                 proteinTableContainer.activateColumnResizeListener();
             }
         });
+
+        this.filterComponentsMap = new HashMap<>();
+        this.filterComponentsMap.put(1, this.datasetFiltersContainer.getProteinInferenceFilter());
+        this.filterComponentsMap.put(2, this.datasetFiltersContainer.getValidationFilter());
+        this.filterComponentsMap.put(3, this.datasetFiltersContainer.getChromosomeFilter());
+        this.filterComponentsMap.put(4, this.datasetFiltersContainer.getModificationFilter());
+        this.filterComponentsMap.put(5, this.datasetFiltersContainer.getFilterRightPanelContainer());
+        this.filterComponentsMap.put(6, this.proteinTableContainer);
+
+        DatasetVisulizationLevelComponent.this.showNext();
 
     }
 
@@ -174,7 +183,7 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
         mainTable.setColumnCollapsed("ms2Quant", true);
         mainTable.setColumnCollapsed("chromosom", smallScreen);
         if (!peptideShakerVisualizationDataset.isQuantDataset()) {
-            mainTable.setColumnCollapsible("proteinIntensity", true);            
+            mainTable.setColumnCollapsible("proteinIntensity", true);
             mainTable.setColumnCollapsed("proteinIntensity", true);
             intensityColumnWidth = 0;
         }
@@ -191,20 +200,20 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
 
         } else {
 
-            mainTable.setColumnWidth("index", 50);
-            mainTable.setColumnWidth("proteinInference", 37);
-            mainTable.setColumnWidth("proteinIntensity", (int) intensityColumnWidth);
-            mainTable.setColumnWidth("Accession", 60);
-            mainTable.setColumnWidth("csf", 50);
-            mainTable.setColumnWidth("coverage", 100);
-            mainTable.setColumnWidth("peptides_number", 100);
-            mainTable.setColumnWidth("psm_number", 100);
-            mainTable.setColumnWidth("ms2Quant", 120);
-            mainTable.setColumnWidth("mwkDa", 120);
-            mainTable.setColumnWidth("chromosom", 50);
-            mainTable.setColumnWidth("validation", 32);
-            mainTable.setColumnWidth("confidence", 120);
-            mainTable.setColumnWidth("chromosom", 37);
+//            mainTable.setColumnWidth("index", 50);
+//            mainTable.setColumnWidth("proteinInference", 37);
+//            mainTable.setColumnWidth("proteinIntensity", (int) intensityColumnWidth);
+//            mainTable.setColumnWidth("Accession", 60);
+//            mainTable.setColumnWidth("csf", 50);
+//            mainTable.setColumnWidth("coverage", 100);
+//            mainTable.setColumnWidth("peptides_number", 100);
+//            mainTable.setColumnWidth("psm_number", 100);
+//            mainTable.setColumnWidth("ms2Quant", 120);
+//            mainTable.setColumnWidth("mwkDa", 120);
+//            mainTable.setColumnWidth("chromosom", 50);
+//            mainTable.setColumnWidth("validation", 32);
+//            mainTable.setColumnWidth("confidence", 120);
+//            mainTable.setColumnWidth("chromosom", 37);
         }
 
         proteinTableContainer.resetTable();
@@ -382,6 +391,69 @@ public class DatasetVisulizationLevelComponent extends VerticalLayout implements
     private String generateCaptionWithTooltio(String caption, String tooltip) {
         return "<div class='tooltip'>" + caption + "<span class='tooltiptext'>" + tooltip + "</span></div>";
 
+    }
+
+    public int showNext() {
+        filterComponentsMap.values().stream().map((view) -> {
+            view.addStyleName("hidedsfilter");
+            return view;
+        }).forEachOrdered((view) -> {
+            view.removeStyleName("viewdsfilter");
+        });
+        currentFilterView++;
+        if (currentFilterView > 6) {
+            currentFilterView = 1;
+        }
+        if (currentFilterView < 3) {
+            filterComponentsMap.get(1).addStyleName("viewdsfilter");
+            filterComponentsMap.get(1).removeStyleName("hidedsfilter");
+            currentFilterView = 2;
+        }
+        filterComponentsMap.get(currentFilterView).addStyleName("viewdsfilter");
+        filterComponentsMap.get(currentFilterView).removeStyleName("hidedsfilter");
+        if (currentFilterView == 6) {
+            datasetFiltersContainer.addStyleName("hidedsfilter");
+        } else {
+            datasetFiltersContainer.removeStyleName("hidedsfilter");
+        }
+        if (currentFilterView <= 2) {
+            return 1;
+        }
+        return currentFilterView-1;
+    }
+
+    public int showBefore() {
+        filterComponentsMap.values().stream().map((view) -> {
+            view.addStyleName("hidedsfilter");
+            return view;
+        }).forEachOrdered((view) -> {
+            view.removeStyleName("viewdsfilter");
+        });
+        currentFilterView--;
+        if (currentFilterView < 2) {
+            currentFilterView = 6;
+        }
+        if (currentFilterView < 3) {
+            filterComponentsMap.get(1).addStyleName("viewdsfilter");
+            filterComponentsMap.get(1).removeStyleName("hidedsfilter");
+            currentFilterView = 2;
+        }
+        filterComponentsMap.get(currentFilterView).addStyleName("viewdsfilter");
+        filterComponentsMap.get(currentFilterView).removeStyleName("hidedsfilter");
+        if (currentFilterView <= 2) {
+            return 1;
+        }
+        return currentFilterView-1;
+    }
+    /**
+     * Returns the color object corresponding to the given rgb representation.
+     *
+     * @param colorRGB the color in rgb representation
+     *
+     * @return the color object
+     */
+    private  Color getColor(int colorRGB) {
+        return new Color((colorRGB >> 16) & 0xFF, (colorRGB >> 8) & 0xFF, colorRGB & 0xFF);
     }
 
 }

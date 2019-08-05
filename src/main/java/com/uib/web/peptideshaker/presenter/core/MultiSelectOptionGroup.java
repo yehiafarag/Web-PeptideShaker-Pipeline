@@ -1,5 +1,6 @@
 package com.uib.web.peptideshaker.presenter.core;
 
+import com.vaadin.data.Property;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.HorizontalLayout;
@@ -146,9 +147,12 @@ public class MultiSelectOptionGroup extends HorizontalLayout implements LayoutEv
     /**
      * Set selection value
      *
-     * @param String id of the selected item
+     * @param valueId  id of the selected item
      */
     public void setSelectedValue(String valueId) {
+        if (valueId.equalsIgnoreCase("")) {
+            valueId = null;
+        }
         listI.select(valueId);
         listI.setData(listI.getValue());
     }
@@ -205,6 +209,24 @@ public class MultiSelectOptionGroup extends HorizontalLayout implements LayoutEv
 
     public boolean isModified() {
         return !listI.getValue().toString().equalsIgnoreCase(listI.getData() + "");
+    }
+
+    public void addValueChangeListener(Property.ValueChangeListener listener) {
+        listI.addValueChangeListener(listener);
+        listII.addValueChangeListener(listener);
+        listIII.addValueChangeListener(listener);
+    }
+
+    public void selectAll() {
+        listI.getItemIds().forEach((o) -> {
+            listI.select(o);
+        });
+        listII.getItemIds().forEach((o) -> {
+            listII.select(o);
+        });
+        listIII.getItemIds().forEach((o) -> {
+            listIII.select(o);
+        });
     }
 
 }

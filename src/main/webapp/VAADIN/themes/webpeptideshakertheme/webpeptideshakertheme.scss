@@ -147,6 +147,18 @@
 
 
     }
+    .v-verticallayout-mainapplicationframe {
+
+        border:1px solid lightgray;
+    }
+    .v-horizontallayout-mainapplicationframe {
+        max-width:1920px;
+        max-height:1057px;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        position:relative !important;
+        overflow:hidden !important;
+    }
 
     .v-link-headerlogo font{
         text-decoration: none !important;
@@ -535,8 +547,8 @@
     .frame{
         border-radius: 5px;
         padding:10px !important;
-        min-height: 522px;
-        min-width: 650px;
+        min-height:742px;
+        min-width: 1349px;
         background-color: white;
     }
     .subviewbuttonsactioncontainer {
@@ -954,7 +966,15 @@
     .scrollinsideframe{
         padding-left: 25px;
         padding-right: 25px;
+        padding-bottom:25px;
     }
+    .v-absolutelayout-wrapper-datasetfilterstyle{
+        bottom:40% !important;
+    }
+    .v-absolutelayout-wrapper-datasetproteinstablestyle{
+        top:60% !important;
+    }
+
     .disable{
         opacity:0.6;
     }
@@ -994,6 +1014,8 @@
         border-radius: 100%;
         max-width: 16px;
         max-height: 16px;
+        min-width: 16px;
+        min-height: 16px;
         position: fixed !important;
         cursor: -webkit-grab;
     }
@@ -1004,6 +1026,8 @@
         border-radius: 100%;
         min-width: 30px;
         min-height: 30px;
+        max-width: 30px;
+        max-height: 30px;
         overflow: visible !important;
         position: fixed !important;
         cursor: -webkit-grab;
@@ -1257,7 +1281,7 @@
         text-overflow: ellipsis !important;
         overflow: hidden !important;
         border-width: 1px;     
-        z-index:3 !important;
+        z-index:5 !important;
         position:relative !important;
         font-size: 10px !important;
 
@@ -2267,7 +2291,7 @@
     .v-popupview-popup-protlegend .v-label{
         margin-left:5px !important;
         line-height:25px;
-        font-size:14px;
+        font-size:12px;
         font-weight:bold;
     }
     .v-popupview-popup-protlegend .v-verticallayout-peptidenode{
@@ -2287,7 +2311,7 @@
     }
     .v-popupview-popup-protlegend .v-captiontext{
         padding-bottom: 10px;
-        font-size:17px;
+        font-size:13px;
     }
     .v-popupview-popup-protlegend .v-verticallayout-viewframecontent .v-button{
         position:absolute;
@@ -2749,10 +2773,13 @@
 
     .v-filterselect-select3dMenue .v-filterselect-button {
         color: #3d84dc !important;
-        -webkit-appearance: menulist !important;
         box-sizing: content-box !important;
         align-items: center;
         width: 20px !important;
+        background-size: 13px 15px;
+        background-image: url('img/caret-4.png');
+        background-repeat: no-repeat;
+        background-position:center -1px;
     }
 
     .v-filterselect-select3dMenue .v-filterselect-button:before {
@@ -3126,10 +3153,10 @@
         margin-top: calc(50vh - 10vw);
         height:50px!important;
         text-align: left;
-        background: linear-gradient(50deg,#2c3143 30%,hsl(59, 81%, 30%) 40%,hsl(28, 99%, 57%) 30% );
-        background: -webkit-linear-gradient(50deg,#2c3143 30%,hsl(59, 81%, 30%) 40%,hsl(28, 99%, 57%) 30% );
-        background: -o-linear-gradient(50deg,#2c3143 30%,hsl(59, 81%, 30%) 40%,hsl(28, 99%, 57%) 30% );
-        background: -moz-linear-gradient(50deg,#2c3143 30%,hsl(59, 81%, 30%) 40%,hsl(28, 99%, 57%) 30% );
+        background: linear, 50deg, #e9f2fd 30%, #8a880f 40%, #fe8a25 30%;
+        background: -webkit-linear-gradient(50deg, #e9f2fd 30%, #8a880f 40%, #fe8a25 30%);
+        background: -o-linear-gradient(50deg, #e9f2fd 30%, #8a880f 40%, #fe8a25 30%);
+        background: -moz-linear-gradient(50deg, #e9f2fd 30%, #8a880f 40%, #fe8a25 30%);
 
         color: #f7f7f7;
         -webkit-background-clip: text;
@@ -3162,223 +3189,7 @@
         border-radius:2px; 
     }
     /****small screen css**/
-    .smallscreenstyle .hidelowerpanel .v-slot-integratedframe {
-        width: 99% !important;
-        height:100% !important;
-    }
-    .smallscreenstyle  .largetitle .v-label{
-        margin-left:10px;
-    }
-    .smallscreenstyle .scrollinsideframe{
-        padding-left: 10px;
-        padding-right: 10px;
-    }
-    .smallscreenstyle .mainbodystyle  {
-        margin-top:50px !important;
-    }
 
-
-    .smallscreenstyle .v-slot-leftsidebtncontainer {
-        width: 1% !important;
-        background-color: white;
-        opacity:0;
-    }
-
-    .smallscreenstyle .v-slot-integratedframe {
-        width: 99% !important;
-        height: 90% !important;
-    }
-
-    .smallscreenstyle .v-slot-bottomsidebtncontainer{       
-        opacity: 1;
-    }
-    .smallscreenstyle .bigmenubtn img {
-        /*        height:100% !important;
-                width: 40px !important;
-                border: 2px solid lightgray;
-                border-radius: 5px;
-                cursor: pointer;
-                padding: 10% !important;
-                z-index:5 !important;
-                position:relative;*/
-    }
-    .smallscreenstyle zeropadding{
-        padding:10px !important;
-    }
-    .smallscreenstyle .selectedbiglbtn {
-        /*        background-color:whitesmoke;
-                margin-top:-2px !important;
-                border-top-color:whitesmoke;
-                border-right-color:lightgrey;
-                border-bottom-right-radius:5px;*/
-    }
-    .smallscreenstyle .selectedbiglbtn img{
-        /*border-color:rgba(131, 188, 255, 0.96) !important;*/
-    }
-    .smallscreenstyle.autooverflow{
-        overflow:hidden !important;
-    }
-    .smallscreenstyle .v-slot-rightsidebtncontainer {	
-        /*        background-color: white;
-                border-top: 2px solid white;
-                border-bottom: 2px solid white;
-                overflow: hidden;*/
-        width: 0px !important;
-        z-index:0 !important;
-        overflow: hidden;
-    }
-
-    /*    .smallscreenstyle .v-slot-rightsidebtncontainer {
-            width: 50px !important;
-            z-index: 10000000000.0 !important;
-            position: absolute !important;
-            overflow: visible;
-            right: 10px;
-        }*/
-
-
-    .smallscreenstyle .middleviewcontainer {
-        padding-left: 0px;
-        padding-right: 0px;
-        padding-bottom:20px;
-    }
-
-    .smallscreenstyle .smallscreenfloatright {
-        position:absolute !important;
-        top:60px ;
-        overflow: hidden !important;
-        left:430px !important;
-
-    }
-    .smallscreenstyle .smallscreenfloatright .v-select-optiongroup-optiongroup{
-        height:100px !important;
-    }
-    .smallscreenstyle .top220{
-        top:220px !important;	
-    }
-
-    .smallscreenstyle .v-caption-dropdownlist .v-captiontext, .smallscreenstyle .v-caption-optiongroup .v-captiontext{
-        font-size: 14px;
-        font-weight: bold;
-        font-family: "Open Sans", sans-serif;
-    }
-    .smallscreenstyle .subviewbuttonsactioncontainer .v-slot-bigmenubtn {
-        /*        visibility: hidden !important;*/
-    }
-    .smallscreenstyle.frame {	
-        min-height: 400px !important;
-        min-width: 495px !important;
-
-    }
-    .smallscreenstyle .v-slot-bottomsidebtncontainer {
-
-        min-height: 60px !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        position: relative;
-        z-index: 2;
-        background-color: white !important;
-    }
-    .smallscreenstyle .bottomsidebtncontainer {
-        margin-top: -2px;	
-        min-height: 60px !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        position: relative;
-        margin-left:20px;
-    }
-    .smallscreenstyle .v-slot-topviewcontainer {
-        min-height: 50px;
-        max-width: 220px;
-        position: relative !important;
-        top: 35px !important;
-        float: right;
-        left: -50px !important;
-        z-index: 5 !important;
-        background-color: #ffffff !important;
-        height: 50px !important;
-        overflow: visible;
-        visibility: visible !important;
-    }
-    .v-slot-smallmenubtn{
-        min-width:50px;
-    }
-    .smallscreenstyle .v-verticallayout-middleviewcontainer{
-        top:-39px !important;
-        overflow:visible;
-        visibility:visible !important;
-        z-index:2 !important;
-        position:absolute !important;
-    }
-    .smallscreenstyle .logocontainer img {
-        margin-left: 50% !important;
-        left: -180px;
-        position:absolute;
-        /*        height: 140px !important;
-                overflow: visible;
-                margin-top: 30px;
-                position: fixed;
-                z-index: 5 !important;
-                margin-left:50%;
-                left:-53px;*/
-    }
-    .v-verticallayout-hidepanel img{
-        visibility:hidden;
-    }
-    .smallscreenstyle .v-link-headerlogo {
-        /*visibility:hidden;*/
-        margin-left: 50% !important;
-        left: -97.5px;
-        position:absolute;
-        margin-top:-10px;
-    }
-
-    .smallscreenstyle .selectedsmallbtn {
-
-    }
-    .smallscreenstyle .v-slot-smallmenubtn {
-        min-width: 50px;
-    }
-    .smallscreenstyle .v-label-frametitle {
-
-        padding-left: 10px;
-        padding-top: 13px;
-        font-size: 14px;
-        font-weight: bold;
-        font-family: "Open Sans", sans-serif;
-        color: #464646;
-    }
-
-
-    .smallscreenstyle .v-slot-smallmenubtn {
-        max-height: 40px !important;
-        border: 2px solid lightgray;
-        border-top: 2px solid rgba(211, 211, 211, 0);
-        background: whitesmoke;
-        border-radius: 5px;
-        border-top-right-radius: 0px;
-        border-top-left-radius: 0px;
-        overflow: visible !important;
-        z-index: 3 !important;
-        position: relative !important;
-        margin-top:-2px;
-        padding-top:2px;
-        margin-left:-2px;
-        float:bottom;
-    }
-
-    .smallscreenstyle .v-slot-smallmenubtn.v-slot-selectedsmallbtn {
-        border-bottom-color: white !important;	
-        background:white !important;
-        border-top-color:lightgray;
-        border-top-right-radius: 5px;
-        border-top-left-radius: 5px;
-        border-bottom-right-radius: 0px;
-        border-bottom-left-radius: 0px;
-        overflow: hidden;
-        z-index: 2 !important;
-
-    }
 
     .v-verticallayout-basicpeptidemodification div{
         /*        height:12px !important;
@@ -3482,24 +3293,32 @@
     }
 
     /**mobile screen style***/
-    .smallscreenstyle.mobilestyle .logocontainer img {
-        height: 150px !important;
-        overflow: visible;
-        margin-top: 10px;
-        position: fixed;
-        z-index: 5 !important;
-        margin-left: 50%;
-        left: -57px;
-    }
-    .smallscreenstyle.mobilestyle .mainbodystyle  {
-        margin-top:80px !important;
-    }
+
     .hidemode{
         display:none !important;
     }
-    .mobilealertnotification .v-Notification-caption{
-        font-size:50px !important;
-        text-overflow:inherit !important;
+    .mobilealertnotification {
+        min-height:90px;
+        border-radius:5px;
+        background-color:transparent!important;
+        top:auto !important;
+        bottom:200px !important;
+    }
+
+    .mobilealertnotification .v-Notification-caption {
+        font-size: 40px !important;
+        text-overflow: inherit !important;
+        font-family:cursive !important;
+        color:#5e9ae4 !important;;
+        word-spacing:10px;
+        letter-spacing:5px;
+        font-weight:100;
+        background-color:transparent!important;
+
+    }
+    .mobilealertnotification .v-Notification-caption center{	
+        color:orange;
+        font-family:cursive !important;
     }
 
 
@@ -3553,90 +3372,12 @@
         position: relative !important;
         top:-1px!important;
     }
-    /*    .cornerfiltercontainerstyle {
-            position: relative;
-            margin: 0px !important;
-            padding: 0px !important;
-        } 
-        .v-horizontallayout-cornerfiltercontainerstyle {
-            overflow: hidden;
-        }*/
-    .cornerfiltercontainerstyle {
 
-    }
-
-    .smallscreenstyle .v-slot-reorderlayout {
-        max-width:32.15% !important;
-        min-height:100% !important;
-        min-width:32.15% !important;
-        margin-right:1% !important;
-        margin-bottom: 0px !important;
-        font-size:12px !important;
-    }
-    .smallscreenstyle .reorderlayout {
-        min-height:100% !important;
-        position:absolute !important;
-        perspective: 1000px !important;
-
-    }
-
-    .smallscreenstyle .v-slot-datasetfilterstyle {
-        max-width: 100% !important;
-        overflow-x: auto !important;
-        overflow-y:hidden !important;
-    }
-    .smallscreenstyle .v-horizontallayout-datasetfilterstyle {
-        min-width: 2380px;
-    }
-    .smallscreenstyle .middlefiltercontainerstyle {
-        float: left;
-        margin-left: -18px !important;
-
-        width: 103.5% !important	
-    }
-    .smallscreenstyle .v-slot-middlefiltercontainerstyle {
-        max-width: 27%!important;
-        position:relative !important;
-    }
-    .smallscreenstyle .v-slider-handle {
-        margin-top: -16px !important;
-        display: inline-block !important;
-        vertical-align: top !important;
-        position: relative !important;
-        z-index: 5 !important;
-    }
-    .smallscreenstyle .v-slider-handle:after {
-        content: "";
-        -webkit-box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        box-sizing: border-box;
-        padding: 1000 !important;
-        width: 5px;
-        height: 20px;
-        border-radius: 11px;
-        margin-left: 0px;
-        margin-right: 0px !important;
-        overflow: visible !important;
-        position: relative !important;
-        z-index: 5 !important;
-    }
-    .smallscreenstyle .v-slot-cornerfiltercontainerstyle{
-        width:44% !important;
-    }
-    .smallscreenstyle .divapiechartcontainerstyle{
-        width: 120% !important;
-        margin-left: -30px;
-        margin-top: 20px;
-    }
     .v-slot-presentercontainer.v-slot-hide {
         border: none !important;
         display:none ;
     }
-    .smallscreenstyle .v-slot-presentercontainer {
-        /*	width: 0px !important;
-                z-index: 0 !important;
-                overflow: hidden;*/
-    }
+
     .v-slot-presentercontainer {
         margin-top: 0px;
         height: 100px !important;
@@ -3765,317 +3506,22 @@
         margin-right: 5px;
     }
 
-
-    .smallscreenstyle .v-absolutelayout-presentercontainer.v-absolutelayout-bigmenubtn.v-absolutelayout-selectedbiglbtn{
-        background-color:rgba(255, 255, 255, 0) !important;
-        min-height:100% !important;
-    }
-    .smallscreenstyle .v-absolutelayout-presentercontainer.v-absolutelayout-bigmenubtn.v-absolutelayout-selectedbiglbtn{
-        background:  rgba(255, 255, 255, 0) !important; 
-        min-height: 100% !important;
-    }
-    .smallscreenstyle .v-absolutelayout-presentercontainer.v-absolutelayout-bigmenubtn.v-absolutelayout-selectedbiglbtn div:hover {
-        background:  rgba(255, 255, 255, 0); 
-    }
-
-    .smallscreenstyle .v-slot-presentercontainer.v-slot-bigmenubtn.v-slot-selectedbiglbtn {
-        right: 0px !important;
-        left: auto !important;
-        bottom: auto !important;
-        height: 100% !important;
-        background-color: rgba(255, 255, 255, 0) !important;
-        margin: 0px !important;
-        padding: 0px !important;
-        position: absolute !important;
-        max-width: 50px;
-        max-height:  220px!important;
-
-    }
-    .smallscreenstyle .v-slot-presentercontainer.v-slot-bigmenubtn.v-slot-selectedbiglbtn .actionButtonContainer{
-        top: 0px !important;
-        /*margin-top: -100px;*/
-        background-color: white !important;
-        border-top: 2px solid #bcbcbc  !important;
-        border: 2px solid #bcbcbc !important;
-        border-right:none !important;
-        border-top-right-radius:0px !important;
-        border-bottom-right-radius:0px !important;
-        min-height: 200px;
-        max-height: 210px;
-        border-radius: 5px;
-        padding-top: 5px;
-        background-color:whitesmoke !important;
-        padding-left:5px !important;
-        -webkit-transition: all 0.1s ease-in-out;
-        -moz-transition: all 0.1s ease-in-out;
-        -o-transition: all 0.1s ease-in-out;
-        transition: all 0.1s ease-in-out;
-    }
-    .smallscreenstyle .v-slot-presentercontainer.v-slot-bigmenubtn.v-slot-selectedbiglbtn.v-slot-welcomepagstyle  .actionButtonContainer{
-        top:0%!important;
-        margin-top:0px;
-        background-color:rgba(255, 255, 255, 0) !important;
-        min-height: 0px;
-        border: none !important;
-
-        padding-top:0px;
-
-    }
-
-
-    .smallscreenstyle .bigmenubtn {
-        max-width: 50px;
-        border:none !important;
-
-    }
-
-    .smallscreenstyle .bigmenubtn .v-gridlayout-slot {
-
-        position: relative !important;
-        top: 5px !important;
-        left: 0px !important;
-        padding-left:0px !important;
-        min-width: 30px !important;
-        max-height:50px;
-
-    }
-
-    .smallscreenstyle .welcomepagstyle {
-        margin-left: -100px !important;
-    }
-
-    .smallscreenstyle .v-slot-presentercontainer.v-slot-bigmenubtn.v-slot-selectedbiglbtn.v-slot-welcomepagstyle {
-        right: auto !important;
-        left: 50% !important;
-        top: 0px !important;
-        margin: 0px !important;
-        padding: 0px !important;
-        position: absolute !important;
-        margin-left: 0px !important;
-        bottom: 10px !important;
-        top: auto !important;
-        min-height:100px;
-        max-height:100px;
-    }
-
-    .smallscreenstyle .welcomepagstyle.bigmenubtn {
-        min-width: 400px !important;
-        border: none !important;
-        margin-left:-175px !important;
-    }
-
-
-
-    .smallscreenstyle .welcomepagstyle.bigmenubtn .v-gridlayout-slot {
-        display: inline !important;
-        position: relative !important;
-        top: 0px !important;
-        left: 5px !important;
-        padding-left: 35px !important;
-        min-width: 30px !important;
-    }
-    .sweepeventcanvas ,.smallscreenstyle .welcomepagstyle .sweepeventcanvas  {
+    .sweepeventcanvas {
        	min-width: 0px !important;
         max-width:0px !important;
         z-index:0 !important;
         position:absolute !important;
     }
-    .smallscreenstyle .sweepeventcanvas {
-        min-width:200px !important;
-        background-color:rgba(255, 255, 255, 0) !important;
-        outline:none !important;
-    }
-    .smallscreenstyle .v-gridlayout-hideactionbutton {
-        width:0px !important;
-        overflow:hidden;
-    }
+
 
 
     .v-absolutelayout-wrapper-sweepeventcanvas:hover{
         display:none !important;
     }
-
-
-
-    .smallscreenstyle  .integratedframe {	
-        border-top-left-radius:5px;
-    }
-
-    .smallscreenstyle  .subviewbuttonsactioncontainer {
-        margin-top:11px;
-        top: 30% !important;
-        width: 70px !important;
-        z-index: 3 !important;
-        position: fixed !important;
-        overflow: visible;
-        background-color:whitesmoke !important;
-        border:1px solid #88bfff !important;
-        left:0px;
-    }
-
-
-
-    .smallscreenstyle .subviewbuttonsactioncontainer .v-verticallayout{
-        background-color:whitesmoke ;
-        border:1px solid #88bfff;
-        border-radius:5px;
-        margin-left:-2px;
-        position:absolute !important;
-        z-index:2 !important;
-        border-top-left-radius:0px;
-        border-bottom-left-radius:0px;
-        padding-left:0px !important;
-        padding-top:0px;
-        padding-bottom:10px;
-        padding-right:5px !important;
-        font-size:12px !important;
-    }
-
-
-
-    .smallscreenstyle .subviewbuttonsactioncontainer .bigmenubtn {
-        max-height: 225px;
-        height: auto !important;
-        padding: 0%;
-        border: 1px solid lightgray ;
-        position: relative !important;
-        border-radius: 5px;
-        border-top-right-radius: 0px;
-        border-bottom-right-radius: 0px;
-        border-top: none;
-        border-bottom: none;
-        background-color: #ffffff;
-        position: relative;
-        z-index: 5 !important;
-        width: 50px !important;
-        margin-top:10px;
-    }
-
-    .smallscreenstyle .bigmenubtn img {
-        max-width: 100px !important;
-        width: 100% !important;
-        height: auto !important;
-        border:1px solid lightgray;
-        border-radius: 5px !important;
-        cursor: pointer;
-        padding: 10%;
-        position: relative;
-        z-index: 10 !important;
-    }
-
-    .smallscreenstyle .v-verticallayout-singlebtn {
-        display:none !important;
-
-    }
     .v-slot-hide{
         height:0px;
     }
 
-    .smallscreenstyle .extendwidthstyle{
-        min-width:1500px !important;
-
-    }
-    .smallscreenstyle .v-slot-extendwidthstyle{
-        overflow-x:auto;
-        padding-bottom:40px;
-    }
-
-    .smallscreenstyle .peptidenode {
-        position: relative !important;
-    }
-
-    .smallscreenstyle .selectednode.peptidenode, .smallscreenstyle .peptidenode:hover {
-        position: relative !important;
-    }
-
-    .smallscreenstyle .selectednode.proteinnode, .smallscreenstyle .proteinnode:hover {
-        position: relative !important;
-    }
-    .smallscreenstyle .proteinnode{
-        position: absolute !important;
-    }
-
-    /*    ::-webkit-scrollbar {
-            width: 10px;
-            height:10px;
-        }
-         Track 
-        ::-webkit-scrollbar-track {
-    
-            -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3); 
-            -webkit-border-radius: 5px;
-            border-radius: 5px;
-        }
-         Handle 
-        ::-webkit-scrollbar-thumb {
-            -webkit-border-radius: 5px;
-            border-radius: 5px;
-            background: rgb(128, 128, 128);  
-            -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
-        }
-        ::-webkit-scrollbar-thumb:window-inactive {
-            background: #bcbcbc; 
-        }*/
-    .smallscreenstyle .v-caption-framedpanel b{
-        font-size: 12px !important;
-    }
-    .smallscreenstyle .searchtablecontainer .v-label, .smallscreenstyle .searchtablecontainer .smallundecorated.v-label-smallundecorated {
-        font-size: 11px !important;
-        color: gray !important;
-
-    }
-    .smallscreenstyle .searchtablecontainer{
-        width: 300px !important;
-    }
-    .smallscreenstyle .searchtablecontainer .v-slot div{   
-        font-size:12px !important;
-        text-align: middle !important;
-        position: relative !important;
-        max-height:20px !important;
-
-    }
-    .smallscreenstyle .searchtablecontainer .v-textfield{   
-        font-size:10px !important;
-        text-align: middle !important;
-        position: relative !important;
-        max-height:20px !important;
-
-    }/*
-    .smallscreenstyle .datasetproteinstablestyle{
-            padding-top:5px;
-    }
-    .smallscreenstyle .datasetproteinstablestyle .v-expand{
-            padding:0px !important;
-            margin:0px;
-    }
-    .smallscreenstyle .v-slot-framedpanel {
-            height:94% !important;
-            position:absolute !important;
-            width: 100% !important;
-    }
-    .v-slot-datasetproteinstablestyle{
-    width:100% !important;
-    }
-    
-    .smallscreenstyle .v-table-body{
-    
-            
-    }
-    
-    .smallscreenstyle .v-table-framedpanel.v-table-borderless {
-            max-width:100% !important;
-            right:0px !important;
-            position:relative;
-    
-    }
-    .v-table-header-wrap,.v-table-body-wrapper{
-            max-width:100% !important;
-    }
-    .v-table-body-wrapper{
-            margin-left:-10px;
-            position:relative !important;
-            z-index:3 !important;
-    }*/
     .v-disabled .Vaadin-Icons{
         color:lightgray !important;
     }
@@ -4114,8 +3560,8 @@
 
     .welcomepagecontainer{
         max-width:1000px ;
-        min-width: 1000px ;
-        overflow: auto;
+        /* min-width: 1000px ;
+         overflow: auto;*/
 
     }
 
@@ -4368,8 +3814,8 @@
     .optiongroupframe{
         max-height:135px;
         overflow-y:auto;
-        overflow-x:hidden;
-        min-width:495px;
+        overflow-x:hidden;        
+        width: 495px !important;
         text-overflow: ellipsis;
     }
     .optiongroupframe label{
@@ -4476,7 +3922,7 @@
     .v-textfield-psprojectname{
         max-height:25px;
         font-size:12px !important;
-        background-color:whitesmoke !important;
+        background-color:white !important;
     }
     .v-filterselect span.v-icon{
         margin-left:10px;
@@ -4959,12 +4405,19 @@
     }
     .connectionwindow{
 
-        background-color:whitesmoke !important;
+        background-color: transparent !important;
+        font-family:cursive;
+        font-size:26px !important;
+        width:100% !important;
+        height:100% !important;
+        left:0px !important;
+        text-align:center !important;
+        min-height:200px !important;
 
     }
     .connectionwindow .popupContent div{
-        max-height:100px;
-        max-width:350px;
+        /*        max-height:100px;
+                max-width:350px;*/
 
 
 
@@ -4976,16 +4429,35 @@
     .connectionwindow .v-window-outerheader:after{
         border-color:transparent !important;
     }
-    .connectionwindow .popupContent  .v-caption{
-        text-align:center;
+
+    .connectionwindow .popupContent .v-caption {
+        text-align: center;
+        line-height: 30px;
+        font-size: 20px !important;
+        word-spacing:5px;
+        letter-spacing:1px;
+        font-family:cursive !important
+    }
+    .connectionwindow .v-verticallayout{
+        background-color:transparent ;
+        top:50% !important;
+        position:relative;
+        height:120px !important;
+        min-width:100% !important;
 
     }
-    .connectionwindow .popupContent  h1{
-        line-height:16px;
-        font-size:16px !important;
-
+    .connectionwindow .v-label{
+        width:100% !important;
+    }
+    .connectionwindow .popupContent h1 {
+        line-height: 30px;
+        font-size: 26px !important;
+        word-spacing:5px;
+        letter-spacing:1px;
+        font-family:cursive !important;
 
     }
+
 
     /* Tooltip container */
     .tooltip {
@@ -5071,7 +4543,7 @@
         font-size:15px !important;
     }
     .psmlegendrangeconatainer center{	
-        font-size:15px !important;
+        font-size:12px !important;
 
     }
     .v-verticallayout-psmlegendrangeconatainer{
@@ -5088,10 +4560,15 @@
 
     }
     .litemolcontainer{
-        background-image:url("img/litemoldarksm.png");
-        background-size:200px;
-        background-position:center;
-        background-repeat:no-repeat;
+        background-image: url("img/litemoldarksm.png");
+        background-size: 200px;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-color:transparent !important;
+        z-index:3 !important;
+        color:transparent;
+        padding:0px !important;
+        border-radius:5px;
     }
     .nomargintop{
         margin-top:15px !important;
@@ -5685,59 +5162,1167 @@
         position:relative;
         margin-top:-15px;
     }
-    
-    
-.verticallabel{
-    font-size:10px;
-    color:gray;
-    font-weight:bold;
- writing-mode: vertical-lr;
- 
-transform: rotate(-180deg);
 
 
-  /* Legacy vendor prefixes that you probably don't need... */
+    .verticallabel{
+        font-size:10px;
+        color:gray;
+        font-weight:bold;
+        writing-mode: vertical-lr;
 
-  /* Safari */
-  -webkit-transform: rotate(-180deg);
+        transform: rotate(-180deg);
 
-  /* Firefox */
-  -moz-transform: rotate(-180deg);
 
-  /* IE */
-  -ms-transform: rotate(-180deg);
+        /* Legacy vendor prefixes that you probably don't need... */
 
-  /* Opera */
-  -o-transform: rotate(-180deg);
+        /* Safari */
+        -webkit-transform: rotate(-180deg);
 
-  /* Internet Explorer */
-  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+        /* Firefox */
+        -moz-transform: rotate(-180deg);
+
+        /* IE */
+        -ms-transform: rotate(-180deg);
+
+        /* Opera */
+        -o-transform: rotate(-180deg);
+
+        /* Internet Explorer */
+        filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+    }
+    .selectednode.proteinnode .intensitycolornode div{
+        min-width:20px;
+        min-height:20px;
+        opacity:1 !important;
+        position:absolute !important;
+        z-index:5 !important;
+    }
+    .proteinnode .intensitycolornode div{
+        min-width:20px;
+        min-height:20px;
+        opacity:1 !important;
+        position:absolute !important;
+        z-index:5 !important;
+    }
+
+    .verticalgradescal{
+    }
+    .lm-logo{
+        background-color:white !important;
+        z-index:2 !important;
+    }
+    .verticalgradescal .v-label div{
+        background-color:white !important;
+        position:absolute ;
+        margin-left:-10px;
+        font-size:9px;
+        text-align:center;
+        min-width:30px;
+        font-weight:bold;
+
+    }
+    .v-absolutelayout-proteincoverage .v-absolutelayout-margin{
+        overflow:visible !important;
+    }
+
+    .invisiblepeptideon3d{
+        z-index:2 !important;
+        max-height:15px !important;
+        background-color:white;
+        border:1px solid lightgray;
+
+
+    }
+    .hideinvisible .invisiblepeptideon3d{
+        opacity:0  !important;
+    } 
+
+
+    /***Mobile style*/
+    .mobilestyle .hideonmobilemode{
+        display:none;
+    }
+    .mobilestyle .v-slot-hideonmobilemode{
+        display:none;
+        max-height:0px;
+    }
+    .mobilestyle .hidetextonmobilemode .v-label{
+        display:none;
+    }
+    .mobilestyle .v-slot-hidetextonmobilemode{
+        max-height:10px;
+    }
+    .mobilestyle .v-slot-hidecontent {
+        max-width:25px;
+    }
+
+    .mobilestyle .hidecontent {
+        overflow:hidden;
+
+    }
+    .mobilestyle .hidecontent .v-icon, .mobilestyle .hidecontent img{
+        overflow:visible ;
+        margin-left:2px !important;
+
+    }
+    .mobilestyle .v-slot-actionbuttoncontainer{
+        width:100% !important;
+    }
+    .mobilestyle .actionbuttoncontainer{
+        width:100% !important;
+        position:relative !important;;
+        left:8px !important;
+        -webkit-transition: all .5s ease-in-out;
+        -moz-transition: all .5s ease-in-out;
+        -o-transition: all .5s ease-in-out;
+        transition: all .5s ease-in-out;
+    }
+    .mobilestyle .v-slot-actionbuttoncontainer .v-label font{
+        max-height:30px;
+    }
+
+    .mobilestyle .actionbuttoncontainer .v-absolutelayout {
+        margin-top:-80px;
+    }
+
+    .mobilestyle .v-slot-actionbuttoncontainer .reducewidth{
+        width:80% !important;
+    }
+    .mobilestyle .reducewidth .v-gridlayout {
+        margin-top:-80px;
+    }
+
+    .mobilestyle .v-caption-useroverviewpanelstyle .Vaadin-Icons{
+        font-size:17px;
+        font-weight:bold;
+        color:gray !important;
+        position:absolute;
+        left:50% !important;
+        top:200px;
+        background-color:whitesmoke;
+        border:1px solid lightgray;
+        border-radius:3px;
+        width:20px !important;
+        height:20px;
+        text-align:right;
+        line-height:21px;
+        transform: rotate(-180deg);
+        -webkit-transform: rotate(-180deg);
+        -moz-transform: rotate(-180deg);
+        -ms-transform: rotate(-180deg);
+        -o-transform: rotate(-180deg);
+        filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+    }
+    .mobilestyle  .v-caption-hidecontent .Vaadin-Icons{
+        font-size:17px;
+        font-weight:bold;
+        color:gray !important;
+        position:absolute;
+        left:16px !important;
+        top:200px;
+        background-color:whitesmoke;
+        border:1px solid lightgray;
+        border-radius:3px;
+        width:20px !important;
+        height:20px;
+        text-align:right;
+        line-height:21px;
+        transform: rotate(0deg);
+        -webkit-transform: rotate(0deg);
+        -moz-transform: rotate(0deg);
+        -ms-transform: rotate(0deg);
+        -o-transform: rotate(0deg);
+        filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=0);
+        z-index:0 !important;
+    }
+    .mobilestyle .v-verticallayout-useroverviewpanelstyle {
+        background-color:transparent;
+        z-index:2 !important;
+        position:absolute;
+    }
+    /***small screen style*/
+
+
+    .mobilestyle .v-slot-actionbuttoncontainer .v-label {	
+        padding-right:10px !important;
+    }
+
+    .mobilestyle.verticalmode .actionbuttoncontainer .v-absolutelayout {
+        margin-top:-70px;
+    }
+    .mobilestyle.verticalmode .v-verticallayout-actionbuttoncontainer .v-absolutelayout-margin{
+
+        overflow:visible !important;
+    }
+    .mobilestyle.verticalmode .v-absolutelayout-wrapper-resultsbtn{    
+        left:0% !important;
+        top:100% !important;
+
+    }
+    .mobilestyle.verticalmode .v-absolutelayout-wrapper-galaxylabel{    
+        left:0% !important;
+        top:150% !important;
+
+    }
+    .mobilestyle  .v-slot-useroverviewpanelstyle{
+        background:white !important;
+        min-width:210px;
+        position:absolute !important;
+        opacity:1  !important;
+        z-index:3 !important;
+        border:1px solid lightgray;
+        border-radius:5px;
+        max-height:250px;
+    }
+    .mobilestyle .v-slot-useroverviewpanelstyle.v-slot-hidecontent {
+        max-width:25px !important;
+        min-width:0px !important;
+        border-color:transparent;
+    }
+
+
+    .mobilestyle .useroverviewpanelstyle{
+        border-right-color:transparent ;
+    }
+    .mobilestyle .useroverviewpanelstyle.hidecontent {
+        border-right-color:lightgray;
+
+    }
+    .mobilestyle .v-absolutelayout-wrapper-singlebtn{
+        display:none
+    }
+
+
+    .mobilestyle .v-slot-presentercontainer.v-slot-selectedbiglbtn {
+        top: 50% !important;
+        left:-10px !important;
+        height: 195px !important;
+        margin-top: -97.5px;
+        position:fixed !important;
+    }
+
+    .mobilestyle .v-absolutelayout-presentercontainer.v-absolutelayout-bigmenubtn {
+        left:0px !important;
+        position:absolute !important;
+        border: 2px solid gray;
+        border-radius: 5px !important;
+        height: 195px !important;
+        width: 53px !important;
+    }
+
+
+
+    .mobilestyle .middleviewcontainer{
+        padding:0px;
+    }
+
+    .mobilestyle.frame {
+        min-height: 50px !important;
+        min-width:300px !important;
+    }
+    .mobilestyle .uploaderlayout {
+        display:none;
+    }
+    .mobilestyle .v-absolutelayout-wrapper-dataoverviewsmallbtn {
+        top: 45px !important;
+        left: 0px !important;
+    }
+
+    .mobilestyle .v-absolutelayout-wrapper-resultsmallbtn {
+        top: 90px !important;
+        left:0px !important;
+
+    }
+
+    .mobilestyle .v-absolutelayout-wrapper-smalltoolsbtn {
+        top: 135px !important;
+        left: 0px !important;
+    }
+    .mobilestyle.verticalmode  .uploaderlayout {
+        display:block !important;
+    }
+    .mobilestyle.verticalmode.frame {
+        min-height:0px;
+        min-width:0px !important;
+    }
+    .mobilestyle .v-horizontallayout-smallscreenfloatright .v-slot-optiongroup{
+
+        max-width:33% !important;
+        float:left !important;
+
+    }
+    .mobilestyle.verticalmode .v-slot-subviewbuttonsactioncontainer {
+        top:auto !important;
+        bottom: 10px !important;
+        min-width: 270px !important;
+        left: 50%;
+        margin-left: -135px !important;
+    }
+
+    .mobilestyle.verticalmode .v-absolutelayout-subviewbuttonsactioncontainer {
+        top: auto !important;
+        bottom: -10px !important;
+        max-height: 0px !important;
+        min-width: 270px !important;
+        left:0px !important;
+        position:relative !important;
+    }
+
+
+
+
+    .mobilestyle.verticalmode .v-slot-dsoverviewbtn {
+        margin: 0px !important;
+        left: 0px !important;
+        position: absolute !important;
+        top: 30px !important;
+    }
+
+    .mobilestyle.verticalmode .v-horizontallayout-dsoverviewbtn {
+        border-color: #88bfff;
+        border-radius: 5px !important;
+        border-bottom-left-radius: 0px !important;
+        border-bottom-right-radius: 0px !important;
+        position: absolute !important;
+        padding: 0px;
+        width: 80px !important;
+    }
+
+    .mobilestyle.verticalmode .v-horizontallayout-proteinoverviewbtn {
+        border-color: #88bfff;
+        border-radius: 5px !important;
+        border-bottom-left-radius: 0px !important;
+        border-bottom-right-radius: 0px !important;
+        position: absolute !important;
+        padding: 0px;
+        width: 80px !important;
+    }
+
+    .mobilestyle.verticalmode .v-slot-proteinoverviewbtn {
+        margin: 0px !important;
+        position: absolute;
+        left: 90px !important;
+        top: 30px;
+    }
+
+    .mobilestyle.verticalmode .v-horizontallayout-psmoverviewbtn {
+        border-color: #88bfff;
+        border-radius: 5px !important;
+        border-bottom-left-radius: 0px !important;
+        border-bottom-right-radius: 0px !important;
+        position: absolute !important;
+        padding: 0px;
+        width: 80px !important;
+    }
+
+    .mobilestyle.verticalmode .v-slot-psmoverviewbtn {
+        margin: 0px !important;
+        position: absolute;
+        left: 180px !important;
+        top: 30px;
+    }
+
+
+
+
+
+    .mobilestyle .v-horizontallayout-selectedbiglbtn {
+        border:2px solid orange !important;
+    }
+
+
+    .mobilestyle.verticalmode .v-slot-displayvisible{
+        visibility:visible !important;
+        width:50px !important;
+        border-right:1px solid lightgray !important;
+        border-left:1px solid lightgray !important;
+        position:absolute !important;
+        background-color:#fafafa;
+        z-index:2 !important;
+        max-height:37px;
+        bottom:-14px !important;
+    }
+    .mobilestyle .subviewbuttonsactioncontainer .v-absolutelayout-margin{
+        overflow:visible !important;
+    }
+
+    .paggingbtnscontainer{
+        display:none;
+    }
+    .mobilestyle .paggingbtnscontainer{
+        bottom:-30px !important;
+        position:absolute !important;
+        z-index:1;
+        display:block;
+    }
+    .mobilestyle.verticalmode .paggingbtnscontainer{
+        bottom:-30px !important;
+        position:absolute !important;
+        z-index:1;
+        display:block;
+
+        margin-left:10px !important;
+    }
+    .mobilestyle .paggingbtnscontainer .v-button{
+        max-height:25px;
+        line-height:25px;
+        font-size:20px !important;
+    }
+    .mobilestyle .paggingbtnscontainer{
+        bottom:-30px !important;
+        left:35% !important;
+        position:absolute !important;
+        z-index:1;
+        display:block;
+    }
+
+    .mobilestyle .v-slot-datasetfilterstyle{
+        width:100% !important;
+        height:85% !important;
+    }
+
+    .mobilestyle .hidedsfilter{
+        top:-10000px !important;
+        left:-10000px !important;
+        position:absolute !important;
+    }
+    .mobilestyle .v-slot-cornerfiltercontainerstyle{
+        width:100% !important;
+        height:100% !important;	
+    }
+    .mobilestyle .v-slot-pifilter.v-slot-viewdsfilter{
+        width:50% !important;
+        height:100% !important;
+    }
+
+    .mobilestyle .viewdsfilter.pifilter .v-label{
+        font-size:13px;
+    }
+
+    .mobilestyle .v-absolutelayout-wrapper-divapiechartcontainerstyle{
+        top:80px !important;
+        right:0px !important;
+    }
+    .mobilestyle .btninframe img{
+        width:20px !important;
+        height:20px !important;
+        margin-left:-5px;
+        margin-top:-5px;
+        background-color:white;
+    }
+
+    .mobilestyle .v-slot-validationfilter.v-slot-viewdsfilter {
+        height:100% !important;
+        max-width:50% !important;
+        position:relative !important;
+        left:50% !important;
+        top:-100%;
+        margin-left:15px;	
+        margin-top:-2px;
+    }
+    .mobilestyle .viewdsfilter.validationfilter .v-label{
+        font-size:13px;
+    }
+    .mobilestyle .v-absolutelayout-wrapper-divapiechartcontainerstyle{
+        top:80px !important;
+    }
+    .mobilestyle .btninframe img{
+        width:20px !important;
+        height:20px !important;
+        margin-left:-5px;
+        margin-top:-5px;
+        background-color:white;
+        right:0px !important;
+    }
+
+    .mobilestyle .v-slot-chromfilter.v-slot-viewdsfilter{
+        height:100% !important;
+        width:100% !important;
+        top:-70% !important;
+        position:relative;
+        margin-left:12.5px;
+    }
+    .mobilestyle .viewdsfilter.chromfilter .v-label, .mobilestyle .viewdsfilter.chromfilter center{
+        font-size:13px !important;
+    }
+    .mobilestyle .chromosomefiltercontainerstyle{
+        max-height:80% !important;
+    }
+    .mobilestyle.verticalmode .v-slot-middlefiltercontainerstyle.v-slot-viewdsfilter{
+        height:99% !important;
+        width:100% !important;
+        left:-100% !important;
+        top:-5px !important;
+        position:absolute !important;
+    }
+    .mobilestyle .v-slot-middlefiltercontainerstyle.v-slot-viewdsfilter {
+        height: 99% !important;
+        width: 100% !important;
+        left: -100% !important;
+        top: 0px !important;
+        position: absolute !important;
+    }
+    .mobilestyle .viewdsfilter.middlefiltercontainerstyle .v-label{
+        font-size:13px;
+    }
+
+
+    .mobilestyle .v-slot-rightpanelfilter.v-slot-viewdsfilter{
+        left:-200%;
+        margin-left:-20px;
+        position:relative !important;
+        height:100% !important;
+
+    }
+    .mobilestyle .viewdsfilter.rightpanelfilter .v-label{
+        font-size:13px;
+    }
+    .mobilestyle .v-slot-rightpanelfilter.v-slot-viewdsfilter{
+        left:-200%;
+        margin-left:-15px;
+        position:relative !important;
+
+        height:98% !important;
+
+    }
+    .mobilestyle .viewdsfilter.rightpanelfilter .v-label{
+        font-size:13px;
+    }
+    .mobilestyle .v-slot-pepNumfilter,.mobilestyle .v-slot-psmnumfilter,.mobilestyle .v-slot-coveragefilter,.mobilestyle .v-slot-intinsfilter{
+        height:50% !important;
+        width:50% !important;
+    }
+    .mobilestyle .v-slot-coveragefilter{
+        position:relative !important;
+        top:-100% !important;
+        left:50% !important;
+        margin-top:-5px;
+        margin-left:10px;
+    }
+    .mobilestyle .v-slot-intinsfilter{
+        top:-100% !important;
+        left:50% !important;;
+        position:relative;
+        margin-left:10px;
+    }
+    .mobilestyle .v-absolutelayout-intinsfilter .v-absolutelayout-margin{
+        overflow:visible !important;
+    }
+    .mobilestyle .v-absolutelayout-wrapper-intallpepfilter,.mobilestyle .v-absolutelayout-wrapper-intuniquepepfilter{
+        top:3px !important;
+        bottom:-2px !important;
+
+    }
+    .v-slot-datasetfilterstyle.v-slot-hidedsfilter{
+        top:-1000px !important;
+        left:-1000px !important;
+        position:absolute !important;
+    }
+    .mobilestyle .noquantlabel center {
+        max-height: 30px;
+    }
+    .mobilestyle.verticalmode .v-absolutelayout-wrapper-datasetfilterstyle{
+        bottom:45px !important;
+        top:20px !important;
+    }
+    .mobilestyle .v-absolutelayout-wrapper-datasetfilterstyle {
+        bottom: 25px !important;
+        top: 0px !important;
+    }
+    .mobilestyle.verticalmode .v-absolutelayout-wrapper-datasetproteinstablestyle{
+        margin-top:-10px !important;
+        top:20px !important;
+        bottom:45px !important;
+        width:100% !important;
+    }
+    .mobilestyle .v-absolutelayout-wrapper-datasetproteinstablestyle{
+        margin-top: -10px !important;
+        top: 0px !important;
+        bottom: 25px !important;
+        width: 100% !important;
+    }
+    .mobilestyle .resizeabletext{
+        font-size:12px !important;
+    }
+
+    .mobilestyle .v-slot-graphcontainerstyle.v-slot-hidedsfilter ,  .mobilestyle .v-slot-extendwidthstyle.v-slot-hidedsfilter {
+        display:none !important;
+        left:-10000px;
+        top:-10000px;
+    }
+
+    .mobilestyle .v-slot-graphcontainerstyle.v-slot-viewdsfilter{
+        width:100% !important;
+        height:100% !important;
+        margin-left:-10px !important;
+    }
+    .mobilestyle .v-slot-protein3dcontainerstyle.v-slot-viewdsfilter{
+        width:100% !important;
+        height:100% !important;
+        position:relative !important;
+        margin:0px !important;
+        padding:0px !important;
+        left:0px !important;
+        margin-left:-5px!important;
+    }
+    .v-absolutelayout-protein3dcontainerstyle{
+
+        width:95% !important;
+        height:100% !important;
+        position:relative !important;
+        margin-left:2.5% !important;
+
+    }
+
+
+    .mobilestyle .v-slot-extendwidthstyle{
+        height:78% !important;
+        max-height:78%;
+        width:100% !important;
+        left:0px !important;
+        position:relative !important;    
+
+
+    }
+    .mobilestyle .v-horizontallayout-extendwidthstyle .v-expand{
+        padding-left:10px !important;
+
+    }
+
+    .mobilestyle .extendwidthstyle .v-spacing{
+        display:none;
+    }
+    .mobilestyle .lm-plugin{
+        background-color:transparent;
+    }
+    .mobilestyle .v-slot-proteincoveragetablecontainer.v-slot-proteincoveragecontainerstyle{
+        background-color:transparent !important;
+        height:95% !important;
+        margin-top:-65px;
+        top:15px !important;
+        bottom:0px !important;
+        position:relative;
+    }
+
+    .mobilestyle .v-absolutelayout-wrapper-psmchartcontainerstyle{
+        bottom:25px !important;
+    }
+    .mobilestyle .v-absolutelayout-wrapper-psmtablecontainerstyle{
+        top:30px !important;
+
+    }
+    .mobilestyle .v-absolutelayout-wrapper-psmtablecontainerstyle.v-absolutelayout-wrapper-hidedsfilter{	
+        top:-10000px !important;
+        left:-10000px !important;
+        position:relative !important;
+    }
+
+    .mobilestyle .v-absolutelayout-wrapper-psmtablecontainerstyle{
+        top: 10px !important;
+        bottom: 10px !important;
+
+    }
+
+    .mobilestyle  .v-verticallayout-psmchartcontainerstyle .v-absolutelayout-wrapper{
+        width:100% !important;
+        overflow-x:auto;
+        overflow-y:hidden;
+
+    }
+    .mobilestyle .v-verticallayout-psmchartcontainerstyle .v-absolutelayout-wrapper .v-horizontallayout {
+        overflow-x:auto !important;
+        width:100% !important;
+        position:relative !important;
+        overflow-y:hidden;
+        z-index:3 !important;
+    }
+    .mobilestyle .peptidenode  .v-expand {
+        padding-left: 0px !important;
+    }
+    .proteinnode .v-verticallayout,  .proteinnode .v-verticallayout .v-label {
+        width: 30px !important;
+        height: 30px !important;
+    } 
+    .mobilestyle.verticalmode .v-slot-chromfilter.v-slot-viewdsfilter .v-label-resizableimg img{
+        max-width:95%;
+        height:auto !important;
+
+    }
+    .mobilestyle.verticalmode .v-horizontallayout-mainapplicationframe {
+        max-width: 10000px;
+        max-height: 10000px;
+    }
+
+
+    .mobilestyle.verticalmode .v-slot-pifilter.v-slot-viewdsfilter {
+        width: 100% !important;
+        height: 50% !important;
+        margin-left:10px;
+    }
+
+
+    .mobilestyle.verticalmode .v-slot-validationfilter.v-slot-viewdsfilter {
+        height: 50% !important;
+        max-width: 100% !important;
+        position: relative !important;
+        left: 10px !important;
+        top: 0%;
+        margin-left: 0px;
+        margin-top: 0px;
+    }
+    .mobilestyle.verticalmode .v-slot-chromfilter.v-slot-viewdsfilter {
+        height: 100% !important;
+        width: 100% !important;
+        top: auto !important;
+        bottom:0% !important;
+        position: absolute !important;;
+        margin-left: 12.5px;
+    }
+
+    .mobilestyle.verticalmode .v-slot-graphcontainerstyle.v-slot-viewdsfilter {
+        width: 100% !important;
+        height: 100% !important;
+        margin-left:  -22.5px !important;
+        top:50px !important;
+        bottom:0px !important;
+        position:absolute !important;
+    }
+    .mobilestyle.verticalmode .v-slot-protein3dcontainerstyle.v-slot-viewdsfilter {
+        top:20px;
+    }
+
+    .mobilestyle.verticalmode .v-absolutelayout-wrapper-lefttoppanelstyle{
+        left:0px !important;
+        top:-30px !important;
+        width:100% !important;
+    }
+    .mobilestyle.verticalmode .v-absolutelayout-wrapper-lefttoppanelstyle div{
+        width:100% !important;
+    }
+    .mobilestyle.verticalmode .v-absolutelayout-wrapper-lefttoppanelstyle  label{
+        font-size:10px !important;
+    }
+    .mobilestyle.verticalmode .v-absolutelayout-wrapper-righttbottompanelstyle {
+        bottom:-30px !important;
+        right:0px !important ;
+    }
+    .mobilestyle.verticalmode .v-horizontallayout-righttbottompanelstyle{
+        max-width:200px !important;
+        overflow:hidden !important;	
+    }
+    .mobilestyle.verticalmode .v-absolutelayout-wrapper-righttbottompanelstyle   .v-button-caption{
+        font-size:10px !important;
+        max-width:50px;
+        word-spacing:0.01px !important;
+    }
+    .mobilestyle.verticalmode  .v-absolutelayout-wrapper-righttbottompanelstyle  .v-button{
+        padding:0px !important;
+        margin:0px !important;
+        padding-left:10px !important;
+    }
+
+    .mobilestyle.verticalmode .v-absolutelayout-wrapper-highlightedoptions{
+        bottom:-30px !important;
+        right:185px !important;
+    }
+
+    .mobilestyle.verticalmode .v-absolutelayout-wrapper-highlightedoptions  label{	
+        font-size:10px !important;
+    }
+
+
+    .mobilestyle.verticalmode .v-absolutelayout-wrapper-leftbottompanelstyle{
+        bottom:-30px !important;
+        left:0px !important;
+        max-width:20px !important;
+    }
+
+    .mobilestyle.verticalmode .v-absolutelayout-wrapper-leftbottompanelstyle  label{	
+        font-size:10px !important;
+        word-spacing:1px;
+    }
+    .mobilestyle.verticalmode .v-verticallayout-leftbottompanelstyle{
+        max-width:66px;
+        overflow:hidden !important;
+    }
+
+    .mobilestyle .v-absolutelayout-wrapper-verticalgradescal{
+        left:-11px !important;
+    }
+
+
+    .mobilestyle.verticalmode  .v-slot-largetitle {
+        /*	font-size: 12px !important;
+                text-overflow:ellipsis;
+                overflow:hidden !important;
+                max-width:65% !important;*/
+
+    }
+    .mobilestyle.verticalmode .selectiondescriptionlabel i{
+        padding:0px !important;
+    }
+    .mobilestyle.verticalmode .v-slot-selectiondescriptionlabel{
+        right:10px !important;	
+        top:25px;
+        width:100% !important;
+        left:0px !important;
+        right:auto !important;
+        position:absolute !important;
+
+        max-height:30px !important;
+
+    }
+    .mobilestyle.verticalmode .v-label-selectiondescriptionlabel{
+        left:0px !important;
+        position:absolute !important;
+        width:100% !important;
+        text-align:right !important;
+        padding-right:10px;
+    }
+    .mobilestyle .psmtable.v-table .v-table-body {
+        overflow-x: auto;
+        overflow-y: scroll !important;
+    }
+    .mobilestyle.verticalmode .v-absolutelayout-wrapper-floatrightinyscreen{
+
+        left:50% !important;
+        margin-left:-250px ;
+        max-width:500px;
+
+
+    }
+    .mobilestyle .v-absolutelayout-wrapper-floatrightinyscreen {
+        left:10px !important;
+    }
+    .mobilestyle .v-absolutelayout-wrapper-floatrightinyscreen .dropdownlistframe ,.mobilestyle .v-absolutelayout-wrapper-floatrightinyscreen   .v-slot-psprojectname, .mobilestyle .v-absolutelayout-wrapper-floatrightinyscreen .v-slot-smallfontlongtext, .mobilestyle .v-absolutelayout-wrapper-floatrightinyscreen .v-slot-optiongroupframe{
+        max-width:50% ;
+    }
+
+    .mobilestyle .v-absolutelayout-wrapper-floatrightinyscreen  .v-label-smallfontlongtext{
+        max-width:100% ;
+        height:110px !important;
+        overflow:auto !important;
+        margin-top:10px;
+    }
+    .mobilestyle .v-absolutelayout-wrapper-floatrightinyscreen .v-horizontallayout-optiongroupframe{
+        max-width:50% !important ;
+        min-width:0px !important;
+        height:150px !important;
+        overflow:hidden !important;
+        padding:0px !important;
+        margin:0px !important;
+        right:0px !important;
+        position:absolute !important;
+        top:32px;
+    }
+
+    .mobilestyle .searchenginesstyle{
+        top:170px !important;
+    }
+
+    .mobilestyle .v-absolutelayout-wrapper-floatrightinyscreen .v-horizontallayout-bottomformlayout{
+        left:50% !important;
+        position:relative;
+        margin-left:-225px !important;
+    }
+
+
+
+    .mobilestyle .chromosomefiltercontainerstyle img{
+        height:auto  !important;
+        width:100% !important;
+        top:0px !important;
+        bottom:0px !important;
+        position:relative !important;	
+        max-height: 90% !important;
+    }
+
+    .mobilestyle .divapiechartcontainerstyle {
+        max-height: 90% !important;
+    }
+    .mobilestyle .v-slot-viewdsfilter {
+        z-index:2 !important;
+        position:relative !important;
+    }
+
+    .mobilestyle .v-verticallayout-protoformnode .v-label{
+        min-width:15px !important;
+        min-height:15px !important;
+        z-index:2 !important;
+        position:absolute  !important;
+        left:-10px;
+        font-size:10px !important;
+    }
+    .mobilestyle .v-verticallayout-protoformnode .v-label div{	
+        font-size:10px !important;
+    }
+    .mobilestyle .v-absolutelayout-wrapper-proteoformoptioncontrol{
+        top:-15px !important;
+        max-height:25px !important;
+    }
+    .mobilestyle .subviewbuttonsactioncontainer {
+        top: 50% !important;
+        right: -10px !important;
+        height: 170px !important;
+        margin-top: -85px;
+        position: fixed !important;
+        margin-left:0px !important;
+        max-width:60px !important;
+
+    }
+    .mobilestyle .v-slot-dsoverviewbtn {
+        max-width:50px !important;
+    }
+    .mobilestyle .v-horizontallayout-dsoverviewbtn {
+        border-color: #88bfff;
+        border-radius: 5px !important;
+        border-bottom-right-radius: 0px !important;
+        border-top-right-radius: 0px !important;
+        position: relative !important;
+        padding: 0px;
+        width: 50px !important;
+        left:0px !important;
+    }
+    .mobilestyle .v-horizontallayout-proteinoverviewbtn {
+        border-color: #88bfff;
+        border-radius: 5px !important;
+        border-bottom-right-radius: 0px !important;
+        border-top-right-radius: 0px !important;
+        position: relative !important;
+        padding: 0px;
+        width: 50px !important;
+        left:0px !important;
+    }
+    .mobilestyle .v-slot-proteinoverviewbtn {
+        max-width:50px !important;
+    }
+    .mobilestyle .v-horizontallayout-psmoverviewbtn {
+        border-color: #88bfff;
+        border-radius: 5px !important;
+        border-bottom-right-radius: 0px !important;
+        border-top-right-radius: 0px !important;
+        position: relative !important;
+        padding: 0px;
+        width: 50px !important;
+        left:0px !important;
+    }
+    .mobilestyle .v-slot-psmoverviewbtn {
+        max-width:50px !important;
+    }
+    .mobilestyle .v-slot-displayvisible {
+        visibility: visible !important;
+        width: 50px !important;
+        border-top: 1px solid lightgray !important;
+        border-bottom: 1px solid lightgray !important;
+        position: absolute !important;
+        background-color: #fafafa;
+        z-index: 5 !important;
+        max-height: 180px;
+        margin-top:-95px !important;
+        top: 50% !important;
+        right:-35px !important;
+    }
+    .mobilestyle .v-slot-chromfilter.v-slot-viewdsfilter {	
+        top: -65% !important;
+    }
+    .mobilestyle .v-slot-extendwidthstyle {
+        height: 85% !important;
+        max-height: 85% !important;
+    }
+    .mobilestyle .v-slot-proteincoveragetablecontainer.v-slot-proteincoveragecontainerstyle {
+
+        height: 100% !important;
+        margin-top: -40px;
+        top: 0px !important;
+    }
+    .v-verticallayout-useroverviewpanelstyle .v-label font{
+        text-overflow:ellipsis !important;
+        overflow:hidden;
+    }
+    .v-verticallayout-useroverviewpanelstyle .v-label :hover{
+        text-overflow:visible !important;
+        overflow:visible !important;
+        z-index:3 !important;
+        position:absolute;
+        width:auto !important;
+        background-color:whitesmoke;
+        margin-left:5px;
+    }
+    .mobilestyle.verticalmode .v-slot-middleviewcontainer {
+        left: 0px !important;
+        position:absolute !important;
+    }
+    .mobilestyle.verticalmode .v-absolutelayout-wrapper-proteoformoptioncontrol {
+        left: 0px !important;
+        top: -30px !important;
+        width: 100% !important;
+    }
+    .mobilestyle.verticalmode .v-absolutelayout-wrapper-psmchartcontainerstyle , .mobilestyle.verticalmode .v-absolutelayout-wrapper-psmtablecontainerstyle{
+        bottom: 40px !important;
+    }
+    .mobilestyle.verticalmode.smallpcscreen .v-slot-extendwidthstyle {
+        height: 80% !important;
+        max-height: 80% !important;
+    }
+    .mobilestyle.smallpcscreen .resizeabletext {
+        font-size: 10px !important;
+    }
+    .mobilestyle.smallpcscreen ::-webkit-scrollbar-track{
+        -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+        background-color: #F5F5F5;
+    }
+    .mobilestyle.smallpcscreen ::-webkit-scrollbar{
+        max-width:10px;
+        max-height:10px !important;
+        background-color: #F5F5F5;
+    }
+    .mobilestyle.smallpcscreen ::-webkit-scrollbar-thumb{
+        background-color: gray !important;
+        border: 2px solid gray;
+    }
+    .mobilestyle.verticalmode .v-absolutelayout-wrapper-floatrightinyscreen .dropdownlistframe, .mobilestyle.verticalmode .v-absolutelayout-wrapper-floatrightinyscreen .v-slot-psprojectname,  .mobilestyle.verticalmode .v-absolutelayout-wrapper-floatrightinyscreen .v-slot-smallfontlongtext,  .mobilestyle.verticalmode .v-absolutelayout-wrapper-floatrightinyscreen .v-slot-optiongroupframe {
+        max-width: 100%;
+    }
+    .mobilestyle.verticalmode .v-absolutelayout-wrapper-floatrightinyscreen .v-label-smallfontlongtext {
+        max-width: 100%;
+        height: 110px !important;
+        overflow: auto !important;
+        margin-top: 0px;
+    }
+    .mobilestyle.verticalmode .v-absolutelayout-wrapper-floatrightinyscreen .v-horizontallayout-optiongroupframe {
+        max-width: 100% !important;
+        min-width: 0px !important;
+        height: 150px !important;
+        overflow: hidden !important;
+        padding: 0px !important;
+        margin: 0px !important;
+        right: 0px !important;
+        position: relative !important;
+        top:0px !important;
+    }
+    .mobilestyle.verticalmode .v-absolutelayout-wrapper-floatrightinyscreen {
+        left: 50% !important;
+        margin-left: -250px;
+        max-width: 500px;
+        top:50% !important;
+        position:absolute !important;
+        margin-top:-50% !important;;
+    }
+    .mobilestyle.verticalmode.smallpcscreen .v-absolutelayout-wrapper-floatrightinyscreen {	
+        top:0px!important;
+        margin-top:0% !important;;
+    }
+    .modificationlegendconatiner .peptidenode .v-label div {	
+        min-width:14px !important;
+        min-height:14px !important;
+    }
+    .mobilestyle.verticalmode.smallpcscreen .v-slot-selectiondescriptionlabel {	
+        top: 17px;
+    }
+    .intensitylegendrangeconatainer .v-label center{
+        text-overflow:visible !important;
+        overflow:visible !important;
+        font-size:12px !important;
+        word-spacing:1px !important;
+    }
+    .intensitylegendrangeconatainer .v-label center:before, .intensitylegendrangeconatainer .v-label center:after { content: "\00a0 "; }
+    .intensitycontainer .selectednode.proteinnode ,.intensitycontainer .selectednode.peptidenode{
+        background-color:#c7ddf3 !important;
+        border:1px solid black !important;
+    }    
+    .v-verticallayout-legend.v-verticallayout-pathwaynode {
+        position: absolute !important;
+        margin-top: 5px;
+        margin-left:3px !important;
+        min-width: 20px !important;
+        min-height: 20px !important;
+        background-color: grey;
+        opacity: 1 !important;
+    }
+    .v-verticallayout-legend.v-verticallayout-pathwaynode.v-verticallayout-protoformparentnode {
+        position: absolute !important;
+        margin-top: -2px;
+        margin-left: -2px !important;
+        min-width: 30px !important;
+        min-height: 30px !important;
+    }
+    .proteoformslegend .v-label {
+        min-width: 120px;
+        left: -20px !important;
+        position: relative !important;
+        line-height: 30px !important;
+    }
+    .proteoformedges .v-verticallayout{
+        border-color:lightgray !important;
+    }
+    .v-verticallayout-proteoformedges .v-verticallayout-legend.v-verticallayout-pathwaynode{
+        position:absolute !important;
+        left:15px !important;
+        opacity:1 !important;
+    }
+    .v-verticallayout-edgeside.v-verticallayout-legend.v-verticallayout-pathwaynode{
+        margin-left:-15px !important;
+    }
+    .v-verticallayout-proteoformconatiner .selectednode.nodemodificationbackground {
+        background-color: gray !important;
+        border:2px solid  lightgray !important;
+        min-width:18px !important;
+        min-height:18px !important;
+        width:20px !important;
+        height:20px !important;
+    }
+    .v-verticallayout-proteoformconatiner.modificationlegendconatiner .peptidenode .v-label div {
+        max-width: 14px !important;
+        max-height: 14px !important;
+        min-height:14px !important;
+        margin-left:20px;
+    }
+    .v-verticallayout-proteoformconatiner.modificationlegendconatiner  .v-label-multiplemodificationstyle div  {
+        background: #fde8b3 !important;
+        opacity:1 !important;
+    }
+    .v-verticallayout-proteoformconatiner.modificationlegendconatiner  .v-slot-tiny {
+
+        margin-left:-85px
+    }
+    .v-verticallayout-proteoformedges .v-slot{
+        max-height:33% !important;	
+    }
+    .v-verticallayout-proteoformedges .v-verticallayout-dottedborder , .v-verticallayout-proteoformedges .v-verticallayout-solidborder {
+        margin-top:-15px
+    }
+
+
+    .v-slot-searchenginesstyle{
+    }
+
+    .v-slot-searchenginesstyle .v-slot-optiongroup {
+        max-width:33% !important;
+    }
+    .focos{
+        border-color:#88bfff !important;
+    }
+    .v-filterselect-dropdownlist input{
+    background:white !important;
+
 }
-.selectednode.proteinnode .intensitycolornode div{
-    min-width:20px;
-    min-height:20px;
-    opacity:1 !important;
-    position:absolute !important;
-    z-index:5 !important;
-}
-.proteinnode .intensitycolornode div{
-    min-width:20px;
-    min-height:20px;
-    opacity:1 !important;
-    position:absolute !important;
-    z-index:5 !important;
-}
-
-.verticalgradescal{
-}
-.verticalgradescal .v-label div{
-    background-color:white !important;
-    position:absolute ;
-    margin-left:-10px;
-    font-size:9px;
-    text-align:center;
-    min-width:30px;
-    font-weight:bold;
+.v-filterselect-dropdownlist.v-disabled input{
+    background:#f4f4f4 !important;
 
 }
+.v-slot-smallcombobox{
+ max-height:20px !important;
+
 }
+.v-select-optiongroup-smallcombobox{
+    margin-left:20px;
+    font-size:13px !important;
+    font-weight:900;
+    border-top:1px  solid lightgray;
+    margin-top:5px;
+    color:#599de1;
+   
+}
+}
+
+

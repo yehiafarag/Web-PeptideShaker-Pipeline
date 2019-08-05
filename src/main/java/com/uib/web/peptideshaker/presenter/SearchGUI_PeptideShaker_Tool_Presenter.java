@@ -48,13 +48,7 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
     public SearchGUI_PeptideShaker_Tool_Presenter() {
         SearchGUI_PeptideShaker_Tool_Presenter.this.setSizeFull();
         SearchGUI_PeptideShaker_Tool_Presenter.this.setStyleName("activelayout");
-        SearchGUI_PeptideShaker_Tool_Presenter.this.addStyleName("integratedframe");
-
-        
-        // this.initLayout();
-        
-
-    }
+        SearchGUI_PeptideShaker_Tool_Presenter.this.addStyleName("integratedframe");    }
 
     /**
      * Update the work-flow input files
@@ -65,7 +59,7 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
      * @param mgfFilesMap The main MGF File Map (ID to Name).
      */
     public void updatePeptideShakerToolInputForm(Map<String, GalaxyTransferableFile> searchSettingsMap, Map<String, GalaxyFileObject> fastaFilesMap, Map<String, GalaxyFileObject> mgfFilesMap) {
-        peptideshakerToolInputForm.updateForm(searchSettingsMap, fastaFilesMap, mgfFilesMap);
+        peptideshakerToolInputForm.updateForm(searchSettingsMap, fastaFilesMap, mgfFilesMap,mgfFilesMap);
     }
 
     /**
@@ -76,7 +70,8 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
         smallControlButton = new SmallSideBtn("img/sgui.png");//spectra2.pngimg/searchgui-medium-shadow-2.png
         smallControlButton.setData(SearchGUI_PeptideShaker_Tool_Presenter.this.getViewId());
         smallControlButton.setDescription("Run SearchGUI and PeptideShaker");
-        controlButton = new ButtonWithLabel("SearchGUI & PeptideShaker</br><font>Run SearchGUI and PeptideShaker tools on Galaxy Server</font>",1);//spectra2.png
+        smallControlButton.addStyleName("smalltoolsbtn");
+        controlButton = new ButtonWithLabel("SearchGUI & PeptideShaker</br><font>Run SearchGUI and PeptideShaker</font>",1);//spectra2.png
         controlButton.setData(SearchGUI_PeptideShaker_Tool_Presenter.this.getViewId());
         controlButton.updateIconResource(new ThemeResource("img/sgui.png"));//img/workflow3.png
 

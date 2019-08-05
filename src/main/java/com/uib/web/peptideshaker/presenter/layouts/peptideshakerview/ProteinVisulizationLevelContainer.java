@@ -9,14 +9,19 @@ import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components.
 import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.charts.RegistrableFilter;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.components.RangeColorGenerator;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.themes.ValoTheme;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -30,6 +35,7 @@ import java.util.Set;
 public class ProteinVisulizationLevelContainer extends HorizontalLayout implements RegistrableFilter {
 
     private final AbsoluteLayout container;
+    private final HorizontalLayout middleContainer;
     private final Label headerLabel;
     private final GraphsContainerComponent graphsContainerComponent;
     private final SelectionManager Selection_Manager;
@@ -39,6 +45,10 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
     private Map<String, PeptideObject> proteinPeptides;
     private RangeColorGenerator colorScale;
     private boolean specificPeptideSelection;
+    private boolean initialized3D = false;
+
+    private final Map<Integer, Component> filterComponentsMap;
+    private int currentFilterView = 0;
 
     /**
      * Constructor to initialise the main layout and variables.
@@ -78,15 +88,16 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
         commentLabel.setWidthUndefined();
         commentLabel.setStyleName("resizeabletext");
         commentLabel.addStyleName("margintop10");
+        commentLabel.addStyleName("selectiondescriptionlabel");
         topLabelContainer.addComponent(commentLabel);
         topLabelContainer.setComponentAlignment(commentLabel, Alignment.TOP_RIGHT);
 
         VerticalLayout subContainer = new VerticalLayout();
         subContainer.setSizeFull();
         subContainer.setSpacing(true);
-        container.addComponent(subContainer, "left:0px; top:30px;");
+        container.addComponent(subContainer, "left:0px; top:30px; bottom:15px;");
 
-        HorizontalLayout middleContainer = new HorizontalLayout();
+        middleContainer = new HorizontalLayout();
         middleContainer.addStyleName("extendwidthstyle");
         middleContainer.setHeight(100, Unit.PERCENTAGE);
         middleContainer.setWidth(100, Unit.PERCENTAGE);
@@ -98,12 +109,13 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
             @Override
             public void selectedItem(Set<Object> selectedItems, Set<Object> selectedChildsItems, boolean isProteform) {
                 if (selectedItems.size() == 1) {
-                    headerLabel.setValue("Protein overview (" + graphsContainerComponent.getProteinName(selectedItems.iterator().next().toString())+")");
+                    headerLabel.setValue("Protein overview (" + graphsContainerComponent.getProteinName(selectedItems.iterator().next().toString()) + ")");
                 } else {
                     headerLabel.setValue("Protein overview ");
                 }
 
                 if (specificPeptideSelection) {
+
                     return;
                 }
                 proteinCoverageContainer.setSelectedItems(selectedItems, selectedChildsItems);
@@ -116,8 +128,11 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
                     this.getPeptidesNodes().values().stream().filter((peptide) -> (peptide.getProteinsSet().contains(protein.getAccession()))).forEachOrdered((peptide) -> {
                         proteinPeptides.put(peptide.getModifiedSequence(), peptide);
                     });
-
+                    if (protein3DStructurePanel.getLastSelectedAccession() != null && !protein3DStructurePanel.getLastSelectedAccession().toString().equalsIgnoreCase(protein.getAccession())) {
+                        initialized3D = false;
+                    }
                     protein3DStructurePanel.updatePanel(protein.getAccession(), protein.getSequence(), proteinPeptides.values());
+
                 } else {
                     protein3DStructurePanel.reset();
                 }
@@ -127,8 +142,19 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
                     Object proteinId = selectedItems.iterator().next();
                     peptideSelection(peptideId, proteinId);
                     protein3DStructurePanel.selectPeptide(peptideId + "");
+
                 } else {
-                    peptideSelection(null, null);
+
+                    if (initialized3D && selectedItems.size() == 1) {
+                        Object proteinId = selectedItems.toArray()[0];
+                        peptideSelection(null, proteinId);
+                        protein3DStructurePanel.selectPeptide(null + "");
+
+                    } else {
+                        peptideSelection(null, null);
+                        initialized3D = true;
+                    }
+
                 }
 
             }
@@ -160,10 +186,12 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
         };
         middleContainer.addComponent(graphsContainerComponent);
         middleContainer.setExpandRatio(graphsContainerComponent, 60);
+        graphsContainerComponent.addStyleName("graphcontainerstyle");
 
         protein3DStructurePanel = new Protein3DStructurePanel();
         middleContainer.addComponent(protein3DStructurePanel);
         middleContainer.setExpandRatio(protein3DStructurePanel, 40);
+        protein3DStructurePanel.addStyleName("protein3dcontainerstyle");
 
         Selection_Manager.RegistrProteinInformationComponent(ProteinVisulizationLevelContainer.this);
 
@@ -178,6 +206,42 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
         };
         proteinCoverageContainer.setSizeFull();
         subContainer.addComponent(proteinCoverageContainer);
+        proteinCoverageContainer.addStyleName("proteincoveragecontainerstyle");
+
+        this.filterComponentsMap = new HashMap<>();
+        this.filterComponentsMap.put(1, this.graphsContainerComponent);
+        this.filterComponentsMap.put(2, this.protein3DStructurePanel);
+        this.filterComponentsMap.put(3, this.proteinCoverageContainer);
+
+        HorizontalLayout paggingBtnsContainer = new HorizontalLayout();
+        paggingBtnsContainer.setWidth(100, Unit.PERCENTAGE);
+        paggingBtnsContainer.setHeight(20, Unit.PIXELS);
+        paggingBtnsContainer.addStyleName("paggingbtnscontainer");
+        container.addComponent(paggingBtnsContainer, "left:0px;bottom:50px");
+        HorizontalLayout btnContainer = new HorizontalLayout();
+        btnContainer.setHeight(100, Unit.PERCENTAGE);
+        btnContainer.setWidthUndefined();
+        btnContainer.setSpacing(true);
+        paggingBtnsContainer.addComponent(btnContainer);
+        paggingBtnsContainer.setComponentAlignment(btnContainer, Alignment.TOP_CENTER);
+
+        Button beforeBtn = new Button(VaadinIcons.CARET_LEFT);
+        beforeBtn.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
+        btnContainer.addComponent(beforeBtn);
+
+        final Label filterViewIndex = new Label(" (1/3) ", ContentMode.HTML);
+        btnContainer.addComponent(filterViewIndex);
+
+        beforeBtn.addClickListener((Button.ClickEvent event) -> {
+            filterViewIndex.setValue(" (" + this.showBefore() + "/3) ");
+        });
+        Button nextBtn = new Button(VaadinIcons.CARET_RIGHT);
+        nextBtn.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
+        btnContainer.addComponent(nextBtn);
+        nextBtn.addClickListener((Button.ClickEvent event) -> {
+            filterViewIndex.setValue(" (" + this.showNext() + "/3) ");
+        });
+        filterViewIndex.setValue(" (" + ProteinVisulizationLevelContainer.this.showNext() + "/3) ");
 
     }
 
@@ -246,6 +310,51 @@ public class ProteinVisulizationLevelContainer extends HorizontalLayout implemen
     public void activate3DProteinView() {
         protein3DStructurePanel.activate3DProteinView();
         graphsContainerComponent.updateMode();
+    }
+
+    public int showNext() {
+        filterComponentsMap.values().stream().map((view) -> {
+            view.addStyleName("hidedsfilter");
+            return view;
+        }).forEachOrdered((view) -> {
+            view.removeStyleName("viewdsfilter");
+        });
+        currentFilterView++;
+        if (currentFilterView > 3) {
+            currentFilterView = 1;
+        }
+        if (currentFilterView == 3) {
+            middleContainer.addStyleName("hidedsfilter");
+        } else {
+            middleContainer.removeStyleName("hidedsfilter");
+        }
+
+        filterComponentsMap.get(currentFilterView).addStyleName("viewdsfilter");
+        filterComponentsMap.get(currentFilterView).removeStyleName("hidedsfilter");
+
+        return currentFilterView;
+    }
+
+    public int showBefore() {
+        filterComponentsMap.values().stream().map((view) -> {
+            view.addStyleName("hidedsfilter");
+            return view;
+        }).forEachOrdered((view) -> {
+            view.removeStyleName("viewdsfilter");
+        });
+        currentFilterView--;
+        if (currentFilterView < 1) {
+            currentFilterView = 3;
+        }
+        if (currentFilterView == 3) {
+            middleContainer.addStyleName("hidedsfilter");
+        } else {
+            middleContainer.removeStyleName("hidedsfilter");
+        }
+        filterComponentsMap.get(currentFilterView).addStyleName("viewdsfilter");
+        filterComponentsMap.get(currentFilterView).removeStyleName("hidedsfilter");
+
+        return currentFilterView;
     }
 
 }

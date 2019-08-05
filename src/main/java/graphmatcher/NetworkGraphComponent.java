@@ -116,6 +116,10 @@ public abstract class NetworkGraphComponent extends VerticalLayout {
     private final Legend informationLegend;
     private final SelectioncanvasComponent2 selectionCanavas;
 
+    public Legend getInformationLegend() {
+        return informationLegend;
+    }
+
     public NetworkGraphComponent() {
         NetworkGraphComponent.this.setMargin(new MarginInfo(false, false, false, false));
         NetworkGraphComponent.this.setSizeFull();
@@ -265,6 +269,7 @@ public abstract class NetworkGraphComponent extends VerticalLayout {
         leftBottomPanel.setSpacing(false);
         leftBottomPanel.setWidthUndefined();
         leftBottomPanel.addStyleName("inframe");
+        leftBottomPanel.addStyleName("proteoformoptioncontrol");
         nodeControl = new OptionGroup();
         nodeControl.setMultiSelect(true);
         nodeControl.setStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
@@ -310,7 +315,7 @@ public abstract class NetworkGraphComponent extends VerticalLayout {
             selectAll();
         });
 
-        informationLegend = new Legend() {
+        informationLegend = new Legend(true) {
             @Override
             public void close() {
                 legendLayout.setPopupVisible(false);
@@ -341,6 +346,7 @@ public abstract class NetworkGraphComponent extends VerticalLayout {
         bottomRightPanel.setSpacing(false);
 
         bottomRightPanel.setStyleName("inframe");
+        bottomRightPanel.addStyleName("righttbottompanelstyle");
         bottomRightPanel.addComponent(selectAllBtn);
         bottomRightPanel.setComponentAlignment(selectAllBtn, Alignment.TOP_CENTER);
         bottomRightPanel.addComponent(updateLayoutBtn);
@@ -396,7 +402,6 @@ public abstract class NetworkGraphComponent extends VerticalLayout {
                 NetworkGraphNode node = new NetworkGraphNode(id, true, true) {
                     @Override
                     public void selected(String id) {
-                        System.out.println("at selected node 333 " + id);
                     }
                 };
                 node.setSelected(true);
@@ -417,7 +422,6 @@ public abstract class NetworkGraphComponent extends VerticalLayout {
 
     private void initializeGraphLayout() {
         layoutGraphData();
-        System.out.println("init graphlayout");
         canvas.removeAllComponents();
         graph.getVertices().forEach((node) -> {
             NetworkGraphNode n = activeGraphNodes.get(node);
@@ -679,7 +683,7 @@ public abstract class NetworkGraphComponent extends VerticalLayout {
         base64 = "data:image/png;base64," + base64;
         edgesImage.setSource(new ExternalResource(base64));
         edgesImage.removeStyleName("hide");
-        graphInfo.setValue("#Internal: <font style='float:right ;padding-left: 3px;'>" + internalNodes.size() + "</font><br/>#External: <font style='float:right ;padding-left: 3px;'>" + externalNodes.size() + "</font>");
+        graphInfo.setValue("#Internal: <font style='float:right ;padding-left: 3px;'>" + (internalNodes.size()-1) + "</font><br/>#External: <font style='float:right ;padding-left: 3px;'>" + externalNodes.size() + "</font>");
         graphInfo.setData(!internalNodes.isEmpty());
 
     }

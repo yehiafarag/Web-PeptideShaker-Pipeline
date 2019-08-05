@@ -2,9 +2,7 @@ package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components
 
 import com.compomics.util.experiment.biology.PTMFactory;
 import com.vaadin.event.LayoutEvents;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import java.awt.Color;
@@ -58,4 +56,4 @@ public abstract class ProtoformModificationLayout extends VerticalLayout impleme
         return null;
     }
 
-}
+    }

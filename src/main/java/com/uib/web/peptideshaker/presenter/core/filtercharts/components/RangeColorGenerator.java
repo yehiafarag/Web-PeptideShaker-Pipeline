@@ -8,6 +8,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import java.awt.Color;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,11 +23,11 @@ public class RangeColorGenerator {
     private final double max;
     private final Color lowerColor = new Color(13, 99, 196);
     private final Color upperColor = new Color(207, 227, 249);
-
     private final Color lowerColor2 = new Color(0, 25, 51);
     private final Color upperColor2 = new Color(230, 242, 255);
     private final HorizontalLayout colorScale;
     private final Map<Double, String> colorCategories;
+    private final DecimalFormat df = new DecimalFormat("0.00E00");// new DecimalFormat("#.##");
 
     /**
      * Constructor to initialise the main attributes
@@ -51,7 +52,13 @@ public class RangeColorGenerator {
             colorScale.addComponent(l);
             colorScale.setComponentAlignment(l, Alignment.TOP_CENTER);
         }
-        l = new Label("<center style= 'font-size: 1vmin;width:25px !important; height:15px !important;'>" + (int) max + "</center>", ContentMode.HTML);
+        String maxStr;
+        if (max > 1000) {
+            maxStr = df.format(max);
+        } else {
+            maxStr = ((int) max) + "";
+        }
+        l = new Label("<center style= 'font-size: 1vmin;width:25px !important; height:15px !important;'>" + maxStr + "</center>", ContentMode.HTML);
         l.setSizeFull();
         colorScale.addComponent(l);
 
@@ -79,11 +86,14 @@ public class RangeColorGenerator {
         Label l = new Label("<div>Max</div>", ContentMode.HTML);
         l.setSizeFull();
         scal.addComponent(l);
-        for (double x = 70; x > 0; x--) {
+        double step = max / 50.0;
+        for (double x = max; x > 0;) {
             if (gradeScale) {
-                l = new Label("<center style= ' background-color: " + RangeColorGenerator.this.getGradeColor(x * 0.02 * max, max, 0) + ";'></center>", ContentMode.HTML);
+                l = new Label("<center style= ' background-color: " + RangeColorGenerator.this.getGradeColor(x, max, 0) + ";'></center>", ContentMode.HTML);
+                x -= step;
             } else {
                 l = new Label("<center style= ' background-color: " + RangeColorGenerator.this.getColor(x * 0.02 * max) + ";'></center>", ContentMode.HTML);
+                x--;
             }
             l.setSizeFull();
             l.setStyleName(ValoTheme.LABEL_NO_MARGIN);
@@ -121,41 +131,49 @@ public class RangeColorGenerator {
         return rgb;
     }
 
-    public String getGradeColor(double value, double max, double min) {
+    public String getGradeColor(double value, double max1, double min) {
 
         if (value == 0.0) {
             return "RGB(" + 245 + "," + 245 + "," + 245 + ")";
         }
-        value = value / max;
-//        int counter
-        if (value <= 0.2) {
-            return colorCategories.get(20.0);
+        int h = 209;
+        int s = 100;
+        int l = 100 - ((int) ((value * 100.0) / max));
+        l = scaleValueInRange(0.0, 100.00, 10.0, 95, l);
+        if (max < value) {
+            System.out.println("at l " + l + "  " + max + "  " + value);
         }
-        if (value / max <= 0.40) {
-            return colorCategories.get(40.0);
-        }
-        if (value / max <= 0.60) {
-            return colorCategories.get(60.0);
-        }
-        if (value / max <= 0.8) {
-
-            return colorCategories.get(80.0);
-        }
-        if (value / max <= 1) {
-
-            return colorCategories.get(100.0);
-        }
-        if (value / max > 1) {
-
-            return colorCategories.get(1000.0);
-        }
-
-        double n = (value) / max;
-        double R1 = lowerColor2.getRed() * n + upperColor2.getRed() * (1 - n);
-        double G1 = lowerColor2.getGreen() * n + upperColor2.getGreen() * (1 - n);
-        double B1 = lowerColor2.getBlue() * n + upperColor2.getBlue() * (1 - n);
-        String rgb = "RGB(" + (int) R1 + "," + (int) G1 + "," + (int) B1 + ")";
-        return rgb;
+        Color c = toRGB(h, s, l);
+        return "RGB(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")";
+////        int counter
+//        if (value <= 0.2) {
+//            return colorCategories.get(20.0);
+//        }
+//        if (value / max <= 0.40) {
+//            return colorCategories.get(40.0);
+//        }
+//        if (value / max <= 0.60) {
+//            return colorCategories.get(60.0);
+//        }
+//        if (value / max <= 0.8) {
+//
+//            return colorCategories.get(80.0);
+//        }
+//        if (value / max <= 1) {
+//
+//            return colorCategories.get(100.0);
+//        }
+//        if (value / max > 1) {
+//
+//            return colorCategories.get(1000.0);
+//        }
+//
+//        double n = (value) / max;
+//        double R1 = lowerColor2.getRed() * n + upperColor2.getRed() * (1 - n);
+//        double G1 = lowerColor2.getGreen() * n + upperColor2.getGreen() * (1 - n);
+//        double B1 = lowerColor2.getBlue() * n + upperColor2.getBlue() * (1 - n);
+//        String rgb = "RGB(" + (int) R1 + "," + (int) G1 + "," + (int) B1 + ")";
+//        return rgb;
 
 //        if (value == 0.0) {
 //            return "RGB(" + 245 + "," + 245 + "," + 245 + ")";
@@ -166,6 +184,101 @@ public class RangeColorGenerator {
 //        double B1 = lowerColor2.getBlue() * n + upperColor2.getBlue() * (1 - n);
 //        String rgb = "RGB(" + (int) R1 + "," + (int) G1 + "," + (int) B1 + ")";
 //        return rgb;
+    }
+
+    private int scaleValueInRange(double rMin, double rMax, double tMin, double tMax, double value) {
+        value = (((value - rMin) / (rMax - rMin)) * (tMax - tMin)) + tMin;
+        return (int) Math.round(value);
+    }
+
+    /**
+     * Convert HSL values to a RGB Color with a default alpha value of 1.
+     *
+     * @param h Hue is specified as degrees in the range 0 - 360.
+     * @param s Saturation is specified as a percentage in the range 1 - 100.
+     * @param l Lumanance is specified as a percentage in the range 1 - 100.
+     *
+     * @returns the RGB Color object
+     */
+    private Color toRGB(float h, float s, float l) {
+        return toRGB(h, s, l, 1.0f);
+    }
+
+    /**
+     * Convert HSL values to a RGB Color.
+     *
+     * @param h Hue is specified as degrees in the range 0 - 360.
+     * @param s Saturation is specified as a percentage in the range 1 - 100.
+     * @param l Lumanance is specified as a percentage in the range 1 - 100.
+     * @param alpha the alpha value between 0 - 1
+     *
+     * @returns the RGB Color object
+     */
+    private Color toRGB(float h, float s, float l, float alpha) {
+        if (s < 0.0f || s > 100.0f) {
+            String message = "Color parameter outside of expected range - Saturation";
+            throw new IllegalArgumentException(message);
+        }
+
+        if (l < 0.0f || l > 100.0f) {
+            String message = "Color parameter outside of expected range - Luminance";
+            throw new IllegalArgumentException(message);
+        }
+
+        if (alpha < 0.0f || alpha > 1.0f) {
+            String message = "Color parameter outside of expected range - Alpha";
+            throw new IllegalArgumentException(message);
+        }
+
+        //  Formula needs all values between 0 - 1.
+        h = h % 360.0f;
+        h /= 360f;
+        s /= 100f;
+        l /= 100f;
+
+        float q = 0;
+
+        if (l < 0.5) {
+            q = l * (1 + s);
+        } else {
+            q = (l + s) - (s * l);
+        }
+
+        float p = 2 * l - q;
+
+        float r = Math.max(0, HueToRGB(p, q, h + (1.0f / 3.0f)));
+        float g = Math.max(0, HueToRGB(p, q, h));
+        float b = Math.max(0, HueToRGB(p, q, h - (1.0f / 3.0f)));
+
+        r = Math.min(r, 1.0f);
+        g = Math.min(g, 1.0f);
+        b = Math.min(b, 1.0f);
+
+        return new Color(r, g, b, alpha);
+    }
+
+    private float HueToRGB(float p, float q, float h) {
+        if (h < 0) {
+            h += 1;
+        }
+
+        if (h > 1) {
+            h -= 1;
+        }
+
+        if (6 * h < 1) {
+            return p + ((q - p) * 6 * h);
+        }
+
+        if (2 * h < 1) {
+            return q;
+        }
+
+        if (3 * h < 2) {
+            return p + ((q - p) * 6 * ((2.0f / 3.0f) - h));
+        }
+
+        return p;
     }
 
 }

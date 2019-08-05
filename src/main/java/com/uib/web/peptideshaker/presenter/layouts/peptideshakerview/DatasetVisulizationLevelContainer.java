@@ -13,8 +13,10 @@ import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.themes.ValoTheme;
 import java.util.Set;
 
 /**
@@ -68,7 +70,6 @@ public class DatasetVisulizationLevelContainer extends HorizontalLayout {
         topLeftLabelContainer.setSpacing(true);
         topLeftLabelContainer.addComponent(headerLabel);
 
-       
         FilterButton removeFilterIcon = new FilterButton() {
             @Override
             public void layoutClick(LayoutEvents.LayoutClickEvent event) {
@@ -81,24 +82,53 @@ public class DatasetVisulizationLevelContainer extends HorizontalLayout {
         commentLabel.setWidthUndefined();
         commentLabel.setStyleName("resizeabletext");
         commentLabel.addStyleName("margintop10");
+        commentLabel.addStyleName("selectiondescriptionlabel");
         topLabelContainer.addComponent(commentLabel);
         topLabelContainer.setComponentAlignment(commentLabel, Alignment.TOP_RIGHT);
         datasetVisulizationLevelComponent = new DatasetVisulizationLevelComponent(Selection_Manager) {
             @Override
             public void updateFilterSelection(Set<Comparable> selection, Set<Comparable> selectedCategories, boolean topFilter, boolean selectOnly, boolean selfAction) {
                 removeFilterIcon.setVisible(Selection_Manager.isDatasetFilterApplied());
-                super.updateFilterSelection(selection, selectedCategories, topFilter, selectOnly, selfAction);               
+                super.updateFilterSelection(selection, selectedCategories, topFilter, selectOnly, selfAction);
             }
         };
         container.addComponent(datasetVisulizationLevelComponent, "left:0px;top:40px;");
 
+        HorizontalLayout paggingBtnsContainer = new HorizontalLayout();
+        paggingBtnsContainer.setWidth(100, Unit.PERCENTAGE);
+        paggingBtnsContainer.setHeight(20, Unit.PIXELS);
+        paggingBtnsContainer.addStyleName("paggingbtnscontainer");
+        container.addComponent(paggingBtnsContainer, "left:0px;bottom:50px");
+        HorizontalLayout btnContainer = new HorizontalLayout();
+        btnContainer.setHeight(100, Unit.PERCENTAGE);
+        btnContainer.setWidthUndefined();
+        btnContainer.setSpacing(true);
+        paggingBtnsContainer.addComponent(btnContainer);
+        paggingBtnsContainer.setComponentAlignment(btnContainer, Alignment.TOP_CENTER);
+
+        Button beforeBtn = new Button(VaadinIcons.CARET_LEFT);
+        beforeBtn.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
+        btnContainer.addComponent(beforeBtn);
+
+        final Label filterViewIndex = new Label(" (1/5) ", ContentMode.HTML);
+        btnContainer.addComponent(filterViewIndex);
+
+        beforeBtn.addClickListener((Button.ClickEvent event) -> {
+            filterViewIndex.setValue(" (" + datasetVisulizationLevelComponent.showBefore() + "/5) ");
+        });
+        Button nextBtn = new Button(VaadinIcons.CARET_RIGHT);
+        nextBtn.setStyleName(ValoTheme.BUTTON_ICON_ONLY);
+        btnContainer.addComponent(nextBtn);
+        nextBtn.addClickListener((Button.ClickEvent event) -> {
+            filterViewIndex.setValue(" (" + datasetVisulizationLevelComponent.showNext() + "/5) ");
+        });
+
     }
-  
 
     public void selectDataset(PeptideShakerVisualizationDataset peptideShakerVisualizationDataset) {
         headerLabel.setLabelValue("Dataset: " + peptideShakerVisualizationDataset.getName().split("___")[0]);
-       
-        SearchSettingsLayout dsOverview = new SearchSettingsLayout((PeptideShakerVisualizationDataset) peptideShakerVisualizationDataset,true) {
+
+        SearchSettingsLayout dsOverview = new SearchSettingsLayout((PeptideShakerVisualizationDataset) peptideShakerVisualizationDataset, true) {
             @Override
             public void saveSearchingFile(SearchParameters searchParameters, boolean isNew) {
                 throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -108,7 +138,7 @@ public class DatasetVisulizationLevelContainer extends HorizontalLayout {
             public void cancel() {
                 headerLabel.setPopupVisible(false);
             }
-        }; 
+        };
         headerLabel.setContent(dsOverview);
         datasetVisulizationLevelComponent.updateData(peptideShakerVisualizationDataset);
 

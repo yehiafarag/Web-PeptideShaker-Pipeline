@@ -222,4 +222,4 @@ public class PeptideLayout extends AbsoluteLayout implements Comparable<PeptideL
         return postionsList;
     }
 
-}
+    }

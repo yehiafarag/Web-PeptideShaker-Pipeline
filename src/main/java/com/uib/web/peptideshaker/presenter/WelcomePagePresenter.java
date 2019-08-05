@@ -1,8 +1,5 @@
 package com.uib.web.peptideshaker.presenter;
 
-//import com.github.jmchilton.blend4j.galaxy.GalaxyInstance;
-//import com.uib.onlinepeptideshaker.managers.RegistrableView;
-//import com.uib.onlinepeptideshaker.presenter.view.SmallSideBtn;
 import com.uib.web.peptideshaker.presenter.core.ButtonWithLabel;
 import com.uib.web.peptideshaker.presenter.core.SmallSideBtn;
 import com.uib.web.peptideshaker.presenter.core.ViewableFrame;
@@ -21,22 +18,19 @@ import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
-import graphmatcher.NetworkGraphComponent;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-//import sun.security.provider.certpath.Vertex;
 
 /**
  * This class represents the welcome page for Online PeptideShaker
@@ -53,54 +47,38 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
      * The header layout container layout.
      */
     private final HorizontalLayout headerPanelContentLayout;
-
     /**
      * The body layout panel.
      */
     private final VerticalLayout userConnectionPanel;
+    /**
+     * The connecting to galaxy progress label.
+     */
     private final Label connectingLabel;
-    private final ButtonWithLabel connectionBtnLabel;
     /**
-     * The connection button to NeLS login page
+     * Galaxy login with API key button
      */
-    private final Link nelsGalaxyConnectionBtn;
+    private final ButtonWithLabel galaxyLoginConnectionBtnLabel;
     /**
-     * Button to direct connection using testing account
-     *
-     */
-//    private final Button loadExampleUserAccount;
-    /**
-     * Button to connect to user account.
-     *
-     */
-    private final Button galaxyConnectionBtn;
-    /**
-     * Test user Login account.
-     *
+     * Test user galaxy API key.
      */
     private final String testUserLogin = "test_User_Login";
     /**
      * Not valid API error message .
-     *
      */
     private final String apiErrorMessage = "Wrong API please try again";
     /**
      * Connection to galaxy statues label.
-     *
      */
-//    private final Label loginLabel;
     private final ButtonWithLabel galaxyLloginBtn;
     /**
      * Galaxy login controls layout.
-     *
      */
     private final VerticalLayout galaxyLoginLayout;
     /**
      * User API login field.
-     *
      */
     private final TextField userAPIFeald;
-
     /**
      * The side home button .
      */
@@ -113,14 +91,24 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
      * Executor service to execute connection task to galaxy server.
      */
     private ExecutorService executorService = Executors.newFixedThreadPool(2);
-
+    /**
+     * Container for different presenters buttons (data overview, tools ,
+     * results, and galaxy connection)
+     */
     private final VerticalLayout presenteControlButtonsLayout;
+    /**
+     * Layout for labels that have user information gathered from user accountr
+     * on galaxy server
+     */
     private final VerticalLayout userOverviewLayout;
     /**
-     *
+     * Connection to galaxy progress window
      */
     private final Window connectinoWindow;
-    private String viewId;
+    /**
+     * Unique presenter id
+     */
+    private final String viewId = WelcomePagePresenter.class.getName();
 
     /**
      * Constructor to initialise the layout.
@@ -140,7 +128,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         mainHeaderPanel.setHeight(50, Unit.PIXELS);
         mainHeaderPanel.setWidth(100, Unit.PERCENTAGE);
         container.addComponent(mainHeaderPanel, "left:10px;top:20px;");
-        
+
         headerPanelContentLayout = initializeHeaderPanel();
         mainHeaderPanel.addComponent(headerPanelContentLayout);
         mainHeaderPanel.setMargin(new MarginInfo(false, false, false, false));
@@ -154,7 +142,6 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         mainMiddlePanel.setSizeFull();
         mainMiddlePanel.setSpacing(true);
         container.addComponent(mainMiddlePanel, "left:10px;top:100px;");
-
         /**
          * The left panel (user data overview/connect-disconnect)
          */
@@ -165,7 +152,6 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         userOverviewPanel.setStyleName("useroverviewpanelstyle");
         mainMiddlePanel.addComponent(userOverviewPanel);
         mainMiddlePanel.setExpandRatio(userOverviewPanel, 20);
-
         /**
          * *user overview layout*
          */
@@ -175,6 +161,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         userOverviewPanel.setExpandRatio(userOverviewLayout, 0.7f);
         userOverviewPanel.setComponentAlignment(userOverviewLayout, Alignment.TOP_LEFT);
         Label overviewLabel = initLeftSideInfoLabel("<b></b>", "");
+        overviewLabel.addStyleName("hidetextonmobilemode");
         overviewLabel.addStyleName(ValoTheme.LABEL_H2);
         userOverviewLayout.addComponent(overviewLabel);
 
@@ -206,6 +193,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         mainMiddlePanel.addComponent(presenterControlButtonsPanel);
         mainMiddlePanel.setExpandRatio(presenterControlButtonsPanel, 80);
         presenterControlButtonsPanel.setMargin(new MarginInfo(false, false, false, true));
+        presenterControlButtonsPanel.addStyleName("actionbuttoncontainer");
 
         VerticalLayout welcomeTextContainerLayout = new VerticalLayout();
         welcomeTextContainerLayout.setSizeFull();
@@ -223,13 +211,14 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         welcomeText.setSizeFull();
         welcomeText.setContentMode(ContentMode.HTML);
         welcomeText.setStyleName(ValoTheme.LABEL_NO_MARGIN);
+        welcomeText.addStyleName("hideonmobilemode");
         welcomeText.setValue("<font style='font-weight: bold; font-size:23px'>Welcome to PeptideShaker </font>");// <br/><br/>To start using the system connect to your Galaxy Server");
         welcomeText.setData("ignoreclick");
         welcomeTextContainerLayout.addComponent(welcomeText);
         welcomeTextContainerLayout.setExpandRatio(welcomeText, 0.05f);
         welcomeTextContainerLayout.setComponentAlignment(welcomeText, Alignment.TOP_LEFT);
 
-        Label subWelcomeText = new Label();
+        final Label subWelcomeText = new Label();
         subWelcomeText.setSizeFull();
         subWelcomeText.setData("ignoreclick");
         subWelcomeText.setContentMode(ContentMode.HTML);
@@ -239,9 +228,8 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         welcomeTextContainerLayout.addComponent(subWelcomeText);
         welcomeTextContainerLayout.setExpandRatio(subWelcomeText, 0.05f);
         welcomeTextContainerLayout.setComponentAlignment(subWelcomeText, Alignment.TOP_LEFT);
-
         /**
-         * *Presenter control buttons container layout*
+         * *Presenter control buttons container layout
          */
         presenteControlButtonsLayout = new VerticalLayout();
         presenteControlButtonsLayout.setHeight(180, Unit.PIXELS);
@@ -251,7 +239,6 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         presenterControlButtonsPanel.setExpandRatio(presenteControlButtonsLayout, 0.6f);
         presenteControlButtonsLayout.setEnabled(false);
         presenteControlButtonsLayout.addStyleName("disableasenable");
-
         /**
          * Pop-up window layout to connect to Galaxy Server.
          */
@@ -308,17 +295,16 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
             }
 
             if (galaxyLloginBtn.getData() == null) {
-                viewId = comp.getData().toString();
                 connectinoWindow.setVisible(true);
             }
         });
         galaxyLloginBtn.addLayoutClickListener((LayoutEvents.LayoutClickEvent event) -> {
-            viewId = this.getViewId();
             if (galaxyLloginBtn.getData() == null) {
                 connectinoWindow.removeStyleName("connectionwindow");
                 connectinoWindow.setStyleName("windowcontainer");
                 connectinoWindow.setVisible(true);
             } else {
+                Notification.show("error in connection..", Notification.Type.ERROR_MESSAGE);
                 VaadinSession.getCurrent().getSession().invalidate();
                 Page.getCurrent().reload();
             }
@@ -333,25 +319,12 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         userConnectionPanel.setExpandRatio(serviceButtonContainer, 0.1f);
         userConnectionPanel.setComponentAlignment(serviceButtonContainer, Alignment.TOP_LEFT);
 
-        galaxyConnectionBtn = new Button("Galaxy", new ThemeResource("img/galaxyLogo.png"));
-        galaxyConnectionBtn.setSizeFull();
-        galaxyConnectionBtn.setEnabled(false);
-        galaxyConnectionBtn.setCaptionAsHtml(true);
-        
-        connectionBtnLabel = new ButtonWithLabel("<font style='width: 100%;height: 100%;font-size: 14px;font-weight: 600;text-align: justify;line-height: 70px;'>Login to Galaxy Server using your API Key</font>", 1);
-        connectionBtnLabel.updateIconResource(new ThemeResource("img/galaxyLogo.png"));
+        galaxyLoginConnectionBtnLabel = new ButtonWithLabel("<font style='width: 100%;height: 100%;font-size: 14px;font-weight: 600;text-align: justify;line-height: 70px;'>Login to Galaxy Server using your API Key</font>", 1);
+        galaxyLoginConnectionBtnLabel.updateIconResource(new ThemeResource("img/galaxyLogo.png"));
 
-        connectionBtnLabel.addStyleName("smaller");
-        serviceButtonContainer.addComponent(connectionBtnLabel);
+        galaxyLoginConnectionBtnLabel.addStyleName("smaller");
+        serviceButtonContainer.addComponent(galaxyLoginConnectionBtnLabel);
 
-        nelsGalaxyConnectionBtn = new Link("NeLS-Galaxy", new ExternalResource("http://localhost:8084/NelsGalaxyRedirectForm/"));
-        nelsGalaxyConnectionBtn.setStyleName("nelslogo");
-        /**
-         * @todo: to be remove in NeLS enable Online PeptideShaker
-         *
-         */
-        nelsGalaxyConnectionBtn.setVisible(false);
-        
         galaxyLoginLayout = new VerticalLayout();
         galaxyLoginLayout.setSizeFull();
         galaxyLoginLayout.setSpacing(true);
@@ -402,14 +375,14 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
             if (userAPIFeald.isValid() && !userAPIFeald.getValue().equalsIgnoreCase(testUserLogin)) {
                 connectingLabel.setVisible(true);
                 connectinoWindow.setClosable(false);
-                connectionBtnLabel.setVisible(false);
+                galaxyLoginConnectionBtnLabel.setVisible(false);
                 galaxyLoginLayout.setVisible(false);
                 Runnable task = () -> {
                     connectinoWindow.removeStyleName("windowcontainer");
                     connectinoWindow.setStyleName("connectionwindow");
 
                     List<String> userOverviewData = connectToGalaxy(userAPIFeald.getValue(), viewId);
-                    connectedToGalaxy(userOverviewData);
+                    updateConnectionStatusToGalaxy(userOverviewData);
                 };
                 if (executorService.isShutdown()) {
                     executorService = Executors.newFixedThreadPool(2);
@@ -420,7 +393,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
 
             }
         });
-        
+
         viewControlButton = new SmallSideBtn(VaadinIcons.HOME_O);
         viewControlButton.addStyleName("homepagepresenterbtn");
         viewControlButton.setData(WelcomePagePresenter.this.getViewId());
@@ -439,6 +412,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         sponserContainer.setWidthUndefined();
         mainBottomPanel.addComponent(sponserContainer);
         mainBottomPanel.setComponentAlignment(sponserContainer, Alignment.TOP_CENTER);
+        sponserContainer.addStyleName("hidetextonmobilemode");
 
         Label developmentText = new Label("<font>The web version of PeptideShaker is being developed by <a href='http://www.cbu.uib.no/barsnes/' target='_blank'>Barsnes Group</a> at the Computational Biology Unit (CBU) at the University of Bergen, Norway, in close collaboration with the Proteomics Unit at the University of Bergen (PROBE), Bergen, Norway.</font>", ContentMode.HTML);
         developmentText.setStyleName("refrencetext");
@@ -447,7 +421,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         Link probeLink = new Link("<img src='VAADIN/themes/webpeptideshakertheme/img/probe-updated.png' alt style='height: 65px;margin-top: -20px;cursor:pointer !important;'>", new ExternalResource("https://www.uib.no/rg/probe"));
         probeLink.setCaptionAsHtml(true);
         probeLink.setHeight(100, Unit.PERCENTAGE);
-        probeLink.setWidth(200, Unit.PIXELS);
+        probeLink.setWidth(180, Unit.PIXELS);
         probeLink.setTargetName("_blank");
         sponserContainer.addComponent(probeLink);
         Link uibLink = new Link("<img src='VAADIN/themes/webpeptideshakertheme/img/uib-logo.svg' alt style='height: 85px;margin-top: -30px;margin-left: -20px;cursor:pointer !important;'>", new ExternalResource("https://www.uib.no/"));
@@ -462,7 +436,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         cbuLink.setWidth(112, Unit.PIXELS);
         cbuLink.setTargetName("_blank");
         sponserContainer.addComponent(cbuLink);
-        
+
         VerticalLayout windowContent = new VerticalLayout();
         windowContent.setWidth(500, Unit.PIXELS);
         this.busyConnectinWindow = new Window(null, windowContent);
@@ -475,14 +449,31 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         busyConnectinWindow.center();
         this.busyConnectinWindow.setWindowMode(WindowMode.NORMAL);
         busyConnectinWindow.addStyleName("hidewindow");
-        
-        this.loginAsGuest();
 
+        if ((boolean) VaadinSession.getCurrent().getAttribute("mobilescreenstyle")) {
+            userOverviewPanel.setIcon(VaadinIcons.ANGLE_RIGHT);
+            userOverviewPanel.addLayoutClickListener((LayoutEvents.LayoutClickEvent event) -> {
+                if (userOverviewPanel.getStyleName().contains("hidecontent")) {
+                    userOverviewPanel.removeStyleName("hidecontent");
+                    presenterControlButtonsPanel.addStyleName("reducewidth");
+                } else {
+                    userOverviewPanel.addStyleName("hidecontent");
+                    presenterControlButtonsPanel.removeStyleName("reducewidth");
+                }
+            });
+            userOverviewPanel.addStyleName("hidecontent");
+
+        }
+
+        this.loginAsGuest();
 
     }
 
+    /**
+     * Log in to galaxy as guest (test user API key).
+     */
     private void loginAsGuest() {
-        connectionBtnLabel.setVisible(false);
+        galaxyLoginConnectionBtnLabel.setVisible(false);
         connectinoWindow.setVisible(true);
         galaxyLoginLayout.setVisible(false);
         connectinoWindow.setClosable(false);
@@ -492,7 +483,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
             connectinoWindow.removeStyleName("windowcontainer");
             connectinoWindow.setStyleName("connectionwindow");
             List<String> userOverviewData = connectToGalaxy(testUserLogin, viewId);
-            connectedToGalaxy(userOverviewData);
+            updateConnectionStatusToGalaxy(userOverviewData);
         };
         if (executorService.isShutdown()) {
             executorService = Executors.newSingleThreadExecutor();
@@ -504,11 +495,12 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
     /**
      * update the layout based on connection to galaxy.
      *
-     * @param connected connected to galaxy server
+     * @param userOverviewData list of user data gathered from user account on
+     * Galaxy server
      */
-    private void connectedToGalaxy(List<String> userOverviewData) {
+    private void updateConnectionStatusToGalaxy(List<String> userOverviewData) {
         connectinoWindow.setClosable(true);
-        connectionBtnLabel.setVisible(true);
+        galaxyLoginConnectionBtnLabel.setVisible(true);
         galaxyLoginLayout.setEnabled(true);
         galaxyLoginLayout.setVisible(true);
         galaxyLloginBtn.setData(null);
@@ -534,6 +526,12 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
 
     }
 
+    /**
+     * update user overview panel.
+     *
+     * @param userOverviewData list of user data gathered from user account on
+     * Galaxy server
+     */
     public void updateUserOverviewPanel(List<String> userOverviewData) {
         if (userOverviewData != null && !userOverviewData.isEmpty()) {
             Label l1 = initLeftSideInfoLabel(VaadinIcons.USER.getHtml() + " <b style='color:#cd6e1d !important'>" + userOverviewData.get(0) + "</b>", "");
@@ -570,40 +568,67 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         return headerLayoutContainer;
     }
 
+    /**
+     * Get the unique presenter ID for the welcome page
+     *
+     * @return presenter ID
+     */
     @Override
     public String getViewId() {
-        return WelcomePagePresenter.class.getName();
+        return viewId;
     }
 
+    /**
+     * Hide current presenter
+     */
     @Override
     public void minimizeView() {
         viewControlButton.setSelected(false);
         this.addStyleName("hidepanel");
     }
 
+    /**
+     * View presenter
+     */
     @Override
     public void maximizeView() {
         viewControlButton.setSelected(true);
         this.removeStyleName("hidepanel");
     }
 
+    /**
+     * Get presenter side menu button
+     *
+     * @return small side button for the presenter
+     */
     @Override
     public SmallSideBtn getSmallPresenterControlButton() {
         return viewControlButton;
     }
 
+    /**
+     * Get the main frame that contains the presenter view
+     *
+     * @return
+     */
     @Override
     public VerticalLayout getMainView() {
         return this;
     }
 
+    /**
+     * Get the left side (sub presenter action buttons) in welcome page the side
+     * view layout is not exist
+     *
+     * @return empty layout
+     */
     @Override
     public VerticalLayout getSubViewButtonsActionContainerLayout() {
         return new VerticalLayout();
     }
 
     /**
-     * Start the Online PeptideShaker - Galaxy server connection.
+     * Connect to galaxy server.
      *
      * @param presenterId button used to login
      * @param userAPI user API key that is required to connect to galaxy
@@ -612,6 +637,14 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
      */
     public abstract List<String> connectToGalaxy(String userAPI, String presenterId);
 
+    /**
+     * Create unified labels for the user overview panel
+     *
+     * @param title the label text title
+     * @param value the label text value
+     * @return the generated label
+     *
+     */
     private Label initLeftSideInfoLabel(String title, String value) {
         Label label = new Label("<font style='width:120px;font-size: 14px;'>" + title + "</font><font style='width:60px; text-align: right !important;font-size: 14px; float: right !important;  color:#cd6e1d'>  " + value + " </font>");
         label.setContentMode(ContentMode.HTML);
@@ -622,19 +655,40 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
 
     }
 
+    /**
+     * Update the generated labels for the user overview panel
+     *
+     * @param label the generated label to be updated
+     * @param value the new value for the label
+     *
+     */
     private void updateLeftSideInfoLabel(Label label, String value) {
         String org = label.getValue().split("</font>")[0];
         label.setValue(org + "</font><font style='width:60px; text-align: right !important;font-size: 14px;float: right !important;  color:#cd6e1d; margin-top:2px'>  " + value + " </font>");
 
     }
 
+    /**
+     * Get the presenter button (large button with label) for the welcome page
+     * (not exist for welcome page presenter)
+     *
+     * @return null no large button for welcome page presenter
+     */
     @Override
     public ButtonWithLabel getLargePresenterControlButton() {
         return null;
     }
 
-    public void setPresenterControlButtonContainer(GridLayout presenterBtnsContainer) {
-        presenterBtnsContainer.addComponent(galaxyLloginBtn, 1, 1);
+    /**
+     * Set the presenter buttons (large button with label) container that have
+     * button for each presenter in the system
+     *
+     * @param presenterBtnsContainer grid layout that contain all the large
+     * presenter buttons
+     */
+    public void setPresenterControlButtonContainer(AbsoluteLayout presenterBtnsContainer) {
+//        presenterBtnsContainer.addComponent(galaxyLloginBtn, 1, 1);
+presenterBtnsContainer.addComponent(galaxyLloginBtn,"left:50%;top:50%;");
         presenteControlButtonsLayout.addComponent(presenterBtnsContainer);
     }
 

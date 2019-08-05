@@ -40,13 +40,16 @@ public class FiltersContainer extends HorizontalLayout {
 
     private final ChromosomesFilter chromosomeFilter;
 
-    private final DivaRangeFilter prptidesNumberFilter;
+    private final DivaRangeFilter peptidesNumberFilter;
     private final DivaRangeFilter coverageFilter;
     private final DivaRangeFilter psmNumberFilter;
 
     private final AbsoluteLayout intinsityContainer;
     private final DivaRangeFilter intensityAllPeptidesRange;
     private final DivaRangeFilter intensityUniquePeptidesRange;
+    
+    private final  VerticalLayout filterRightPanelContainer ;
+    private final VerticalLayout filterLeftPanelContainer;
 
     private final Map<String, Color> PIColorMap;// new Color[]{Color.DARK_GRAY, new Color(4, 180, 95), new Color(245, 226, 80), new Color(213, 8, 8), Color.ORANGE};
 //    private final SelectionGraph proteinsPathwayNewtorkGraph;
@@ -95,8 +98,8 @@ public class FiltersContainer extends HorizontalLayout {
             }
 
         };
-
-        VerticalLayout filterLeftPanelContainer = new VerticalLayout();
+ProteinInferenceFilter.addStyleName("pifilter");
+        filterLeftPanelContainer = new VerticalLayout();
         filterLeftPanelContainer.setHeight(100, Unit.PERCENTAGE);
         filterLeftPanelContainer.setWidth(100, Unit.PERCENTAGE);
         filterLeftPanelContainer.setSpacing(false);
@@ -115,6 +118,7 @@ public class FiltersContainer extends HorizontalLayout {
                 }
             }
         };
+        validationFilter.addStyleName("validationfilter");
         filterLeftPanelContainer.addComponent(validationFilter);
         filterLeftPanelContainer.setComponentAlignment(validationFilter, Alignment.TOP_CENTER);
         chromosomeFilter = new ChromosomesFilter("Chromosome", "chromosome_filter", Selection_Manager) {
@@ -124,6 +128,7 @@ public class FiltersContainer extends HorizontalLayout {
                 }
             }
         };
+        chromosomeFilter.addStyleName("chromfilter");
         filterLeftPanelContainer.addComponent(chromosomeFilter);
         filterLeftPanelContainer.setComponentAlignment(chromosomeFilter, Alignment.TOP_RIGHT);
         chromosomeFilter.addStyleName("bottomfilter");
@@ -151,11 +156,12 @@ public class FiltersContainer extends HorizontalLayout {
         filterMiddlePanelContainer.addComponent(modificationFilter);
         modificationFilter.setSizeFull();
 
-        VerticalLayout filterRightPanelContainer = new VerticalLayout();
+        filterRightPanelContainer = new VerticalLayout();
         filterRightPanelContainer.setHeight(100, Unit.PERCENTAGE);
         filterRightPanelContainer.setWidth(100, Unit.PERCENTAGE);
         filterRightPanelContainer.setSpacing(false);
         filterRightPanelContainer.addStyleName("cornerfiltercontainerstyle");
+        filterRightPanelContainer.addStyleName("rightpanelfilter");
         filterRightPanelContainer.addStyleName(ValoTheme.LAYOUT_HORIZONTAL_WRAPPING);
         FiltersContainer.this.addComponent(filterRightPanelContainer);
         FiltersContainer.this.setComponentAlignment(filterRightPanelContainer, Alignment.TOP_LEFT);
@@ -175,27 +181,29 @@ public class FiltersContainer extends HorizontalLayout {
             }
 
         };
-
+intensityAllPeptidesRange.addStyleName("intallpepfilter");
         intensityUniquePeptidesRange = new DivaRangeFilter("Intensity (% - Unique peptides)", "intensityUniquePep_filter", this.Selection_Manager) {
             @Override
             public void selectionChange(String type) {
 
             }
         };
+        intensityUniquePeptidesRange.addStyleName("intuniquepepfilter");
         intinsityContainer = new AbsoluteLayout();
         intinsityContainer.setSizeFull();
         intinsityContainer.addComponent(intensityAllPeptidesRange, "left:0px;top:5px;bottom:0px !important;right:0px;");
         intensityAllPeptidesRange.setVisible(true);
         intinsityContainer.addComponent(intensityUniquePeptidesRange, "left:0px;top:5px;bottom:0px;right:0px;");
-
-        prptidesNumberFilter = new DivaRangeFilter("#Peptides", "peptidesNum_filter", this.Selection_Manager) {
+intinsityContainer.addStyleName("intinsfilter");
+        peptidesNumberFilter = new DivaRangeFilter("#Peptides", "peptidesNum_filter", this.Selection_Manager) {
             @Override
             public void selectionChange(String type) {
             }
 
         };
-        filterRightPanelContainer.addComponent(prptidesNumberFilter);
-        filterRightPanelContainer.setComponentAlignment(prptidesNumberFilter, Alignment.TOP_LEFT);
+        peptidesNumberFilter.addStyleName("pepNumfilter");
+        filterRightPanelContainer.addComponent(peptidesNumberFilter);
+        filterRightPanelContainer.setComponentAlignment(peptidesNumberFilter, Alignment.TOP_LEFT);
 
         psmNumberFilter = new DivaRangeFilter("#PSMs", "psmNum_filter", this.Selection_Manager) {
             @Override
@@ -203,7 +211,7 @@ public class FiltersContainer extends HorizontalLayout {
             }
 
         };
-
+        psmNumberFilter.addStyleName("psmnumfilter");
         filterRightPanelContainer.addComponent(psmNumberFilter);
         filterRightPanelContainer.setComponentAlignment(psmNumberFilter, Alignment.TOP_CENTER);
 //        TabSheet tabFilterContainer = new TabSheet();
@@ -222,6 +230,7 @@ public class FiltersContainer extends HorizontalLayout {
             }
 
         };
+        coverageFilter.addStyleName("coveragefilter");
         filterRightPanelContainer.addComponent(coverageFilter);
         coverageFilter.addStyleName("bottomfilter");
         coverageFilter.addStyleName("correctresetbtn");
@@ -248,7 +257,7 @@ public class FiltersContainer extends HorizontalLayout {
         Selection_Manager.setProteinIntinsityUniquePepMap(proteinIntinsityUniquePepMap);
         Selection_Manager.setProteinPSMNumberMap(proteinPSMNumberMap);
         Selection_Manager.setProteinPeptidesNumberMap(proteinPeptidesNumberMap);
-        prptidesNumberFilter.initializeFilterData(proteinPeptidesNumberMap);
+        peptidesNumberFilter.initializeFilterData(proteinPeptidesNumberMap);
         psmNumberFilter.initializeFilterData(proteinPSMNumberMap);
         coverageFilter.initializeFilterData(proteinCoverageMap);
         if (proteinIntinsityAllPepMap.isEmpty()) {
@@ -290,5 +299,49 @@ public class FiltersContainer extends HorizontalLayout {
         this.intensityAllPeptidesRange.setVisible(allPeptideInteinsity);
 
     }
+
+    public DivaPieChartFilter getValidationFilter() {
+        return validationFilter;
+    }
+
+    public DivaPieChartFilter getProteinInferenceFilter() {
+        return ProteinInferenceFilter;
+    }
+
+    public ChromosomesFilter getChromosomeFilter() {
+        return chromosomeFilter;
+    }
+
+   
+
+    public ModificationsFilter getModificationFilter() {
+        return modificationFilter;
+    }
+
+    public VerticalLayout getFilterRightPanelContainer() {
+        return filterRightPanelContainer;
+    }
+
+    public VerticalLayout getFilterLeftPanelContainer() {
+        return filterLeftPanelContainer;
+    }
+
+    public DivaRangeFilter getPeptidesNumberFilter() {
+        return peptidesNumberFilter;
+    }
+
+    public DivaRangeFilter getPsmNumberFilter() {
+        return psmNumberFilter;
+    }
+
+    public DivaRangeFilter getIntensityAllPeptidesRange() {
+        return intensityAllPeptidesRange;
+    }
+
+    public DivaRangeFilter getIntensityUniquePeptidesRange() {
+        return intensityUniquePeptidesRange;
+    }
+    
+    
 
 }

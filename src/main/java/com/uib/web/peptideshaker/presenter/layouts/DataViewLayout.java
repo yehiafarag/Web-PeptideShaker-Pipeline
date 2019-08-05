@@ -12,14 +12,12 @@ import com.uib.web.peptideshaker.presenter.core.StatusLabel;
 import com.uib.web.peptideshaker.presenter.core.Uploader;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.jsclipboard.JSClipboard;
 import com.vaadin.server.Page;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -349,15 +347,15 @@ public abstract class DataViewLayout extends Panel {
 //                };
                 infoLabel.addStyleName("centeredicon");
 
-                System.out.println("at ((PeptideShakerVisualizationDataset) ds).isQuantDataset() "+((PeptideShakerVisualizationDataset) ds).isQuantDataset());
                 //0psiconHRNS
                 String quant = null;
+                String quantTooltip="";
                 if (((PeptideShakerVisualizationDataset) ds).isQuantDataset()) {
                     quant = "Quant";
                 }
                 Label type = new Label(quant);
                 type.setIcon(new ThemeResource("img/psiconHRNS.png"));
-                type.setDescription(ds.getType()+" "+quant);
+                type.setDescription(ds.getType()+" "+quantTooltip);
                 type.setStyleName("smalliconlabel");
 
                 rowLayout = initializeRowData(new Component[]{new Label(i + ""), nameLabel, type, infoLabel, shareLabel, getToGalaxyLabel, nelsLabel, downloadLabel, deleteLabel, statusLabel}, false);

@@ -35,7 +35,7 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
     private final String modificationStyleName = "nodemodificationbackground";
     private int edgesNumber;
     private boolean uniqueOnlyMode;
-     private final DecimalFormat df1 = new DecimalFormat("0.00E00");// new DecimalFormat("#.##");
+    private final DecimalFormat df1 = new DecimalFormat("0.00E00");// new DecimalFormat("#.##");
     private final Set<Edge> edges;
 
     /**
@@ -43,7 +43,7 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
      */
     private final PTMFactory PTM = PTMFactory.getInstance();
 
-    public Node(String id, String tooltip, String modifications, String sequence, int psmNumber, String PSMNumberColor,double inteinsity,String inteinsityColor) {
+    public Node(String id, String tooltip, String modifications, String sequence, int psmNumber, String PSMNumberColor, double inteinsity, String inteinsityColor) {
 
         Node.this.setStyleName("node");
         Node.this.addLayoutClickListener(Node.this);
@@ -55,7 +55,7 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
         String subTooltip = "";
         Map<String, String> modificationsTooltip = new HashMap<>();
         for (String mod : modifications.split("\\),")) {
-            if (mod.trim().equalsIgnoreCase("") || mod.contains("Pyrolidone") || mod.contains("Acetylation of protein N-term") || mod.contains("No Modifications") || mod.contains("Two or More Modifications")) {
+            if (mod.trim().equalsIgnoreCase("")|| mod.contains("No Modifications") || mod.contains("Two or More Modifications")) {// || mod.contains("Pyrolidone") || mod.contains("Acetylation of protein N-term") || mod.contains("No Modifications") || mod.contains("Two or More Modifications")) {
                 continue;
             }
             String[] tmod = mod.split("\\(");
@@ -63,6 +63,7 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
             Label modification = new Label("<div  style='background:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ");border-radius:100%;width: 100%;height: 100%;opacity:0.2;'></div>", ContentMode.HTML);
             modification.setSizeFull();
             modificationLayout.addComponent(modification);
+            System.out.println("at temp modification : "+tmod.length+"  "+tmod[0]+"  "+mod);
             String[] indexArr = tmod[1].replace(")", "").replace(" ", "").split(",");
             for (String indexStr : indexArr) {
                 int i = Integer.valueOf(indexStr) - 1;
@@ -80,6 +81,7 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
             modificationLayout.removeAllComponents();
             Label modification = new Label("<div style='background:orange; width:100%;height:100%;border-radius:100%;opacity:0.2;'></div>", ContentMode.HTML);
             modification.setSizeFull();
+            modification.addStyleName("multiplemodificationstyle");
             modificationLayout.addComponent(modification);
         }
         for (String key : modificationsTooltip.keySet()) {
@@ -100,13 +102,12 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
         psmsColorLabel.setSizeFull();
         psmNumberLayout.addComponent(psmsColorLabel);
         psmNumberLayout.setVisible(false);
-        
-        
+
         this.intensityLayout = new VerticalLayout();
         this.intensityLayout.setSizeFull();
         Node.this.addComponent(intensityLayout);
         String tooltipExt2 = "</br>Intinsity: " + df1.format(inteinsity) + "";
-        if (inteinsity == -10000) {           
+        if (inteinsity == -10000) {
             tooltipExt2 = "";
         }
         Label intensityColorLabel = new Label("<div  style='background:" + inteinsityColor + ";border-radius:100%;width: 100%;height: 100%;opacity:0.2;'></div>", ContentMode.HTML);
@@ -114,8 +115,7 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
         intensityColorLabel.setStyleName("intensitycolornode");
         intensityLayout.addComponent(intensityColorLabel);
         intensityLayout.setVisible(false);
-        
-        
+
         tooltip += tooltipExt;
         tooltip += tooltipExt2;
         Node.this.setDescription(tooltip);
@@ -165,7 +165,7 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
         } else if (statues.equalsIgnoreCase("Intensity")) {
             this.intensityLayout.setVisible(true);
             this.addStyleName(modificationStyleName);
-            
+
         }
 
     }
@@ -270,11 +270,11 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
     public void addEdge(Edge e) {
         edges.add(e);
         addEdge();
-        this.setDescription(this.getDescription()+"("+edges.size()+")");
+        this.setDescription(this.getDescription() + "(" + edges.size() + ")");
     }
 
     public Set<Edge> getRelatedEdges() {
-        
+
         return edges;
     }
 

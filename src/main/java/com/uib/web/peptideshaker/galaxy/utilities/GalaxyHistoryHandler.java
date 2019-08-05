@@ -12,7 +12,6 @@ import com.uib.web.peptideshaker.PeptidShakerUI;
 import com.uib.web.peptideshaker.dal.ReactomeDatabase;
 import com.uib.web.peptideshaker.model.core.LinkUtil;
 import com.vaadin.server.Page;
-import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Notification;
 
@@ -579,6 +578,8 @@ public abstract class GalaxyHistoryHandler {
                         int size = (int) map.get("file_size");
                         double sizeinMB = (double) size / 1000000.0;
                         usedStorageSpace = usedStorageSpace + size;
+                        System.out.println("at file name "+map.get("data_type")+"    "+ map.get("name").toString());
+                        
 
                         if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.tabular.Tabular") && map.get("name").toString().endsWith("-MOFF")) {
                             GalaxyFileObject ds = new GalaxyFileObject();
@@ -633,7 +634,7 @@ public abstract class GalaxyHistoryHandler {
                             } catch (ParseException ex) {
                                 ex.printStackTrace();
                             }
-                        } else if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.text.Json") && map.get("name").toString().endsWith(".par")) {
+                        } else if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.text.Json") && (map.get("name").toString().endsWith(".par")|| map.get("name").toString().endsWith("-PAR"))) {
                             GalaxyFileObject ds = new GalaxyFileObject();
                             ds.setName(map.get("name").toString());
                             ds.setType("Search Parameters File (JSON)");
@@ -768,7 +769,7 @@ public abstract class GalaxyHistoryHandler {
                             } catch (ParseException ex) {
                                 ex.printStackTrace();
                             }
-                        } else if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.tabular.Tabular") && map.get("name").toString().endsWith("-MGFFile")) {
+                        } else if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.tabular.Tabular") && (map.get("name").toString().endsWith("-MGFFile")|| (map.get("name").toString().endsWith("-MGF")))) {
                             GalaxyFileObject ds = new GalaxyFileObject();
                             ds.setName(map.get("name").toString());
                             ds.setType("MGF");
@@ -834,8 +835,8 @@ public abstract class GalaxyHistoryHandler {
                     Notification.show("Service Temporarily Unavailable", Notification.Type.ERROR_MESSAGE);
                 } else {
                     e.printStackTrace();
-                    System.out.println("at history are not available");
                     Page.getCurrent().reload();
+                    
                     if (VaadinSession.getCurrent() != null && VaadinSession.getCurrent().getSession() != null) {
                         VaadinSession.getCurrent().getSession().invalidate();
                     }

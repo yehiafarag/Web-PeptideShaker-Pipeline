@@ -167,7 +167,8 @@ public abstract class GraphsContainerComponent extends VerticalLayout {
             } else {
                 protein = proteinNodes.get(protId.toString());
             }
-            if (protein.getValidation().contains("Confident")) {
+            
+            if (protein !=null && protein.getValidation().contains("Confident")) {
                 protoformProteinNodes.put(protein.getAccession(), protein);
             }
         }

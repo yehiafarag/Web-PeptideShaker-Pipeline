@@ -338,7 +338,7 @@ public class ProteinGroupObject extends Protein {
      *
      * @return accession UniProt protein accession
      */
-    @Override
+  
     public String getAccession() {
         return accession;
     }

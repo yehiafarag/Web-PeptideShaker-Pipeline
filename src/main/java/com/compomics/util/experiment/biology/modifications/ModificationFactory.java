@@ -1,5 +1,8 @@
 package com.compomics.util.experiment.biology.modifications;
 
+import com.compomics.util.experiment.biology.modifications.ModificationFactory;
+import com.compomics.util.experiment.biology.modifications.Modification;
+import com.compomics.util.experiment.biology.modifications.ModificationType;
 import com.compomics.util.experiment.biology.AminoAcidPattern;
 import com.compomics.util.experiment.biology.Atom;
 import com.compomics.util.experiment.biology.AtomChain;
@@ -8,6 +11,7 @@ import com.compomics.util.experiment.biology.NeutralLoss;
 import com.compomics.util.experiment.biology.ions.ReporterIon;
 import com.compomics.util.io.json.JsonMarshaller;
 import com.compomics.util.pride.CvTerm;
+import java.awt.Color;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -16,7 +20,7 @@ import java.util.Iterator;
 
 /**
  * This factory will load Modification from an XML file and provide them on
- * demand as standard class.
+ demand as standard class.
  *
  * @author Marc Vaudel
  * @author Harald Barsnes
@@ -44,7 +48,7 @@ public class ModificationFactory {
      * Suffix for the modification clone targeting a single amino acid instead
      * of a pattern.
      */
-    public static final String SINGLE_AA_SUFFIX = "|single_aa";
+    public  final String SINGLE_AA_SUFFIX = "|single_aa";
     /**
      * Set to true if the default mods are sorted alphabetically.
      */
@@ -53,7 +57,10 @@ public class ModificationFactory {
      * Set to true if the users mods are sorted alphabetically.
      */
     public boolean usersModsSorted = false;
-
+ /**
+     * Mapping of the expected modification names to the color used.
+     */
+    private final HashMap<String, Integer> userColors = new HashMap<>();
     /**
      * Constructor for the factory.
      */
@@ -72,7 +79,7 @@ public class ModificationFactory {
      * @throws IOException exception thrown whenever an error occurred while
      * loading the file
      */
-    public static ModificationFactory loadFromFile(File file) throws IOException {
+    public  ModificationFactory loadFromFile(File file) throws IOException {
         JsonMarshaller jsonMarshaller = new JsonMarshaller();
         ModificationFactory result = (ModificationFactory) jsonMarshaller.fromJson(ModificationFactory.class, file);
         return result;
@@ -87,21 +94,21 @@ public class ModificationFactory {
      * @throws IOException exception thrown whenever an error occurred while
      * saving the file
      */
-    public static void saveToFile(ModificationFactory modificationFactory, File file) throws IOException {
+    public  void saveToFile(ModificationFactory modificationFactory, File file) throws IOException {
         JsonMarshaller jsonMarshaller = new JsonMarshaller();
         jsonMarshaller.saveObjectToJson(modificationFactory, file);
     }
 
     /**
      * Returns a clone of the given Modification targeting a single amino acid
-     * instead of a pattern.
+ instead of a pattern.
      *
      * @param modification the modification of interest
      *
      * @return a clone of the given Modification targeting a single amino acid
-     * instead of a pattern
+ instead of a pattern
      */
-    public static Modification getSingleAAModification(Modification modification) {
+    public  Modification getSingleAAModification(Modification modification) {
         if (!modification.isStandardSearch()) {
             return new Modification(modification.getModificationType(), modification.getShortName(),
                     modification.getName() + SINGLE_AA_SUFFIX, modification.getAtomChainAdded(),
@@ -113,12 +120,12 @@ public class ModificationFactory {
 
     /**
      * Returns a clone of the given Modification targeting a single amino acid
-     * instead of a pattern.
+ instead of a pattern.
      *
      * @param modificationName the name of the modification of interest
      *
      * @return a clone of the given Modification targeting a single amino acid
-     * instead of a pattern
+ instead of a pattern
      */
     public Modification getSingleAAModification(String modificationName) {
         Modification modification = getModification(modificationName);
@@ -176,6 +183,10 @@ public class ModificationFactory {
      */
     public Modification getModification(String name) {
         return modificationMap.get(name);
+    }
+
+    public HashMap<String, Modification> getModificationMap() {
+        return modificationMap;
     }
 
     /**
@@ -2893,4 +2904,61 @@ public class ModificationFactory {
         }
 
     }
+    
+    /**
+     * Returns the color used to code the given modification.
+     *
+     * @param modification the name of the given expected modification
+     * @return the corresponding color
+     */
+    public int getColor(String modification) {
+        if (!userColors.containsKey(modification)) {
+            setColor(modification, getDefaultColor(modification));
+        }
+        return userColors.get(modification);
+    }
+    
+     /**
+     * Returns a default color based on the modification name.
+     *
+     * @param modification the name of the modification
+     * @return a default color.
+     */
+    public  int getDefaultColor(String modification) {
+        if (modification.contains("no modification")) {
+            return Color.LIGHT_GRAY.getRGB();
+        } else if (modification.toLowerCase().contains("phospho")) {
+            return Color.RED.getRGB();
+        } else if (modification.toLowerCase().contains("pyro")) {
+            return new Color(255, 102, 51).getRGB();
+        } else if (modification.toLowerCase().contains("ox")) {
+            return Color.BLUE.getRGB();
+        } else if (modification.toLowerCase().contains("itraq")) {
+            return Color.ORANGE.getRGB();
+        } else if (modification.toLowerCase().contains("tmt")) {
+            return Color.ORANGE.getRGB();
+        } else if (modification.toLowerCase().contains("carbamido")) {
+            return Color.LIGHT_GRAY.getRGB();
+        } else if (modification.toLowerCase().contains("ace")) {
+            return new Color(153, 153, 0).getRGB();
+        } else if (modification.toLowerCase().contains("glyco")) {
+            return Color.MAGENTA.getRGB();
+        } else {
+            float r = (float) Math.random();
+            float g = (float) Math.random();
+            float b = (float) Math.random();
+            return new Color(r, g, b).getRGB();
+        }
+    }
+    
+    /**
+     * Sets a new color for the given expected modification.
+     *
+     * @param expectedModification the name of the expected modification
+     * @param color the new color
+     */
+    public void setColor(String expectedModification, int color) {
+        userColors.put(expectedModification, color);
+    }
+
 }
