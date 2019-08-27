@@ -1,10 +1,10 @@
 package com.uib.web.peptideshaker.presenter.layouts;
 
-import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyFileObject;
 import com.uib.web.peptideshaker.model.core.ClipboardUtil;
 import com.uib.web.peptideshaker.model.core.LinkUtil;
+import com.uib.web.peptideshaker.model.core.WebSearchParameters;
 import com.uib.web.peptideshaker.presenter.core.ActionLabel;
 import com.uib.web.peptideshaker.presenter.core.FileOverviewLayout;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
@@ -319,7 +319,7 @@ public abstract class DataViewLayout extends Panel {
                     private final PopupWindow tDsOverview = (PopupWindow) infoLabel;
 
                     @Override
-                    public void saveSearchingFile(SearchParameters searchParameters, boolean isNew) {
+                    public void saveSearchingFile(WebSearchParameters searchParameters, boolean isNew) {
                         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
                     }
 

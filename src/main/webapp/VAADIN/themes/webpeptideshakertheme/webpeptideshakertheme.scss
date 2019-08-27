@@ -6303,26 +6303,190 @@
         border-color:#88bfff !important;
     }
     .v-filterselect-dropdownlist input{
-    background:white !important;
+        background:white !important;
 
-}
-.v-filterselect-dropdownlist.v-disabled input{
-    background:#f4f4f4 !important;
+    }
+    .v-filterselect-dropdownlist.v-disabled input{
+        background:#f4f4f4 !important;
 
-}
-.v-slot-smallcombobox{
- max-height:20px !important;
+    }
+    .v-slot-smallcombobox{
+        max-height:20px !important;
 
-}
-.v-select-optiongroup-smallcombobox{
-    margin-left:20px;
-    font-size:13px !important;
-    font-weight:900;
-    border-top:1px  solid lightgray;
-    margin-top:5px;
-    color:#599de1;
-   
-}
+    }
+    .v-select-optiongroup-smallcombobox{
+        margin-left:20px;
+        font-size:13px !important;
+        font-weight:900;
+        border-top:1px  solid lightgray;
+        margin-top:5px;
+        color:#599de1;   
+    }
+    .v-slot-advancedsearchlayout{
+        position:absolute !important;
+        top:18px;
+        left:140px
+    }
+
+    .v-verticallayout-advancedsearchlayout{
+        width:100% !important;
+    }
+    .v-verticallayout-advancedsearchlayout .v-label{
+
+        text-decoration: none !important;
+        padding-left: 2px;
+        font-size: 11px;
+        font-weight: bold;
+        font-family: "Open Sans", sans-serif;
+        color:#1b7de1;
+        margin-top:5px;
+        max-width:120px;
+        float:right !important;
+        cursor: pointer;
+    }
+
+    .advsettingcontainer .v-label{
+
+        text-decoration: none !important;
+        padding-left: 2px;
+        font-weight: bold;
+        font-family: "Open Sans", sans-serif;
+        color:gray;
+    }
+
+    .advsettingssubcontainer .v-label{
+
+        text-decoration: none !important;
+        padding-left: 2px;
+        font-weight: bold;
+        font-family: "Open Sans", sans-serif;
+        color:gray;
+        border:1px solid lightgray ;
+        min-height:35px;
+        max-height: 35px;
+        margin-top:10px;
+        border-radius:5px;
+        line-height:30px;
+        padding-left:20px;
+        background-color:whitesmoke;
+    }
+
+
+
+    .popuppanelcontainer .v-caption-optiongroup{
+        display:none;
+    }
+    .popuppanelcontainer .v-horizontallayout-optiongroupframe{
+        border:1px solid lightgray;
+        border-radius:5px;
+        background-color:whitesmoke;
+        padding:2px;
+        position:absolute !important;
+        padding-top:10px;
+
+    }
+    .popuppanelcontainer .v-gridlayout{
+        border:1px solid lightgray;
+        border-radius:5px;
+        background-color:whitesmoke;
+
+
+    }
+    .popuppanelcontainer .v-caption {
+        font-size:13px;
+        margin-top:0px;
+        font-weight:bold;
+        min-height:20px;
+        line-height:20px;
+    }
+    .popuppanelcontainer .v-gridlayout-slot{
+        min-width:60%;
+        margin-left:20px;
+        margin-top:15px
+    }
+    .popuppanelcontainer .v-filterselect-small{
+        max-width:40%;
+        float:right;
+        margin-left:160px !important;
+        position:absolute !important;
+    }
+    .popuppanelcontainer .v-select-optiongroup{
+        max-width:40%;
+        float:right;
+        margin-top:-5px
+    }
+    .popuppanelcontainer .v-textfield {
+        z-index:3 !important;
+        position:relative !important;
+        max-width:50px
+    }
+    .popuppanelcontainer .v-slot-align-center {
+        max-width:50px;
+    }
+    .popuppanelcontainer .v-label{
+        visibility:visible ;
+        font-size:11px !important;
+    }
+    .popuppanelmaincontainer .v-absolutelayout-wrapper-tiny{
+        left:auto !important;
+    }
+
+    .advsettingssubcontainer .v-label center{
+        font-size:9px;
+        position: relative;
+        top: -25px;
+        left:200px;
+        text-align:left !important;
+        line-height:12px;
+        max-width:280px; 
+        overflow: hidden;
+        text-overflow:ellipsis !important;
+        max-height:25px;
+    }
+
+    .popuppanelmaincontainer .v-label {
+        text-decoration: none !important;
+        padding-left: 2px;
+        font-weight: bold;
+        font-family: "Open Sans", sans-serif;
+        color: gray;
+        font-size:14px;}
+
+    .subcontainer{
+        background-color:whitesmoke;
+        border:1px solid lightgray;
+        border-radius:5px;
+        max-height:80px;
+        padding:5px;
+        top:-5px !important;
+        position:absolute ;
+    }
+
+    .importfiltersubcontainer{
+        background-color: whitesmoke;
+        border: 1px solid lightgray;
+        border-radius: 5px;
+        padding: 5px;
+        top: -5px !important;
+        position: absolute;
+    }
+    .importfiltersubcontainer .v-select-optiongroup-optiongroup{
+
+        padding-left:0px;
+    }
+
+    .v-absolutelayout-wrapper-nolabelfullcombobox{
+        width:100% !important;
+    }
+    .lightgrayborder{
+        border: 1px solid lightgray;   
+    }
+    .importfiltersubcontainer .v-caption-optiongroup{
+
+        margin-left:0px !important;
+        position:relative;
+        left:-20px;
+    }
 }
 
 

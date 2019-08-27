@@ -10,7 +10,6 @@ import com.compomics.util.experiment.identification.spectrum_assumptions.Peptide
 import com.compomics.util.gui.spectrum.MassErrorPlot;
 import com.compomics.util.gui.spectrum.SequenceFragmentationPanel;
 import com.itextpdf.text.pdf.codec.Base64;
-import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -111,9 +110,9 @@ public class SecondarySpectraChartsGenerator {
 
         spectrumInformation.getIdentificationParameters().setAnnotationSettings(annotationPreferences);
         try {
-            specificAnnotationPreferences = annotationPreferences.getSpecificAnnotationPreferences(spectrumInformation.getSpectrum().getSpectrumKey(), specificAnnotationPreferences.getSpectrumIdentificationAssumption(), spectrumInformation.getIdentificationParameters().getSequenceMatchingPreferences(), spectrumInformation.getIdentificationParameters().getPtmScoringPreferences().getSequenceMatchingPreferences());
+            specificAnnotationPreferences = annotationPreferences.getSpecificAnnotationPreferences(spectrumInformation.getSpectrum().getSpectrumKey(), specificAnnotationPreferences.getSpectrumIdentificationAssumption(), spectrumInformation.getIdentificationParameters().getSequenceMatchingPreferences(), spectrumInformation.getIdentificationParameters().getPtmScoringPreferencesSequenceMatchingPreferences());
         } catch (IOException | InterruptedException | ClassNotFoundException | SQLException ex) {
-            Logger.getLogger(PeptideShakerVisualizationDataset.class.getName()).log(Level.SEVERE, null, ex);
+           ex.printStackTrace();
         }
 
         ArrayList<IonMatch> annotations;
@@ -123,16 +122,16 @@ public class SecondarySpectraChartsGenerator {
             Logger.getLogger(SecondarySpectraChartsGenerator.class.getName()).log(Level.SEVERE, null, ex);
             return;
         }
-        Integer forwardIon = spectrumInformation.getIdentificationParameters().getSearchParameters().getForwardIons().get(0);
-        Integer rewindIon = spectrumInformation.getIdentificationParameters().getSearchParameters().getRewindIons().get(0);//
-        String taggedPeptideSequence = currentPeptide.getTaggedModifiedSequence(spectrumInformation.getIdentificationParameters().getSearchParameters().getPtmSettings(), false, false, false);
-        SequenceFragmentationPanel sequenceFragmentationPanel = new SequenceFragmentationPanel(taggedPeptideSequence, annotations, currentPeptide.isModified(), spectrumInformation.getIdentificationParameters().getSearchParameters().getPtmSettings(), forwardIon, rewindIon);
+        Integer forwardIon = spectrumInformation.getIdentificationParameters().getForwardIons().get(0);
+        Integer rewindIon = spectrumInformation.getIdentificationParameters().getRewindIons().get(0);//
+        String taggedPeptideSequence = currentPeptide.getTaggedModifiedSequence(spectrumInformation.getIdentificationParameters().getPtmSettings(), false, false, false);
+        SequenceFragmentationPanel sequenceFragmentationPanel = new SequenceFragmentationPanel(taggedPeptideSequence, annotations, currentPeptide.isModified(), spectrumInformation.getIdentificationParameters().getPtmSettings(), forwardIon, rewindIon);
         sequenceFragmentationPanel.setOpaque(true);
         sequenceFragmentationPanel.setBackground(Color.WHITE);
         sequenceFragmentationPanel.setSize(1000, 68);
         sequenceFragmentationChartComponent.setSource(new ExternalResource(drawImage(sequenceFragmentationPanel)));
         try {
-            errorPlot = new MassErrorPlot(annotations, spectrumInformation.getSpectrum(), accuracy, spectrumInformation.getIdentificationParameters().getSearchParameters().getFragmentAccuracyType() == SearchParameters.MassAccuracyType.PPM);
+            errorPlot = new MassErrorPlot(annotations, spectrumInformation.getSpectrum(), accuracy, spectrumInformation.getIdentificationParameters().getFragmentAccuracyType() == SearchParameters.MassAccuracyType.PPM);
             errorPlot.setSize(300, 68);
             errorPlot.getChartPanel().setSize(300, 68);
             errorPlot.updateUI();

@@ -1,11 +1,11 @@
 package com.uib.web.peptideshaker;
 
 import com.uib.web.peptideshaker.presenter.PresenterManager;
-import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
 import com.uib.web.peptideshaker.galaxy.GalaxyInteractiveLayer;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyFileObject;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyTransferableFile;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
+import com.uib.web.peptideshaker.model.core.WebSearchParameters;
 import com.uib.web.peptideshaker.presenter.FileSystemPresenter;
 import com.uib.web.peptideshaker.presenter.InteractivePSPRojectResultsPresenter;
 import com.uib.web.peptideshaker.presenter.SearchGUI_PeptideShaker_Tool_Presenter;
@@ -115,19 +115,19 @@ public class WebPeptideShakerApp extends VerticalLayout {
 
         SearchGUI_PeptideShaker_Tool_Presenter = new SearchGUI_PeptideShaker_Tool_Presenter() {
             @Override
-            public void execute_SearchGUI_PeptideShaker_WorkFlow(String projectName, String fastaFileId, Set<String> mgfIdsList, Set<String> searchEnginesList, SearchParameters searchParameters) {
-                Galaxy_Interactive_Layer.execute_SearchGUI_PeptideShaker_WorkFlow(projectName, fastaFileId, mgfIdsList, searchEnginesList, searchParameters);
+            public void execute_SearchGUI_PeptideShaker_WorkFlow(String projectName, String fastaFileId,String searchParameterFileId, Set<String> inputFilesIdsList, Set<String> searchEnginesList, WebSearchParameters searchParameters,boolean quant) {
+                Galaxy_Interactive_Layer.execute_SearchGUI_PeptideShaker_WorkFlow(projectName, fastaFileId,searchParameterFileId, inputFilesIdsList, searchEnginesList, searchParameters,quant);
                 presentationManager.viewLayout(fileSystemPresenter.getViewId());
             }
 
             @Override
-            public Map<String, GalaxyTransferableFile> saveSearchGUIParameters(SearchParameters searchParameters, boolean isNew) {
+            public Map<String, GalaxyTransferableFile> saveSearchGUIParameters(WebSearchParameters searchParameters, boolean isNew) {
                 return Galaxy_Interactive_Layer.saveSearchGUIParameters(searchParameters, isNew);
             }
 
             @Override
             public void maximizeView() {
-                updatePeptideShakerToolInputForm(Galaxy_Interactive_Layer.getSearchSettingsFilesMap(), Galaxy_Interactive_Layer.getFastaFilesMap(), Galaxy_Interactive_Layer.getMgfFilesMap());
+                updatePeptideShakerToolInputForm(Galaxy_Interactive_Layer.getSearchSettingsFilesMap(), Galaxy_Interactive_Layer.getFastaFilesMap(), Galaxy_Interactive_Layer.getMgfFilesMap(),Galaxy_Interactive_Layer.getRawFilesMap());
                 super.maximizeView(); //To change body of generated methods, choose Tools | Templates.
             }
 

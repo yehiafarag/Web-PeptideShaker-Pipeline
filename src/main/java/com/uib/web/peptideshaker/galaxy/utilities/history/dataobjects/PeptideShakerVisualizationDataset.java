@@ -5,7 +5,6 @@ import com.compomics.util.experiment.biology.AminoAcidPattern;
 import com.compomics.util.experiment.biology.Enzyme;
 import com.compomics.util.experiment.biology.EnzymeFactory;
 import com.compomics.util.experiment.biology.Peptide;
-import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
 import com.compomics.util.experiment.identification.matches.ModificationMatch;
 import com.compomics.util.experiment.identification.matches.SpectrumMatch;
 import com.compomics.util.experiment.identification.spectrum_assumptions.PeptideAssumption;
@@ -13,10 +12,10 @@ import com.compomics.util.experiment.io.massspectrometry.MgfIndex;
 import com.compomics.util.experiment.massspectrometry.Charge;
 import com.compomics.util.experiment.massspectrometry.MSnSpectrum;
 import com.compomics.util.io.SerializationUtils;
-import com.compomics.util.preferences.IdentificationParameters;
 import com.compomics.util.preferences.SequenceMatchingPreferences;
 import com.uib.web.peptideshaker.galaxy.utilities.history.GalaxyDatasetServingUtil;
 import com.uib.web.peptideshaker.model.core.ModificationMatrix;
+import com.uib.web.peptideshaker.model.core.WebSearchParameters;
 import com.uib.web.peptideshaker.presenter.core.filtercharts.components.RangeColorGenerator;
 import com.uib.web.peptideshaker.presenter.pscomponents.SpectrumInformation;
 import graphmatcher.NetworkGraphEdge;
@@ -186,7 +185,7 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
     /**
      * Generic class grouping the parameters used for protein identifications.
      */
-    private IdentificationParameters identificationParameters;
+    private WebSearchParameters identificationParameters;
     /**
      * Creating time for the datasets (to sort based on creation date).
      */
@@ -414,7 +413,7 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
      *
      * @return IdentificationParameters object.
      */
-    public IdentificationParameters getSearchingParameters() {
+    public WebSearchParameters getSearchingParameters() {
 
         if (SearchGUIResultFile == null || (!getStatus().equalsIgnoreCase("ok"))) {
             return null;
@@ -627,7 +626,7 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
         if (identificationParameters == null) {
             initIdintificationParameters();
         }
-        ArrayList<String> variableModifications = identificationParameters.getSearchParameters().getPtmSettings().getVariableModifications();
+        ArrayList<String> variableModifications = identificationParameters.getVariableModifications();
 
         variableModifications.forEach((mod) -> {
             modificationMap.put(mod.trim(), new LinkedHashSet<>());
@@ -644,7 +643,7 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
         if (identificationParameters == null) {
             initIdintificationParameters();
         }
-        ArrayList<String> fixedModifications = identificationParameters.getSearchParameters().getPtmSettings().getFixedModifications();
+        ArrayList<String> fixedModifications = identificationParameters.getFixedModifications(); 
         fixedModifications.forEach((mod) -> {
             modificationMap.put(mod.trim(), new LinkedHashSet<>());
         });
@@ -1451,17 +1450,15 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
         ds.setDownloadUrl(SearchGUIResultFile.getDownloadUrl());
         GalaxyTransferableFile file = new GalaxyTransferableFile(user_folder, ds, true);
         file.setDownloadUrl("to_ext=" + file_ext);
-        SearchParameters searchParameters;
+        File f;
         try {
-            File f = file.getFile();
-            searchParameters = SearchParameters.getIdentificationParameters(f);
-            searchParameters.setFastaFile(null);
-        } catch (IOException | ClassNotFoundException ex) {
+            f = file.getFile(); 
+            this.identificationParameters = new WebSearchParameters(f);
+        } catch (IOException ex) {
             ex.printStackTrace();
-            System.out.println("at catched the exception");
-            return;
         }
-        this.identificationParameters = new IdentificationParameters(searchParameters);
+       
+
     }
 
     /**
@@ -1529,7 +1526,7 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
             spectrumMatch.setBestPeptideAssumption(psAssumption);
             SpectrumInformation spectrumInformation = new SpectrumInformation();
             spectrumInformation.setCharge("2");
-            spectrumInformation.setFragmentIonAccuracy(identificationParameters.getSearchParameters().getFragmentIonAccuracy());
+            spectrumInformation.setFragmentIonAccuracy(identificationParameters.getFragmentIonAccuracy());
 
             spectrumInformation.setIdentificationParameters(identificationParameters);
             spectrumInformation.setSpectrumMatch(spectrumMatch);

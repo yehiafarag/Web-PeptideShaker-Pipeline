@@ -1,9 +1,9 @@
 package com.uib.web.peptideshaker.presenter;
 
 import com.uib.web.peptideshaker.presenter.core.ViewableFrame;
-import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyFileObject;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyTransferableFile;
+import com.uib.web.peptideshaker.model.core.WebSearchParameters;
 import com.uib.web.peptideshaker.presenter.layouts.SearchGUIPeptideShakerWorkFlowInputLayout;
 import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
 import com.uib.web.peptideshaker.presenter.core.ButtonWithLabel;
@@ -54,12 +54,13 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
      * Update the work-flow input files
      *
      *
-     * @param searchSettingsMap search settings .par files map
+     * @param searchSettingFilesMap Search settings .par files map
      * @param fastaFilesMap The main FASTA File Map (ID to Name).
      * @param mgfFilesMap The main MGF File Map (ID to Name).
+     * @param rawFilesMap The main Raw file map (ID to Name).
      */
-    public void updatePeptideShakerToolInputForm(Map<String, GalaxyTransferableFile> searchSettingsMap, Map<String, GalaxyFileObject> fastaFilesMap, Map<String, GalaxyFileObject> mgfFilesMap) {
-        peptideshakerToolInputForm.updateForm(searchSettingsMap, fastaFilesMap, mgfFilesMap,mgfFilesMap);
+    public void updatePeptideShakerToolInputForm(Map<String, GalaxyTransferableFile> searchSettingFilesMap, Map<String, GalaxyFileObject> fastaFilesMap, Map<String, GalaxyFileObject> mgfFilesMap, Map<String, GalaxyFileObject> rawFilesMap) {
+        peptideshakerToolInputForm.updateForm(searchSettingFilesMap, fastaFilesMap, mgfFilesMap,rawFilesMap);
     }
 
     /**
@@ -85,13 +86,13 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
 
         peptideshakerToolInputForm = new SearchGUIPeptideShakerWorkFlowInputLayout() {
             @Override
-            public void executeWorkFlow(String projectName, String fastaFileId, Set<String> mgfIdsList, Set<String> searchEnginesList, SearchParameters searchParam) {
-                SearchGUI_PeptideShaker_Tool_Presenter.this.execute_SearchGUI_PeptideShaker_WorkFlow(projectName, fastaFileId, mgfIdsList, searchEnginesList, searchParam);
+            public void executeWorkFlow(String projectName, String fastaFileId,String searchParameterFileId, Set<String> inputFilesIdsList, Set<String> searchEnginesList, WebSearchParameters searchParam,boolean quant) {
+                SearchGUI_PeptideShaker_Tool_Presenter.this.execute_SearchGUI_PeptideShaker_WorkFlow(projectName, fastaFileId, searchParameterFileId,inputFilesIdsList, searchEnginesList, searchParam,quant);
                 
             }
 
             @Override
-            public Map<String, GalaxyTransferableFile> saveSearchGUIParameters(SearchParameters searchParameters, boolean isNEw) {
+            public Map<String, GalaxyTransferableFile> saveSearchGUIParameters(WebSearchParameters searchParameters, boolean isNEw) {
                 return SearchGUI_PeptideShaker_Tool_Presenter.this.saveSearchGUIParameters(searchParameters, isNEw);
             }
 
@@ -201,11 +202,12 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
      *
      * @param projectName The project name
      * @param fastaFileId FASTA file dataset id
+     *  @param searchParameterFileId .par file id
      * @param mgfIdsList list of MGF file dataset ids
      * @param searchEnginesList List of selected search engine names
      * @param historyId galaxy history id that will store the results
      */
-    public abstract void execute_SearchGUI_PeptideShaker_WorkFlow(String projectName, String fastaFileId, Set<String> mgfIdsList, Set<String> searchEnginesList, SearchParameters searchParam);
+    public abstract void execute_SearchGUI_PeptideShaker_WorkFlow(String projectName, String fastaFileId,String searchParameterFileId, Set<String> mgfIdsList, Set<String> searchEnginesList, WebSearchParameters searchParam,boolean quant);
 
     /**
      * Save search settings file into galaxy
@@ -215,6 +217,6 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
      * @param isNew is new search parameter file
      * @return updated search parameters file list
      */
-    public abstract Map<String, GalaxyTransferableFile> saveSearchGUIParameters(SearchParameters searchParameters, boolean isNew);
+    public abstract Map<String, GalaxyTransferableFile> saveSearchGUIParameters(WebSearchParameters searchParameters, boolean isNew);
 
 }

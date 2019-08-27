@@ -1,6 +1,7 @@
 package com.uib.web.peptideshaker.presenter.core.form;
 
 import com.vaadin.data.Property;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -31,7 +32,7 @@ public class HorizontalLabelDropDounList extends HorizontalLayout {
     public HorizontalLabelDropDounList(String caption) {
         HorizontalLabelDropDounList.this.setSizeFull();
         HorizontalLabelDropDounList.this.setSpacing(true);
-        cap = new Label(caption);
+        cap = new Label(caption,ContentMode.HTML);
         cap.addStyleName(ValoTheme.LABEL_TINY);
         cap.addStyleName(ValoTheme.LABEL_SMALL);
         cap.addStyleName("smallundecorated");
@@ -69,6 +70,10 @@ public class HorizontalLabelDropDounList extends HorizontalLayout {
     public String getSelectedValue() {
         return list.getValue().toString();
 
+    }
+    public void setItemCaption(Object itemId,String caption){
+   
+        list.setItemCaption(itemId, caption);
     }
 
     public void addValueChangeListener(Property.ValueChangeListener listener) {

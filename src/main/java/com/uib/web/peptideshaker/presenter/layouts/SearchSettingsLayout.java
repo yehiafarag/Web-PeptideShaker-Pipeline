@@ -3,11 +3,8 @@ package com.uib.web.peptideshaker.presenter.layouts;
 import com.compomics.util.experiment.biology.Enzyme;
 import com.compomics.util.experiment.biology.EnzymeFactory;
 import com.compomics.util.experiment.biology.PTMFactory;
-import com.compomics.util.experiment.identification.identification_parameters.PtmSettings;
-import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
-import com.compomics.util.experiment.massspectrometry.Charge;
-import com.compomics.util.preferences.DigestionPreferences;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
+import com.uib.web.peptideshaker.model.core.WebSearchParameters;
 import com.uib.web.peptideshaker.presenter.core.MultiSelectOptionGroup;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
 import com.uib.web.peptideshaker.presenter.core.form.ColorLabel;
@@ -21,6 +18,7 @@ import com.uib.web.peptideshaker.presenter.core.form.SparkLine;
 import com.vaadin.data.Property;
 import com.vaadin.data.validator.DoubleRangeValidator;
 import com.vaadin.data.validator.IntegerRangeValidator;
+import com.vaadin.event.FieldEvents;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FontAwesome;
@@ -109,7 +107,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
      */
     private final Map<Object, Object[]> completeModificationItems = new LinkedHashMap<>();
     private final Map<String, String> updatedModiList = new HashMap<>();
-    
+
     private final MultiSelectOptionGroup createDecoyDatabaseOptionList;
     /**
      * Search parameter file name input field.
@@ -160,7 +158,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
      * Search Parameters object that is used to initialise parameter file
      * (.par).
      */
-    private SearchParameters searchParameters;
+    private WebSearchParameters searchParameters;
     /**
      * Search Parameters file (.par) is new or modified.
      */
@@ -190,7 +188,13 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
     private final boolean editable;
 
     /**
+     * Advanced search settings layout
+     */
+    private AdvancedSearchSettings _advSearchSettings;
+
+    /**
      * Constructor to initialise the main setting parameters.
+     *
      * @param editable editable layout
      */
     public SearchSettingsLayout(boolean editable) {
@@ -248,17 +252,18 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         searchParametersFileNameInputField.setWidth(100, Unit.PERCENTAGE);
         searchParametersFileNameInputField.updateExpandingRatio(0.271f, 0.525f);
         searchParametersFileNameInputField.setRequired(false);
+        searchParametersFileNameInputField.addTextChangeListener((FieldEvents.TextChangeEvent event) -> {
+            searchParameters.setParamFileName(searchParametersFileNameInputField.getSelectedValue());
+        });
         VerticalLayout spacer = new VerticalLayout();
         searchParametersFileNameInputField.addComponent(spacer);
         searchParametersFileNameInputField.setExpandRatio(spacer, 0.204f);
-
         searchsettingsContainer.addComponent(searchParametersFileNameInputField);
 
         upperPanel.addComponent(searchsettingsContainer);
         HorizontalLayout protDatabaseContainer = new HorizontalLayout();
         protDatabaseContainer.setHeight(40, Unit.PIXELS);
         protDatabaseContainer.setWidth(100, Unit.PERCENTAGE);
-        
 
         createDecoyDatabaseOptionList = new MultiSelectOptionGroup(null, false);
         protDatabaseContainer.addComponent(createDecoyDatabaseOptionList);
@@ -304,6 +309,14 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         proteaseFragmentationLabelsContainer.setMargin(new MarginInfo(false, false, false, true));
         upperPanel.addComponent(proteaseFragmentationLabelsContainer);
 
+        _advSearchSettings = new AdvancedSearchSettings();
+//        if (editable) {
+        upperPanel.addComponent(_advSearchSettings);
+        _advSearchSettings.addLayoutClickListener((LayoutEvents.LayoutClickEvent event) -> {
+            _advSearchSettings.updateAdvancedSearchParamForms(searchParameters);
+        });
+//        }
+
 //        SearchSettingsLayout.this.addComponent(modificationContainer);
         proteaseFragmentationContainer = inititProteaseFragmentationLayout();
         proteaseFragmentationBtn.addClickListener((Button.ClickEvent event) -> {
@@ -332,7 +345,8 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         saveBtn.addClickListener((Button.ClickEvent event) -> {
             if (this.isValidForm()) {
                 if (this.isModifiedForm()) {
-                    saveSearchingFile(updateSearchingFile(), isNew);
+                     searchParameters.setParamFileName(searchParametersFileNameInputField.getSelectedValue());
+                    saveSearchingFile(searchParameters, isNew);
                 } else {
                     cancel();
                 }
@@ -405,10 +419,10 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         dataset.getVariableModification();
         SearchSettingsLayout.this.setVisible(visibleByDefault);
         SearchSettingsLayout.this.addStyleName("dsoverview");
-        SearchSettingsLayout.this.updateForms(dataset.getSearchingParameters().getSearchParameters(), null);
+        SearchSettingsLayout.this.updateForms(dataset.getSearchingParameters());
         titleLabel.setValue(dataset.getName().split("___")[0] + (" <i style='color: gray;font-size: 12px;'>(" + dataset.getCreateTime() + ")</i>").replace("(null)", ""));
         searchsettingsContainer.setVisible(false);
-   
+
 //        fastaFileList.setEnabled(false);
         if (createDecoyDatabaseOptionList.getSelectedValue() != null && !createDecoyDatabaseOptionList.getSelectedValue().isEmpty()) {
             createDecoyDatabaseOptionList.setEnabled(false);
@@ -418,7 +432,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         modificationsBtn.setResponsive(false);
         proteaseFragmentationBtn.setResponsive(false);
         saveBtn.setVisible(false);
-      
+
         dataset.getFixedModification();
         dataset.getVariableModification();
 
@@ -452,6 +466,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         PopupWindow modificationWindow = new PopupWindow("Edit Modifications") {
             @Override
             public void onClosePopup() {
+                updateSearchingFile();
             }
 
         };
@@ -922,6 +937,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
 
                 String value = "<center>" + digestionList.fullLabelValue() + "</center><center>" + enzymeList.fullLabelValue() + "</center><center>" + specificityList.fullLabelValue() + " </center><br/><center> " + maxMissCleavages.fullLabelValue() + "</center><center>" + fragmentIonTypes.fullLabelValue().replace("_-_", " and ") + "</center><center>" + precursorTolerance.fullLabelValue().replace("_-_", "") + " </center><br/><center> " + fragmentTolerance.fullLabelValue().replace("_-_", "") + "</center><center>" + precursorCharge.fullLabelValue().replace("_-_", "-") + "</center><center>" + isotopes.fullLabelValue().replace("_-_", "-") + "</center>";
                 proteaseFragmentationLabels.setValue(value);
+                updateSearchingFile();
 
             }
 
@@ -934,57 +950,36 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
 
     }
 
-   
-
     /**
      * Update search input forms based on user selection (add/edit) from search
      * files drop-down list
      *
      * @param searchParameters search parameter object from selected parameter
      * file
-     * @param paramFileId Parameter file galaxy id
      */
-    public void updateForms(SearchParameters searchParameters, String paramFileId) {
+    public void updateForms(WebSearchParameters searchParameters) {
         this.searchParameters = searchParameters;
-        if (paramFileId != null) {
-            if (searchParameters.getFastaFile() != null) {
-                isNew = false;
-                this.parameterFileId = paramFileId;
-//                String fileInfo = searchParameters.getFastaFile();
-//                if (fileInfo.length == 4) {
-//                    searchParametersFileNameInputField.setSelectedValue(fileInfo[1]);
-//                    if (Boolean.valueOf(fileInfo[2])) {
-//                        createDecoyDatabaseOptionList.setSelectedValue("create_decoy");
-//                    } else {
-//                        createDecoyDatabaseOptionList.setSelectedValue(new HashSet<>());
-//                    }
-//                }
-            } else {
-                isNew = true;
-                this.parameterFileId = "New_File";
-                searchParametersFileNameInputField.setSelectedValue(null);
-                createDecoyDatabaseOptionList.setSelectedValue("create_decoy");
+        isNew = true;
+        this.parameterFileId = "New_File";
+        searchParametersFileNameInputField.setSelectedValue(null);
+        createDecoyDatabaseOptionList.setSelectedValue("create_decoy");
 
-            }
-        }
         if (searchParameters.getDigestionPreferences() != null) {
-
-            digestionList.setSelected(searchParameters.getDigestionPreferences().getCleavagePreference().toString());
-            enzymeList.setSelected(searchParameters.getDigestionPreferences().getEnzymes().get(0).getName());
+            digestionList.setSelected(searchParameters.getCleavagePreferenceAsString());
+            enzymeList.setSelected(searchParameters.getEnzymeName());
             enzyme = enzymeList.getSelectedValue();
-            specificityList.setSelected(searchParameters.getDigestionPreferences().getSpecificity(searchParameters.getDigestionPreferences().getEnzymes().get(0).getName()));
-            maxMissCleavages.setSelectedValue(searchParameters.getDigestionPreferences().getnMissedCleavages(searchParameters.getDigestionPreferences().getEnzymes().get(0).getName()));
+            specificityList.setSelected(searchParameters.getSpecificity(searchParameters.getEnzymeName()));
+            maxMissCleavages.setSelectedValue(searchParameters.getnMissedCleavages(searchParameters.getEnzymeName()));
             fragmentIonTypes.setSelectedI(ions.get(searchParameters.getForwardIons().get(0)));
             fragmentIonTypes.setSelectedII(ions.get(searchParameters.getRewindIons().get(0)));
             precursorTolerance.setTextValue(searchParameters.getPrecursorAccuracy());
-            precursorTolerance.setSelected(searchParameters.getPrecursorAccuracyType().toString());
+            precursorTolerance.setSelected(searchParameters.getPrecursorAccuracyType());
             fragmentTolerance.setTextValue(searchParameters.getFragmentIonAccuracy());
-            fragmentTolerance.setSelected(searchParameters.getFragmentAccuracyType().toString());
-            precursorCharge.setFirstSelectedValue(searchParameters.getMinChargeSearched().value);
-            precursorCharge.setSecondSelectedValue(searchParameters.getMaxChargeSearched().value);
+            fragmentTolerance.setSelected(searchParameters.getFragmentAccuracyType());
+            precursorCharge.setFirstSelectedValue(searchParameters.getMinChargeSearched());
+            precursorCharge.setSecondSelectedValue(searchParameters.getMaxChargeSearched());
             isotopes.setFirstSelectedValue(searchParameters.getMinIsotopicCorrection());
             isotopes.setSecondSelectedValue(searchParameters.getMaxIsotopicCorrection());
-
             mostUsedModificationsTable.removeAllItems();
             variableModificationTable.removeAllItems();
             fixedModificationTable.removeAllItems();
@@ -992,66 +987,68 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
                 mostUsedModificationsTable.addItem(completeModificationItems.get(id), id);
             });
 
-            ArrayList<String> vm = searchParameters.getPtmSettings().getVariableModifications();
+            ArrayList<String> vm = searchParameters.getVariableModifications();
             mostUsedModificationsTable.setValue(vm);
             addToVariableModificationTableBtn.click();
-            ArrayList<String> fm = searchParameters.getPtmSettings().getFixedModifications();
+            ArrayList<String> fm = searchParameters.getFixedModifications();
             mostUsedModificationsTable.setValue(fm);
             addToFixedModificationTableBtn.click();
 
-        } else {
-            variableModificationTable.removeAllItems();
-            fixedModificationTable.removeAllItems();
-            mostUsedModificationsTable.removeAllItems();
-            completeModificationItems.keySet().stream().filter((id) -> (commonModificationIds.contains(id.toString()))).forEachOrdered((id) -> {
-                mostUsedModificationsTable.addItem(completeModificationItems.get(id), id);
-            });
-            enzymeList.setSelected("Trypsin");
-            enzyme = enzymeList.getSelectedValue();
-            digestionList.setSelected("Enzyme");
-            specificityList.setSelected("Specific");
-            fragmentIonTypes.setSelectedI("b");
-            fragmentIonTypes.setSelectedII("y");
-            precursorTolerance.setSelected("ppm");
-            fragmentTolerance.setSelected("Da");
-
         }
 
-        Set<Object> idSet = (Set<Object>) variableModificationTable.getData();
-        idSet.addAll(variableModificationTable.getItemIds());
-        variableModificationTable.setData(idSet);
-
-        Set<Object> idSet2 = (Set<Object>) fixedModificationTable.getData();
-        idSet2.addAll(fixedModificationTable.getItemIds());
-        fixedModificationTable.setData(idSet2);
-
-        mostUsedModificationsTable.setCaption("(" + mostUsedModificationsTable.getItemIds().size() + ")");
-        allModificationsTable.setCaption("(" + allModificationsTable.getItemIds().size() + ")");
-        if (((boolean) VaadinSession.getCurrent().getAttribute("mobilescreenstyle")) && !editable) {
-//            modificationContainer.setHeight(270, Unit.PIXELS);
-//            modificationContainer.addLayoutClickListener(viewCoordinatorListener);
-//            proteaseFragmentationContainer.addLayoutClickListener(viewCoordinatorListener);
-//            Label modificationLabel = (Label) ((VerticalLayout) modificationContainer.getComponent(0)).getComponent(0);
-//            Label protFragLabel = (Label) (((GridLayout) proteaseFragmentationContainer.getContent()).getComponent(0, 0));
-//            protFragLabel.setValue(protFragLabel.getValue().replace(VaadinIcons.ANGLE_DOUBLE_DOWN.getHtml(), VaadinIcons.ANGLE_DOUBLE_RIGHT.getHtml()));
-//            modificationLabel.setValue(modificationLabel.getValue().replace(VaadinIcons.ANGLE_DOUBLE_RIGHT.getHtml(), VaadinIcons.ANGLE_DOUBLE_DOWN.getHtml()));
-//            modificationContainer.removeStyleName("minimizelayout");
-//            proteaseFragmentationContainer.addStyleName("minimizelayout");
-            System.out.println("init mobile search layout 1 --------------------------------------------------");
-        } else if (((boolean) VaadinSession.getCurrent().getAttribute("smallscreenstyle")) && !editable) {
-//            modificationContainer.setHeight(270, Unit.PIXELS);
-//            modificationContainer.addLayoutClickListener(viewCoordinatorListener);
-//            proteaseFragmentationContainer.addLayoutClickListener(viewCoordinatorListener);
-//            Label modificationLabel = (Label) ((VerticalLayout) modificationContainer.getComponent(0)).getComponent(0);
-//            Label protFragLabel = (Label) (((GridLayout) proteaseFragmentationContainer.getContent()).getComponent(0, 0));
-//            protFragLabel.setValue(protFragLabel.getValue().replace(VaadinIcons.ANGLE_DOUBLE_DOWN.getHtml(), VaadinIcons.ANGLE_DOUBLE_RIGHT.getHtml()));
-//            modificationLabel.setValue(modificationLabel.getValue().replace(VaadinIcons.ANGLE_DOUBLE_RIGHT.getHtml(), VaadinIcons.ANGLE_DOUBLE_DOWN.getHtml()));
-//            modificationContainer.removeStyleName("minimizelayout");
-//            proteaseFragmentationContainer.addStyleName("minimizelayout");
-        }
-
+//        else {
+//            variableModificationTable.removeAllItems();
+//            fixedModificationTable.removeAllItems();
+//            mostUsedModificationsTable.removeAllItems();
+//            completeModificationItems.keySet().stream().filter((id) -> (commonModificationIds.contains(id.toString()))).forEachOrdered((id) -> {
+//                mostUsedModificationsTable.addItem(completeModificationItems.get(id), id);
+//            });
+//            enzymeList.setSelected("Trypsin");
+//            enzyme = enzymeList.getSelectedValue();
+//            digestionList.setSelected("Enzyme");
+//            specificityList.setSelected("Specific");
+//            fragmentIonTypes.setSelectedI("b");
+//            fragmentIonTypes.setSelectedII("y");
+//            precursorTolerance.setSelected("ppm");
+//            fragmentTolerance.setSelected("Da");
+//
+//        }
+//
+//        Set<Object> idSet = (Set<Object>) variableModificationTable.getData();
+//        idSet.addAll(variableModificationTable.getItemIds());
+//        variableModificationTable.setData(idSet);
+//
+//        Set<Object> idSet2 = (Set<Object>) fixedModificationTable.getData();
+//        idSet2.addAll(fixedModificationTable.getItemIds());
+//        fixedModificationTable.setData(idSet2);
+//
+//        mostUsedModificationsTable.setCaption("(" + mostUsedModificationsTable.getItemIds().size() + ")");
+//        allModificationsTable.setCaption("(" + allModificationsTable.getItemIds().size() + ")");
+//        if (((boolean) VaadinSession.getCurrent().getAttribute("mobilescreenstyle")) && !editable) {
+////            modificationContainer.setHeight(270, Unit.PIXELS);
+////            modificationContainer.addLayoutClickListener(viewCoordinatorListener);
+////            proteaseFragmentationContainer.addLayoutClickListener(viewCoordinatorListener);
+////            Label modificationLabel = (Label) ((VerticalLayout) modificationContainer.getComponent(0)).getComponent(0);
+////            Label protFragLabel = (Label) (((GridLayout) proteaseFragmentationContainer.getContent()).getComponent(0, 0));
+////            protFragLabel.setValue(protFragLabel.getValue().replace(VaadinIcons.ANGLE_DOUBLE_DOWN.getHtml(), VaadinIcons.ANGLE_DOUBLE_RIGHT.getHtml()));
+////            modificationLabel.setValue(modificationLabel.getValue().replace(VaadinIcons.ANGLE_DOUBLE_RIGHT.getHtml(), VaadinIcons.ANGLE_DOUBLE_DOWN.getHtml()));
+////            modificationContainer.removeStyleName("minimizelayout");
+////            proteaseFragmentationContainer.addStyleName("minimizelayout");
+//            System.out.println("init mobile search layout 1 --------------------------------------------------");
+//        } else if (((boolean) VaadinSession.getCurrent().getAttribute("smallscreenstyle")) && !editable) {
+////            modificationContainer.setHeight(270, Unit.PIXELS);
+////            modificationContainer.addLayoutClickListener(viewCoordinatorListener);
+////            proteaseFragmentationContainer.addLayoutClickListener(viewCoordinatorListener);
+////            Label modificationLabel = (Label) ((VerticalLayout) modificationContainer.getComponent(0)).getComponent(0);
+////            Label protFragLabel = (Label) (((GridLayout) proteaseFragmentationContainer.getContent()).getComponent(0, 0));
+////            protFragLabel.setValue(protFragLabel.getValue().replace(VaadinIcons.ANGLE_DOUBLE_DOWN.getHtml(), VaadinIcons.ANGLE_DOUBLE_RIGHT.getHtml()));
+////            modificationLabel.setValue(modificationLabel.getValue().replace(VaadinIcons.ANGLE_DOUBLE_RIGHT.getHtml(), VaadinIcons.ANGLE_DOUBLE_DOWN.getHtml()));
+////            modificationContainer.removeStyleName("minimizelayout");
+////            proteaseFragmentationContainer.addStyleName("minimizelayout");
+//        }
         String value = "<center>" + digestionList.fullLabelValue() + "</center><center>" + enzymeList.fullLabelValue() + "</center><center>" + specificityList.fullLabelValue() + " </center><br/><center> " + maxMissCleavages.fullLabelValue() + "</center><center>" + fragmentIonTypes.fullLabelValue().replace("_-_", " and ") + "</center><center>" + precursorTolerance.fullLabelValue().replace("_-_", "") + " </center><br/><center> " + fragmentTolerance.fullLabelValue().replace("_-_", "") + "</center><center>" + precursorCharge.fullLabelValue().replace("_-_", "-") + "</center><center>" + isotopes.fullLabelValue().replace("_-_", "-") + "</center>";
         proteaseFragmentationLabels.setValue(value);
+        _advSearchSettings.updateAdvancedSearchParamForms(searchParameters);
 
     }
 
@@ -1068,7 +1065,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
                 && fragmentIonTypes.isValid()
                 && precursorTolerance.isValid()
                 && fragmentTolerance.isValid()
-                && precursorCharge.isValid() && isotopes.isValid() && searchParametersFileNameInputField.isValid() ;
+                && precursorCharge.isValid() && isotopes.isValid() && searchParametersFileNameInputField.isValid();
     }
 
     /**
@@ -1112,24 +1109,28 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
      * @return updates search parameters object that will be use for creating
      * .par file
      */
-    private SearchParameters updateSearchingFile() {
+    private void updateSearchingFile() {
 
-        PtmSettings ptmSettings = new PtmSettings();
+        if (searchParameters == null) {
+            return;
+        }
+//        PtmSettings ptmSettings = new PtmSettings();
+        searchParameters.resetSearchingParameters();
+      
         fixedModificationTable.getItemIds().forEach((modificationId) -> {
-            ptmSettings.addFixedModification(PTM.getPTM(modificationId.toString()));
+            searchParameters.addFixedModification((modificationId.toString()));
         });
         variableModificationTable.getItemIds().forEach((modificationId) -> {
-            ptmSettings.addVariableModification(PTM.getPTM(modificationId.toString()));
+            searchParameters.addVariableModification(modificationId.toString());
         });
-        searchParameters.setPtmSettings(ptmSettings);
-        DigestionPreferences digPref = new DigestionPreferences();
-        ArrayList<Enzyme> enzymes = new ArrayList<>();
-        enzymes.add(enzymeFactory.getEnzyme(enzymeList.getSelectedValue()));
-        digPref.setEnzymes(enzymes);
-        digPref.setSpecificity(enzymeList.getSelectedValue(), DigestionPreferences.Specificity.valueOf(specificityList.getSelectedValue().toLowerCase()));
-        digPref.setnMissedCleavages(enzymeList.getSelectedValue(), Integer.valueOf(maxMissCleavages.getSelectedValue()));
-        digPref.setCleavagePreference(DigestionPreferences.CleavagePreference.valueOf(digestionList.getSelectedValue().toLowerCase().replace("uns", "unS").replace("le p", "leP")));
-        searchParameters.setDigestionPreferences(digPref);
+//        searchParameters.setPtmSettings(ptmSettings);
+//        DigestionPreferences digPref = new DigestionPreferences();
+        ArrayList<String> enzymes = new ArrayList<>();
+        enzymes.add(enzymeList.getSelectedValue());
+        searchParameters.setEnzymes(enzymes);
+        searchParameters.setSpecificity(enzymeList.getSelectedValue(), (specificityList.getSelectedValue().toLowerCase()));
+        searchParameters.setnMissedCleavages(enzymeList.getSelectedValue(), Integer.valueOf(maxMissCleavages.getSelectedValue()));
+        searchParameters.setCleavagePreference(digestionList.getSelectedValue().toLowerCase());
         ArrayList<Integer> forwardIonsv = new ArrayList<>();
         forwardIonsv.add(ions.indexOf(fragmentIonTypes.getFirstSelectedValue()));
         searchParameters.setForwardIons(forwardIonsv);
@@ -1137,17 +1138,16 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         rewindIonsv.add(ions.indexOf(fragmentIonTypes.getSecondSelectedValue()));
         searchParameters.setRewindIons(rewindIonsv);
         searchParameters.setPrecursorAccuracy(Double.valueOf(precursorTolerance.getFirstSelectedValue()));
-        searchParameters.setPrecursorAccuracyType(SearchParameters.MassAccuracyType.valueOf(precursorTolerance.getSecondSelectedValue().toUpperCase()));
+        searchParameters.setPrecursorAccuracyType(precursorTolerance.getSecondSelectedValue());
         searchParameters.setFragmentIonAccuracy(Double.valueOf(fragmentTolerance.getFirstSelectedValue()));
-        searchParameters.setFragmentAccuracyType(SearchParameters.MassAccuracyType.valueOf(fragmentTolerance.getSecondSelectedValue().toUpperCase()));
+        searchParameters.setFragmentAccuracyType(fragmentTolerance.getSecondSelectedValue());
 
-        searchParameters.setMinChargeSearched(new Charge(Charge.PLUS, Integer.valueOf(precursorCharge.getFirstSelectedValue())));
-        searchParameters.setMaxChargeSearched(new Charge(Charge.PLUS, Integer.valueOf(precursorCharge.getSecondSelectedValue())));
+        searchParameters.setMinChargeSearched(Integer.valueOf(precursorCharge.getFirstSelectedValue()));
+        searchParameters.setMaxChargeSearched(Integer.valueOf(precursorCharge.getSecondSelectedValue()));
 
         searchParameters.setMinIsotopicCorrection(Integer.valueOf(isotopes.getFirstSelectedValue()));
         searchParameters.setMaxIsotopicCorrection(Integer.valueOf(isotopes.getSecondSelectedValue()));
-        return searchParameters;
-
+        _advSearchSettings.updateAdvancedSearchParamForms(searchParameters);
     }
 
     /**
@@ -1155,11 +1155,9 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
      *
      * @return updated search parameters object
      */
-    public SearchParameters getSearchParameters() {
+    public WebSearchParameters getSearchParameters() {
         return searchParameters;
     }
-
-   
 
     /**
      * Save user search input parameters into .par file and store it on Galaxy
@@ -1170,11 +1168,11 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
      * @param isNew store the search parameters object in new file or over write
      * existing .par file
      */
-    public abstract void saveSearchingFile(SearchParameters searchParameters, boolean isNew);
+    public abstract void saveSearchingFile(WebSearchParameters searchParameters, boolean isNew);
 
     /**
      * cancel add/edit search parameters input process*
      */
     public abstract void cancel();
-    
-    }
+
+}

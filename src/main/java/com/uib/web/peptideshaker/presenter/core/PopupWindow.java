@@ -1,6 +1,7 @@
 package com.uib.web.peptideshaker.presenter.core;
 
 import com.vaadin.event.LayoutEvents;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.shared.ui.window.WindowMode;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Layout;
@@ -24,7 +25,7 @@ public abstract class PopupWindow extends VerticalLayout implements LayoutEvents
      * @param title header for the popup window
      */
     public  PopupWindow(String title) {
-        titleLabel = new Label(title);
+        titleLabel = new Label(title,ContentMode.HTML);
         titleLabel.setStyleName("windowtitle");
         PopupWindow.this.addComponent(titleLabel);
         PopupWindow.this.addLayoutClickListener(PopupWindow.this);

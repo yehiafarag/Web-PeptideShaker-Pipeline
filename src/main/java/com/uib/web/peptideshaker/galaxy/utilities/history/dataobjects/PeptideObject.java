@@ -301,7 +301,7 @@ public class PeptideObject extends Peptide {
             PTM ptm = ptmFactory.getPTM(modStrArr[0].trim());
             String[] indexArr = modStrArr[1].trim().replace(")", "").trim().split(",");
             for (String modIndex : indexArr) {
-                ModificationMatch mod = new ModificationMatch(ptm.getName(), true, Integer.parseInt(modIndex.trim()));
+                ModificationMatch mod = new ModificationMatch(ptm.getName(), true, Integer.parseInt(modIndex.trim().split(";")[0]));
                 modificationMatches.add(mod);
             }
 

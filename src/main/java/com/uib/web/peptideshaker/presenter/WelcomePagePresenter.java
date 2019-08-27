@@ -223,7 +223,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         subWelcomeText.setData("ignoreclick");
         subWelcomeText.setContentMode(ContentMode.HTML);
         subWelcomeText.setStyleName(ValoTheme.LABEL_NO_MARGIN);
-        subWelcomeText.setValue("<font>A web interactive visual analysis tool that attempts to give the best possible understanding of proteomics data on web!</font>");// <br/><br/>To start using the system connect to your Galaxy Server");
+        subWelcomeText.setValue("<font>Interactive visual analysis of proteomics data on web!</font>");// <br/><br/>To start using the system connect to your Galaxy Server");
 
         welcomeTextContainerLayout.addComponent(subWelcomeText);
         welcomeTextContainerLayout.setExpandRatio(subWelcomeText, 0.05f);

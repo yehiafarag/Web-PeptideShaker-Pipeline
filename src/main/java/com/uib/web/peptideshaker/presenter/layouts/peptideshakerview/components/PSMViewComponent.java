@@ -11,7 +11,6 @@ import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PSMObject;
 import com.uib.web.peptideshaker.presenter.core.ColorLabelWithPopupTooltip;
 import com.uib.web.peptideshaker.presenter.core.SparkLineLabel;
 import com.uib.web.peptideshaker.presenter.core.ValidationLabel;
-import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.ProteinVisulizationLevelContainer;
 import com.uib.web.peptideshaker.presenter.pscomponents.SecondarySpectraChartsGenerator;
 import com.uib.web.peptideshaker.presenter.pscomponents.SpectrumInformation;
 import com.uib.web.peptideshaker.presenter.pscomponents.SpectrumPlot;

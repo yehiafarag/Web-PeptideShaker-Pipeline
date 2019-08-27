@@ -18,6 +18,7 @@ public class MultiSelectOptionGroup extends HorizontalLayout implements LayoutEv
     private final OptionGroup listI;
     private final OptionGroup listII;
     private final OptionGroup listIII;
+    private final OptionGroup listIV;
     private final boolean expandable;
 
     /**
@@ -60,6 +61,14 @@ public class MultiSelectOptionGroup extends HorizontalLayout implements LayoutEv
 
         MultiSelectOptionGroup.this.addComponent(listIII);
 
+        listIV = new OptionGroup(" ");
+        listIV.setCaptionAsHtml(true);
+        listIV.setSizeUndefined();
+        listIV.setMultiSelect(true);
+        listIV.setStyleName("optiongroup");
+
+        MultiSelectOptionGroup.this.addComponent(listIV);
+
     }
 
     /**
@@ -76,13 +85,16 @@ public class MultiSelectOptionGroup extends HorizontalLayout implements LayoutEv
         listIII.clear();
         int counter = 0;
         OptionGroup list = listI;
-        if (idToCaptionMap.size() < 10) {
+        if (idToCaptionMap.size() < 11) {
             for (String id : idToCaptionMap.keySet()) {
                 if (counter == 3) {
                     list = listII;
                 }
                 if (counter == 6) {
                     list = listIII;
+                }
+                if (counter == 9) {
+                    list = listIV;
                 }
                 list.addItem(id);
                 list.setItemCaption(id, idToCaptionMap.get(id));
@@ -104,6 +116,7 @@ public class MultiSelectOptionGroup extends HorizontalLayout implements LayoutEv
         }
         listII.setVisible(!listII.getItemIds().isEmpty());
         listIII.setVisible(!listIII.getItemIds().isEmpty());
+        listIV.setVisible(!listIV.getItemIds().isEmpty());
 
     }
 
@@ -124,6 +137,9 @@ public class MultiSelectOptionGroup extends HorizontalLayout implements LayoutEv
             }
             if (listIII.getValue() != null) {
                 set.addAll((Set<String>) listIII.getValue());
+            }
+            if (listIV.getValue() != null) {
+                set.addAll((Set<String>) listIV.getValue());
             }
             if (set.isEmpty()) {
                 return null;
@@ -147,11 +163,25 @@ public class MultiSelectOptionGroup extends HorizontalLayout implements LayoutEv
     /**
      * Set selection value
      *
-     * @param valueId  id of the selected item
+     * @param valueId id of the selected item
      */
     public void setSelectedValue(String valueId) {
         if (valueId.equalsIgnoreCase("")) {
-            valueId = null;
+            listI.getItemIds().forEach((o) -> {
+                listI.unselect(o);
+            });
+            listII.getItemIds().forEach((o) -> {
+                listII.unselect(o);
+            });
+            listIII.getItemIds().forEach((o) -> {
+                listIII.unselect(o);
+            });
+            listI.setData(null);
+            listII.setData(null);
+            listIII.setData(null);
+            listIV.setData(null);
+
+            return;
         }
         listI.select(valueId);
         listI.setData(listI.getValue());
@@ -215,6 +245,7 @@ public class MultiSelectOptionGroup extends HorizontalLayout implements LayoutEv
         listI.addValueChangeListener(listener);
         listII.addValueChangeListener(listener);
         listIII.addValueChangeListener(listener);
+        listIV.addValueChangeListener(listener);
     }
 
     public void selectAll() {
@@ -227,6 +258,41 @@ public class MultiSelectOptionGroup extends HorizontalLayout implements LayoutEv
         listIII.getItemIds().forEach((o) -> {
             listIII.select(o);
         });
+        listIV.getItemIds().forEach((o) -> {
+            listIV.select(o);
+        });
+    }
+    
+ public void unselectAll() {
+        listI.getItemIds().forEach((o) -> {
+            listI.unselect(o);
+        });
+        listII.getItemIds().forEach((o) -> {
+            listII.unselect(o);
+        });
+        listIII.getItemIds().forEach((o) -> {
+            listIII.unselect(o);
+        });
+        listIV.getItemIds().forEach((o) -> {
+            listIV.unselect(o);
+        });
+    }
+    public void selectByIndexes(Set<Integer> indexes) {
+        indexes.forEach((index) -> {
+            selectByIndex(index);
+        });
+    }
+
+    public void selectByIndex(int index) {
+        if (index < 3) {
+            listI.select(listI.getItemIds().toArray()[index]);
+        } else if (index >= 3 && index < 6) {
+            listII.select(listII.getItemIds().toArray()[index - 3]);
+        } else if (index >= 6 && index < 9) {
+            listIII.select(listIII.getItemIds().toArray()[index - 6]);
+        } else if (index >= 9) {
+            listIV.select(listIV.getItemIds().toArray()[index - 9]);
+        }
     }
 
 }

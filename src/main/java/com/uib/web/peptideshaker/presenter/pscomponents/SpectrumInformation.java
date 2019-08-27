@@ -7,7 +7,7 @@ package com.uib.web.peptideshaker.presenter.pscomponents;
 
 import com.compomics.util.experiment.identification.matches.SpectrumMatch;
 import com.compomics.util.experiment.massspectrometry.MSnSpectrum;
-import com.compomics.util.preferences.IdentificationParameters;
+import com.uib.web.peptideshaker.model.core.WebSearchParameters;
 
 /**
  *this class contain all the required information to load spectrum data
@@ -17,7 +17,7 @@ public class SpectrumInformation {
     private   MSnSpectrum spectrum;
     private String charge;
     private double fragmentIonAccuracy;
-    private IdentificationParameters identificationParameters;
+    private WebSearchParameters identificationParameters;
     private SpectrumMatch spectrumMatch;
     private Object spectrumId;
     private int maxCharge;
@@ -63,11 +63,11 @@ public class SpectrumInformation {
         this.fragmentIonAccuracy = fragmentIonAccuracy;
     }
 
-    public IdentificationParameters getIdentificationParameters() {
+    public WebSearchParameters getIdentificationParameters() {
         return identificationParameters;
     }
 
-    public void setIdentificationParameters(IdentificationParameters identificationParameters) {
+    public void setIdentificationParameters(WebSearchParameters identificationParameters) {
         this.identificationParameters = identificationParameters;
     }
 

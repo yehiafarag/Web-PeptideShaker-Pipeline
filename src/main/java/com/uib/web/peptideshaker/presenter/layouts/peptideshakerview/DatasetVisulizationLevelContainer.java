@@ -1,8 +1,8 @@
 package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview;
 
-import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components.DatasetVisulizationLevelComponent;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
+import com.uib.web.peptideshaker.model.core.WebSearchParameters;
 import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
 import com.uib.web.peptideshaker.presenter.core.FilterButton;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
@@ -130,7 +130,7 @@ public class DatasetVisulizationLevelContainer extends HorizontalLayout {
 
         SearchSettingsLayout dsOverview = new SearchSettingsLayout((PeptideShakerVisualizationDataset) peptideShakerVisualizationDataset, true) {
             @Override
-            public void saveSearchingFile(SearchParameters searchParameters, boolean isNew) {
+            public void saveSearchingFile(WebSearchParameters searchParameters, boolean isNew) {
                 throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
             }
 

@@ -1,4 +1,4 @@
-package com.uib.web.peptideshaker.presenter.layouts;
+package archive;
 
 import com.compomics.util.experiment.biology.Enzyme;
 import com.compomics.util.experiment.biology.EnzymeFactory;
@@ -405,7 +405,7 @@ public abstract class SearchSettingsLayout1 extends VerticalLayout {
         dataset.getVariableModification();
         SearchSettingsLayout1.this.setVisible(visibleByDefault);
         SearchSettingsLayout1.this.addStyleName("dsoverview");
-        SearchSettingsLayout1.this.updateForms(dataset.getSearchingParameters().getSearchParameters(), null);
+//        SearchSettingsLayout1.this.updateForms(dataset.getSearchingParameters().getSearchParameters(), null);
         titleLabel.setValue(dataset.getName().split("___")[0] + (" <i style='color: gray;font-size: 12px;'>(" + dataset.getCreateTime() + ")</i>").replace("(null)", ""));
         searchsettingsContainer.setVisible(false);
    
