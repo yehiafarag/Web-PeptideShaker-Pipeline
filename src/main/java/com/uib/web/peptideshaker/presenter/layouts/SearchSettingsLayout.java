@@ -178,7 +178,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
      * Protease fragmentation container layout.
      */
     private final PopupWindow proteaseFragmentationContainer;
-    DecimalFormat df = new DecimalFormat("0.00E00");//new DecimalFormat("#.##");
+    private final DecimalFormat df = new DecimalFormat("0.00E00");//new DecimalFormat("#.##");
 
     private String enzyme;
     private final Label titleLabel;
@@ -191,6 +191,10 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
      * Advanced search settings layout
      */
     private AdvancedSearchSettings _advSearchSettings;
+    /**
+     * Advanced search engines settings layout
+     */
+    private AdvancedSearchEnginesSettings _advSearchEnginesSettings;
 
     /**
      * Constructor to initialise the main setting parameters.
@@ -315,6 +319,13 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         _advSearchSettings.addLayoutClickListener((LayoutEvents.LayoutClickEvent event) -> {
             _advSearchSettings.updateAdvancedSearchParamForms(searchParameters);
         });
+
+        _advSearchEnginesSettings = new AdvancedSearchEnginesSettings();
+//        if (editable) {
+        upperPanel.addComponent(_advSearchEnginesSettings);
+        _advSearchEnginesSettings.addLayoutClickListener((LayoutEvents.LayoutClickEvent event) -> {
+            _advSearchEnginesSettings.updateAdvancedSearchParamForms(searchParameters);
+        });
 //        }
 
 //        SearchSettingsLayout.this.addComponent(modificationContainer);
@@ -345,7 +356,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         saveBtn.addClickListener((Button.ClickEvent event) -> {
             if (this.isValidForm()) {
                 if (this.isModifiedForm()) {
-                     searchParameters.setParamFileName(searchParametersFileNameInputField.getSelectedValue());
+                    searchParameters.setParamFileName(searchParametersFileNameInputField.getSelectedValue());
                     saveSearchingFile(searchParameters, isNew);
                 } else {
                     cancel();
@@ -1049,7 +1060,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         String value = "<center>" + digestionList.fullLabelValue() + "</center><center>" + enzymeList.fullLabelValue() + "</center><center>" + specificityList.fullLabelValue() + " </center><br/><center> " + maxMissCleavages.fullLabelValue() + "</center><center>" + fragmentIonTypes.fullLabelValue().replace("_-_", " and ") + "</center><center>" + precursorTolerance.fullLabelValue().replace("_-_", "") + " </center><br/><center> " + fragmentTolerance.fullLabelValue().replace("_-_", "") + "</center><center>" + precursorCharge.fullLabelValue().replace("_-_", "-") + "</center><center>" + isotopes.fullLabelValue().replace("_-_", "-") + "</center>";
         proteaseFragmentationLabels.setValue(value);
         _advSearchSettings.updateAdvancedSearchParamForms(searchParameters);
-
+        _advSearchEnginesSettings.updateAdvancedSearchParamForms(searchParameters);
     }
 
     /**
@@ -1116,7 +1127,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         }
 //        PtmSettings ptmSettings = new PtmSettings();
         searchParameters.resetSearchingParameters();
-      
+
         fixedModificationTable.getItemIds().forEach((modificationId) -> {
             searchParameters.addFixedModification((modificationId.toString()));
         });
@@ -1148,6 +1159,7 @@ public abstract class SearchSettingsLayout extends VerticalLayout {
         searchParameters.setMinIsotopicCorrection(Integer.valueOf(isotopes.getFirstSelectedValue()));
         searchParameters.setMaxIsotopicCorrection(Integer.valueOf(isotopes.getSecondSelectedValue()));
         _advSearchSettings.updateAdvancedSearchParamForms(searchParameters);
+        _advSearchEnginesSettings.updateAdvancedSearchParamForms(searchParameters);
     }
 
     /**

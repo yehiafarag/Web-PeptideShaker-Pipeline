@@ -52,7 +52,7 @@ public class SequanceMatchingPanel extends PopupWindow {
         subContainer.addComponent(matchingMethodList);
         subContainer.addComponent(shareOfX);
         container.addComponent(title, "left:10px;top:10px");
-        container.addComponent(subContainer, "left:10px;top:40px;right:10px,bottom:40px");
+        container.addComponent(subContainer, "left:10px;top:40px;right:10px;bottom:40px");
         SequanceMatchingPanel.this.setContent(container);
         SequanceMatchingPanel.this.setClosable(true);
 

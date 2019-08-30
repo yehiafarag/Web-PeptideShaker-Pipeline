@@ -607,6 +607,8 @@ public abstract class GalaxyHistoryHandler {
 
                     usedStorageSpace = 0;
                     results.stream().filter((map) -> map != null && (!((map.get("purged") + "").equalsIgnoreCase("true") || (!historiesIds.contains(map.get("history_id") + "")) || (map.get("deleted") + "").equalsIgnoreCase("true")))).forEachOrdered((Map<String, Object> map) -> {
+                      
+                        
                         if (map.get("name").toString().contains("ToDelete")) {
                             toDeleteMap.add(map.get("history_id")+";"+map.get("id").toString());
                         } else {

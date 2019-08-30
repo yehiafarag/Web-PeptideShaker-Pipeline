@@ -6456,7 +6456,7 @@
         background-color:whitesmoke;
         border:1px solid lightgray;
         border-radius:5px;
-        max-height:80px;
+/*        max-height:80px;*/
         padding:5px;
         top:-5px !important;
         position:absolute ;
@@ -6487,6 +6487,117 @@
         position:relative;
         left:-20px;
     }
+    .v-slot-advancedsearchenglayout {
+        position: absolute !important;
+        top: 18px;
+        left: 255px;
+    }
+
+    .v-verticallayout-advancedsearchenglayout {
+        width: 100% !important;
+    }
+
+    .v-verticallayout-advancedsearchenglayout .v-label {
+        text-decoration: none !important;
+        padding-left: 2px;
+        font-size: 11px;
+        font-weight: bold;
+        font-family: "Open Sans", sans-serif;
+        color: #1b7de1;
+        margin-top: 5px;
+        max-width: 145px;
+        float: right !important;
+        cursor: pointer;
+    }
+    .v-tabsheet-subcontainertabsheet{
+        border-bottom:1px solid lightgray;
+
+    }
+    .v-tabsheet-subcontainertabsheet .v-captiontext{
+        font-size:12px;
+        font-weight:500;
+    }
+    .v-tabsheet-subcontainertabsheet .v-tabsheet-tabsheetpanel{
+        margin-top:10px !important;
+    }
+
+    .v-tabsheet-subcontainertabsheet{
+        border-bottom:1px solid lightgray;
+
+    }
+
+
+    .infopopupcontainer .v-label{
+        font-size:11px !important;
+        font-weight:normal !important;
+        line-height:12px;
+        max-width:250px;
+        padding-top:15px !important;
+    }
+    .v-popupview-infopopup .v-icon{
+        margin-top:15px !important;
+    }
+
+    .infolayout .v-verticallayout-closeboxbtn {
+        z-index: 3;
+        padding-left:3px !important;
+        right: -10px !important;
+        margin-top: 0px !important;
+        font-size: 20px !important;
+        font-weight: bold !important;
+        font-family: "Open Sans", sans-serif !important;
+        text-decoration: none !important;
+        width: 20px !important;
+        height: 20px !important;
+        border: 1px solid gray;
+        text-align: center !important;
+        outline: none;
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+        cursor: pointer;
+        color: gray !important;
+        font-weight: 400;
+        border-radius: 4px !important;
+        border: 1px solid #c5c5c5;
+        background-color: #fafafa;
+        line-height: 18px;
+    }
+    .infolayout{
+        border:1px solid lightgray;
+    }
+    .infolayout h1{
+        font-size:14px;
+        font-weight:bold;
+        margin-top:0px;
+    }
+    .infolayout{
+        font-size:12px;
+    }
+    .popuppanelmaincontainer a{
+        letter-spacing :2px;
+        text-decoration:none ;
+        font-size:9px;
+    }
+    .popuppanelmaincontainer .v-label-smalltable {
+        text-align:right;
+        right:50%;
+        position:relative;
+        font-size:9px !important;
+    }
+
+    .popuppanelmaincontainer  .intablesparkline .v-label div{
+        margin-top:3px;
+    }
+.v-disabled.v-popupview-infopopup .v-icon{
+    color:#197de1 !important;
+    font-size:16px;
+    opacity:1 !important;
+
+}
+.v-disabled.v-popupview-infopopup{   
+    opacity:1 !important;
+
+}
 }
 
 

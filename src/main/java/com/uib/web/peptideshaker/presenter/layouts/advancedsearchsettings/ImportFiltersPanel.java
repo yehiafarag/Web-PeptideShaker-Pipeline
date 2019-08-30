@@ -46,7 +46,7 @@ public class ImportFiltersPanel extends PopupWindow {
         subContainer.setStyleName("importfiltersubcontainer");
 
         container.addComponent(title, "left:10px;top:10px");
-        container.addComponent(subContainer, "left:10px;top:40px;right:10px,bottom:40px");
+        container.addComponent(subContainer, "left:10px;top:40px;right:10px;bottom:40px");
         peptideLength = new HorizontalLabel2TextField("Peptide Length", 0, 0, new IntegerRangeValidator("check the input range", Integer.MIN_VALUE, Integer.MAX_VALUE));
         subContainer.addComponent(peptideLength);
         Set<String> values = new LinkedHashSet<>();

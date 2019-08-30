@@ -2,8 +2,12 @@ package com.uib.web.peptideshaker.presenter.layouts;
 
 import com.uib.web.peptideshaker.model.core.WebSearchParameters;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
+import com.uib.web.peptideshaker.presenter.layouts.advancedsearchenginessettings.MSAmandaAdvancedSettingsPanel;
+import com.uib.web.peptideshaker.presenter.layouts.advancedsearchenginessettings.MyriMatchAdvancedSettingsPanel;
+import com.uib.web.peptideshaker.presenter.layouts.advancedsearchenginessettings.XTandemAdvancedSettingsPanel;
 import com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings.DatabaseProcessingPanel;
 import com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings.FractionAnalysisPanel;
+
 import com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings.GeneAnnotationPanel;
 import com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings.ImportFiltersPanel;
 import com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings.PSMScoringPanel;
@@ -12,7 +16,6 @@ import com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings.Peptid
 import com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings.ProteinInferencePanel;
 import com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings.QualityControlPanel;
 import com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings.SequanceMatchingPanel;
-import com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings.SpectrumAnnotationPanel;
 import com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings.ValidationLevelsPanel;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbsoluteLayout;
@@ -25,13 +28,13 @@ import com.vaadin.ui.VerticalLayout;
  *
  * @author Yehia Farag
  */
-public class AdvancedSearchSettings extends VerticalLayout {
+public class AdvancedSearchEnginesSettings extends VerticalLayout {
 
     private final PopupWindow popupAdvancedSettingLayout;
     private WebSearchParameters webSearchParam;
-    private SpectrumAnnotationPanel spectrumAnnotationPanel;
-    private SequanceMatchingPanel sequanceMatchingPanel;
-    private ImportFiltersPanel importFilters;
+    private XTandemAdvancedSettingsPanel xTandemAdvancedSettingsPanel;
+    private MyriMatchAdvancedSettingsPanel myriMatchAdvancedSettingsPanel;
+    private MSAmandaAdvancedSettingsPanel mSAmandaAdvancedSettingsPanel;
     private ValidationLevelsPanel validationLevel;
     private FractionAnalysisPanel fractionAnalysis;
     private ProteinInferencePanel proteinInference;
@@ -39,22 +42,22 @@ public class AdvancedSearchSettings extends VerticalLayout {
     private PTMLocalizationPanel ptmLocalization;
     private DatabaseProcessingPanel databaseProcessing;
     private PeptideVariantsPanel peptideVariants;
-    private  PSMScoringPanel psmScoring;
+    private PSMScoringPanel psmScoring;
     private QualityControlPanel qualityControl;
 
-    public AdvancedSearchSettings() {
-        AdvancedSearchSettings.this.setSizeFull();
-        AdvancedSearchSettings.this.setStyleName("advancedsearchlayout");
+    public AdvancedSearchEnginesSettings() {
+        AdvancedSearchEnginesSettings.this.setSizeFull();
+        AdvancedSearchEnginesSettings.this.setStyleName("advancedsearchenglayout");
 //        Label title = new Label("( Advanced Settings )");
-//        AdvancedSearchSettings.this.addComponent(title);
-//        AdvancedSearchSettings.this.addLayoutClickListener(AdvancedSearchSettings.this);
-        popupAdvancedSettingLayout = new PopupWindow("( Advanced Settings |") {
+//        AdvancedSearchEnginesSettings.this.addComponent(title);
+//        AdvancedSearchEnginesSettings.this.addLayoutClickListener(AdvancedSearchEnginesSettings.this);
+        popupAdvancedSettingLayout = new PopupWindow(" Search Engines Settings )") {
             @Override
             public void onClosePopup() {
 
             }
         };
-        AdvancedSearchSettings.this.addComponent(popupAdvancedSettingLayout);
+        AdvancedSearchEnginesSettings.this.addComponent(popupAdvancedSettingLayout);
         AbsoluteLayout vlo = initLayout();
         vlo.setWidth(590, Unit.PIXELS);
         vlo.setHeight(590, Unit.PIXELS);
@@ -67,7 +70,7 @@ public class AdvancedSearchSettings extends VerticalLayout {
         AbsoluteLayout container = new AbsoluteLayout();
         container.setSizeFull();
         container.setStyleName("advsettingcontainer");
-        Label title = new Label("<font style='font-size:15px;'>Advanced Settings</font>", ContentMode.HTML);
+        Label title = new Label("<font style='font-size:15px;'> Search Engines Settings</font>", ContentMode.HTML);
         container.addComponent(title, "left:10px;top:10px");
 
         VerticalLayout subContainer = new VerticalLayout();
@@ -77,16 +80,16 @@ public class AdvancedSearchSettings extends VerticalLayout {
         subContainer.setMargin(false);
         subContainer.setStyleName("advsettingssubcontainer");
 
-        spectrumAnnotationPanel = new SpectrumAnnotationPanel();
-        subContainer.addComponent(spectrumAnnotationPanel);
+        xTandemAdvancedSettingsPanel = new XTandemAdvancedSettingsPanel();
+        subContainer.addComponent(xTandemAdvancedSettingsPanel);
 
-        sequanceMatchingPanel = new SequanceMatchingPanel();
-        subContainer.addComponent(sequanceMatchingPanel);
+        myriMatchAdvancedSettingsPanel = new MyriMatchAdvancedSettingsPanel();
+        subContainer.addComponent(myriMatchAdvancedSettingsPanel);
         peptideVariants = new PeptideVariantsPanel();
         subContainer.addComponent(peptideVariants);
 
-        importFilters = new ImportFiltersPanel();
-        subContainer.addComponent(importFilters);
+        mSAmandaAdvancedSettingsPanel = new MSAmandaAdvancedSettingsPanel();
+        subContainer.addComponent(mSAmandaAdvancedSettingsPanel);
         psmScoring = new PSMScoringPanel();
         subContainer.addComponent(psmScoring);
         ptmLocalization = new PTMLocalizationPanel();
@@ -119,9 +122,9 @@ public class AdvancedSearchSettings extends VerticalLayout {
         if (webSearchParam.isNewVersionParFile()) {
             web.com.compomics.util.parameters.identification.IdentificationParameters idSearchParameter = webSearchParam.getUpdatedIdentificationParameters();
             if (idSearchParameter != null) {
-                spectrumAnnotationPanel.updateGUI(searchParameters);
-                sequanceMatchingPanel.updateGUI(searchParameters);
-                importFilters.updateGUI(searchParameters);
+                xTandemAdvancedSettingsPanel.updateGUI(searchParameters);
+                myriMatchAdvancedSettingsPanel.updateGUI(searchParameters);
+                mSAmandaAdvancedSettingsPanel.updateGUI(searchParameters);
                 validationLevel.updateGUI(searchParameters);
                 fractionAnalysis.updateGUI(searchParameters);
                 proteinInference.updateGUI(searchParameters);
