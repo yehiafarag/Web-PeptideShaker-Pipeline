@@ -229,7 +229,7 @@ public abstract class PSMViewComponent extends VerticalLayout {
         this.psmOverviewTable.removeValueChangeListener(psmlistener);
         this.psmOverviewTable.removeAllItems();
         index = 1;
-        fragWidth=Integer.MIN_VALUE;
+        fragWidth=(-1* Integer.MAX_VALUE);
         if (!quantDataset) {
             psmOverviewTable.setColumnWidth("sequenceFrag", psmOverviewTable.getColumnWidth("sequenceFrag") + 120);
             psmOverviewTable.setColumnCollapsingAllowed(true);

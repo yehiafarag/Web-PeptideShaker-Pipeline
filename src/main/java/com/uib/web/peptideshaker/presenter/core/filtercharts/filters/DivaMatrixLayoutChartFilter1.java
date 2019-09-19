@@ -304,7 +304,7 @@ public abstract class DivaMatrixLayoutChartFilter1 extends AbsoluteLayout implem
             }
 
         }
-        int max = Integer.MIN_VALUE;
+        int max = (-1* Integer.MAX_VALUE);
         int min = Integer.MAX_VALUE;
         for (int i : rows.values()) {
             if (max < i) {

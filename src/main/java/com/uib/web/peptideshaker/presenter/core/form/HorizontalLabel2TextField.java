@@ -1,6 +1,8 @@
 package com.uib.web.peptideshaker.presenter.core.form;
 
 import com.vaadin.data.Validator;
+import com.vaadin.data.validator.DoubleRangeValidator;
+import com.vaadin.data.validator.IntegerRangeValidator;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextField;
@@ -25,6 +27,7 @@ public class HorizontalLabel2TextField extends HorizontalLayout {
     private final String defaultValue1;
     private final String defaultValue2;
     private final Label cap;
+    private final Validator validator;
 
     /**
      * Constructor to initialize the main attributes
@@ -34,8 +37,9 @@ public class HorizontalLabel2TextField extends HorizontalLayout {
      */
     public HorizontalLabel2TextField(String title, Object defaultValue1, Object defaultValue2, Validator validator) {
 
+        this.validator = validator;
         HorizontalLabel2TextField.this.setSizeFull();
-        HorizontalLabel2TextField.this.setSpacing(true);
+        HorizontalLabel2TextField.this.setSpacing(false);
         cap = new Label(title);
         cap.addStyleName(ValoTheme.LABEL_TINY);
         cap.addStyleName(ValoTheme.LABEL_SMALL);
@@ -50,8 +54,23 @@ public class HorizontalLabel2TextField extends HorizontalLayout {
         }
 
         textField1 = new TextField();
+        textField2 = new TextField();
         textField1.setValidationVisible(true);
-        textField1.setConverter(Integer.class);
+        if (validator != null && validator instanceof IntegerRangeValidator) {
+            textField1.setConverter(Integer.class);
+            textField2.setConverter(Integer.class);
+        } else if (validator != null && validator instanceof DoubleRangeValidator) {
+            textField1.setConverter(Double.class);
+            textField2.setConverter(Double.class);
+        }
+
+        HorizontalLayout fieldContaner = new HorizontalLayout();
+        fieldContaner.setHeight(20, Unit.PIXELS);
+        fieldContaner.setWidth(100, Unit.PERCENTAGE);
+        fieldContaner.setSpacing(true);
+        fieldContaner.setStyleName("twofieldscontainer");
+        HorizontalLabel2TextField.this.addComponent(fieldContaner);
+        HorizontalLabel2TextField.this.setExpandRatio(fieldContaner, 55f);
 
         textField1.addValidator(validator);
         textField1.addStyleName(ValoTheme.TEXTFIELD_ALIGN_CENTER);
@@ -60,8 +79,7 @@ public class HorizontalLabel2TextField extends HorizontalLayout {
         textField1.setNullRepresentation(this.defaultValue1);
         textField1.setWidth(100, Unit.PERCENTAGE);
         textField1.setHeight(20, Unit.PIXELS);
-        HorizontalLabel2TextField.this.addComponent(textField1);
-        HorizontalLabel2TextField.this.setExpandRatio(textField1, 27.5f);
+        fieldContaner.addComponent(textField1);
 
         if (defaultValue2 == null) {
             this.defaultValue2 = "0";
@@ -69,9 +87,7 @@ public class HorizontalLabel2TextField extends HorizontalLayout {
             this.defaultValue2 = defaultValue2.toString();
         }
 
-        textField2 = new TextField();
         textField2.setValidationVisible(true);
-        textField2.setConverter(Integer.class);
 
         textField2.addValidator(validator);
         textField2.addStyleName(ValoTheme.TEXTFIELD_ALIGN_CENTER);
@@ -80,8 +96,9 @@ public class HorizontalLabel2TextField extends HorizontalLayout {
         textField2.setNullRepresentation(this.defaultValue2);
         textField2.setWidth(100, Unit.PERCENTAGE);
         textField2.setHeight(20, Unit.PIXELS);
-        HorizontalLabel2TextField.this.addComponent(textField2);
-        HorizontalLabel2TextField.this.setExpandRatio(textField2, 27.5f);
+        fieldContaner.addComponent(textField2);
+        textField1.setValue(this.defaultValue1);
+        textField2.setValue(this.defaultValue2);
 
     }
 
@@ -113,25 +130,40 @@ public class HorizontalLabel2TextField extends HorizontalLayout {
 
     }
 
+    public void setRequired(boolean required) {
+        textField1.setRequired(required);
+        textField2.setRequired(required);
+    }
+
     public boolean isValid() {
         boolean check1 = textField1.isValid();
         boolean check2 = textField2.isValid();
-        boolean check3 = Integer.valueOf(this.getFirstSelectedValue()) <= Integer.valueOf(this.getSecondSelectedValue());
-
-        if (!check3) {
-            textField1.setValue("Error");
-            textField2.setValue("Error");
-        }
-        return check1 && check2 && check3;
+        boolean check3;
+        if (validator != null && validator instanceof IntegerRangeValidator) {
+            check3 = Integer.valueOf(this.getFirstSelectedValue()) < Integer.valueOf(this.getSecondSelectedValue());
+   }else  if (validator != null && validator instanceof DoubleRangeValidator) {
+        check3 = Double.valueOf(this.getFirstSelectedValue()) < Double.valueOf(this.getSecondSelectedValue());
+       
+   }else{
+       check3=true;
+   }
+            if (!check3) {
+                textField1.setValue("Error");
+                textField2.setValue("Error");
+            }
+            return check1 && check2 && check3;
+     
     }
+    
 
     public boolean isModified() {
         return (!textField1.getValue().equalsIgnoreCase(textField1.getData() + "")) || (!textField2.getValue().equalsIgnoreCase(textField2.getData() + ""));
 
     }
-    public String fullLabelValue(){
-        return "<b>"+cap.getValue()+": </b>"+textField1.getValue()+"_-_"+textField2.getValue();
-    
+
+    public String fullLabelValue() {
+        return "<b>" + cap.getValue() + ": </b>" + textField1.getValue() + "_-_" + textField2.getValue();
+
     }
 
 }

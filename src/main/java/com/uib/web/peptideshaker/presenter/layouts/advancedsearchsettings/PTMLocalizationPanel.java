@@ -56,7 +56,7 @@ public class PTMLocalizationPanel extends PopupWindow {
 
         accountNeutralLosses = new HorizontalLabelDropDounList("Account Neutral Losses");
         accountNeutralLosses.updateData(values);
-        threshold = new HorizontalLabelTextField("Threshold", 0.0, new DoubleRangeValidator("Only double values allowd", Double.MIN_VALUE, Double.MAX_VALUE));
+        threshold = new HorizontalLabelTextField("Threshold", 0.0, new DoubleRangeValidator("Only double values allowd", (-1* Double.MAX_VALUE), Double.MAX_VALUE));
 
         confidentSites = new HorizontalLabelDropDounList("Confident Sites");
         confidentSites.updateData(values);

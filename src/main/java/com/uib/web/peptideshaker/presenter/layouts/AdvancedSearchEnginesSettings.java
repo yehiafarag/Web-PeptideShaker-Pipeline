@@ -2,21 +2,22 @@ package com.uib.web.peptideshaker.presenter.layouts;
 
 import com.uib.web.peptideshaker.model.core.WebSearchParameters;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
+import com.uib.web.peptideshaker.presenter.layouts.advancedsearchenginessettings.AndromedaAdvancedSettingsPanel;
+import com.uib.web.peptideshaker.presenter.layouts.advancedsearchenginessettings.CometAdvancedSettingsPanel;
+import com.uib.web.peptideshaker.presenter.layouts.advancedsearchenginessettings.DirecTagAdvancedSettingsPanel;
 import com.uib.web.peptideshaker.presenter.layouts.advancedsearchenginessettings.MSAmandaAdvancedSettingsPanel;
+import com.uib.web.peptideshaker.presenter.layouts.advancedsearchenginessettings.MsGFAdvancedSettingsPanel;
 import com.uib.web.peptideshaker.presenter.layouts.advancedsearchenginessettings.MyriMatchAdvancedSettingsPanel;
+import com.uib.web.peptideshaker.presenter.layouts.advancedsearchenginessettings.NovorAdvancedSettingsPanel;
+import com.uib.web.peptideshaker.presenter.layouts.advancedsearchenginessettings.OmssaAdvancedSettingsPanel;
+import com.uib.web.peptideshaker.presenter.layouts.advancedsearchenginessettings.TideAdvancedSettingsPanel;
 import com.uib.web.peptideshaker.presenter.layouts.advancedsearchenginessettings.XTandemAdvancedSettingsPanel;
-import com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings.DatabaseProcessingPanel;
 import com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings.FractionAnalysisPanel;
 
 import com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings.GeneAnnotationPanel;
-import com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings.ImportFiltersPanel;
-import com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings.PSMScoringPanel;
-import com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings.PTMLocalizationPanel;
 import com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings.PeptideVariantsPanel;
 import com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings.ProteinInferencePanel;
 import com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings.QualityControlPanel;
-import com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings.SequanceMatchingPanel;
-import com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings.ValidationLevelsPanel;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Label;
@@ -35,15 +36,13 @@ public class AdvancedSearchEnginesSettings extends VerticalLayout {
     private XTandemAdvancedSettingsPanel xTandemAdvancedSettingsPanel;
     private MyriMatchAdvancedSettingsPanel myriMatchAdvancedSettingsPanel;
     private MSAmandaAdvancedSettingsPanel mSAmandaAdvancedSettingsPanel;
-    private ValidationLevelsPanel validationLevel;
-    private FractionAnalysisPanel fractionAnalysis;
-    private ProteinInferencePanel proteinInference;
-    private GeneAnnotationPanel geneAnnotation;
-    private PTMLocalizationPanel ptmLocalization;
-    private DatabaseProcessingPanel databaseProcessing;
-    private PeptideVariantsPanel peptideVariants;
-    private PSMScoringPanel psmScoring;
-    private QualityControlPanel qualityControl;
+    private AndromedaAdvancedSettingsPanel andromedaAdvancedSettingsPanel;
+    private TideAdvancedSettingsPanel tideAdvancedSettingsPanel;
+    private OmssaAdvancedSettingsPanel omssaAdvancedSettingsPanel;
+    private NovorAdvancedSettingsPanel novorAdvancedSettingsPanel;
+    private DirecTagAdvancedSettingsPanel direcTagAdvancedSettingsPanel;
+    private MsGFAdvancedSettingsPanel msGFAdvancedSettingsPanel;
+    private CometAdvancedSettingsPanel cometAdvancedSettingsPanel;
 
     public AdvancedSearchEnginesSettings() {
         AdvancedSearchEnginesSettings.this.setSizeFull();
@@ -59,8 +58,8 @@ public class AdvancedSearchEnginesSettings extends VerticalLayout {
         };
         AdvancedSearchEnginesSettings.this.addComponent(popupAdvancedSettingLayout);
         AbsoluteLayout vlo = initLayout();
-        vlo.setWidth(590, Unit.PIXELS);
-        vlo.setHeight(590, Unit.PIXELS);
+        vlo.setWidth(500, Unit.PIXELS);
+        vlo.setHeight(500, Unit.PIXELS);
         popupAdvancedSettingLayout.setClosable(true);
         popupAdvancedSettingLayout.setContent(vlo);
 
@@ -85,28 +84,25 @@ public class AdvancedSearchEnginesSettings extends VerticalLayout {
 
         myriMatchAdvancedSettingsPanel = new MyriMatchAdvancedSettingsPanel();
         subContainer.addComponent(myriMatchAdvancedSettingsPanel);
-        peptideVariants = new PeptideVariantsPanel();
-        subContainer.addComponent(peptideVariants);
 
         mSAmandaAdvancedSettingsPanel = new MSAmandaAdvancedSettingsPanel();
         subContainer.addComponent(mSAmandaAdvancedSettingsPanel);
-        psmScoring = new PSMScoringPanel();
-        subContainer.addComponent(psmScoring);
-        ptmLocalization = new PTMLocalizationPanel();
-        subContainer.addComponent(ptmLocalization);
-        geneAnnotation = new GeneAnnotationPanel();
-        subContainer.addComponent(geneAnnotation);
-        proteinInference = new ProteinInferencePanel();
-        subContainer.addComponent(proteinInference);
-        validationLevel = new ValidationLevelsPanel();
-        subContainer.addComponent(validationLevel);
-        fractionAnalysis = new FractionAnalysisPanel();
-        subContainer.addComponent(fractionAnalysis);
-        qualityControl = new QualityControlPanel();
-        subContainer.addComponent(qualityControl);
+        msGFAdvancedSettingsPanel = new MsGFAdvancedSettingsPanel();
+        subContainer.addComponent(msGFAdvancedSettingsPanel);
 
-        databaseProcessing = new DatabaseProcessingPanel();
-        subContainer.addComponent(databaseProcessing);
+        omssaAdvancedSettingsPanel = new OmssaAdvancedSettingsPanel();
+        subContainer.addComponent(omssaAdvancedSettingsPanel);
+
+        cometAdvancedSettingsPanel = new CometAdvancedSettingsPanel();
+        subContainer.addComponent(cometAdvancedSettingsPanel);
+        tideAdvancedSettingsPanel = new TideAdvancedSettingsPanel();
+        subContainer.addComponent(tideAdvancedSettingsPanel);
+        andromedaAdvancedSettingsPanel = new AndromedaAdvancedSettingsPanel();
+        subContainer.addComponent(andromedaAdvancedSettingsPanel);
+        novorAdvancedSettingsPanel = new NovorAdvancedSettingsPanel();
+        subContainer.addComponent(novorAdvancedSettingsPanel);
+        direcTagAdvancedSettingsPanel = new DirecTagAdvancedSettingsPanel();
+        subContainer.addComponent(direcTagAdvancedSettingsPanel);
 
         return container;
     }
@@ -125,15 +121,13 @@ public class AdvancedSearchEnginesSettings extends VerticalLayout {
                 xTandemAdvancedSettingsPanel.updateGUI(searchParameters);
                 myriMatchAdvancedSettingsPanel.updateGUI(searchParameters);
                 mSAmandaAdvancedSettingsPanel.updateGUI(searchParameters);
-                validationLevel.updateGUI(searchParameters);
-                fractionAnalysis.updateGUI(searchParameters);
-                proteinInference.updateGUI(searchParameters);
-                geneAnnotation.updateGUI(searchParameters);
-                ptmLocalization.updateGUI(searchParameters);
-                databaseProcessing.updateGUI(searchParameters);
-                peptideVariants.updateGUI(searchParameters);
-                psmScoring.updateGUI(searchParameters);
-                qualityControl.updateGUI(searchParameters);
+                msGFAdvancedSettingsPanel.updateGUI(searchParameters);
+                novorAdvancedSettingsPanel.updateGUI(searchParameters);
+                andromedaAdvancedSettingsPanel.updateGUI(searchParameters);
+                tideAdvancedSettingsPanel.updateGUI(searchParameters);
+                omssaAdvancedSettingsPanel.updateGUI(searchParameters);
+                direcTagAdvancedSettingsPanel.updateGUI(searchParameters);
+                cometAdvancedSettingsPanel.updateGUI(searchParameters);
             }
         }
 

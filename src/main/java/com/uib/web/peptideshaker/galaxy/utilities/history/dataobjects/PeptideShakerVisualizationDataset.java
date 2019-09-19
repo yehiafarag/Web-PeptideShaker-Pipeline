@@ -1474,8 +1474,8 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
             initIdintificationParameters();
         }
         Map<Object, SpectrumInformation> spectrumInformationMap = new LinkedHashMap<>();
-        int maxCharge = Integer.MIN_VALUE;
-        double maxError = Double.MIN_VALUE;
+        int maxCharge = (-1* Integer.MAX_VALUE);
+        double maxError =  (-1.0*Double.MAX_VALUE);
 
         for (PSMObject selectedPsm : PSMs) {
             try {
@@ -1934,19 +1934,19 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
         /**
          * Maximum molecular weight.
          */
-        private double maxMW = Double.MIN_VALUE;
+        private double maxMW =  (-1.0*Double.MAX_VALUE);
         /**
          * Maximum MS2 quantitative.
          */
-        private double maxMS2Quant = Double.MIN_VALUE;
+        private double maxMS2Quant =  (-1.0*Double.MAX_VALUE);
         /**
          * Maximum peptides number.
          */
-        private int maxPeptideNumber = Integer.MIN_VALUE;
+        private int maxPeptideNumber = (-1* Integer.MAX_VALUE);
         /**
          * Maximum PSM numbers.
          */
-        private int maxPsmNumber = Integer.MIN_VALUE;
+        private int maxPsmNumber = (-1* Integer.MAX_VALUE);
 
         /**
          * Constructor to initialise the main variables.

@@ -247,7 +247,7 @@ public class XTandemAdvancedSettingsPanel extends PopupWindow {
 
         List<String> allModiList = PTM.getDefaultModifications();
         // get the min and max values for the mass sparklines
-        double maxMass = Double.MIN_VALUE;
+        double maxMass =  (-1.0*Double.MAX_VALUE);
         double minMass = Double.MAX_VALUE;
 
         for (String ptm : PTM.getPTMs()) {

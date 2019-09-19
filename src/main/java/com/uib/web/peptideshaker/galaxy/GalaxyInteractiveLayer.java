@@ -61,22 +61,22 @@ public abstract class GalaxyInteractiveLayer {
      */
     private final DecimalFormat dsFormater = new DecimalFormat("#.##");
 
-    private Set<String> csf_pr_Accession_List;
+//    private Set<String> csf_pr_Accession_List;
 
-    public Set<String> getCsf_pr_Accession_List() {
-        return csf_pr_Accession_List;
-    }
+//    public Set<String> getCsf_pr_Accession_List() {
+//        return csf_pr_Accession_List;
+//    }
 
     /**
      * Constructor to initialise the main Galaxy history handler.
      */
     public GalaxyInteractiveLayer() {
         this.userOverViewList = new ArrayList<>();
-        if (csf_pr_Accession_List == null) {
-            csf_pr_Accession_List = initialiseCSFList();
-        }
+//        if (csf_pr_Accession_List == null) {
+//            csf_pr_Accession_List = initialiseCSFList();
+//        }
 
-        this.historyHandler = new GalaxyHistoryHandler(csf_pr_Accession_List) {
+        this.historyHandler = new GalaxyHistoryHandler() {
             @Override
             public void synchronizeDataWithGalaxyServer(Map<String, GalaxyFileObject> historyFilesMap, boolean jobsInProgress, boolean updatePresenterView, Set<String> toDeleteMap) {
                 //update history in the system                 
@@ -106,29 +106,30 @@ public abstract class GalaxyInteractiveLayer {
             userOverViewList.clear();
             Galaxy_Instance = GalaxyInstanceFactory.get(galaxyServerUrl, userAPI);
             Galaxy_Instance.getHistoriesClient().getHistories();
+            System.out.println("check connection "+Galaxy_Instance.getUsersClient()==null);
 
-            user_folder = new File(userDataFolderUrl, Galaxy_Instance.getApiKey() + "");
-            user_folder.mkdir();
-            historyHandler.connectToGalaxy(Galaxy_Instance, user_folder);
-            toolsHandler = new GalaxyToolsHandler(Galaxy_Instance.getToolsClient(), Galaxy_Instance.getWorkflowsClient(), Galaxy_Instance.getHistoriesClient()) {
-                @Override
-                public void synchronizeDataWithGalaxyServer(boolean updatePresenterView) {
-                    historyHandler.updateHistory(updatePresenterView);
-                    userOverViewList.set(1, historyHandler.getDatasetsNumber() + "");
-                    userOverViewList.set(2, historyHandler.getFilesNumber() + "");
-                    userOverViewList.set(3, dsFormater.format(historyHandler.getMemoryUsage()) + " GB");
-                }
-            };
-            VaadinSession.getCurrent().setAttribute("ApiKey", Galaxy_Instance.getApiKey());
-
-            UsersClient userClient = Galaxy_Instance.getUsersClient();
-            User user = userClient.getUsers().get(0);
-            userOverViewList.add(user.getUsername().replace("guest_user", "Guest User <i style='font-size: 10px;'>(public data)</i>"));
-            userOverViewList.add(historyHandler.getDatasetsNumber() + "");
-            userOverViewList.add(historyHandler.getFilesNumber() + "");
-            userOverViewList.add(dsFormater.format(historyHandler.getMemoryUsage()) + " GB");
-            userOverViewList.add(toolsHandler.getSearch_GUI_Tool().getVersion());
-            userOverViewList.add(toolsHandler.getPeptideShaker_Tool().getVersion());
+//            user_folder = new File(userDataFolderUrl, Galaxy_Instance.getApiKey() + "");
+//            user_folder.mkdir();
+//            historyHandler.connectToGalaxy(Galaxy_Instance, user_folder);
+//            toolsHandler = new GalaxyToolsHandler(Galaxy_Instance.getToolsClient(), Galaxy_Instance.getWorkflowsClient(), Galaxy_Instance.getHistoriesClient()) {
+//                @Override
+//                public void synchronizeDataWithGalaxyServer(boolean updatePresenterView) {
+//                    historyHandler.updateHistory(updatePresenterView);
+//                    userOverViewList.set(1, historyHandler.getDatasetsNumber() + "");
+//                    userOverViewList.set(2, historyHandler.getFilesNumber() + "");
+//                    userOverViewList.set(3, dsFormater.format(historyHandler.getMemoryUsage()) + " GB");
+//                }
+//            };
+//            VaadinSession.getCurrent().setAttribute("ApiKey", Galaxy_Instance.getApiKey());
+//
+//            UsersClient userClient = Galaxy_Instance.getUsersClient();
+//            User user = userClient.getUsers().get(0);
+//            userOverViewList.add(user.getUsername().replace("guest_user", "Guest User <i style='font-size: 10px;'>(public data)</i>"));
+//            userOverViewList.add(historyHandler.getDatasetsNumber() + "");
+//            userOverViewList.add(historyHandler.getFilesNumber() + "");
+//            userOverViewList.add(dsFormater.format(historyHandler.getMemoryUsage()) + " GB");
+//            userOverViewList.add(toolsHandler.getSearch_GUI_Tool().getVersion());
+//            userOverViewList.add(toolsHandler.getPeptideShaker_Tool().getVersion());
         } catch (Exception e) {
             System.out.println("exception in galaxy connection cought " + e.getMessage());
             if (VaadinSession.getCurrent().getSession() != null) {

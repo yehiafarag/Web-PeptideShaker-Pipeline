@@ -53,7 +53,7 @@ public class ProteinInferencePanel extends PopupWindow {
 
         peptideConfidence = new HorizontalLabelDropDounList("&nbsp&nbsp-Based on Peptide Confidence");
         peptideConfidence.updateData(values);
-        peptideIgnoredConfidence = new HorizontalLabelTextField("&nbsp&nbsp&nbsp&nbsp&nbspConfidence Below Which A Peptide Is Ignored", 0.0, new DoubleRangeValidator("Only double values allowd", Double.MIN_VALUE, Double.MAX_VALUE));
+        peptideIgnoredConfidence = new HorizontalLabelTextField("&nbsp&nbsp&nbsp&nbsp&nbspConfidence Below Which A Peptide Is Ignored", 0.0, new DoubleRangeValidator("Only double values allowd", (-1* Double.MAX_VALUE), Double.MAX_VALUE));
 
         enzymaticity = new HorizontalLabelDropDounList("&nbsp&nbsp-Based on Enzymaticity");
         enzymaticity.updateData(values);

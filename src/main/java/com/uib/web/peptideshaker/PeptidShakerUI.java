@@ -1,5 +1,9 @@
 package com.uib.web.peptideshaker;
 
+import com.compomics.util.experiment.massspectrometry.Charge;
+import com.compomics.util.experiment.massspectrometry.MSnSpectrum;
+import com.compomics.util.experiment.massspectrometry.Peak;
+import com.compomics.util.experiment.massspectrometry.Precursor;
 import com.uib.web.peptideshaker.galaxy.nelsgalaxy.NeLSStorageInteractiveLayer;
 import javax.servlet.annotation.WebServlet;
 
@@ -13,16 +17,22 @@ import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.util.ArrayList;
+import java.util.HashMap;
 import javax.servlet.ServletContext;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -80,7 +90,7 @@ public class PeptidShakerUI extends UI {
             VaadinSession.getCurrent().setAttribute("testUserAPIKey", testUserAPIKey);
             String galaxyServerUrl = (scx.getInitParameter("galaxyServerUrl"));
             VaadinSession.getCurrent().setAttribute("galaxyServerUrl", galaxyServerUrl);
-            String csfProteinsListURL = (scx.getInitParameter("csfprservice"));
+            String csfprLink = (scx.getInitParameter("csfprservice"));
             String dbURL = (scx.getInitParameter("url"));
             String dbDriver = (scx.getInitParameter("driver"));
             String dbUserName = (scx.getInitParameter("userName"));
@@ -89,25 +99,21 @@ public class PeptidShakerUI extends UI {
             VaadinSession.getCurrent().setAttribute("dbDriver", dbDriver);
             VaadinSession.getCurrent().setAttribute("dbUserName", dbUserName);
             VaadinSession.getCurrent().setAttribute("dbPassword", dbPassword);
-            System.out.println("---->>>csfProteinsListURL---->>"+csfProteinsListURL);
-            updateCSFPRProteinsList(csfProteinsListURL);
-            if (testUserAPIKey == null || galaxyServerUrl == null || !checkConnectionToGalaxy(galaxyServerUrl)) {
-                notification = new Notification("<center style=' color: black;>'><font style='font-size: 14px;font-weight: 600;line-height: 31px;word-spacing: 4px; letter-spacing: 1px;'>Contact administrator !</font><br>Galaxy server is not available</center>", Notification.Type.WARNING_MESSAGE);
-                notification.setHtmlContentAllowed(true);
-                notification.setDelayMsec(-1);
-                notification.show(Page.getCurrent());
-                return;
-            }
+             VaadinSession.getCurrent().setAttribute("csfprLink", csfprLink);
+//            updateCSFPRProteinsList(csfProteinsListURL);
+//            if (testUserAPIKey == null || galaxyServerUrl == null || !checkConnectionToGalaxy(galaxyServerUrl)) {
+//                notification = new Notification("<center style=' color: black;>'><font style='font-size: 14px;font-weight: 600;line-height: 31px;word-spacing: 4px; letter-spacing: 1px;'>Contact administrator !</font><br>Galaxy server is not available</center>", Notification.Type.WARNING_MESSAGE);
+//                notification.setHtmlContentAllowed(true);
+//                notification.setDelayMsec(-1);
+//                notification.show(Page.getCurrent());
+//                return;
+//            }
 
             int screenH = Page.getCurrent().getWebBrowser().getScreenHeight();
             int screenW = Page.getCurrent().getWebBrowser().getScreenWidth();
             mobileScreenComp = (Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile")) || (screenW < 1349 || screenH < 1000);
             verticalScreenMode = (Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight());
-            
-           
-            
-            
-            
+                      
 //            if (mobileScreenComp) {
             VaadinSession.getCurrent().setAttribute("smallscreenstyle", false);
             VaadinSession.getCurrent().setAttribute("mobilescreenstyle", mobileScreenComp);
@@ -178,6 +184,7 @@ public class PeptidShakerUI extends UI {
             e.printStackTrace();
 
         }
+        getSpectrum();
 
     }
 
@@ -225,62 +232,46 @@ public class PeptidShakerUI extends UI {
     public static class PeptidShakerUIServlet extends VaadinServlet {
     }
 
-    /**
-     * Get the name list of the files exist in the compressed folder
+    
+     /**
+     * Get MSn spectrum object using HTML request to Galaxy server (byte serving
+     * support).
      *
-     * @return the sub files list of files contained in folder (case of
-     * compressed folder).
-     *
+     * @param startIndex the spectra index on the MGF file
+     * @param historyId the Galaxy Server History ID that contain the MGF file
+     * @param MGFGalaxyID The ID of the MGF file on Galaxy Server
+     * @param MGFFileName The MGF file name
+     * @return MSnSpectrum spectrum object
      */
-    private void updateCSFPRProteinsList(String csfProteinsListURL) {
-        String updateFileName = "";
-        try {
-            Document doc = Jsoup.connect(csfProteinsListURL).get();
-            Elements elements = doc.getElementsByTag("body");
-            for (Element elemet : elements) {
-                if ((elemet.text() + "").contains("prot-")) {
-                    for (String fileName : elemet.text().split(" ")) {
-                        if (fileName.contains("prot-") && fileName.trim().endsWith(".txt")) {
-                            updateFileName = fileName.trim();
-                            break;
-                        }
-                    }
-                    break;
-                }
-            }
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+    private void getSpectrum() {
 
-        String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
-        VaadinSession.getCurrent().setAttribute("csfprfile", basepath + "/VAADIN/" + updateFileName);
-        File file = new File(basepath + "/VAADIN/" + updateFileName);
-        if (file.exists()) {
-            return;
-        }
-        FileOutputStream fos = null;
         try {
-            file.createNewFile();
-            URL downloadableFile = new URL(csfProteinsListURL + updateFileName);
-            URLConnection conn = downloadableFile.openConnection();
+            StringBuilder locationBuilder = new StringBuilder("https://galaxy-uib.bioinfo.no/api/histories/d52bb4af7fa2c539/contents/6ee1d49667a686b6/display?key=042f8dd459607d2d56c8d41cfb6eb5b5");//"/api/histories/" + historyId + "/contents/" + MGFGalaxyID + "/display?"
+
+            String location = locationBuilder.toString();
+            URL website = new URL(location);
+            URLConnection conn = website.openConnection();
+            conn.addRequestProperty("Accept", "application/json, text/javascript, */*; q=0.01");
+            conn.addRequestProperty("Accept-Encoding", "gzip, deflate, sdch, br");
+            conn.addRequestProperty("Accept-Language", "ar,en-US;q=0.8,en;q=0.6,en-GB;q=0.4");
+            conn.addRequestProperty("Cache-Control", "no-cache");
             conn.addRequestProperty("Connection", "keep-alive");
+            conn.addRequestProperty("Range", "bytes=" + 65544 + "-" + Long.MAX_VALUE);
+              conn.addRequestProperty("offset", "65544");
+            conn.addRequestProperty("DNT", "1");
+            conn.addRequestProperty("X-Requested-With", "XMLHttpRequest");
+            conn.addRequestProperty("Pragma", "no-cache");
+            conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36");
             conn.setDoInput(true);
-            InputStream in = conn.getInputStream();
-            try (ReadableByteChannel rbc = Channels.newChannel(in)) {
-                fos = new FileOutputStream(file);
-                fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-                fos.close();
-                rbc.close();
-                in.close();
-            } catch (MalformedURLException ex) {
-                ex.printStackTrace();
-            } finally {
-                if (fos != null) {
-                    try {
-                        fos.close();
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
+//https://galaxy-uib.bioinfo.no/api/histories/d52bb4af7fa2c539/contents/6ee1d49667a686b6/display?offset=10000&key=042f8dd459607d2d56c8d41cfb6eb5b5
+            String line;
+            int counter =0;
+            try (BufferedReader bin = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+               
+                while ((line = bin.readLine()) != null && counter<30) { 
+                    
+                     System.out.println("at line "+line);
+                     counter++;
                 }
 
             }
@@ -289,17 +280,8 @@ public class PeptidShakerUI extends UI {
             ex.printStackTrace();
         } catch (IOException ex) {
             ex.printStackTrace();
-        } finally {
-            if (fos != null) {
-                try {
-                    fos.close();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-            }
-
         }
-
+        System.out.println("we will return null spectrum");
     }
 
 }

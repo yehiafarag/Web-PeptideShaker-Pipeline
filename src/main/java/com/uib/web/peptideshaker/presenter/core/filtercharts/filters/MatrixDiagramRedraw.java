@@ -179,7 +179,7 @@ public abstract class MatrixDiagramRedraw extends VerticalLayout {
         
         int currentX = 0;
         int currentY = 0;
-        int max = Integer.MIN_VALUE;
+        int max = (-1* Integer.MAX_VALUE);
         int min = Integer.MAX_VALUE;
         rowLabelsWidth = 0;
         

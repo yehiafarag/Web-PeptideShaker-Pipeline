@@ -63,9 +63,9 @@ public class MyriMatchAdvancedSettingsPanel extends PopupWindow {
         MyriMatchAdvancedSettingsPanel.this.setContent(container);
         MyriMatchAdvancedSettingsPanel.this.setClosable(true);
 
-        peptideLength = new HorizontalLabel2TextField("Peptide Length (min-max)", 0, 0, new IntegerRangeValidator("Only integer number allowd", Integer.MIN_VALUE, Integer.MAX_VALUE));
+        peptideLength = new HorizontalLabel2TextField("Peptide Length (min-max)", 0, 0, new IntegerRangeValidator("Only integer number allowd", (-1* Integer.MAX_VALUE), Integer.MAX_VALUE));
         subContainer.addComponent(peptideLength);
-        precursorMass = new HorizontalLabel2TextField("Precursor Mass (min-max)", 0.0, 0.0, new DoubleRangeValidator("Only double values allowd", Double.MIN_VALUE, Double.MAX_VALUE));
+        precursorMass = new HorizontalLabel2TextField("Precursor Mass (min-max)", 0.0, 0.0, new DoubleRangeValidator("Only double values allowd", (-1* Double.MAX_VALUE), Double.MAX_VALUE));
         subContainer.addComponent(precursorMass);
         numberOfSpectrumMatches = new HorizontalLabelTextField("Number of Spectrum Matches", 0, new IntegerRangeValidator("Postive integer only allowed", 0, Integer.MAX_VALUE));
         subContainer.addComponent(numberOfSpectrumMatches);

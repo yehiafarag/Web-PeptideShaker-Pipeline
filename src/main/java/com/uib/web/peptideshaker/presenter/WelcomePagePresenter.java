@@ -237,7 +237,8 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         presenteControlButtonsLayout.setSpacing(true);
         presenterControlButtonsPanel.addComponent(presenteControlButtonsLayout);
         presenterControlButtonsPanel.setExpandRatio(presenteControlButtonsLayout, 0.6f);
-        presenteControlButtonsLayout.setEnabled(false);
+       // @todo:to be removed after galaxy comeback to life
+        presenteControlButtonsLayout.setEnabled(true);
         presenteControlButtonsLayout.addStyleName("disableasenable");
         /**
          * Pop-up window layout to connect to Galaxy Server.
@@ -465,7 +466,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
 
         }
 
-        this.loginAsGuest();
+//        this.loginAsGuest();
 
     }
 

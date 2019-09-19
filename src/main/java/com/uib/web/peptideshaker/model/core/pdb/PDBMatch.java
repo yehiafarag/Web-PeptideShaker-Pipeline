@@ -42,7 +42,7 @@ public class PDBMatch {
      * List of chain block IDs.
      */
     int minStartAuth = Integer.MAX_VALUE;
-    int maxEndAuth = Integer.MIN_VALUE;
+    int maxEndAuth = (-1* Integer.MAX_VALUE);
 //    private final Set<String> chainsIds;
     /**
      * Entity ID 'default value is 1'

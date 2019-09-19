@@ -93,14 +93,16 @@ public abstract class GalaxyHistoryHandler {
     /**
      * Constructor to initialise the the galaxy history handler, and Connection
      * refresher to keep tracking running jobs on Galaxy Server.
-     *
-     * @param csf_pr_Accession_List
+  
      */
-    public GalaxyHistoryHandler(Set<String> csf_pr_Accession_List) {
+    public GalaxyHistoryHandler() {
         REFRESHER = new Refresher();
         ((PeptidShakerUI) UI.getCurrent()).addExtension(REFRESHER);
         this.reactomeDatabase = new ReactomeDatabase();
-        this.csf_pr_Accession_List = csf_pr_Accession_List;
+        
+        
+        
+        this.csf_pr_Accession_List = this.reactomeDatabase.getCsfprAccList();
         refreshlistener = (Refresher source) -> {
             HistoriesClient loopGalaxyHistoriesClient = Galaxy_Instance.getHistoriesClient();
             List<History> historiesList = Galaxy_Instance.getHistoriesClient().getHistories();
@@ -154,6 +156,8 @@ public abstract class GalaxyHistoryHandler {
      * @return map of available PS datasets
      */
     public Map<String, PeptideShakerVisualizationDataset> getPeptideShakerVisualizationMap() {
+          if(updateDatasetructureFuture==null)
+            return new LinkedHashMap<>();
         while (!updateDatasetructureFuture.isDone()) {
             try {
                 Thread.sleep(1000);
@@ -170,6 +174,8 @@ public abstract class GalaxyHistoryHandler {
      * @return Search parameters files .par map
      */
     public Map<String, GalaxyTransferableFile> getSearchSettingsFilesMap() {
+        if(updateDatasetructureFuture==null)
+            return new LinkedHashMap<>();
         while (!updateDatasetructureFuture.isDone()) {
             try {
                 Thread.sleep(1000);
@@ -186,6 +192,8 @@ public abstract class GalaxyHistoryHandler {
      * @return FASTA Files Map
      */
     public Map<String, GalaxyFileObject> getFastaFilesMap() {
+          if(updateDatasetructureFuture==null)
+            return new LinkedHashMap<>();
         while (!updateDatasetructureFuture.isDone()) {
             try {
                 Thread.sleep(1000);
@@ -202,6 +210,8 @@ public abstract class GalaxyHistoryHandler {
      * @return Map of available MGF files (file galaxy id mapped to datasets)
      */
     public Map<String, GalaxyFileObject> getMgfFilesMap() {
+          if(updateDatasetructureFuture==null)
+            return new LinkedHashMap<>();
         while (!updateDatasetructureFuture.isDone()) {
             try {
                 Thread.sleep(1000);
@@ -223,6 +233,8 @@ public abstract class GalaxyHistoryHandler {
      * @return Map of available Raw files (file galaxy id mapped to datasets)
      */
     public Map<String, GalaxyFileObject> getRawFilesMap() {
+          if(updateDatasetructureFuture==null)
+            return new LinkedHashMap<>();
         while (!updateDatasetructureFuture.isDone()) {
             try {
                 Thread.sleep(1000);
@@ -293,6 +305,8 @@ public abstract class GalaxyHistoryHandler {
      * @return integer number of available datasets
      */
     public int getDatasetsNumber() {
+          if(updateDatasetructureFuture==null)
+            return -1;
         while (!updateDatasetructureFuture.isDone()) {
             try {
                 Thread.sleep(1000);
@@ -310,6 +324,8 @@ public abstract class GalaxyHistoryHandler {
      * @return Working history id in Galaxy server
      */
     public String getWorkingHistoryId() {
+          if(updateDatasetructureFuture==null)
+            return "offlinegalaxyid";
         while (!updateDatasetructureFuture.isDone()) {
             try {
                 Thread.sleep(1000);

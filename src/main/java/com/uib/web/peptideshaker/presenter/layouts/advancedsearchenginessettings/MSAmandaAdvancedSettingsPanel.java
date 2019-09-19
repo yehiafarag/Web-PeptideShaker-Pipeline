@@ -122,7 +122,7 @@ public class MSAmandaAdvancedSettingsPanel extends PopupWindow {
         maxVariablePTMsPerPeptide.updateData(values3);
 
         maxPotintialPtmSitesPerPeptide = new HorizontalLabelDropDounList("Max Potintial PTM sites per PTM");
-        subContainer.addComponent(maxVariablePTMsPerPeptide);
+        subContainer.addComponent(maxPotintialPtmSitesPerPeptide);
         values3.add(11 + "");
         values3.add(12 + "");
         values3.add(13 + "");
@@ -133,7 +133,7 @@ public class MSAmandaAdvancedSettingsPanel extends PopupWindow {
         values3.add(18 + "");
         values3.add(19 + "");
         values3.add(20 + "");
-        maxVariablePTMsPerPeptide.updateData(values3);
+        maxPotintialPtmSitesPerPeptide.updateData(values3);
 
         maxNeutralLossesPerPeptide = new HorizontalLabelDropDounList("Max Neutral Losses per Peptide");
         subContainer.addComponent(maxNeutralLossesPerPeptide);
@@ -214,11 +214,11 @@ public class MSAmandaAdvancedSettingsPanel extends PopupWindow {
         } else {
             performDeisotoping.setSelected("No");
         }
-        maxPtmDublicatesPerPeptide.setSelected(oldMsAmandaParameters.getMaxModifications());
-        maxVariablePTMsPerPeptide.setSelected(oldMsAmandaParameters.getMaxVariableModifications());
-        maxPotintialPtmSitesPerPeptide.setSelected(oldMsAmandaParameters.getMaxModificationSites());
-        maxNeutralLossesPerPeptide.setSelected(oldMsAmandaParameters.getMaxNeutralLosses());
-        maxPtmNeutralLossesPerPeptide.setSelected(oldMsAmandaParameters.getMaxNeutralLossesPerModification());
+        maxPtmDublicatesPerPeptide.setSelected(oldMsAmandaParameters.getMaxModifications()+"");
+        maxVariablePTMsPerPeptide.setSelected(oldMsAmandaParameters.getMaxVariableModifications()+"");
+        maxPotintialPtmSitesPerPeptide.setSelected(oldMsAmandaParameters.getMaxModificationSites()+"");
+        maxNeutralLossesPerPeptide.setSelected(oldMsAmandaParameters.getMaxNeutralLosses()+"");
+        maxPtmNeutralLossesPerPeptide.setSelected(oldMsAmandaParameters.getMaxNeutralLossesPerModification()+"");
         minPeptideLength.setSelectedValue(oldMsAmandaParameters.getMinPeptideLength());
         maxProteinsLoadedIntoMemory.setSelectedValue(oldMsAmandaParameters.getMaxLoadedProteins());
         maxSpectraLoadedIntoMemory.setSelectedValue(oldMsAmandaParameters.getMaxLoadedSpectra());
@@ -252,9 +252,9 @@ public class MSAmandaAdvancedSettingsPanel extends PopupWindow {
         oldMsAmandaParameters.setMaxModificationSites(Integer.valueOf(maxPotintialPtmSitesPerPeptide.getSelectedValue()));
         oldMsAmandaParameters.setMaxNeutralLosses(Integer.valueOf(maxNeutralLossesPerPeptide.getSelectedValue()));
         oldMsAmandaParameters.setMaxNeutralLossesPerModification(Integer.valueOf(maxPtmNeutralLossesPerPeptide.getSelectedValue()));
-        oldMsAmandaParameters.setMinPeptideLength(Integer.valueOf(minPeptideLength.getSelectedValue()));
-        oldMsAmandaParameters.setMaxLoadedProteins(Integer.valueOf(maxProteinsLoadedIntoMemory.getSelectedValue()));
-        oldMsAmandaParameters.setMaxLoadedSpectra(Integer.valueOf(maxSpectraLoadedIntoMemory.getSelectedValue()));
+        oldMsAmandaParameters.setMinPeptideLength(Integer.valueOf(minPeptideLength.getSelectedValue().replace(",", "")));
+        oldMsAmandaParameters.setMaxLoadedProteins(Integer.valueOf(maxProteinsLoadedIntoMemory.getSelectedValue().replace(",", "")));
+        oldMsAmandaParameters.setMaxLoadedSpectra(Integer.valueOf(maxSpectraLoadedIntoMemory.getSelectedValue().replace(",", "")));
         oldMsAmandaParameters.setOutputFormat(outputFormat.getSelectedValue());
 
     }

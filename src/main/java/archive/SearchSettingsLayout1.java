@@ -558,7 +558,7 @@ public abstract class SearchSettingsLayout1 extends VerticalLayout {
 
         List<String> allModiList = PTM.getDefaultModifications();
         // get the min and max values for the mass sparklines
-        double maxMass = Double.MIN_VALUE;
+        double maxMass =  (-1.0*Double.MAX_VALUE);
         double minMass = Double.MAX_VALUE;
 
         for (String ptm : PTM.getPTMs()) {
@@ -867,7 +867,7 @@ public abstract class SearchSettingsLayout1 extends VerticalLayout {
 
         specificityList = new HorizontalLabelDropDounList("Specificity");
         specificityList.updateData(specificityOptionList);
-        maxMissCleavages = new HorizontalLabelTextField("Max Missed Cleavages", 2, new IntegerRangeValidator("Error", Integer.MIN_VALUE, Integer.MAX_VALUE));
+        maxMissCleavages = new HorizontalLabelTextField("Max Missed Cleavages", 2, new IntegerRangeValidator("Error", (-1* Integer.MAX_VALUE), Integer.MAX_VALUE));
 
         Set<String> ionListI = new LinkedHashSet<>();
         ionListI.add("a");
@@ -896,8 +896,8 @@ public abstract class SearchSettingsLayout1 extends VerticalLayout {
         Set<String> mzToleranceList = new LinkedHashSet<>();
         mzToleranceList.add("ppm");
         mzToleranceList.add("Da");
-        precursorTolerance = new HorizontalLabelTextFieldDropdownList("Precursor m/z Tolerance", 10.0, mzToleranceList, new DoubleRangeValidator("Error ", Double.MIN_VALUE, Double.MAX_VALUE));
-        fragmentTolerance = new HorizontalLabelTextFieldDropdownList("Fragment m/z Tolerance", 0.5, mzToleranceList, new DoubleRangeValidator("Error ", Double.MIN_VALUE, Double.MAX_VALUE));
+        precursorTolerance = new HorizontalLabelTextFieldDropdownList("Precursor m/z Tolerance", 10.0, mzToleranceList, new DoubleRangeValidator("Error ", (-1* Double.MAX_VALUE), Double.MAX_VALUE));
+        fragmentTolerance = new HorizontalLabelTextFieldDropdownList("Fragment m/z Tolerance", 0.5, mzToleranceList, new DoubleRangeValidator("Error ", (-1* Double.MAX_VALUE), Double.MAX_VALUE));
         precursorTolerance.setSelected("ppm");
         precursorTolerance.setTextValue(10);
 
@@ -905,9 +905,9 @@ public abstract class SearchSettingsLayout1 extends VerticalLayout {
         fragmentTolerance.setTextValue(0.5);
         rightSideLayout.addComponent(precursorTolerance);
         rightSideLayout.addComponent(fragmentTolerance);
-        precursorCharge = new HorizontalLabel2TextField("Precursor Charge", 2, 4, new IntegerRangeValidator("Error ", Integer.MIN_VALUE, Integer.MAX_VALUE));
+        precursorCharge = new HorizontalLabel2TextField("Precursor Charge", 2, 4, new IntegerRangeValidator("Error ", (-1* Integer.MAX_VALUE), Integer.MAX_VALUE));
         rightSideLayout.addComponent(precursorCharge);
-        isotopes = new HorizontalLabel2TextField("Isotopes", 0, 1, new IntegerRangeValidator("Error", Integer.MIN_VALUE, Integer.MAX_VALUE));
+        isotopes = new HorizontalLabel2TextField("Isotopes", 0, 1, new IntegerRangeValidator("Error", (-1* Integer.MAX_VALUE), Integer.MAX_VALUE));
         rightSideLayout.addComponent(isotopes);
 
         proteaseFragmentationLabels = new Label("", ContentMode.HTML);
