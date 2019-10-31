@@ -1,9 +1,10 @@
 package com.uib.web.peptideshaker.presenter.core;
 
-import com.compomics.util.experiment.biology.modifications.ModificationFactory;
-import com.compomics.util.preferences.IdentificationParameters;
+import com.compomics.util.parameters.identification.IdentificationParameters;
+import temp.suspend.com.compomics.util.experiment.biology.modifications.ModificationFactory;
+
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
-import com.uib.web.peptideshaker.model.core.WebSearchParameters;
+
 import com.uib.web.peptideshaker.presenter.core.form.Horizontal2Label;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.shared.ui.MarginInfo;
@@ -136,7 +137,7 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
 
     }
 
-    private GridLayout inititProteaseFragmentationLayout(WebSearchParameters parameters) {
+    private GridLayout inititProteaseFragmentationLayout(IdentificationParameters parameters) {
         GridLayout proteaseFragmentationContainer = new GridLayout(2, 6);
         proteaseFragmentationContainer.setWidth(100, Unit.PERCENTAGE);
         proteaseFragmentationContainer.setStyleName("panelframe");
@@ -160,14 +161,14 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
 //            parameters.getSearchParameters().getDigestionPreferences();
 
             //cleavage
-            switch (parameters.getCleavagePreferenceOrdinal()) {
+            switch (parameters.getSearchParameters().getDigestionParameters().getCleavageParameter().ordinal()) {
                 case 0:
                     //jsonProtein_digest_optionsObjects.get("cleavage").toString().equalsIgnoreCase("default")) {
 
-                    digestion = parameters.getCleavagePreferenceName();
-                    enzyme = parameters.getEnzymeName();
+                    digestion = parameters.getSearchParameters().getDigestionParameters().getCleavageParameter().name();
+                    enzyme = parameters.getSearchParameters().getDigestionParameters().getEnzymes().get(0).getName();
                     specificity = "Specific";
-                    maxMissCleavValue = parameters.getnMissedCleavages(enzyme);// Integer.valueOf(jsonProtein_digest_optionsObjects.get("missed_cleavages").toString());
+                    maxMissCleavValue = parameters.getSearchParameters().getDigestionParameters().getnMissedCleavages(enzyme);// Integer.valueOf(jsonProtein_digest_optionsObjects.get("missed_cleavages").toString());
 //
                     break;
 //
@@ -192,11 +193,11 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
         }
 
 //            Map<String, Object> json_Precursor_options_Objects = jsonToMap(new JSONObject(parameters.get("precursor_options").toString()));
-        ion = ionsList.get(parameters.getForwardIons().get(0)) + " , " + ionsList.get(parameters.getRewindIons().get(0));//json_Precursor_options_Objects.get("forward_ion") + " , " + json_Precursor_options_Objects.get("reverse_ion");
-        precursor_ion = parameters.getPrecursorIon();//parameters.getSearchParameters().json_Precursor_options_Objects.get("precursor_ion_tol") + " " + json_Precursor_options_Objects.get("precursor_ion_tol_units").toString().replace("1", "ppm").replace("2", "Da");
-        fragment_tol = parameters.getFragmentIonAccuracyInDaltons();// json_Precursor_options_Objects.get("fragment_tol") + " Da";
-        _charge = parameters.getMinChargeSearched() + " to " + parameters.getMaxChargeSearched();//json_Precursor_options_Objects.get("min_charge") + " to " + json_Precursor_options_Objects.get("max_charge");
-        iso = parameters.getMinIsotopicCorrection() + " to " + parameters.getMaxIsotopicCorrection();//json_Precursor_options_Objects.get("min_isotope") + " to " + json_Precursor_options_Objects.get("max_isotope");
+        ion = ionsList.get(parameters.getSearchParameters().getForwardIons().get(0)) + " , " + ionsList.get(parameters.getSearchParameters().getRewindIons().get(0));//json_Precursor_options_Objects.get("forward_ion") + " , " + json_Precursor_options_Objects.get("reverse_ion");
+        precursor_ion = parameters.getSearchParameters().getPrecursorAccuracy()+"";//parameters.getSearchParameters().json_Precursor_options_Objects.get("precursor_ion_tol") + " " + json_Precursor_options_Objects.get("precursor_ion_tol_units").toString().replace("1", "ppm").replace("2", "Da");
+        fragment_tol = parameters.getSearchParameters().getFragmentIonAccuracyInDaltons()+"Da";// json_Precursor_options_Objects.get("fragment_tol") + " Da";
+        _charge = parameters.getSearchParameters().getMinChargeSearched() + " to " + parameters.getSearchParameters().getMaxChargeSearched();//json_Precursor_options_Objects.get("min_charge") + " to " + json_Precursor_options_Objects.get("max_charge");
+        iso = parameters.getSearchParameters().getMinIsotopicCorrection() + " to " + parameters.getSearchParameters().getMaxIsotopicCorrection();//json_Precursor_options_Objects.get("min_isotope") + " to " + json_Precursor_options_Objects.get("max_isotope");
         Horizontal2Label digestionList = new Horizontal2Label("Digestion :", digestion);
         Horizontal2Label enzymeList = new Horizontal2Label("Enzyme :", enzyme);
 //        specificityOptionList.add("Specific");

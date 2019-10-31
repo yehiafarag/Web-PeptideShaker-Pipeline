@@ -1,11 +1,9 @@
 package com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings;
 
-import com.compomics.util.preferences.SequenceMatchingPreferences;
-import com.uib.web.peptideshaker.model.core.WebSearchParameters;
+import com.compomics.util.experiment.identification.filtering.PeptideAssumptionFilter;
+import com.compomics.util.parameters.identification.IdentificationParameters;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabel2TextField;
-import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelDropDounList;
-import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelTextField;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelTextFieldDropdownList;
 import com.vaadin.data.validator.DoubleRangeValidator;
 import com.vaadin.data.validator.IntegerRangeValidator;
@@ -18,7 +16,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import web.com.compomics.util.experiment.identification.filtering.PeptideAssumptionFilter;
 
 /**
  *
@@ -31,7 +28,7 @@ public class ImportFiltersPanel extends PopupWindow {
     private final HorizontalLabel2TextField missedCleavages;
     private final HorizontalLabel2TextField isotops;
     private final OptionGroup excludeUnKnownPTMs;
-    private WebSearchParameters webSearchParameters;
+    private IdentificationParameters webSearchParameters;
 
     public ImportFiltersPanel() {
         super(VaadinIcons.COG.getHtml() + " Import Filters");
@@ -93,9 +90,9 @@ public class ImportFiltersPanel extends PopupWindow {
 
     }
 
-    public void updateGUI(WebSearchParameters webSearchParameters) {
+    public void updateGUI(IdentificationParameters webSearchParameters) {
         this.webSearchParameters = webSearchParameters;
-        PeptideAssumptionFilter filter = webSearchParameters.getUpdatedIdentificationParameters().getPeptideAssumptionFilter();
+        PeptideAssumptionFilter filter = webSearchParameters.getPeptideAssumptionFilter();
         peptideLength.setFirstSelectedValue(filter.getMinPepLength());
         peptideLength.setSecondSelectedValue(filter.getMaxPepLength());
         precursorMzDeviation.setTextValue(filter.getMaxMzDeviation());
@@ -121,7 +118,7 @@ public class ImportFiltersPanel extends PopupWindow {
         } else {
             excludeUnKnownPTMs.select("Exclude UnKnown PTMs");
         }
-        super.setLabelValue(VaadinIcons.COG.getHtml() + " Import Filters" + "<center>" + webSearchParameters.getUpdatedIdentificationParameters().getPeptideAssumptionFilter().getShortDescription() + "</center>");
+        super.setLabelValue(VaadinIcons.COG.getHtml() + " Import Filters" + "<center>" + webSearchParameters.getPeptideAssumptionFilter().getShortDescription() + "</center>");
 
     }
 
@@ -135,13 +132,13 @@ public class ImportFiltersPanel extends PopupWindow {
             updateGUI(webSearchParameters);
         } else if (webSearchParameters != null) {
             updateParameters();
-            super.setLabelValue(VaadinIcons.COG.getHtml() + " Import Filters" + "<center>" + webSearchParameters.getUpdatedIdentificationParameters().getPeptideAssumptionFilter().getShortDescription() + "</center>");
+            super.setLabelValue(VaadinIcons.COG.getHtml() + " Import Filters" + "<center>" + webSearchParameters.getPeptideAssumptionFilter().getShortDescription() + "</center>");
         }
         super.setPopupVisible(visible); //To change body of generated methods, choose Tools | Templates.
     }
 
     private void updateParameters() {
-        PeptideAssumptionFilter filter = webSearchParameters.getUpdatedIdentificationParameters().getPeptideAssumptionFilter();
+        PeptideAssumptionFilter filter = webSearchParameters.getPeptideAssumptionFilter();
         if (peptideLength.isValid()) {
             filter.setMinPepLength(Integer.valueOf(peptideLength.getFirstSelectedValue()));
             filter.setMaxPepLength(Integer.valueOf(peptideLength.getSecondSelectedValue()));

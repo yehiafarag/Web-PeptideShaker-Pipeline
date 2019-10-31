@@ -465,7 +465,7 @@ public class PSPtmScores implements UrParameter {
     }
 
     @Override
-    public String getParameterKey() {
-        return "PeptideShaker|3";
+    public long getParameterKey() {
+        return 3l;
     }
 }

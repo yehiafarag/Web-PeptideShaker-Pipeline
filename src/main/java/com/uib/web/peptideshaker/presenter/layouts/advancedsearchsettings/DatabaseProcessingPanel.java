@@ -1,12 +1,10 @@
 package com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings;
 
-import com.uib.web.peptideshaker.model.core.WebSearchParameters;
+import com.compomics.util.parameters.identification.IdentificationParameters;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelDropDounList;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelTextField;
 import com.vaadin.data.Property;
-import com.vaadin.data.validator.DoubleRangeValidator;
-import com.vaadin.data.validator.IntegerRangeValidator;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
@@ -27,7 +25,7 @@ public class DatabaseProcessingPanel extends PopupWindow {
     private final HorizontalLabelTextField decoyTag;
     private final HorizontalLabelTextField decoyFileTag;
 
-    private WebSearchParameters webSearchParameters;
+    private IdentificationParameters webSearchParameters;
 
     public DatabaseProcessingPanel() {
         super(VaadinIcons.COG.getHtml() + " Database Processing");
@@ -93,23 +91,23 @@ public class DatabaseProcessingPanel extends PopupWindow {
 
     }
 
-    public void updateGUI(WebSearchParameters webSearchParameters) {
+    public void updateGUI(IdentificationParameters webSearchParameters) {
         this.webSearchParameters = webSearchParameters;
 
-        if (webSearchParameters.getUpdatedIdentificationParameters().getFastaParameters().isTargetDecoy()) {
+        if (webSearchParameters.getFastaParameters().isTargetDecoy()) {
             targetDecoy.setSelected("Yes");
         } else {
             targetDecoy.setSelected("No");
         }
-        if (webSearchParameters.getUpdatedIdentificationParameters().getFastaParameters().isDecoySuffix()) {
+        if (webSearchParameters.getFastaParameters().isDecoySuffix()) {
             decoyType.setSelected("Suffix");
         } else {
             decoyType.setSelected("Prefix");
         }
 
-        decoyTag.setSelectedValue(webSearchParameters.getUpdatedIdentificationParameters().getFastaParameters().getDecoyFlag());
-        decoyFileTag.setSelectedValue(webSearchParameters.getUpdatedIdentificationParameters().getFastaParameters().getTargetDecoyFileNameSuffix());
-        super.setLabelValue(VaadinIcons.COG.getHtml() + " Database Processing" + "<center>" + webSearchParameters.getUpdatedIdentificationParameters().getFastaParameters().getShortDescription() + "</center>");
+        decoyTag.setSelectedValue(webSearchParameters.getFastaParameters().getDecoyFlag());
+        decoyFileTag.setSelectedValue(webSearchParameters.getFastaParameters().getTargetDecoyFileNameSuffix());
+        super.setLabelValue(VaadinIcons.COG.getHtml() + " Database Processing" + "<center>" + webSearchParameters.getFastaParameters().getShortDescription() + "</center>");
 
     }
 
@@ -123,16 +121,16 @@ public class DatabaseProcessingPanel extends PopupWindow {
             updateGUI(webSearchParameters);
         } else if (webSearchParameters != null) {
             updateParameters();
-            super.setLabelValue(VaadinIcons.COG.getHtml() + " Database Processing" + "<center>" + webSearchParameters.getUpdatedIdentificationParameters().getFastaParameters().getShortDescription() + "</center>");
+            super.setLabelValue(VaadinIcons.COG.getHtml() + " Database Processing" + "<center>" + webSearchParameters.getFastaParameters().getShortDescription() + "</center>");
         }
         super.setPopupVisible(visible); //To change body of generated methods, choose Tools | Templates.
     }
 
     private void updateParameters() {
-        webSearchParameters.getUpdatedIdentificationParameters().getFastaParameters().setTargetDecoy(targetDecoy.getSelectedValue().equalsIgnoreCase("Yes"));
-        webSearchParameters.getUpdatedIdentificationParameters().getFastaParameters().setDecoySuffix(decoyType.getSelectedValue().equalsIgnoreCase("Suffix"));
-        webSearchParameters.getUpdatedIdentificationParameters().getFastaParameters().setDecoyFlag(decoyTag.getSelectedValue());
-        webSearchParameters.getUpdatedIdentificationParameters().getFastaParameters().setTargetDecoyFileNameSuffix(decoyFileTag.getSelectedValue());
+        webSearchParameters.getFastaParameters().setTargetDecoy(targetDecoy.getSelectedValue().equalsIgnoreCase("Yes"));
+        webSearchParameters.getFastaParameters().setDecoySuffix(decoyType.getSelectedValue().equalsIgnoreCase("Suffix"));
+        webSearchParameters.getFastaParameters().setDecoyFlag(decoyTag.getSelectedValue());
+        webSearchParameters.getFastaParameters().setTargetDecoyFileNameSuffix(decoyFileTag.getSelectedValue());
 
     }
 

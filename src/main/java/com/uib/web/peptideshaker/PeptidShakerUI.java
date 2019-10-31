@@ -1,9 +1,5 @@
 package com.uib.web.peptideshaker;
 
-import com.compomics.util.experiment.massspectrometry.Charge;
-import com.compomics.util.experiment.massspectrometry.MSnSpectrum;
-import com.compomics.util.experiment.massspectrometry.Peak;
-import com.compomics.util.experiment.massspectrometry.Precursor;
 import com.uib.web.peptideshaker.galaxy.nelsgalaxy.NeLSStorageInteractiveLayer;
 import javax.servlet.annotation.WebServlet;
 
@@ -12,32 +8,19 @@ import com.vaadin.annotations.VaadinServletConfiguration;
 import com.vaadin.server.Extension;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
-import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLDecoder;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
-import java.util.ArrayList;
-import java.util.HashMap;
+import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.ServletContext;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 /**
  * This UI is the application entry point. A UI may either represent a browser
@@ -70,6 +53,7 @@ public class PeptidShakerUI extends UI {
     protected void init(VaadinRequest vaadinRequest) {
 
         try {
+            PeptidShakerUI.this.addStyleName("uicontainer");
 
             PeptidShakerUI.this.setSizeFull();
             notification = new Notification("Use the device in landscape mode <center><i>(recommended)</i></center>", Notification.Type.ERROR_MESSAGE);
@@ -99,21 +83,21 @@ public class PeptidShakerUI extends UI {
             VaadinSession.getCurrent().setAttribute("dbDriver", dbDriver);
             VaadinSession.getCurrent().setAttribute("dbUserName", dbUserName);
             VaadinSession.getCurrent().setAttribute("dbPassword", dbPassword);
-             VaadinSession.getCurrent().setAttribute("csfprLink", csfprLink);
-//            updateCSFPRProteinsList(csfProteinsListURL);
-//            if (testUserAPIKey == null || galaxyServerUrl == null || !checkConnectionToGalaxy(galaxyServerUrl)) {
-//                notification = new Notification("<center style=' color: black;>'><font style='font-size: 14px;font-weight: 600;line-height: 31px;word-spacing: 4px; letter-spacing: 1px;'>Contact administrator !</font><br>Galaxy server is not available</center>", Notification.Type.WARNING_MESSAGE);
-//                notification.setHtmlContentAllowed(true);
-//                notification.setDelayMsec(-1);
-//                notification.show(Page.getCurrent());
-//                return;
-//            }
-
+            VaadinSession.getCurrent().setAttribute("csfprLink", csfprLink);
+          
+            if (testUserAPIKey == null || galaxyServerUrl == null || !checkConnectionToGalaxy(galaxyServerUrl)) {
+//              updateCSFPRProteinsList(csfProteinsListURL);
+                notification = new Notification("<center style=' color: black;>'><font style='font-size: 14px;font-weight: 600;line-height: 31px;word-spacing: 4px; letter-spacing: 1px;'>Contact administrator !</font><br>Galaxy server is not available</center>", Notification.Type.WARNING_MESSAGE);
+                notification.setHtmlContentAllowed(true);
+                notification.setDelayMsec(-1);
+                notification.show(Page.getCurrent());
+                return;
+            }
             int screenH = Page.getCurrent().getWebBrowser().getScreenHeight();
             int screenW = Page.getCurrent().getWebBrowser().getScreenWidth();
             mobileScreenComp = (Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile")) || (screenW < 1349 || screenH < 1000);
             verticalScreenMode = (Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight());
-                      
+
 //            if (mobileScreenComp) {
             VaadinSession.getCurrent().setAttribute("smallscreenstyle", false);
             VaadinSession.getCurrent().setAttribute("mobilescreenstyle", mobileScreenComp);
@@ -132,7 +116,7 @@ public class PeptidShakerUI extends UI {
             if (mobileScreenComp) {
                 webPeptideShakerApp.addStyleName("mobilestyle");
             }
-             if(mobileScreenComp && !(Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile"))){
+            if (mobileScreenComp && !(Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile"))) {
                 webPeptideShakerApp.addStyleName("smallpcscreen");
             }
 //            if (smallscreen && verticalScreenMode) {
@@ -143,6 +127,7 @@ public class PeptidShakerUI extends UI {
              * to the page center.
              */
             Page.getCurrent().addBrowserWindowResizeListener((Page.BrowserWindowResizeEvent event) -> {
+                System.out.println("window resize listener invoked");
                 if (mobileScreenComp && (Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight())) {
                     if (Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile")) {
                         notification.show(Page.getCurrent());
@@ -184,7 +169,7 @@ public class PeptidShakerUI extends UI {
             e.printStackTrace();
 
         }
-        getSpectrum();
+//        getSpectrum();
 
     }
 
@@ -197,16 +182,30 @@ public class PeptidShakerUI extends UI {
     private boolean checkConnectionToGalaxy(String urlAddress) {
         try {
             URL url = new URL(urlAddress);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("GET");
-            connection.connect();
-            int code = connection.getResponseCode();
-            if (code == 404) {
-                return false;
+            if (urlAddress.contains("https")) {
+                HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.connect();
+                int code = connection.getResponseCode();
+                if (code == 404) {
+                    return false;
+                }
+            } else {
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.connect();
+                int code = connection.getResponseCode();
+                if (code == 404) {
+                    return false;
+                }
             }
+
         } catch (MalformedURLException ex) {
             return false;
         } catch (IOException ex) {
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
         return true;
@@ -232,8 +231,7 @@ public class PeptidShakerUI extends UI {
     public static class PeptidShakerUIServlet extends VaadinServlet {
     }
 
-    
-     /**
+    /**
      * Get MSn spectrum object using HTML request to Galaxy server (byte serving
      * support).
      *
@@ -257,7 +255,7 @@ public class PeptidShakerUI extends UI {
             conn.addRequestProperty("Cache-Control", "no-cache");
             conn.addRequestProperty("Connection", "keep-alive");
             conn.addRequestProperty("Range", "bytes=" + 65544 + "-" + Long.MAX_VALUE);
-              conn.addRequestProperty("offset", "65544");
+            conn.addRequestProperty("offset", "65544");
             conn.addRequestProperty("DNT", "1");
             conn.addRequestProperty("X-Requested-With", "XMLHttpRequest");
             conn.addRequestProperty("Pragma", "no-cache");
@@ -265,13 +263,13 @@ public class PeptidShakerUI extends UI {
             conn.setDoInput(true);
 //https://galaxy-uib.bioinfo.no/api/histories/d52bb4af7fa2c539/contents/6ee1d49667a686b6/display?offset=10000&key=042f8dd459607d2d56c8d41cfb6eb5b5
             String line;
-            int counter =0;
+            int counter = 0;
             try (BufferedReader bin = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
-               
-                while ((line = bin.readLine()) != null && counter<30) { 
-                    
-                     System.out.println("at line "+line);
-                     counter++;
+
+                while ((line = bin.readLine()) != null && counter < 30) {
+
+                    System.out.println("at line " + line);
+                    counter++;
                 }
 
             }

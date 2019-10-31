@@ -153,7 +153,7 @@ public abstract class ProteinCoverageComponent extends AbsoluteLayout {
                     PeptideLayout genPeptide = new PeptideLayout(peptide, width, startIndex, left, styles.get(peptide.getValidation()), styles.get("Not Applicable"), protein.isEnymaticPeptide(peptide.getModifiedSequence()), colorScale.getColor(peptide.getPSMsNumber()));
                     peptideDistMap.add(genPeptide);
                     peptideObjectsSet.add(peptide);
-                    for (String mod : peptide.getVariableModifications().split(",")) {
+                    for (String mod : peptide.getVariableModificationsAsString().split(",")) {
                         mod = mod.split("\\(")[0].trim();
                         if (mod.equalsIgnoreCase("")) {
                             continue;

@@ -1,4 +1,4 @@
-package com.compomics.util.experiment.biology.modifications;
+package temp.suspend.com.compomics.util.experiment.biology.modifications;
 
 /**
  * Enum for the different types of modifications supported.

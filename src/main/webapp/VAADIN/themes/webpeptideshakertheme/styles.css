@@ -1049,7 +1049,7 @@
  */
 
 .v-vaadin-version:after {
-	content: "7.7.13";
+	content: "7.7.17";
 }
 
 .v-widget {
@@ -1991,6 +1991,12 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .v-tooltip h1, .webpeptideshakertheme .v-tooltip h2, .webpeptideshakertheme .v-tooltip h3, .webpeptideshakertheme .v-tooltip h4 {
 	color: inherit;
+}
+
+.webpeptideshakertheme .v-tooltip pre.v-tooltip-pre {
+	font: inherit;
+	white-space: pre-wrap;
+	margin: 0;
 }
 
 .webpeptideshakertheme .v-contextmenu {
@@ -9351,6 +9357,7 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .v-table-body {
 	border: 1px solid #d4d4d4;
+	overflow-anchor: none;
 	-webkit-user-select: text;
 	-moz-user-select: text;
 	-ms-user-select: text;
@@ -19267,16 +19274,6 @@ div.v-layout.v-horizontal.v-widget {
 	overflow: hidden;
 }
 
-.webpeptideshakertheme .v-verticallayout-useroverviewpanelstyle .v-label :hover {
-	text-overflow: visible !important;
-	overflow: visible !important;
-	z-index: 3 !important;
-	position: absolute;
-	width: auto !important;
-	background-color: whitesmoke;
-	margin-left: 5px;
-}
-
 .webpeptideshakertheme .mobilestyle.verticalmode .v-slot-middleviewcontainer {
 	left: 0px !important;
 	position: absolute !important;
@@ -19770,4 +19767,16 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .v-tabsheet-subcontainertabsheet .twofieldscontainer {
 	padding-left: 7px;
+}
+
+.webpeptideshakertheme .welcomepagecontainer.v-absolutelayout-welcomepagecontainer {
+	max-width: 1000px;
+	min-width: 1000px !important;
+	min-height: 550px !important;
+	overflow: auto !important;
+}
+
+.webpeptideshakertheme .v-label-slowdrawingimg {
+	z-index: 2 !important;
+	position: absolute;
 }

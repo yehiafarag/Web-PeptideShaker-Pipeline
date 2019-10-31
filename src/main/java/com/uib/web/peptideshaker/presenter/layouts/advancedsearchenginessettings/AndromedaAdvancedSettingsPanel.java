@@ -1,8 +1,9 @@
 package com.uib.web.peptideshaker.presenter.layouts.advancedsearchenginessettings;
 
 import com.compomics.util.experiment.identification.Advocate;
+import com.compomics.util.experiment.mass_spectrometry.FragmentationMethod;
+import com.compomics.util.parameters.identification.IdentificationParameters;
 import com.compomics.util.parameters.identification.tool_specific.AndromedaParameters;
-import com.uib.web.peptideshaker.model.core.WebSearchParameters;
 import com.uib.web.peptideshaker.presenter.core.Help;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabel2TextField;
@@ -18,7 +19,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import web.com.compomics.util.experiment.mass_spectrometry.FragmentationMethod;
 
 /**
  *
@@ -45,7 +45,7 @@ public class AndromedaAdvancedSettingsPanel extends PopupWindow {
     private final HorizontalLabelTextField topPeaksWindows;
     private final HorizontalLabelDropDounList decoyMode;
 
-    private WebSearchParameters webSearchParameters;
+    private IdentificationParameters webSearchParameters;
 
     public AndromedaAdvancedSettingsPanel() {
         super(VaadinIcons.COG.getHtml() + " Andromeda Advanced Settings");
@@ -156,9 +156,9 @@ public class AndromedaAdvancedSettingsPanel extends PopupWindow {
 
     }
 
-    public void updateGUI(WebSearchParameters webSearchParameters) {
+    public void updateGUI(IdentificationParameters webSearchParameters) {
         this.webSearchParameters = webSearchParameters;
-        AndromedaParameters andromedaParameters = (AndromedaParameters) webSearchParameters.getUpdatedIdentificationParameters().getSearchParameters().getIdentificationAlgorithmParameter(Advocate.andromeda.getIndex());
+        AndromedaParameters andromedaParameters = (AndromedaParameters) webSearchParameters.getSearchParameters().getIdentificationAlgorithmParameter(Advocate.andromeda.getIndex());
         peptideLength.setFirstSelectedValue(andromedaParameters.getMinPeptideLengthNoEnzyme());
         peptideLength.setSecondSelectedValue(andromedaParameters.getMaxPeptideLengthNoEnzyme());
         maxPeptideMass.setSelectedValue(andromedaParameters.getMaxPeptideMass());
@@ -223,7 +223,7 @@ public class AndromedaAdvancedSettingsPanel extends PopupWindow {
     }
 
     private void updateParameters() {
-        AndromedaParameters andromedaParameters = (AndromedaParameters) webSearchParameters.getUpdatedIdentificationParameters().getSearchParameters().getIdentificationAlgorithmParameter(Advocate.andromeda.getIndex());
+        AndromedaParameters andromedaParameters = (AndromedaParameters) webSearchParameters.getSearchParameters().getIdentificationAlgorithmParameter(Advocate.andromeda.getIndex());
         andromedaParameters.setMinPeptideLengthNoEnzyme(Integer.valueOf(peptideLength.getFirstSelectedValue()));
         andromedaParameters.setMaxPeptideLengthNoEnzyme(Integer.valueOf(peptideLength.getSecondSelectedValue()));
         andromedaParameters.setMaxPeptideMass(Double.valueOf(maxPeptideMass.getSelectedValue().replace(",", "")));

@@ -1,9 +1,9 @@
 package com.uib.web.peptideshaker.presenter.layouts.advancedsearchenginessettings;
 
-import com.compomics.util.experiment.biology.PTMFactory;
-import web.com.compomics.util.experiment.biology.modifications.ModificationFactory;
+import com.compomics.util.experiment.biology.modifications.ModificationFactory;
+import com.compomics.util.experiment.identification.Advocate;
+import com.compomics.util.parameters.identification.IdentificationParameters;
 import com.compomics.util.parameters.identification.tool_specific.XtandemParameters;
-import com.uib.web.peptideshaker.model.core.WebSearchParameters;
 import com.uib.web.peptideshaker.presenter.core.Help;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
 import com.uib.web.peptideshaker.presenter.core.form.ColorLabel;
@@ -22,6 +22,7 @@ import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+import java.awt.Color;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -29,7 +30,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import web.com.compomics.util.experiment.identification.Advocate;
 
 /**
  *
@@ -72,12 +72,12 @@ public class XTandemAdvancedSettingsPanel extends PopupWindow {
      */
     private final Table allModificationsTable;
     private final DecimalFormat df = new DecimalFormat("0.00E00");//new DecimalFormat("#.##");
-    private WebSearchParameters webSearchParameters;
+    private IdentificationParameters webSearchParameters;
     private final Set<String> refModificationSelection = new LinkedHashSet<>();
     /**
      * The post translational modifications factory.
      */
-    private final PTMFactory PTM = PTMFactory.getInstance();
+    private final ModificationFactory PTM = ModificationFactory.getInstance();
     /**
      * The modification items that is used for initialise modifications tables.
      */
@@ -250,12 +250,12 @@ public class XTandemAdvancedSettingsPanel extends PopupWindow {
         double maxMass =  (-1.0*Double.MAX_VALUE);
         double minMass = Double.MAX_VALUE;
 
-        for (String ptm : PTM.getPTMs()) {
-            if (PTM.getPTM(ptm).getMass() > maxMass) {
-                maxMass = PTM.getPTM(ptm).getMass();
+        for (String ptm : PTM.getModifications()) {
+            if (PTM.getModification(ptm).getMass() > maxMass) {
+                maxMass = PTM.getModification(ptm).getMass();
             }
-            if (PTM.getPTM(ptm).getMass() < minMass) {
-                minMass = PTM.getPTM(ptm).getMass();
+            if (PTM.getModification(ptm).getMass() < minMass) {
+                minMass = PTM.getModification(ptm).getMass();
             }
         }
         tab4.addComponent(this.allModificationsTable);
@@ -263,8 +263,8 @@ public class XTandemAdvancedSettingsPanel extends PopupWindow {
             if (modificationFactory.getModification(allModiList.get(x)) == null) {
                 continue;
             }
-            ColorLabel color = new ColorLabel(PTM.getColor(allModiList.get(x)));
-            SparkLine sLine = new SparkLine(PTM.getPTM(allModiList.get(x)).getMass(), minMass, maxMass);
+            ColorLabel color = new ColorLabel(new Color(PTM.getColor(allModiList.get(x))));
+            SparkLine sLine = new SparkLine(PTM.getModification(allModiList.get(x)).getMass(), minMass, maxMass);
             sLine.addStyleName("intablesparkline");
             CheckBox cb1 = new CheckBox();
             String modID = allModiList.get(x);
@@ -323,10 +323,10 @@ public class XTandemAdvancedSettingsPanel extends PopupWindow {
         container.addComponent(cancelBtn, "bottom:10px;right:96px");
     }
 
-    public void updateGUI(WebSearchParameters webSearchParameters) {
+    public void updateGUI(IdentificationParameters webSearchParameters) {
         this.webSearchParameters = webSearchParameters;
 //        this.refModificationSelection.clear();
-        XtandemParameters oldXtandemParameters = (XtandemParameters) this.webSearchParameters.getUpdatedSearchParameter().getIdentificationAlgorithmParameter(Advocate.xtandem.getIndex());
+        XtandemParameters oldXtandemParameters = (XtandemParameters) this.webSearchParameters.getSearchParameters().getIdentificationAlgorithmParameter(Advocate.xtandem.getIndex());
         spectrumDynamicRange.setSelectedValue(oldXtandemParameters.getDynamicRange());
         numberOfPeaks.setSelectedValue(oldXtandemParameters.getnPeaks());
         minFragment.setSelectedValue(oldXtandemParameters.getMinFragmentMz());
@@ -420,8 +420,8 @@ public class XTandemAdvancedSettingsPanel extends PopupWindow {
             spectrumSynthesis.setSelected("No");
         }
 
-        List<String> rVmod = this.webSearchParameters.getUpdatedSearchParameter().getModificationParameters().getRefinementVariableModifications();
-        List<String> rFmod = this.webSearchParameters.getUpdatedSearchParameter().getModificationParameters().getRefinementFixedModifications();
+        List<String> rVmod = this.webSearchParameters.getSearchParameters().getModificationParameters().getRefinementVariableModifications();
+        List<String> rFmod = this.webSearchParameters.getSearchParameters().getModificationParameters().getRefinementFixedModifications();
         rVmod.forEach((key) -> {
             ((CheckBox) allModificationsTable.getItem(key).getItemProperty("variable").getValue()).setValue(Boolean.TRUE);
         });
@@ -445,7 +445,7 @@ public class XTandemAdvancedSettingsPanel extends PopupWindow {
 
     private void updateParameters() {
 
-        XtandemParameters oldXtandemParameters = (XtandemParameters) this.webSearchParameters.getUpdatedSearchParameter().getIdentificationAlgorithmParameter(Advocate.xtandem.getIndex());
+        XtandemParameters oldXtandemParameters = (XtandemParameters) this.webSearchParameters.getSearchParameters().getIdentificationAlgorithmParameter(Advocate.xtandem.getIndex());
         oldXtandemParameters.setDynamicRange(Double.valueOf(spectrumDynamicRange.getSelectedValue()));
         oldXtandemParameters.setnPeaks(Integer.valueOf(numberOfPeaks.getSelectedValue()));
         oldXtandemParameters.setMinFragmentMz(Double.valueOf(minFragment.getSelectedValue()));
@@ -474,22 +474,22 @@ public class XTandemAdvancedSettingsPanel extends PopupWindow {
         oldXtandemParameters.setRefinePointMutations(pointMutations.getSelectedValue().equalsIgnoreCase("Yes"));
         oldXtandemParameters.setRefineSnaps(snAPs.getSelectedValue().equalsIgnoreCase("Yes"));
         oldXtandemParameters.setRefineSpectrumSynthesis(spectrumSynthesis.getSelectedValue().equalsIgnoreCase("Yes"));
-        List<String> rVmod = new ArrayList<>(this.webSearchParameters.getUpdatedSearchParameter().getModificationParameters().getRefinementVariableModifications());
-        List<String> rFmod = new ArrayList<>(this.webSearchParameters.getUpdatedSearchParameter().getModificationParameters().getRefinementFixedModifications());
+        List<String> rVmod = new ArrayList<>(this.webSearchParameters.getSearchParameters().getModificationParameters().getRefinementVariableModifications());
+        List<String> rFmod = new ArrayList<>(this.webSearchParameters.getSearchParameters().getModificationParameters().getRefinementFixedModifications());
         rVmod.forEach((key) -> {
-            this.webSearchParameters.getUpdatedSearchParameter().getModificationParameters().removeRefinementVariableModification(key);
+            this.webSearchParameters.getSearchParameters().getModificationParameters().removeRefinementVariableModification(key);
         });
         rFmod.forEach((key) -> {
-            this.webSearchParameters.getUpdatedSearchParameter().getModificationParameters().removeRefinementFixedModification(key);
+            this.webSearchParameters.getSearchParameters().getModificationParameters().removeRefinementFixedModification(key);
         });
 
         refModificationSelection.stream().map((mod) -> {
             return mod;
         }).forEachOrdered((mod) -> {
             if (mod.contains("v;")) {
-                this.webSearchParameters.getUpdatedSearchParameter().getModificationParameters().addRefinementVariableModification(modificationFactory.getModification(mod.replace("v;", "")));
+                this.webSearchParameters.getSearchParameters().getModificationParameters().addRefinementVariableModification(modificationFactory.getModification(mod.replace("v;", "")));
             } else {
-                this.webSearchParameters.getUpdatedSearchParameter().getModificationParameters().addRefinementFixedModification(modificationFactory.getModification(mod.replace("f;", "")));
+                this.webSearchParameters.getSearchParameters().getModificationParameters().addRefinementFixedModification(modificationFactory.getModification(mod.replace("f;", "")));
             }
         });
     }
@@ -544,7 +544,7 @@ public class XTandemAdvancedSettingsPanel extends PopupWindow {
         modificationsTable.setColumnWidth("fixed", 30);
         modificationsTable.sort(new Object[]{"name"}, new boolean[]{true});
         modificationsTable.setSortEnabled(false);
-        modificationsTable.setItemDescriptionGenerator((Component source, Object itemId, Object propertyId) -> PTM.getPTM(itemId.toString()).getHtmlTooltip());
+        modificationsTable.setItemDescriptionGenerator((Component source, Object itemId, Object propertyId) -> PTM.getModification(itemId.toString()).getHtmlTooltip());
         return modificationsTable;
     }
 

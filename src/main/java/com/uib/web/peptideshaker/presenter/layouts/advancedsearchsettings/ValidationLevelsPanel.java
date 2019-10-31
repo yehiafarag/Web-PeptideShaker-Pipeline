@@ -1,6 +1,7 @@
 package com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings;
 
-import com.uib.web.peptideshaker.model.core.WebSearchParameters;
+import com.compomics.util.parameters.identification.IdentificationParameters;
+import com.compomics.util.parameters.identification.advanced.IdMatchValidationParameters;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelTextField;
 import com.vaadin.data.validator.DoubleRangeValidator;
@@ -10,7 +11,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-import web.com.compomics.util.parameters.identification.advanced.IdMatchValidationParameters;
 
 /**
  *
@@ -21,7 +21,7 @@ public class ValidationLevelsPanel extends PopupWindow {
     private final HorizontalLabelTextField proteinFdr;
     private final HorizontalLabelTextField peptideFdr;
     private final HorizontalLabelTextField psmFdr;
-    private WebSearchParameters webSearchParameters;
+    private IdentificationParameters webSearchParameters;
 
     public ValidationLevelsPanel() {
         super(VaadinIcons.COG.getHtml() + " Validation Level");
@@ -68,14 +68,14 @@ public class ValidationLevelsPanel extends PopupWindow {
 
     }
 
-    public void updateGUI(WebSearchParameters webSearchParameters) {
+    public void updateGUI(IdentificationParameters webSearchParameters) {
         this.webSearchParameters = webSearchParameters;
-        IdMatchValidationParameters idMatchValidationParameters = webSearchParameters.getUpdatedIdentificationParameters().getIdValidationParameters();
+        IdMatchValidationParameters idMatchValidationParameters = webSearchParameters.getIdValidationParameters();
 
         proteinFdr.setSelectedValue(idMatchValidationParameters.getDefaultProteinFDR());
         peptideFdr.setSelectedValue(idMatchValidationParameters.getDefaultPeptideFDR());
         psmFdr.setSelectedValue(idMatchValidationParameters.getDefaultPsmFDR());
-        super.setLabelValue(VaadinIcons.COG.getHtml() + " Validation Levels" + "<center>" + webSearchParameters.getUpdatedIdentificationParameters().getIdValidationParameters().getShortDescription() + "</center>");
+        super.setLabelValue(VaadinIcons.COG.getHtml() + " Validation Levels" + "<center>" + webSearchParameters.getIdValidationParameters().getShortDescription() + "</center>");
 
     }
 
@@ -89,13 +89,13 @@ public class ValidationLevelsPanel extends PopupWindow {
             updateGUI(webSearchParameters);
         } else if (webSearchParameters != null) {
             updateParameters();
-            super.setLabelValue(VaadinIcons.COG.getHtml() + " Validation Levels" + "<center>" + webSearchParameters.getUpdatedIdentificationParameters().getIdValidationParameters().getShortDescription() + "</center>");
+            super.setLabelValue(VaadinIcons.COG.getHtml() + " Validation Levels" + "<center>" + webSearchParameters.getIdValidationParameters().getShortDescription() + "</center>");
         }
         super.setPopupVisible(visible); //To change body of generated methods, choose Tools | Templates.
     }
 
     private void updateParameters() {
-        IdMatchValidationParameters idMatchValidationParameters = webSearchParameters.getUpdatedIdentificationParameters().getIdValidationParameters();
+        IdMatchValidationParameters idMatchValidationParameters = webSearchParameters.getIdValidationParameters();
         idMatchValidationParameters.setDefaultProteinFDR(idMatchValidationParameters.getDefaultProteinFDR());
         idMatchValidationParameters.setDefaultPeptideFDR(idMatchValidationParameters.getDefaultPeptideFDR());
         idMatchValidationParameters.setDefaultPsmFDR(idMatchValidationParameters.getDefaultPsmFDR());

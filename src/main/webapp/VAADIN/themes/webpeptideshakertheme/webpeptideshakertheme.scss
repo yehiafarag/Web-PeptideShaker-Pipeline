@@ -6139,7 +6139,7 @@
         text-overflow:ellipsis !important;
         overflow:hidden;
     }
-    .v-verticallayout-useroverviewpanelstyle .v-label :hover{
+/*    .v-verticallayout-useroverviewpanelstyle .v-label :hover{
         text-overflow:visible !important;
         overflow:visible !important;
         z-index:3 !important;
@@ -6147,7 +6147,7 @@
         width:auto !important;
         background-color:whitesmoke;
         margin-left:5px;
-    }
+    }*/
     .mobilestyle.verticalmode .v-slot-middleviewcontainer {
         left: 0px !important;
         position:absolute !important;
@@ -6601,6 +6601,19 @@
  .v-tabsheet-subcontainertabsheet .twofieldscontainer{
  	padding-left:7px
  } 
+ .welcomepagecontainer.v-absolutelayout-welcomepagecontainer {
+	max-width: 1000px;
+	min-width:1000px !important;
+	min-height:550px !important;
+	overflow:auto !important;
+
+}
+
+
+.v-label-slowdrawingimg{
+	z-index:2 !important;
+	position:absolute;
+}
 }
 
 

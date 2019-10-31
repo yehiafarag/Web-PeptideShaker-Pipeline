@@ -1,14 +1,11 @@
 package com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings;
 
-import com.compomics.util.gui.parameters.identification_parameters.PTMLocalizationParametersDialog;
-import com.compomics.util.preferences.PTMScoringPreferences;
-import com.uib.web.peptideshaker.model.core.WebSearchParameters;
+import com.compomics.util.experiment.identification.modification.ModificationLocalizationScore;
+import com.compomics.util.parameters.identification.IdentificationParameters;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelDropDounList;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelTextField;
-import com.vaadin.data.Property;
 import com.vaadin.data.validator.DoubleRangeValidator;
-import com.vaadin.data.validator.IntegerRangeValidator;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
@@ -17,7 +14,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import web.com.compomics.util.experiment.identification.modification.ModificationLocalizationScore;
 
 /**
  *
@@ -30,7 +26,7 @@ public class PTMLocalizationPanel extends PopupWindow {
     private final HorizontalLabelDropDounList confidentSites;
     private final HorizontalLabelTextField threshold;
 
-    private WebSearchParameters webSearchParameters;
+    private IdentificationParameters webSearchParameters;
 
     public PTMLocalizationPanel() {
         super(VaadinIcons.COG.getHtml() + " PTM Localization");
@@ -99,25 +95,25 @@ public class PTMLocalizationPanel extends PopupWindow {
 
     }
 
-    public void updateGUI(WebSearchParameters webSearchParameters) {
+    public void updateGUI(IdentificationParameters webSearchParameters) {
         this.webSearchParameters = webSearchParameters;
-        probabilisticScore.setSelected(webSearchParameters.getUpdatedIdentificationParameters().getModificationLocalizationParameters().getSelectedProbabilisticScore().getName());
+        probabilisticScore.setSelected(webSearchParameters.getModificationLocalizationParameters().getSelectedProbabilisticScore().getName());
 
-        if (webSearchParameters.getUpdatedIdentificationParameters().getModificationLocalizationParameters().isProbabilisticScoreNeutralLosses()) {
+        if (webSearchParameters.getModificationLocalizationParameters().isProbabilisticScoreNeutralLosses()) {
             accountNeutralLosses.setSelected("Yes");
         } else {
             accountNeutralLosses.setSelected("No");
         }
 
-        if (webSearchParameters.getUpdatedIdentificationParameters().getModificationLocalizationParameters().getAlignNonConfidentModifications()) {
+        if (webSearchParameters.getModificationLocalizationParameters().getAlignNonConfidentModifications()) {
             confidentSites.setSelected("Yes");
         } else {
             confidentSites.setSelected("No");
         }
 
-        threshold.setSelectedValue(webSearchParameters.getUpdatedIdentificationParameters().getModificationLocalizationParameters().getProbabilisticScoreThreshold());
+        threshold.setSelectedValue(webSearchParameters.getModificationLocalizationParameters().getProbabilisticScoreThreshold());
 
-        super.setLabelValue(VaadinIcons.COG.getHtml() + " PTM Localization" + "<center>" + webSearchParameters.getUpdatedIdentificationParameters().getModificationLocalizationParameters().getShortDescription() + "</center>");
+        super.setLabelValue(VaadinIcons.COG.getHtml() + " PTM Localization" + "<center>" + webSearchParameters.getModificationLocalizationParameters().getShortDescription() + "</center>");
 
     }
 
@@ -131,16 +127,16 @@ public class PTMLocalizationPanel extends PopupWindow {
             updateGUI(webSearchParameters);
         } else if (webSearchParameters != null) {
             updateParameters();
-            super.setLabelValue(VaadinIcons.COG.getHtml() + " PTM Localization" + "<center>" + webSearchParameters.getUpdatedIdentificationParameters().getModificationLocalizationParameters().getShortDescription() + "</center>");
+            super.setLabelValue(VaadinIcons.COG.getHtml() + " PTM Localization" + "<center>" + webSearchParameters.getModificationLocalizationParameters().getShortDescription() + "</center>");
         }
         super.setPopupVisible(visible); //To change body of generated methods, choose Tools | Templates.
     }
 
     private void updateParameters() {
-        webSearchParameters.getUpdatedIdentificationParameters().getModificationLocalizationParameters().setSelectedProbabilisticScore(ModificationLocalizationScore.getScore(probabilisticScore.getSelectedValue()));
-        webSearchParameters.getUpdatedIdentificationParameters().getModificationLocalizationParameters().setProbabilisticScoreNeutralLosses(accountNeutralLosses.getSelectedValue().equalsIgnoreCase("Yes"));
-        webSearchParameters.getUpdatedIdentificationParameters().getModificationLocalizationParameters().setAlignNonConfidentModifications(confidentSites.getSelectedValue().equalsIgnoreCase("Yes"));
-        webSearchParameters.getUpdatedIdentificationParameters().getModificationLocalizationParameters().setProbabilisticScoreThreshold(Double.valueOf(threshold.getSelectedValue()));
+        webSearchParameters.getModificationLocalizationParameters().setSelectedProbabilisticScore(ModificationLocalizationScore.getScore(probabilisticScore.getSelectedValue()));
+        webSearchParameters.getModificationLocalizationParameters().setProbabilisticScoreNeutralLosses(accountNeutralLosses.getSelectedValue().equalsIgnoreCase("Yes"));
+        webSearchParameters.getModificationLocalizationParameters().setAlignNonConfidentModifications(confidentSites.getSelectedValue().equalsIgnoreCase("Yes"));
+        webSearchParameters.getModificationLocalizationParameters().setProbabilisticScoreThreshold(Double.valueOf(threshold.getSelectedValue()));
     }
 
 }

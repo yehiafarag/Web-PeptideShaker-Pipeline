@@ -149,7 +149,7 @@ public abstract class PSMViewComponent extends VerticalLayout {
 
         psmlistener = (Property.ValueChangeEvent event) -> {
             SpectrumInformation spectrumInformation = spectrumInformationMap.get(psmOverviewTable.getValue());
-            this.getSpectrumPlot().selectedSpectrum(spectrumInformation.getSpectrum(), spectrumInformation.getCharge(), spectrumInformation.getFragmentIonAccuracy(), spectrumInformation.getIdentificationParameters(), spectrumInformation.getSpectrumMatch());
+            this.getSpectrumPlot().selectedSpectrum(spectrumInformation.getSpectrum(),spectrumInformation.getSequenceProvider(), spectrumInformation.getCharge(), spectrumInformation.getFragmentIonAccuracy(), spectrumInformation.getIdentificationParameters(), spectrumInformation.getSpectrumMatch());
         };
         psmOverviewTable.addValueChangeListener(psmlistener);
 
@@ -238,7 +238,7 @@ public abstract class PSMViewComponent extends VerticalLayout {
             intensityColumnWidth = 0;
         }
 
-        spectrumInformationMap = getSpectrumData(psms);
+        spectrumInformationMap = getSpectrumInformationMap(psms);
         
         if (spectrumInformationMap == null) {
             return;
@@ -296,7 +296,7 @@ public abstract class PSMViewComponent extends VerticalLayout {
 
     }
 
-    public abstract Map<Object, SpectrumInformation> getSpectrumData(List<PSMObject> psms);
+    public abstract Map<Object, SpectrumInformation> getSpectrumInformationMap(List<PSMObject> psms);
 
     public void setThumbImage(Image thumbImage) {
         spectrumPlot.setPlotThumbImage(thumbImage);
@@ -341,50 +341,3 @@ public abstract class PSMViewComponent extends VerticalLayout {
         return currentFilterView;
     }
 }
-/**
- * + "Spectrum & Fragment Ions (" +
- * Util.roundDouble(currentSpectrum.getPrecursor().getMz(), 2) + " m/z)"
- *
- *
- *
- *
- *  // the index column psmTable.getColumn(" ").setMaxWidth(50);
- * psmTable.getColumn(" ").setMinWidth(50);
- *
- * try { psmTable.getColumn("Confidence").setMaxWidth(90);
- * psmTable.getColumn("Confidence").setMinWidth(90); } catch
- * (IllegalArgumentException w) { psmTable.getColumn("Score").setMaxWidth(90);
- * psmTable.getColumn("Score").setMinWidth(90); }
- *
- * // the validated column psmTable.getColumn("").setMaxWidth(30);
- * psmTable.getColumn("").setMinWidth(30);
- *
- * // the selected columns psmTable.getColumn(" ").setMaxWidth(30);
- * psmTable.getColumn(" ").setMinWidth(30);
- *
- * // the protein inference column psmTable.getColumn("ID").setMaxWidth(37);
- * psmTable.getColumn("ID").setMinWidth(37);
- *
- * // set up the psm color map HashMap<Integer, java.awt.Color> psmColorMap =
- * new HashMap<Integer, java.awt.Color>();
- * psmColorMap.put(SpectrumIdentificationPanel.AGREEMENT_WITH_MODS,
- * peptideShakerGUI.getSparklineColor()); // id software agree with PTM
- * certainty psmColorMap.put(SpectrumIdentificationPanel.AGREEMENT,
- * java.awt.Color.CYAN); // id software agree on peptide but not ptm certainty
- * psmColorMap.put(SpectrumIdentificationPanel.CONFLICT, java.awt.Color.YELLOW);
- * // id software don't agree
- * psmColorMap.put(SpectrumIdentificationPanel.PARTIALLY_MISSING,
- * java.awt.Color.ORANGE); // some id software id'ed some didn't
- *
- * // set up the psm tooltip map HashMap<Integer, String> psmTooltipMap = new
- * HashMap<Integer, String>();
- * psmTooltipMap.put(SpectrumIdentificationPanel.AGREEMENT_WITH_MODS, "ID
- * Software Agree"); psmTooltipMap.put(SpectrumIdentificationPanel.AGREEMENT,
- * "ID Software Agree - PTM Certainty Issues");
- * psmTooltipMap.put(SpectrumIdentificationPanel.CONFLICT, "ID Software
- * Disagree"); psmTooltipMap.put(SpectrumIdentificationPanel.PARTIALLY_MISSING,
- * "First Hit(s) Missing");
- *
- *
- *
- */

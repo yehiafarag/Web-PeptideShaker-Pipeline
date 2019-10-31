@@ -1,9 +1,8 @@
 package com.uib.web.peptideshaker.presenter.layouts.advancedsearchenginessettings;
 
 import com.compomics.util.experiment.identification.Advocate;
+import com.compomics.util.parameters.identification.IdentificationParameters;
 import com.compomics.util.parameters.identification.tool_specific.MyriMatchParameters;
-import com.compomics.util.preferences.SequenceMatchingPreferences;
-import com.uib.web.peptideshaker.model.core.WebSearchParameters;
 import com.uib.web.peptideshaker.presenter.core.Help;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabel2TextField;
@@ -12,7 +11,6 @@ import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelTextField;
 import com.vaadin.data.Property;
 import com.vaadin.data.validator.DoubleRangeValidator;
 import com.vaadin.data.validator.IntegerRangeValidator;
-import com.vaadin.data.validator.IntegerValidator;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
@@ -45,7 +43,7 @@ public class MyriMatchAdvancedSettingsPanel extends PopupWindow {
     private final HorizontalLabelTextField maxPeakCount;
     private final HorizontalLabelDropDounList outputFormat;
 
-    private WebSearchParameters webSearchParameters;
+    private IdentificationParameters webSearchParameters;
 
     public MyriMatchAdvancedSettingsPanel() {
         super(VaadinIcons.COG.getHtml() + " MyriMatch Advanced Settings");
@@ -153,9 +151,9 @@ public class MyriMatchAdvancedSettingsPanel extends PopupWindow {
 
     }
 
-    public void updateGUI(WebSearchParameters webSearchParameters) {
+    public void updateGUI(IdentificationParameters webSearchParameters) {
         this.webSearchParameters = webSearchParameters;
-        MyriMatchParameters myriMatchParameters = (MyriMatchParameters) webSearchParameters.getUpdatedIdentificationParameters().getSearchParameters().getIdentificationAlgorithmParameter(Advocate.myriMatch.getIndex());
+        MyriMatchParameters myriMatchParameters = (MyriMatchParameters) webSearchParameters.getSearchParameters().getIdentificationAlgorithmParameter(Advocate.myriMatch.getIndex());
         peptideLength.setFirstSelectedValue(myriMatchParameters.getMinPeptideLength());
         peptideLength.setSecondSelectedValue(myriMatchParameters.getMaxPeptideLength());
         precursorMass.setFirstSelectedValue(myriMatchParameters.getMinPrecursorMass());
@@ -199,7 +197,7 @@ public class MyriMatchAdvancedSettingsPanel extends PopupWindow {
     }
 
     private void updateParameters() {
-        MyriMatchParameters myriMatchParameters = (MyriMatchParameters) webSearchParameters.getUpdatedIdentificationParameters().getSearchParameters().getIdentificationAlgorithmParameter(Advocate.myriMatch.getIndex());
+        MyriMatchParameters myriMatchParameters = (MyriMatchParameters) webSearchParameters.getSearchParameters().getIdentificationAlgorithmParameter(Advocate.myriMatch.getIndex());
         myriMatchParameters.setMinPeptideLength(Integer.valueOf(peptideLength.getFirstSelectedValue()));
         myriMatchParameters.setMaxPeptideLength(Integer.valueOf(peptideLength.getSecondSelectedValue()));
         myriMatchParameters.setNumberOfSpectrumMatches(Integer.valueOf(numberOfSpectrumMatches.getSelectedValue()));

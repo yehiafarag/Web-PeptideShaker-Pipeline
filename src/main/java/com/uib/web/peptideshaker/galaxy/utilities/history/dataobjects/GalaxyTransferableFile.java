@@ -176,7 +176,7 @@ public class GalaxyTransferableFile extends GalaxyFileObject {
                     entry = Zis.getNextEntry();
                     counter++;
                 }
-                System.out.println("to test reader : "+ file.getName()+"  "+ (System.currentTimeMillis() - start) + "ms");
+                System.out.println("to test reader : " + file.getName() + "  " + (System.currentTimeMillis() - start) + "ms");
 
             } catch (MalformedURLException ex) {
                 ex.printStackTrace();
@@ -192,7 +192,7 @@ public class GalaxyTransferableFile extends GalaxyFileObject {
 
         } else {
             FileOutputStream fos = null;
-             long start = System.currentTimeMillis();
+            long start = System.currentTimeMillis();
             try {
                 URL downloadableFile = new URL(galaxyFileObject.getDownloadUrl());
                 URLConnection conn = downloadableFile.openConnection();
@@ -227,10 +227,10 @@ public class GalaxyTransferableFile extends GalaxyFileObject {
                 }
             } catch (MalformedURLException ex) {
                 ex.printStackTrace();
-            } 
-            System.out.println("to test reader : "+ galaxyFileObject.getDownloadUrl()+"  "+getType()+"  "+ (System.currentTimeMillis() - start) + "ms");
+            }
+            System.out.println("to test reader : " + galaxyFileObject.getDownloadUrl() + "  " + getType() + "  " + (System.currentTimeMillis() - start) + "ms");
         }
-        
+
         return file;
     }
 

@@ -1,6 +1,6 @@
 package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components.coverage;
 
-import com.compomics.util.experiment.biology.PTMFactory;
+import com.compomics.util.experiment.biology.modifications.ModificationFactory;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Label;
@@ -23,7 +23,7 @@ public abstract class ProtoformModificationLayout extends VerticalLayout impleme
         ProtoformModificationLayout.this.setHeight(15, Unit.PIXELS);
         ProtoformModificationLayout.this.setStyleName("protoformmodstyle");
         ProtoformModificationLayout.this.setDescription(modificationName + " (" + location + ")");
-        Color c = PTMFactory.getDefaultColor(modificationName);
+        Color c = new Color(ModificationFactory.getDefaultColor(modificationName));
         Label modification = new Label("<div  style='background:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ");;width: 100%;height: 100%;'></div>", ContentMode.HTML);
         modification.setSizeFull();
         ProtoformModificationLayout.this.addComponent(modification);

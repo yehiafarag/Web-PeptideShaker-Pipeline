@@ -1,9 +1,8 @@
 package com.uib.web.peptideshaker.presenter.layouts.advancedsearchenginessettings;
 
 import com.compomics.util.experiment.identification.Advocate;
+import com.compomics.util.parameters.identification.IdentificationParameters;
 import com.compomics.util.parameters.identification.tool_specific.MsAmandaParameters;
-import com.compomics.util.parameters.identification.tool_specific.MyriMatchParameters;
-import com.uib.web.peptideshaker.model.core.WebSearchParameters;
 import com.uib.web.peptideshaker.presenter.core.Help;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelDropDounList;
@@ -39,7 +38,7 @@ public class MSAmandaAdvancedSettingsPanel extends PopupWindow {
     private final HorizontalLabelTextField maxSpectraLoadedIntoMemory;
     private final HorizontalLabelDropDounList outputFormat;
 
-    private WebSearchParameters webSearchParameters;
+    private IdentificationParameters webSearchParameters;
 
     public MSAmandaAdvancedSettingsPanel() {
         super(VaadinIcons.COG.getHtml() + " MS Amanda Advanced Settings");
@@ -191,9 +190,9 @@ public class MSAmandaAdvancedSettingsPanel extends PopupWindow {
 
     }
 
-    public void updateGUI(WebSearchParameters webSearchParameters) {
+    public void updateGUI(IdentificationParameters webSearchParameters) {
         this.webSearchParameters = webSearchParameters;
-        MsAmandaParameters oldMsAmandaParameters = (MsAmandaParameters)  webSearchParameters.getUpdatedIdentificationParameters().getSearchParameters().getIdentificationAlgorithmParameter(Advocate.msAmanda.getIndex());
+        MsAmandaParameters oldMsAmandaParameters = (MsAmandaParameters)  webSearchParameters.getSearchParameters().getIdentificationAlgorithmParameter(Advocate.msAmanda.getIndex());
 
         minPeptideLength.setSelectedValue(oldMsAmandaParameters.getMinPeptideLength());
 
@@ -241,7 +240,7 @@ public class MSAmandaAdvancedSettingsPanel extends PopupWindow {
     }
 
     private void updateParameters() {
-        MsAmandaParameters oldMsAmandaParameters = (MsAmandaParameters) webSearchParameters.getUpdatedIdentificationParameters().getSearchParameters().getIdentificationAlgorithmParameter(Advocate.msAmanda.getIndex());
+        MsAmandaParameters oldMsAmandaParameters = (MsAmandaParameters) webSearchParameters.getSearchParameters().getIdentificationAlgorithmParameter(Advocate.msAmanda.getIndex());
         oldMsAmandaParameters.setGenerateDecoyDatabase(generateDecoyDatabase.getSelectedValue().equalsIgnoreCase("Yes"));
         oldMsAmandaParameters.setInstrumentID(fragmentIonTypes.getSelectedValue());
         oldMsAmandaParameters.setMonoIsotopic(monoisotopicList.getSelectedValue().equalsIgnoreCase("Yes"));

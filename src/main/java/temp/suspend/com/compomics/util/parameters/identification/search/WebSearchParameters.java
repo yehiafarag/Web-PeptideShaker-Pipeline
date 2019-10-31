@@ -1,4 +1,4 @@
-package com.compomics.util.parameters.identification.search;
+package temp.suspend.com.compomics.util.parameters.identification.search;
 //
 //import com.compomics.util.Util;
 //import com.compomics.util.experiment.biology.Enzyme;

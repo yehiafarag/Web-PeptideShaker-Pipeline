@@ -1,6 +1,7 @@
 package com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects;
 
-import com.compomics.util.experiment.biology.Protein;
+
+import com.compomics.util.experiment.biology.proteins.Protein;
 import graphmatcher.NetworkGraphEdge;
 import graphmatcher.NetworkGraphNode;
 import java.util.Arrays;
@@ -47,7 +48,7 @@ public class ProteinGroupObject extends Protein {
      /**
      * Intensity hash-code colour of the quantification using average of all related peptides.
      */
-    private String allPeptideIintensityColor="RGB(" + 255 + "," + 255 + "," + 255 + ")";
+    private String allPeptideIintensityColor="rgb(" + 255 + "," + 255 + "," + 255 + ")";
     
      /**
      * Intensity value of the quantification using average of unique related peptides.
@@ -60,7 +61,7 @@ public class ProteinGroupObject extends Protein {
      /**
      * Intensity hash-code colour of the quantification using average of unique related peptides.
      */
-    private String uniquePeptideIintensityColor="RGB(" + 255 + "," + 255 + "," + 255 + ")";
+    private String uniquePeptideIintensityColor="rgb(" + 255 + "," + 255 + "," + 255 + ")";
 
     public String getAllPeptideIintensityColor() {
         return allPeptideIintensityColor;

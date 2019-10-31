@@ -1,9 +1,9 @@
 package com.uib.web.peptideshaker.galaxy.utilities;
 
+import com.compomics.util.parameters.identification.IdentificationParameters;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyTransferableFile;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyFileObject;
-import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
 import com.github.jmchilton.blend4j.galaxy.GalaxyResponseException;
 import com.github.jmchilton.blend4j.galaxy.HistoriesClient;
 import com.github.jmchilton.blend4j.galaxy.ToolsClient;
@@ -20,7 +20,6 @@ import com.github.jmchilton.blend4j.galaxy.beans.WorkflowOutputs;
 import com.github.jmchilton.blend4j.galaxy.beans.collection.request.CollectionDescription;
 import com.github.jmchilton.blend4j.galaxy.beans.collection.request.HistoryDatasetElement;
 import com.github.jmchilton.blend4j.galaxy.beans.collection.response.CollectionResponse;
-import com.uib.web.peptideshaker.model.core.WebSearchParameters;
 import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Notification;
@@ -108,6 +107,23 @@ public abstract class GalaxyToolsHandler {
 
     public Tool getPeptideShaker_Tool() {
         return peptideShaker_Tool;
+    }
+
+    public String getSearch_GUI_Tool_version() {
+        if (search_GUI_Tool != null) {
+            return search_GUI_Tool.getVersion();
+        } else {
+            return "Not available";
+        }
+
+    }
+
+    public String getPeptideShaker_Tool_Version() {
+        if (peptideShaker_Tool != null) {
+            return peptideShaker_Tool.getVersion();
+        } else {
+            return "Not available";
+        }
     }
 
     /**
@@ -245,9 +261,9 @@ public abstract class GalaxyToolsHandler {
      * @param isNew the .par file is new
      * @return updated Search Parameters files (.par) Map
      */
-    public Map<String, GalaxyTransferableFile> saveSearchGUIParameters(String galaxyURL, File user_folder, Map<String, GalaxyTransferableFile> searchParametersFilesMap, String workHistoryId, WebSearchParameters searchParameters, boolean isNew) {
+    public Map<String, GalaxyTransferableFile> saveSearchGUIParameters(String galaxyURL, File user_folder, Map<String, GalaxyTransferableFile> searchParametersFilesMap, String workHistoryId, IdentificationParameters searchParameters, boolean isNew) {
 
-        String fileName = searchParameters.getParamFileName() + ".par";
+        String fileName = searchParameters.getName()+ ".par";
 //        String fileId;
 //        if (!isNew) {
 //            fileId = searchParameters.getFastaFile().getName().split("__")[3];
@@ -265,7 +281,7 @@ public abstract class GalaxyToolsHandler {
         }
         try {
             file.createNewFile();
-            searchParameters.saveIdentificationParameters(searchParameters, file);
+            IdentificationParameters.saveIdentificationParameters(searchParameters, file);
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -321,6 +337,7 @@ public abstract class GalaxyToolsHandler {
         } catch (FileNotFoundException ex) {
             System.out.println("Unable to open file '" + "'");
         } catch (IOException ex) {
+             ex.printStackTrace();
             System.out.println("Error reading file '" + "'");
         }
         return json;
@@ -333,7 +350,7 @@ public abstract class GalaxyToolsHandler {
      * @param historyId The Galaxy Server History ID where the file belong
      * @param dsId The file (galaxy dataset) ID on Galaxy Server
      */
-    public void deleteDataset(String galaxyURL, String historyId, String dsId, boolean updatePresenter,boolean singleFile) {
+    public void deleteDataset(String galaxyURL, String historyId, String dsId, boolean updatePresenter, boolean singleFile) {
         try {
             if (dsId == null || historyId == null || galaxyURL == null) {
                 return;
@@ -374,8 +391,9 @@ public abstract class GalaxyToolsHandler {
                 }
             }
             conn.disconnect();
-            if(singleFile)
-            synchronizeDataWithGalaxyServer(updatePresenter);
+            if (singleFile) {
+                synchronizeDataWithGalaxyServer(updatePresenter);
+            }
 
         } catch (MalformedURLException ex) {
             ex.printStackTrace();
@@ -395,7 +413,7 @@ public abstract class GalaxyToolsHandler {
      * @return JSON string with the information from the .ga workflow properly
      * adapted
      */
-    public String get_json_for_SearchGUI_PeptideShaker_WorkFlow(File workflowFile, String projectName, WebSearchParameters searchParameters, Set<String> searchEnginesList) {
+    public String get_json_for_SearchGUI_PeptideShaker_WorkFlow(File workflowFile, String projectName, IdentificationParameters searchParameters, Set<String> searchEnginesList) {
 
         String json = readWorkflowFile(workflowFile);
         /**
@@ -477,7 +495,7 @@ public abstract class GalaxyToolsHandler {
      * @param quant full quant pipe-line
      * @return Generated PeptideShaker visualisation dataset (Temporary dataset)
      */
-    public PeptideShakerVisualizationDataset execute_SearchGUI_PeptideShaker_WorkFlow(String projectName, String fastaFileId, String searchParameterFileId, Map<String, String> inputFileIdsList, Set<String> searchEnginesList, String historyId, WebSearchParameters searchParameters, boolean quant) {
+    public PeptideShakerVisualizationDataset execute_SearchGUI_PeptideShaker_WorkFlow(String projectName, String fastaFileId, String searchParameterFileId, Map<String, String> inputFileIdsList, Set<String> searchEnginesList, String historyId, IdentificationParameters searchParameters, boolean quant) {
         Workflow selectedWf = null;
         try {
             String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
@@ -542,8 +560,8 @@ public abstract class GalaxyToolsHandler {
             Set<String> search_engines = new HashSet<>();
             searchEnginesList.forEach((searchEng) -> {
                 search_engines.add(("\\\\\\\"" + searchEng + "\\\\\\\"").replace(" (Select for noncommercial use only)", "").replace("+", "").replace("-", ""));
-            });           
-            jsonWorkflow = jsonWorkflow.replace("\\\"{\\\\\\\"engines\\\\\\\": null}\\\"", "\\\"{\\\\\\\"engines\\\\\\\": "+search_engines.toString()+"}\\\"");
+            });
+            jsonWorkflow = jsonWorkflow.replace("\\\"{\\\\\\\"engines\\\\\\\": null}\\\"", "\\\"{\\\\\\\"engines\\\\\\\": " + search_engines.toString() + "}\\\"");
             selectedWf = galaxyWorkFlowClient.importWorkflow(jsonWorkflow);
 
             WorkflowInputs workflowInputs = new WorkflowInputs();
@@ -609,7 +627,7 @@ public abstract class GalaxyToolsHandler {
      * @param searchParameters Search Parameter object
      * @return Generated PeptideShaker visualisation dataset (Temporary dataset)
      */
-    public PeptideShakerVisualizationDataset execute_SearchGUI_PeptideShaker_PathwayMatcher_WorkFlow(String projectName, String fastaFileId, Map<String, String> mgfIdsList, Set<String> searchEnginesList, String historyId, WebSearchParameters searchParameters) {
+    public PeptideShakerVisualizationDataset execute_SearchGUI_PeptideShaker_PathwayMatcher_WorkFlow(String projectName, String fastaFileId, Map<String, String> mgfIdsList, Set<String> searchEnginesList, String historyId, IdentificationParameters searchParameters) {
         Workflow selectedWf = null;
         try {
             String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
@@ -798,7 +816,7 @@ public abstract class GalaxyToolsHandler {
             if (!galaxyHistoriesClient.showHistory(galaxyWorkingHistory.getId()).isReady()) {
                 Thread.sleep(1000);
             }
-            deleteDataset(galaxyURL, galaxyWorkingHistory.getId(), ds.getId(), true,true);
+            deleteDataset(galaxyURL, galaxyWorkingHistory.getId(), ds.getId(), true, true);
         } catch (GalaxyResponseException | InterruptedException e) {
             e.printStackTrace();
             Notification.show("Could not send it to NeLS :-( ", Notification.Type.ERROR_MESSAGE);

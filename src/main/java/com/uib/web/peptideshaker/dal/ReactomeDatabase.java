@@ -121,10 +121,9 @@ public class ReactomeDatabase {
             InputStreamReader r = new InputStreamReader(in);
             BufferedReader br = new BufferedReader(r);
             String line = br.readLine();
-            if (version.equalsIgnoreCase("") || !line.contains(version)) {
+            if (version.equalsIgnoreCase("") ||(line !=null && !line.contains(version))) {
                 version = line.replace("CSF-PR Protein Accession List (", "").replace(")", "");
                 updateStatment = "INSERT INTO `csf_pr_accssion_list_" + version + "` (`Accssion`) VALUES ";//('lozt'), ('bozot');
-
                 while ((line = br.readLine()) != null) {
                     csf_pr_acc_list.add(line);
                     updateStatment += ("(?),");

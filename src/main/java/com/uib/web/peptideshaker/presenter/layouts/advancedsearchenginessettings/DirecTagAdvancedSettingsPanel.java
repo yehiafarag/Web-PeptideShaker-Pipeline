@@ -1,8 +1,8 @@
 package com.uib.web.peptideshaker.presenter.layouts.advancedsearchenginessettings;
 
 import com.compomics.util.experiment.identification.Advocate;
+import com.compomics.util.parameters.identification.IdentificationParameters;
 import com.compomics.util.parameters.identification.tool_specific.DirecTagParameters;
-import com.uib.web.peptideshaker.model.core.WebSearchParameters;
 import com.uib.web.peptideshaker.presenter.core.Help;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelDropDounList;
@@ -47,7 +47,7 @@ public class DirecTagAdvancedSettingsPanel extends PopupWindow {
 
     private final HorizontalLabelDropDounList adjustPrecursorMass;
     private final HorizontalLabelDropDounList useSpectrumChargeState;
-    private WebSearchParameters webSearchParameters;
+    private IdentificationParameters webSearchParameters;
 
     public DirecTagAdvancedSettingsPanel() {
         super(VaadinIcons.COG.getHtml() + " DirecTag Advanced Settings");
@@ -170,9 +170,9 @@ public class DirecTagAdvancedSettingsPanel extends PopupWindow {
 
     }
 
-    public void updateGUI(WebSearchParameters webSearchParameters) {
+    public void updateGUI(IdentificationParameters webSearchParameters) {
         this.webSearchParameters = webSearchParameters;
-        DirecTagParameters direcTagParameters = (DirecTagParameters) webSearchParameters.getUpdatedIdentificationParameters().getSearchParameters().getIdentificationAlgorithmParameter(Advocate.direcTag.getIndex());
+        DirecTagParameters direcTagParameters = (DirecTagParameters) webSearchParameters.getSearchParameters().getIdentificationAlgorithmParameter(Advocate.direcTag.getIndex());
         tagLength.setSelectedValue(direcTagParameters.getTagLength());
         maxVariabalePTMs.setSelectedValue(direcTagParameters.getMaxDynamicMods());
         numberChargeState.setSelectedValue(direcTagParameters.getNumChargeStates());
@@ -225,7 +225,7 @@ public class DirecTagAdvancedSettingsPanel extends PopupWindow {
     }
 
     private void updateParameters() {
-        DirecTagParameters direcTagParameters = (DirecTagParameters) webSearchParameters.getUpdatedIdentificationParameters().getSearchParameters().getIdentificationAlgorithmParameter(Advocate.direcTag.getIndex());
+        DirecTagParameters direcTagParameters = (DirecTagParameters) webSearchParameters.getSearchParameters().getIdentificationAlgorithmParameter(Advocate.direcTag.getIndex());
         direcTagParameters.setTagLength(Integer.valueOf(tagLength.getSelectedValue()));
         direcTagParameters.setMaxDynamicMods(Integer.valueOf(maxVariabalePTMs.getSelectedValue()));
         direcTagParameters.setNumChargeStates(Integer.valueOf(numberChargeState.getSelectedValue()));

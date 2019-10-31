@@ -5,7 +5,8 @@
  */
 package com.uib.web.peptideshaker.presenter.core.graph;
 
-import com.compomics.util.experiment.biology.PTMFactory;
+import com.compomics.util.experiment.biology.modifications.ModificationFactory;
+import com.compomics.util.experiment.identification.matches.ModificationMatch;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Label;
@@ -41,7 +42,7 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
     /**
      * The post translational modifications factory.
      */
-    private final PTMFactory PTM = PTMFactory.getInstance();
+    private final ModificationFactory PTM = ModificationFactory.getInstance();
 
     public Node(String id, String tooltip, String modifications, String sequence, int psmNumber, String PSMNumberColor, double inteinsity, String inteinsityColor) {
 
@@ -56,19 +57,18 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
         Map<String, String> modificationsTooltip = new HashMap<>();
         for (String mod : modifications.split("\\),")) {
             if (mod.trim().equalsIgnoreCase("")|| mod.contains("No Modifications") || mod.contains("Two or More Modifications")) {// || mod.contains("Pyrolidone") || mod.contains("Acetylation of protein N-term") || mod.contains("No Modifications") || mod.contains("Two or More Modifications")) {
-                continue;
-            }
+                    continue;
+                }
             String[] tmod = mod.split("\\(");
-            Color c = PTMFactory.getDefaultColor(tmod[0].trim());
-            Label modification = new Label("<div  style='background:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ");border-radius:100%;width: 100%;height: 100%;opacity:0.2;'></div>", ContentMode.HTML);
-            modification.setSizeFull();
-            modificationLayout.addComponent(modification);
-            System.out.println("at temp modification : "+tmod.length+"  "+tmod[0]+"  "+mod);
+            Color c = new Color(ModificationFactory.getDefaultColor(tmod[0].trim()));
+                Label modification = new Label("<div  style='background:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ");border-radius:100%;width: 100%;height: 100%;opacity:0.2;'></div>", ContentMode.HTML);
+                modification.setSizeFull();
+                modificationLayout.addComponent(modification);
             String[] indexArr = tmod[1].replace(")", "").replace(" ", "").split(",");
             for (String indexStr : indexArr) {
-                int i = Integer.valueOf(indexStr) - 1;
+                int i = Math.max(Integer.valueOf(indexStr) - 1,0);
                 if (sequence != null) {
-                    modificationsTooltip.put(sequence.charAt(i) + "<" + PTM.getPTM(tmod[0].trim()).getShortName() + ">", "<font style='background-color:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")'>" + sequence.charAt(i) + "</font>");
+                    modificationsTooltip.put(sequence.charAt(i) + "<" + PTM.getModification(tmod[0].trim()).getShortName() + ">", "<font style='background-color:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")'>" + sequence.charAt(i) + "</font>");
 
                     if (!subTooltip.contains("</br><span style='width:20px;height:10px;background-color:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")'>" + sequence.charAt(i) + "</span> - " + mod)) {
                         subTooltip += "</br><span style='width:20px;height:10px;background-color:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")'>" + sequence.charAt(i) + "</span> - " + mod;
@@ -76,8 +76,94 @@ public abstract class Node extends VerticalLayout implements LayoutEvents.Layout
                 }
             }
 
-        }
+            }
         if (modificationLayout.getComponentCount() > 1 || modifications.equalsIgnoreCase("Two or More Modifications")) {
+            modificationLayout.removeAllComponents();
+            Label modification = new Label("<div style='background:orange; width:100%;height:100%;border-radius:100%;opacity:0.2;'></div>", ContentMode.HTML);
+            modification.setSizeFull();
+            modification.addStyleName("multiplemodificationstyle");
+            modificationLayout.addComponent(modification);
+        }
+        for (String key : modificationsTooltip.keySet()) {
+            tooltip = tooltip.replace(key, modificationsTooltip.get(key));
+        }
+        tooltip += subTooltip;
+        modificationLayout.setVisible(false);
+
+        this.psmNumberLayout = new VerticalLayout();
+        this.psmNumberLayout.setSizeFull();
+        Node.this.addComponent(psmNumberLayout);
+        String tooltipExt = "</br>#PSMs: " + psmNumber + "";
+        if (psmNumber == -1) {
+            PSMNumberColor = "red";
+            tooltipExt = "";
+        }
+        Label psmsColorLabel = new Label("<div  style='background:" + PSMNumberColor + ";border-radius:100%;width: 100%;height: 100%;opacity:0.2;'></div>", ContentMode.HTML);
+        psmsColorLabel.setSizeFull();
+        psmNumberLayout.addComponent(psmsColorLabel);
+        psmNumberLayout.setVisible(false);
+
+        this.intensityLayout = new VerticalLayout();
+        this.intensityLayout.setSizeFull();
+        Node.this.addComponent(intensityLayout);
+        String tooltipExt2 = "</br>Intinsity: " + df1.format(inteinsity) + "";
+        if (inteinsity == -10000) {
+            tooltipExt2 = "";
+        }
+        Label intensityColorLabel = new Label("<div  style='background:" + inteinsityColor + ";border-radius:100%;width: 100%;height: 100%;opacity:0.2;'></div>", ContentMode.HTML);
+        intensityColorLabel.setSizeFull();
+        intensityColorLabel.setStyleName("intensitycolornode");
+        intensityLayout.addComponent(intensityColorLabel);
+        intensityLayout.setVisible(false);
+
+        tooltip += tooltipExt;
+        tooltip += tooltipExt2;
+        Node.this.setDescription(tooltip);
+
+        this.edges = new LinkedHashSet<>();
+
+    }
+    
+    
+     public Node(String id, String tooltip, ModificationMatch[] modifications, String sequence, int psmNumber, String PSMNumberColor, double inteinsity, String inteinsityColor) {
+
+        Node.this.setStyleName("node");
+        Node.this.addLayoutClickListener(Node.this);
+        this.nodeId = id;
+        this.modificationLayout = new VerticalLayout();
+        this.modificationLayout.setSizeFull();
+        Node.this.addComponent(modificationLayout);
+
+        String subTooltip = "";
+        Map<String, String> modificationsTooltip = new HashMap<>();
+        if (modifications != null && modifications.length > 0) {
+            for (ModificationMatch mod : modifications) {
+//            if (mod.trim().equalsIgnoreCase("")|| mod.contains("No Modifications") || mod.contains("Two or More Modifications")) {// || mod.contains("Pyrolidone") || mod.contains("Acetylation of protein N-term") || mod.contains("No Modifications") || mod.contains("Two or More Modifications")) {
+//                continue;
+//            }
+                if (mod.getModification().trim().equalsIgnoreCase("") || mod.getModification().contains("No Modifications") || mod.getModification().contains("Two or More Modifications")) {// || mod.contains("Pyrolidone") || mod.contains("Acetylation of protein N-term") || mod.contains("No Modifications") || mod.contains("Two or More Modifications")) {
+                    continue;
+                }
+//            String[] tmod = mod.split("\\(");
+                Color c = new Color(ModificationFactory.getDefaultColor(mod.getModification()));
+                Label modification = new Label("<div  style='background:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ");border-radius:100%;width: 100%;height: 100%;opacity:0.2;'></div>", ContentMode.HTML);
+                modification.setSizeFull();
+                modificationLayout.addComponent(modification);
+                int i = Math.max(mod.getSite() - 1, 0);
+//            String[] indexArr = tmod[1].replace(")", "").replace(" ", "").split(",");
+//            for (String indexStr : indexArr) {
+//                int i = Math.max(Integer.valueOf(indexStr) - 1, 0);
+                if (sequence != null) {
+                    modificationsTooltip.put(sequence.charAt(i) + "<" +PTM.getModification(mod.getModification()).getShortName() + ">", "<font style='background-color:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")'>" + sequence.charAt(i) + "</font>");                    
+                    if (!subTooltip.contains("</br><span style='width:20px;height:10px;background-color:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")'>" + sequence.charAt(i) + "</span> - " + mod.getModification())) {
+                        subTooltip += "</br><span style='width:20px;height:10px;background-color:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")'>" + sequence.charAt(i) + "</span> - " + mod.getModification();
+                    }
+                }
+//            }
+
+            }
+        }
+        if (modifications!=null && (modificationLayout.getComponentCount() > 1 || modifications.length > 1)) {// modifications.equalsIgnoreCase("Two or More Modifications")) {
             modificationLayout.removeAllComponents();
             Label modification = new Label("<div style='background:orange; width:100%;height:100%;border-radius:100%;opacity:0.2;'></div>", ContentMode.HTML);
             modification.setSizeFull();

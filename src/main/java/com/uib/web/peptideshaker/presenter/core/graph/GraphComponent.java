@@ -1,5 +1,6 @@
 package com.uib.web.peptideshaker.presenter.core.graph;
 
+import com.compomics.util.experiment.identification.matches.ModificationMatch;
 import com.ejt.vaadin.sizereporter.ComponentResizeEvent;
 import com.ejt.vaadin.sizereporter.SizeReporter;
 import com.itextpdf.text.pdf.codec.Base64;
@@ -480,13 +481,15 @@ public abstract class GraphComponent extends VerticalLayout {
             proteinsControl.removeItem("Intensity");
         }
         graph.getVertices().forEach((node) -> {
-            String modifications = "";
+            String modificationsAsString = "";
+            ModificationMatch[] modifications=null;
             String sequence = "";
             int psmNumber;
             double intinsity;
             String intinsityColor;
             String tooltip;
             if (peptidesNodes.containsKey(node)) {
+                modificationsAsString = peptidesNodes.get(node).getVariableModificationsAsString();
                 modifications = peptidesNodes.get(node).getVariableModifications();
                 sequence = peptidesNodes.get(node).getSequence();
                 tooltip = node;
@@ -508,8 +511,8 @@ public abstract class GraphComponent extends VerticalLayout {
 
                 }
             };
-            informationLegend.updateModificationLayout(modifications);
-            this.proteinsPathwayNewtorkGraph.getInformationLegend().updateModificationLayout(modifications);
+            informationLegend.updateModificationLayout(modificationsAsString);
+            this.proteinsPathwayNewtorkGraph.getInformationLegend().updateModificationLayout(modificationsAsString);
             n.setX(graphLayout.getX(node));
             n.setY(graphLayout.getY(node));
             nodesMap.put(node, n);

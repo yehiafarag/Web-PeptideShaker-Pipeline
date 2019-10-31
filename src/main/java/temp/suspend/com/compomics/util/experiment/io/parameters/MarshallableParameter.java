@@ -1,4 +1,4 @@
-package com.compomics.util.experiment.io.parameters;
+package temp.suspend.com.compomics.util.experiment.io.parameters;
 
 /**
  * Interface for a parameter which can be marshalled as .par file.

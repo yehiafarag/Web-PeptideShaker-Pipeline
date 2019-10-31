@@ -1,12 +1,11 @@
 package com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings;
 
-import com.uib.web.peptideshaker.model.core.WebSearchParameters;
+import com.compomics.util.parameters.identification.IdentificationParameters;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelDropDounList;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelTextField;
 import com.vaadin.data.Property;
 import com.vaadin.data.validator.DoubleRangeValidator;
-import com.vaadin.data.validator.IntegerRangeValidator;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
@@ -30,7 +29,7 @@ public class ProteinInferencePanel extends PopupWindow {
     private final HorizontalLabelTextField peptideIgnoredConfidence;
     private final HorizontalLabelDropDounList accountModificationforProteinMapping;
 
-    private WebSearchParameters webSearchParameters;
+    private IdentificationParameters webSearchParameters;
 
     public ProteinInferencePanel() {
         super(VaadinIcons.COG.getHtml() + " Protein Inference");
@@ -108,41 +107,41 @@ public class ProteinInferencePanel extends PopupWindow {
 
     }
 
-    public void updateGUI(WebSearchParameters webSearchParameters) {
+    public void updateGUI(IdentificationParameters webSearchParameters) {
         this.webSearchParameters = webSearchParameters;
-        if (webSearchParameters.getUpdatedIdentificationParameters().getProteinInferenceParameters().getSimplifyGroups()) {
+        if (webSearchParameters.getProteinInferenceParameters().getSimplifyGroups()) {
             simplyProteinGroups.setSelected("Yes");
         } else {
             simplyProteinGroups.setSelected("No");
         }
-        if (webSearchParameters.getUpdatedIdentificationParameters().getProteinInferenceParameters().getSimplifyGroupsEvidence()) {
+        if (webSearchParameters.getProteinInferenceParameters().getSimplifyGroupsEvidence()) {
             uniprotEvidenceLevel.setSelected("Yes");
         } else {
             uniprotEvidenceLevel.setSelected("No");
         }
-        if (webSearchParameters.getUpdatedIdentificationParameters().getProteinInferenceParameters().getSimplifyGroupsEnzymaticity()) {
+        if (webSearchParameters.getProteinInferenceParameters().getSimplifyGroupsEnzymaticity()) {
             enzymaticity.setSelected("Yes");
         } else {
             enzymaticity.setSelected("No");
         }
-        if (webSearchParameters.getUpdatedIdentificationParameters().getProteinInferenceParameters().getSimplifyGroupsVariants()) {
+        if (webSearchParameters.getProteinInferenceParameters().getSimplifyGroupsVariants()) {
             variantMapping.setSelected("Yes");
         } else {
             variantMapping.setSelected("No");
         }
-        if (webSearchParameters.getUpdatedIdentificationParameters().getProteinInferenceParameters().getSimplifyGroupsConfidence()) {
+        if (webSearchParameters.getProteinInferenceParameters().getSimplifyGroupsConfidence()) {
             peptideConfidence.setSelected("Yes");
         } else {
             peptideConfidence.setSelected("No");
         }
-        if (webSearchParameters.getUpdatedIdentificationParameters().getProteinInferenceParameters().isModificationRefinement()) {
+        if (webSearchParameters.getProteinInferenceParameters().isModificationRefinement()) {
             accountModificationforProteinMapping.setSelected("Yes");
         } else {
             accountModificationforProteinMapping.setSelected("No");
         }
-        peptideIgnoredConfidence.setSelectedValue(webSearchParameters.getUpdatedIdentificationParameters().getProteinInferenceParameters().getConfidenceThreshold());
+        peptideIgnoredConfidence.setSelectedValue(webSearchParameters.getProteinInferenceParameters().getConfidenceThreshold());
 
-        super.setLabelValue(VaadinIcons.COG.getHtml() + " Protein Inference" + "<center>" + webSearchParameters.getUpdatedIdentificationParameters().getProteinInferenceParameters().getShortDescription() + "</center>");
+        super.setLabelValue(VaadinIcons.COG.getHtml() + " Protein Inference" + "<center>" + webSearchParameters.getProteinInferenceParameters().getShortDescription() + "</center>");
 
     }
 
@@ -156,19 +155,19 @@ public class ProteinInferencePanel extends PopupWindow {
             updateGUI(webSearchParameters);
         } else if (webSearchParameters != null) {
             updateParameters();
-            super.setLabelValue(VaadinIcons.COG.getHtml() + " Protein Inference" + "<center>" + webSearchParameters.getUpdatedIdentificationParameters().getProteinInferenceParameters().getShortDescription() + "</center>");
+            super.setLabelValue(VaadinIcons.COG.getHtml() + " Protein Inference" + "<center>" + webSearchParameters.getProteinInferenceParameters().getShortDescription() + "</center>");
         }
         super.setPopupVisible(visible); //To change body of generated methods, choose Tools | Templates.
     }
 
     private void updateParameters() {
-        webSearchParameters.getUpdatedIdentificationParameters().getProteinInferenceParameters().setSimplifyGroups(simplyProteinGroups.getSelectedValue().equalsIgnoreCase("Yes"));
-        webSearchParameters.getUpdatedIdentificationParameters().getProteinInferenceParameters().setSimplifyGroupsEvidence(uniprotEvidenceLevel.getSelectedValue().equalsIgnoreCase("Yes"));
-        webSearchParameters.getUpdatedIdentificationParameters().getProteinInferenceParameters().setSimplifyGroupsConfidence(peptideConfidence.getSelectedValue().equalsIgnoreCase("Yes"));
-        webSearchParameters.getUpdatedIdentificationParameters().getProteinInferenceParameters().setConfidenceThreshold(Double.valueOf(peptideIgnoredConfidence.getSelectedValue()));
-        webSearchParameters.getUpdatedIdentificationParameters().getProteinInferenceParameters().setSimplifyGroupsEnzymaticity(enzymaticity.getSelectedValue().equalsIgnoreCase("Yes"));
-        webSearchParameters.getUpdatedIdentificationParameters().getProteinInferenceParameters().setSimplifyGroupsVariants(variantMapping.getSelectedValue().equalsIgnoreCase("Yes"));
-      webSearchParameters.getUpdatedIdentificationParameters().getProteinInferenceParameters().setModificationRefinement(accountModificationforProteinMapping.getSelectedValue().equalsIgnoreCase("Yes"));
+        webSearchParameters.getProteinInferenceParameters().setSimplifyGroups(simplyProteinGroups.getSelectedValue().equalsIgnoreCase("Yes"));
+        webSearchParameters.getProteinInferenceParameters().setSimplifyGroupsEvidence(uniprotEvidenceLevel.getSelectedValue().equalsIgnoreCase("Yes"));
+        webSearchParameters.getProteinInferenceParameters().setSimplifyGroupsConfidence(peptideConfidence.getSelectedValue().equalsIgnoreCase("Yes"));
+        webSearchParameters.getProteinInferenceParameters().setConfidenceThreshold(Double.valueOf(peptideIgnoredConfidence.getSelectedValue()));
+        webSearchParameters.getProteinInferenceParameters().setSimplifyGroupsEnzymaticity(enzymaticity.getSelectedValue().equalsIgnoreCase("Yes"));
+        webSearchParameters.getProteinInferenceParameters().setSimplifyGroupsVariants(variantMapping.getSelectedValue().equalsIgnoreCase("Yes"));
+      webSearchParameters.getProteinInferenceParameters().setModificationRefinement(accountModificationforProteinMapping.getSelectedValue().equalsIgnoreCase("Yes"));
 //if
     }
 

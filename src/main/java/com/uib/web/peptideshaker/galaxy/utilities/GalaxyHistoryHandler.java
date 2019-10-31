@@ -6,6 +6,7 @@ import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideSha
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyFileObject;
 import com.github.jmchilton.blend4j.galaxy.GalaxyInstance;
 import com.github.jmchilton.blend4j.galaxy.HistoriesClient;
+import com.github.jmchilton.blend4j.galaxy.beans.Dataset;
 import com.github.jmchilton.blend4j.galaxy.beans.History;
 import com.github.wolfie.refresher.Refresher;
 import com.uib.web.peptideshaker.PeptidShakerUI;
@@ -89,19 +90,18 @@ public abstract class GalaxyHistoryHandler {
     private Set<String> csf_pr_Accession_List;
     private boolean updatePresenterView;
     private final ReactomeDatabase reactomeDatabase;
+    private final GalaxyAPIInteractiveLayer galaxyApiInteractiveLayer = new GalaxyAPIInteractiveLayer();
 
     /**
      * Constructor to initialise the the galaxy history handler, and Connection
      * refresher to keep tracking running jobs on Galaxy Server.
-  
+     *
      */
     public GalaxyHistoryHandler() {
         REFRESHER = new Refresher();
         ((PeptidShakerUI) UI.getCurrent()).addExtension(REFRESHER);
         this.reactomeDatabase = new ReactomeDatabase();
-        
-        
-        
+
         this.csf_pr_Accession_List = this.reactomeDatabase.getCsfprAccList();
         refreshlistener = (Refresher source) -> {
             HistoriesClient loopGalaxyHistoriesClient = Galaxy_Instance.getHistoriesClient();
@@ -156,8 +156,9 @@ public abstract class GalaxyHistoryHandler {
      * @return map of available PS datasets
      */
     public Map<String, PeptideShakerVisualizationDataset> getPeptideShakerVisualizationMap() {
-          if(updateDatasetructureFuture==null)
+        if (updateDatasetructureFuture == null) {
             return new LinkedHashMap<>();
+        }
         while (!updateDatasetructureFuture.isDone()) {
             try {
                 Thread.sleep(1000);
@@ -174,8 +175,9 @@ public abstract class GalaxyHistoryHandler {
      * @return Search parameters files .par map
      */
     public Map<String, GalaxyTransferableFile> getSearchSettingsFilesMap() {
-        if(updateDatasetructureFuture==null)
+        if (updateDatasetructureFuture == null) {
             return new LinkedHashMap<>();
+        }
         while (!updateDatasetructureFuture.isDone()) {
             try {
                 Thread.sleep(1000);
@@ -192,8 +194,9 @@ public abstract class GalaxyHistoryHandler {
      * @return FASTA Files Map
      */
     public Map<String, GalaxyFileObject> getFastaFilesMap() {
-          if(updateDatasetructureFuture==null)
+        if (updateDatasetructureFuture == null) {
             return new LinkedHashMap<>();
+        }
         while (!updateDatasetructureFuture.isDone()) {
             try {
                 Thread.sleep(1000);
@@ -210,8 +213,9 @@ public abstract class GalaxyHistoryHandler {
      * @return Map of available MGF files (file galaxy id mapped to datasets)
      */
     public Map<String, GalaxyFileObject> getMgfFilesMap() {
-          if(updateDatasetructureFuture==null)
+        if (updateDatasetructureFuture == null) {
             return new LinkedHashMap<>();
+        }
         while (!updateDatasetructureFuture.isDone()) {
             try {
                 Thread.sleep(1000);
@@ -233,8 +237,9 @@ public abstract class GalaxyHistoryHandler {
      * @return Map of available Raw files (file galaxy id mapped to datasets)
      */
     public Map<String, GalaxyFileObject> getRawFilesMap() {
-          if(updateDatasetructureFuture==null)
+        if (updateDatasetructureFuture == null) {
             return new LinkedHashMap<>();
+        }
         while (!updateDatasetructureFuture.isDone()) {
             try {
                 Thread.sleep(1000);
@@ -272,7 +277,7 @@ public abstract class GalaxyHistoryHandler {
      * @return double value of user memory used in GB (deleted files not
      * included)
      */
-    public double getMemoryUsage() {
+    public String getMemoryUsage() {
         while (!updateDatasetructureFuture.isDone()) {
             try {
                 Thread.sleep(1000);
@@ -305,8 +310,9 @@ public abstract class GalaxyHistoryHandler {
      * @return integer number of available datasets
      */
     public int getDatasetsNumber() {
-          if(updateDatasetructureFuture==null)
+        if (updateDatasetructureFuture == null) {
             return -1;
+        }
         while (!updateDatasetructureFuture.isDone()) {
             try {
                 Thread.sleep(1000);
@@ -324,8 +330,9 @@ public abstract class GalaxyHistoryHandler {
      * @return Working history id in Galaxy server
      */
     public String getWorkingHistoryId() {
-          if(updateDatasetructureFuture==null)
+        if (updateDatasetructureFuture == null) {
             return "offlinegalaxyid";
+        }
         while (!updateDatasetructureFuture.isDone()) {
             try {
                 Thread.sleep(1000);
@@ -394,7 +401,7 @@ public abstract class GalaxyHistoryHandler {
      * system
      * @param toDeleteMap datasets to delete after finishing work
      */
-    public abstract void synchronizeDataWithGalaxyServer(Map<String, GalaxyFileObject> historyFilesMap, boolean jobsInProgress, boolean updatePresenterView, Set<String>toDeleteMap);
+    public abstract void synchronizeDataWithGalaxyServer(Map<String, GalaxyFileObject> historyFilesMap, boolean jobsInProgress, boolean updatePresenterView, Set<String> toDeleteMap);
 
     /**
      * Following jobs statues on Galaxy server until all jobs are done.
@@ -442,6 +449,10 @@ public abstract class GalaxyHistoryHandler {
          * The main MGF Files Map.
          */
         private final Map<String, GalaxyFileObject> mgfFilesMap;
+        /**
+         * The indexed MGF Files Map.
+         */
+        private final Map<String, GalaxyFileObject> indexedMgfFilesMap;
         /**
          * The main Raw Files Map.
          */
@@ -503,6 +514,10 @@ public abstract class GalaxyHistoryHandler {
             return mgfFilesMap;
         }
 
+        public Map<String, GalaxyFileObject> getIndexedMgfFilesMap() {
+            return indexedMgfFilesMap;
+        }
+
         public Map<String, GalaxyFileObject> getRawFilesMap() {
             return rawFilesMap;
         }
@@ -539,7 +554,7 @@ public abstract class GalaxyHistoryHandler {
             return workingHistory.getId();
         }
 
-        private double usedStorageSpace = 0;
+        private String usedStorageSpace = "Not Available";
         private int filesNumber;
         private int dsNumbers;
         private Set<String> toDeleteMap = new HashSet<>();
@@ -547,6 +562,7 @@ public abstract class GalaxyHistoryHandler {
         public UpdateDatasetructureTask(boolean updatePresenterView) {
             jobsInProgress = false;
             this.mgfFilesMap = new LinkedHashMap<>();
+            this.indexedMgfFilesMap = new LinkedHashMap<>();
             this.rawFilesMap = new LinkedHashMap<>();
             this.historyFilesMap = new LinkedHashMap<>();
             this.fastaFilesMap = new LinkedHashMap<>();
@@ -558,7 +574,6 @@ public abstract class GalaxyHistoryHandler {
             this.historiesIds = new HashSet<>();
             this.NeLSFilesMap = new LinkedHashMap<>();
             this.tabMgfFilesMap = new HashMap<>();
-
             this.searchSettingsFilesMap = new LinkedHashMap<>();
 
             try {
@@ -588,6 +603,7 @@ public abstract class GalaxyHistoryHandler {
                     externaldataset.setName(project_name);
                     GalaxyFileObject ds = new GalaxyFileObject();
                     ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + dsDetails[1].split(":")[1] + "/display?to_ext=searchgui_archive");
+                    
                     externaldataset.setSearchGUIResultFile(ds);
 
                     ds.setOverview(dsDetails[5]);
@@ -596,8 +612,10 @@ public abstract class GalaxyHistoryHandler {
                     externaldataset.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + dsDetails[2].split(":")[1] + "/display?to_ext=zip");
                     historyFilesMap.put(project_name + "_ExternalDS", externaldataset);
                 } else {
-                    NeLSFilesMap.putAll((LinkedHashMap<String, String>) VaadinSession.getCurrent().getAttribute("nelsFilesMap"));
+
+//                    NeLSFilesMap.putAll((LinkedHashMap<String, String>) VaadinSession.getCurrent().getAttribute("nelsFilesMap"));
                     HistoriesClient galaxyHistoriesClient = Galaxy_Instance.getHistoriesClient();
+
                     List<History> historiesList = galaxyHistoriesClient.getHistories();
                     if (historiesList.isEmpty()) {
                         galaxyHistoriesClient.create(new History("Online-PeptideShaker-History"));
@@ -613,33 +631,36 @@ public abstract class GalaxyHistoryHandler {
                         }
                     }
                     historiesList = galaxyHistoriesClient.getHistories();
-
                     for (History history : historiesList) {
                         historiesIds.add(history.getId());
+
                     }
+                    List<Map<String, Object>> results = galaxyApiInteractiveLayer.getDatasetIdList(Galaxy_Instance.getGalaxyUrl(), Galaxy_Instance.getApiKey());//sresp.getResults();
+                    String userID = Galaxy_Instance.getUsersClient().getUsers().get(0).getId();
+                    usedStorageSpace = galaxyApiInteractiveLayer.getUserMemoryUsage(Galaxy_Instance.getGalaxyUrl(), userID, Galaxy_Instance.getApiKey());
 
-                    final String query = "select * from hda ";//where history_id= '" + history.getId() + "'"; 
-                    List<Map<String, Object>> results = Galaxy_Instance.getSearchClient().search(query).getResults();
-
-                    usedStorageSpace = 0;
+//                    if (true) {
+//                        for (Map<String, Object> tempMap : results) {
+//                            for (String key : tempMap.keySet()) {
+//                                System.out.println("ay key: " + key + "  value: " + tempMap.get(key));
+//                            }
+//                            System.out.println("----------------------------------------------------------------");
+//                        }
+//                        results.clear();
+//
+//                    }
                     results.stream().filter((map) -> map != null && (!((map.get("purged") + "").equalsIgnoreCase("true") || (!historiesIds.contains(map.get("history_id") + "")) || (map.get("deleted") + "").equalsIgnoreCase("true")))).forEachOrdered((Map<String, Object> map) -> {
-                      
-                        
                         if (map.get("name").toString().contains("ToDelete")) {
-                            toDeleteMap.add(map.get("history_id")+";"+map.get("id").toString());
+                            toDeleteMap.add(map.get("history_id") + ";" + map.get("id").toString());
                         } else {
-                            int size = (int) map.get("file_size");
-                            double sizeinMB = (double) size / 1000000.0;
-                            usedStorageSpace = usedStorageSpace + size;
-                            if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.tabular.Tabular") && map.get("name").toString().endsWith("-MOFF")) {
+                            if (map.get("extension").toString().equalsIgnoreCase("tabular") && map.get("name").toString().endsWith("-MOFF")) {
                                 GalaxyFileObject ds = new GalaxyFileObject();
                                 ds.setName(map.get("name").toString());
                                 ds.setType("MOFF Quant");
                                 ds.setHistoryId(map.get("history_id") + "");
                                 ds.setGalaxyId(map.get("id").toString());
-                                ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + map.get("id").toString() + "/display?to_ext=" + map.get("file_ext").toString());
+                                ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + map.get("url") + "/display?");
                                 ds.setStatus(map.get("state") + "");
-                                ds.setSize(sizeinMB);
                                 try {
                                     ds.setCreate_time(df6.parse((map.get("create_time") + "")));
                                 } catch (ParseException ex) {
@@ -647,18 +668,15 @@ public abstract class GalaxyHistoryHandler {
                                 }
                                 GalaxyTransferableFile file = new GalaxyTransferableFile(user_folder, ds, false);
                                 file.setDownloadUrl(ds.getDownloadUrl());
-                                file.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
                                 file.setAvailableOnNels(NeLSFilesMap.containsKey(file.getNelsKey()));
 
                                 this.moffFilesMap.put(map.get("name").toString().replace("-MOFF", ""), file);
-                                file.setSize(sizeinMB);
                                 file.setCreate_time(ds.getCreate_time());
-                                ds.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
                                 ds.setAvailableOnNels(NeLSFilesMap.containsKey(ds.getNelsKey()));
                                 NeLSFilesMap.remove(ds.getNelsKey());
 
                             }
-                            if ((map.get("data_type") + "").equalsIgnoreCase("galaxy.datatypes.binary.SearchGuiArchive")) {
+                            if ((map.get("extension") + "").equalsIgnoreCase("searchgui_archive")) {
                                 GalaxyFileObject ds = new GalaxyFileObject();
                                 ds.setStatus(map.get("state") + "");
                                 if (ds.getStatus().equalsIgnoreCase("new") || ds.getStatus().equalsIgnoreCase("running") || ds.getStatus().equalsIgnoreCase("queued")) {
@@ -669,14 +687,11 @@ public abstract class GalaxyHistoryHandler {
                                 } catch (ParseException ex) {
                                     ex.printStackTrace();
                                 }
-                                ds.setSize(sizeinMB);
                                 ds.setName(map.get("name").toString());
-                                ds.setType("SearchGUI Output File");
-                                ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + map.get("id").toString() + "/display?to_ext=" + map.get("file_ext").toString());
+                                ds.setType("SearchGUI");
+                                ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + map.get("url") + "/display?");
                                 ds.setHistoryId(map.get("history_id") + "");
-                                ds.setOverview(map.get("misc_info") + "");
                                 ds.setGalaxyId(map.get("id").toString());
-                                ds.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
                                 ds.setAvailableOnNels(NeLSFilesMap.containsKey(ds.getNelsKey()));
                                 searchGUIFilesMap.put(map.get("name").toString().replace("-SearchGUI Results", ""), ds);
                                 try {
@@ -684,15 +699,14 @@ public abstract class GalaxyHistoryHandler {
                                 } catch (ParseException ex) {
                                     ex.printStackTrace();
                                 }
-                            } else if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.text.Json") && (map.get("name").toString().endsWith(".par") || map.get("name").toString().endsWith("-PAR"))) {
+                            } else if (map.get("extension").toString().equalsIgnoreCase("json") && (map.get("name").toString().endsWith(".par") || map.get("name").toString().endsWith("-PAR"))) {
                                 GalaxyFileObject ds = new GalaxyFileObject();
                                 ds.setName(map.get("name").toString());
-                                ds.setType("Search Parameters File (JSON)");
+                                ds.setType("Parameters File (JSON)");
                                 ds.setHistoryId(map.get("history_id") + "");
                                 ds.setGalaxyId(map.get("id").toString());
-                                ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + map.get("id").toString() + "/display?to_ext=" + map.get("file_ext").toString());
+                                ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + map.get("url") + "/display?");
                                 ds.setStatus(map.get("state") + "");
-                                ds.setSize(sizeinMB);
                                 try {
                                     ds.setCreate_time(df6.parse((map.get("create_time") + "")));
                                 } catch (ParseException ex) {
@@ -700,30 +714,21 @@ public abstract class GalaxyHistoryHandler {
                                 }
                                 GalaxyTransferableFile file = new GalaxyTransferableFile(user_folder, ds, false);
                                 file.setDownloadUrl(ds.getDownloadUrl());
-                                file.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
                                 file.setAvailableOnNels(NeLSFilesMap.containsKey(file.getNelsKey()));
-//                        try {
-//                            file.getFile();
-//                        } catch (IOException ex) {
-//                            ex.printStackTrace();
-//                        }
+
                                 this.searchSettingsFilesMap.put(ds.getGalaxyId(), file);
-                                file.setSize(sizeinMB);
                                 file.setCreate_time(ds.getCreate_time());
-                                ds.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
                                 ds.setAvailableOnNels(NeLSFilesMap.containsKey(ds.getNelsKey()));
                                 NeLSFilesMap.remove(ds.getNelsKey());
-                            } else if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.proteomics.Mgf")) {
+                            } else if (map.get("extension").toString().equalsIgnoreCase("mgf")) {
                                 GalaxyFileObject ds = new GalaxyFileObject();
                                 ds.setName(map.get("name").toString());
                                 ds.setType("MGF");
-                                ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + map.get("id").toString() + "/display?to_ext=" + map.get("file_ext").toString());
+                                ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + map.get("url") + "/display?");
                                 ds.setHistoryId(map.get("history_id") + "");
                                 ds.setGalaxyId(map.get("id").toString());
-                                ds.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
                                 ds.setAvailableOnNels(NeLSFilesMap.containsKey(ds.getNelsKey()));
                                 ds.setStatus(map.get("state") + "");
-                                ds.setSize(sizeinMB);
                                 try {
                                     ds.setCreate_time(df6.parse((map.get("create_time") + "")));
                                 } catch (ParseException ex) {
@@ -731,17 +736,33 @@ public abstract class GalaxyHistoryHandler {
                                 }
                                 this.mgfFilesMap.put(ds.getGalaxyId(), ds);
                                 NeLSFilesMap.remove(ds.getNelsKey());
-                            } else if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.proteomics.ThermoRAW")) {
+                            } else if (map.get("extension").toString().equalsIgnoreCase("tabular") && map.get("name").toString().endsWith("Indexed-MGF")) {
                                 GalaxyFileObject ds = new GalaxyFileObject();
                                 ds.setName(map.get("name").toString());
-                                ds.setType("Raw");
-                                ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + map.get("id").toString() + "/display?to_ext=" + map.get("file_ext").toString());
+                                ds.setType("Indexed-MGF");
+                                ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + map.get("url") + "/display?");
                                 ds.setHistoryId(map.get("history_id") + "");
                                 ds.setGalaxyId(map.get("id").toString());
-                                ds.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
+//                                ds.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
                                 ds.setAvailableOnNels(NeLSFilesMap.containsKey(ds.getNelsKey()));
                                 ds.setStatus(map.get("state") + "");
-                                ds.setSize(sizeinMB);
+                                try {
+                                    ds.setCreate_time(df6.parse((map.get("create_time") + "")));
+                                } catch (ParseException ex) {
+                                    ex.printStackTrace();
+                                }
+                                this.indexedMgfFilesMap.put(ds.getName(), ds);
+                                NeLSFilesMap.remove(ds.getNelsKey());
+
+                            } else if (map.get("extension").toString().equalsIgnoreCase("thermo.raw")) {
+                                GalaxyFileObject ds = new GalaxyFileObject();
+                                ds.setName(map.get("name").toString());
+                                ds.setType("Thermo.raw");
+                                ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + map.get("url") + "/display?");
+                                ds.setHistoryId(map.get("history_id") + "");
+                                ds.setGalaxyId(map.get("id").toString());
+                                ds.setAvailableOnNels(NeLSFilesMap.containsKey(ds.getNelsKey()));
+                                ds.setStatus(map.get("state") + "");
                                 try {
                                     ds.setCreate_time(df6.parse((map.get("create_time") + "")));
                                 } catch (ParseException ex) {
@@ -749,67 +770,67 @@ public abstract class GalaxyHistoryHandler {
                                 }
                                 this.rawFilesMap.put(ds.getGalaxyId(), ds);
                                 NeLSFilesMap.remove(ds.getNelsKey());
-                            } else if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.sequence.Fasta")) {
+                            } else if (map.get("extension").toString().equalsIgnoreCase("fasta")) {
                                 GalaxyFileObject ds = new GalaxyFileObject();
                                 ds.setName(map.get("name").toString());
                                 ds.setType("FASTA");
-                                ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + map.get("id").toString() + "/display?to_ext=" + map.get("file_ext").toString());
+                                ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + map.get("url") + "/display?");
                                 ds.setHistoryId(map.get("history_id") + "");
                                 ds.setGalaxyId(map.get("id").toString());
-                                ds.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
                                 ds.setAvailableOnNels(NeLSFilesMap.containsKey(ds.getNelsKey()));
                                 this.fastaFilesMap.put(ds.getGalaxyId(), ds);
                                 ds.setStatus(map.get("state") + "");
-                                ds.setSize(sizeinMB);
                                 try {
                                     ds.setCreate_time(df6.parse((map.get("create_time") + "")));
                                 } catch (ParseException ex) {
                                     ex.printStackTrace();
                                 }
                                 NeLSFilesMap.remove(ds.getNelsKey());
-                            } else if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.data.Data") && map.get("name").toString().endsWith(".fasta")) {
-                                GalaxyFileObject ds = new GalaxyFileObject();
-                                ds.setName(map.get("name").toString());
-                                ds.setType("FASTA");
-                                ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + map.get("id").toString() + "/display?to_ext=" + map.get("file_ext").toString());
-                                ds.setHistoryId(map.get("history_id") + "");
-                                ds.setGalaxyId(map.get("id").toString());
-                                ds.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
-                                ds.setAvailableOnNels(NeLSFilesMap.containsKey(ds.getNelsKey()));
-                                this.fastaFilesMap.put(ds.getGalaxyId(), ds);
-                                ds.setSize(sizeinMB);
-                                try {
-                                    ds.setCreate_time(df6.parse((map.get("create_time") + "")));
-                                } catch (ParseException ex) {
-                                    ex.printStackTrace();
-                                }
-                                ds.setStatus(map.get("state") + "");
-                                NeLSFilesMap.remove(ds.getNelsKey());
-                                if (map.get("state").toString().equalsIgnoreCase("new") || map.get("state").toString().equalsIgnoreCase("running") || map.get("state").toString().equalsIgnoreCase("queued")) {
-                                    jobsInProgress = true;
-                                }
-                            } else if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.data.Data") && map.get("name").toString().endsWith(".mgf")) {
-                                GalaxyFileObject ds = new GalaxyFileObject();
-                                ds.setName(map.get("name").toString());
-                                ds.setType("MGF");
-                                ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + map.get("id").toString() + "/display?to_ext=" + map.get("file_ext").toString());
-                                ds.setHistoryId(map.get("history_id") + "");
-                                ds.setGalaxyId(map.get("id").toString());
-                                ds.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
-                                ds.setAvailableOnNels(NeLSFilesMap.containsKey(ds.getNelsKey()));
-                                ds.setStatus(map.get("state") + "");
-                                ds.setSize(sizeinMB);
-                                this.mgfFilesMap.put(ds.getGalaxyId(), ds);
-                                try {
-                                    ds.setCreate_time(df6.parse((map.get("create_time") + "")));
-                                } catch (ParseException ex) {
-                                    ex.printStackTrace();
-                                }
-                                NeLSFilesMap.remove(ds.getNelsKey());
-                                if (map.get("state").toString().equalsIgnoreCase("new") || map.get("state").toString().equalsIgnoreCase("running") || map.get("state").toString().equalsIgnoreCase("queued")) {
-                                    jobsInProgress = true;
-                                }
-                            } else if ((map.get("name").toString().endsWith("-ZIP")) && (map.get("data_type").toString().equalsIgnoreCase("abc.CompressedArchive") || map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.binary.CompressedZipArchive"))) {
+                            } //                            else if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.data.Data") && map.get("name").toString().endsWith(".fasta")) {
+                            //                                GalaxyFileObject ds = new GalaxyFileObject();
+                            //                                ds.setName(map.get("name").toString());
+                            //                                ds.setType("FASTA");
+                            //                                ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() +map.get("url")+"/display?");
+                            //                                ds.setHistoryId(map.get("history_id") + "");
+                            //                                ds.setGalaxyId(map.get("id").toString());
+                            ////                                ds.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
+                            //                                ds.setAvailableOnNels(NeLSFilesMap.containsKey(ds.getNelsKey()));
+                            //                                this.fastaFilesMap.put(ds.getGalaxyId(), ds);
+                            //                                ds.setSize(sizeinMB);
+                            //                                try {
+                            //                                    ds.setCreate_time(df6.parse((map.get("create_time") + "")));
+                            //                                } catch (ParseException ex) {
+                            //                                    ex.printStackTrace();
+                            //                                }
+                            //                                ds.setStatus(map.get("state") + "");
+                            //                                NeLSFilesMap.remove(ds.getNelsKey());
+                            //                                if (map.get("state").toString().equalsIgnoreCase("new") || map.get("state").toString().equalsIgnoreCase("running") || map.get("state").toString().equalsIgnoreCase("queued")) {
+                            //                                    jobsInProgress = true;
+                            //                                }
+                            //                            } 
+                            //                        else if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.data.Data") && map.get("name").toString().endsWith(".mgf")) {
+                            //                                GalaxyFileObject ds = new GalaxyFileObject();
+                            //                                ds.setName(map.get("name").toString());
+                            //                                ds.setType("MGF");
+                            //                                ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() +map.get("url")+"/display?");
+                            //                                ds.setHistoryId(map.get("history_id") + "");
+                            //                                ds.setGalaxyId(map.get("id").toString());
+                            ////                                ds.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
+                            //                                ds.setAvailableOnNels(NeLSFilesMap.containsKey(ds.getNelsKey()));
+                            //                                ds.setStatus(map.get("state") + "");
+                            //                                ds.setSize(sizeinMB);
+                            //                                this.mgfFilesMap.put(ds.getGalaxyId(), ds);
+                            //                                try {
+                            //                                    ds.setCreate_time(df6.parse((map.get("create_time") + "")));
+                            //                                } catch (ParseException ex) {
+                            //                                    ex.printStackTrace();
+                            //                                }
+                            //                                NeLSFilesMap.remove(ds.getNelsKey());
+                            //                                if (map.get("state").toString().equalsIgnoreCase("new") || map.get("state").toString().equalsIgnoreCase("running") || map.get("state").toString().equalsIgnoreCase("queued")) {
+                            //                                    jobsInProgress = true;
+                            //                                }
+                            //                            } 
+                            else if ((map.get("name").toString().endsWith("-PS")) && (map.get("extension").toString().equalsIgnoreCase("zip"))) {
                                 String projectId = map.get("name").toString().split("-")[0];
                                 PeptideShakerVisualizationDataset vDs = new PeptideShakerVisualizationDataset(projectId, user_folder, Galaxy_Instance.getGalaxyUrl(), Galaxy_Instance.getApiKey(), galaxyDatasetServingUtil, csf_pr_Accession_List) {
                                     @Override
@@ -822,13 +843,11 @@ public abstract class GalaxyHistoryHandler {
                                 vDs.setHistoryId(map.get("history_id") + "");
                                 vDs.setType("Web Peptide Shaker Dataset");
                                 vDs.setName(projectId);
-                                vDs.setFile_ext(map.get("file_ext") + "");
+//                                vDs.setFile_ext(map.get("file_ext") + "");
                                 vDs.setPeptideShakerResultsFileId(map.get("id").toString(), false);
                                 vDs.setStatus(map.get("state") + "");
                                 vDs.setGalaxyId(map.get("id").toString());
-                                vDs.setSize(sizeinMB);
-                                vDs.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + map.get("id").toString() + "/display?to_ext=" + map.get("file_ext").toString());
-
+                                vDs.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + map.get("url") + "/display?");
                                 if (map.get("state").toString().equalsIgnoreCase("new") || map.get("state").toString().equalsIgnoreCase("running") || map.get("state").toString().equalsIgnoreCase("queued")) {
                                     jobsInProgress = true;
                                 }
@@ -837,43 +856,49 @@ public abstract class GalaxyHistoryHandler {
                                 } catch (ParseException ex) {
                                     ex.printStackTrace();
                                 }
-                            } else if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.tabular.Tabular") && (map.get("name").toString().endsWith("-MGFFile") || (map.get("name").toString().endsWith("-MGF")))) {
-                                GalaxyFileObject ds = new GalaxyFileObject();
-                                ds.setName(map.get("name").toString());
-                                ds.setType("MGF");
-                                ds.setHistoryId(map.get("history_id") + "");
-                                ds.setGalaxyId(map.get("id").toString());
-                                ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + map.get("id").toString() + "/display");
-                                ds.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
-                                ds.setAvailableOnNels(NeLSFilesMap.containsKey(ds.getNelsKey()));
-                                ds.setStatus(map.get("state") + "");
-                                ds.setSize(sizeinMB);
-                                if (ds.getStatus().equalsIgnoreCase("new") || ds.getStatus().equalsIgnoreCase("running") || ds.getStatus().equalsIgnoreCase("queued")) {
-                                    jobsInProgress = true;
-                                }
-                                NeLSFilesMap.remove(ds.getNelsKey());
-                                tabMgfFilesMap.put(ds.getName(), ds);
-                                try {
-                                    ds.setCreate_time(df6.parse((map.get("create_time") + "")));
-                                } catch (ParseException ex) {
-                                    ex.printStackTrace();
-                                }
                             }
+//                        else if (map.get("data_type").toString().equalsIgnoreCase("galaxy.datatypes.tabular.Tabular") && (map.get("name").toString().endsWith("-MGFFile") || (map.get("name").toString().endsWith("-MGF")))) {
+//                                GalaxyFileObject ds = new GalaxyFileObject();
+//                                ds.setName(map.get("name").toString());
+//                                ds.setType("MGF");
+//                                ds.setHistoryId(map.get("history_id") + "");
+//                                ds.setGalaxyId(map.get("id").toString());
+//                                ds.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + map.get("id").toString() + "/display");
+////                                ds.setNelsKey(map.get("name") + "", map.get("file_ext") + "");
+//                                ds.setAvailableOnNels(NeLSFilesMap.containsKey(ds.getNelsKey()));
+//                                ds.setStatus(map.get("state") + "");
+//                                ds.setSize(sizeinMB);
+//                                if (ds.getStatus().equalsIgnoreCase("new") || ds.getStatus().equalsIgnoreCase("running") || ds.getStatus().equalsIgnoreCase("queued")) {
+//                                    jobsInProgress = true;
+//                                }
+//                                NeLSFilesMap.remove(ds.getNelsKey());
+//                                tabMgfFilesMap.put(ds.getName(), ds);
+//                                try {
+//                                    ds.setCreate_time(df6.parse((map.get("create_time") + "")));
+//                                } catch (ParseException ex) {
+//                                    ex.printStackTrace();
+//                                }
+//                            }
                         }
                     });
 
+                    System.out.println("at--- "+peptideShakerVisualizationMap.keySet()+"*****"+searchGUIFilesMap.keySet()+"   ");
                     peptideShakerVisualizationMap.keySet().stream().map((key) -> peptideShakerVisualizationMap.get(key)).filter((vDs) -> !(!searchGUIFilesMap.containsKey(vDs.getProjectName()))).forEachOrdered((vDs) -> {
 //                        if (!moffFilesMap.isEmpty() && vDs.getName().contains("Pathway_testing")) {
 //                            vDs.setMoff_quant_file(moffFilesMap.values().iterator().next());
 //                        }
                         GalaxyFileObject ds = searchGUIFilesMap.get(vDs.getProjectName());
                         vDs.setCreateTime(ds.getCreate_time());
+                        Dataset hcp =  Galaxy_Instance.getHistoriesClient().showDataset(ds.getHistoryId(), ds.getGalaxyId());
+                        ds.setOverview(hcp.getInfo());
+                        
                         vDs.setSearchGUIResultFile(ds);
                         moffFilesMap.keySet().stream().filter((key) -> (key.contains(vDs.getProjectName()))).forEachOrdered((key) -> {
                             vDs.setMoff_quant_file(moffFilesMap.get(key));
                         });
-                        tabMgfFilesMap.keySet().stream().filter((key) -> (key.contains(vDs.getProjectName()))).forEachOrdered((key) -> {
-                            vDs.addMgfFiles(key, tabMgfFilesMap.get(key));
+                        indexedMgfFilesMap.keySet().stream().filter((key) -> (key.contains(vDs.getProjectName()))).forEachOrdered((key) -> {
+                            System.out.println("at add mgf file "+key);
+                            vDs.addMgfFiles(key, indexedMgfFilesMap.get(key));
                         });
                     });
 
@@ -891,6 +916,7 @@ public abstract class GalaxyHistoryHandler {
                     historyFilesMap.putAll(fastaFilesMap);
                     historyFilesMap.putAll(searchSettingsFilesMap);
                     historyFilesMap.putAll(indexFilesMap);
+                    historyFilesMap.putAll(rawFilesMap);
                 }
 
                 if (jobsInProgress) {
@@ -898,7 +924,7 @@ public abstract class GalaxyHistoryHandler {
                     invokeRecheckDataProcessing(updatePresenterView);
 
                 }
-                synchronizeDataWithGalaxyServer(historyFilesMap, jobsInProgress, updatePresenterView,toDeleteMap);
+                synchronizeDataWithGalaxyServer(historyFilesMap, jobsInProgress, updatePresenterView, toDeleteMap);
             } catch (Exception e) {
                 if (e.toString().contains("Service Temporarily Unavailable")) {
                     Notification.show("Service Temporarily Unavailable", Notification.Type.ERROR_MESSAGE);
@@ -912,7 +938,6 @@ public abstract class GalaxyHistoryHandler {
 
                 }
             }
-            usedStorageSpace = usedStorageSpace / 1000000000.0;
 
         }
 
@@ -924,7 +949,7 @@ public abstract class GalaxyHistoryHandler {
             return workingHistory;
         }
 
-        public double getUsedStorageSpace() {
+        public String getUsedStorageSpace() {
             return usedStorageSpace;
         }
 

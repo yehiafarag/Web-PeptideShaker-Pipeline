@@ -1,16 +1,18 @@
 package com.uib.web.peptideshaker.presenter.core.filtercharts.filters;
 
-import com.uib.web.peptideshaker.presenter.core.filtercharts.charts.*;
 import com.ejt.vaadin.sizereporter.ComponentResizeEvent;
-import com.ejt.vaadin.sizereporter.SizeReporter;
+import com.uib.web.peptideshaker.presenter.core.filtercharts.charts.*;
 import com.google.common.collect.Sets;
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.SelectionManager;
 import com.uib.web.peptideshaker.presenter.core.FilterButton;
 import com.vaadin.data.Property;
 import com.vaadin.event.LayoutEvents;
+import com.vaadin.server.Page;
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.shared.ui.absolutelayout.AbsoluteLayoutState;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbsoluteLayout;
+import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Slider;
 import com.vaadin.ui.VerticalLayout;
@@ -54,7 +56,6 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
     private final JFreeChart mainChart;
     private final FilterButton resetFilterBtn;
     private double maxValue;
-    private double positionIndexFactro;
     private final String title;
     private final String sign;
     private boolean suspendFilter;
@@ -97,23 +98,38 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
         chartContainer.setMargin(new MarginInfo(false, false, false, false));
         chartImage = new Label("", ContentMode.HTML);
         chartImage.setSizeFull();
+        chartImage.setId(this.title);
         chartImage.addStyleName("labeasimg");
         chartContainer.addComponent(chartImage);
-        SizeReporter reporter = new SizeReporter(chartContainer);
-        mainChart = initChart();
-        reporter.addResizeListener((ComponentResizeEvent event) -> {
-            int tChartWidth = event.getWidth();
-            int tChartHeight = event.getHeight();
-            if (tChartWidth <= 0 || tChartHeight <= 0) {
-                return;
-            }
-            if ((tChartWidth == chartWidth || Math.abs(tChartWidth - chartWidth) < 10) && (chartHeight == tChartHeight || Math.abs(tChartHeight - chartHeight) < 10)) {
-                return;
-            }
-            chartWidth = tChartWidth;
-            chartHeight = tChartHeight;
-            chartImage.setValue(saveToFile(mainChart, chartWidth, chartHeight));
+        
+          JavaScript.getCurrent().addFunction("getElSizeof" + filterId,
+                (arg) -> {
+                    int width = (int) arg.getNumber(0);
+                    int height = (int) arg.getNumber(1);
+                    if (chartWidth == width && chartHeight == height) {
+                        return;
+                    }
+                    sizeChanged(width, height);
+                });
+
+        Page.getCurrent().addBrowserWindowResizeListener((Page.BrowserWindowResizeEvent event) -> {
+            updateComponentSize();
         });
+        
+        mainChart = initChart();
+//        reporter.addResizeListener((ComponentResizeEvent event) -> {
+//            int tChartWidth = event.getWidth();
+//            int tChartHeight = event.getHeight();
+//            if (tChartWidth <= 0 || tChartHeight <= 0) {
+//                return;
+//            }
+//            if ((tChartWidth == chartWidth || Math.abs(tChartWidth - chartWidth) < 10) && (chartHeight == tChartHeight || Math.abs(tChartHeight - chartHeight) < 10)) {
+//                return;
+//            }
+//            chartWidth = tChartWidth;
+//            chartHeight = tChartHeight;
+//            chartImage.setValue(saveToFile(mainChart, chartWidth, chartHeight));
+//        });
 
         frame.addComponent(chartContainer, "top: 22px;left: 21px;right: 9px;bottom: 18px;");
         slidersContainer = new AbsoluteLayout();
@@ -157,6 +173,22 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
         
 
     }
+    private void updateComponentSize() {
+        JavaScript.getCurrent().execute(" var elem = document.getElementById('" + title + "'); "
+                + " if(elem){ getElSizeof" + filterId + "(elem.clientWidth, elem.clientHeight); }");
+    }
+
+    private void sizeChanged(int tChartWidth, int tChartHeight) {
+   
+//            if (tChartWidth <= 0 || tChartHeight <= 0) {
+//                return;
+//            }
+//            if ((tChartWidth == chartWidth || Math.abs(tChartWidth - chartWidth) < 10) && (chartHeight == tChartHeight || Math.abs(tChartHeight - chartHeight) < 10)) {
+//                return;
+//            }
+            chartWidth = tChartWidth;
+            chartHeight = tChartHeight;
+            chartImage.setValue(saveToFile(mainChart, chartWidth, chartHeight));}
 
     public void initializeFilterData(TreeMap<Comparable, Set<Comparable>> data) {
         activeData.clear();
@@ -175,7 +207,6 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
         } else {
             maxValue = 100.0;
         }
-        positionIndexFactro = 100.0 / maxValue;
         upperRangeSlider.removeValueChangeListener(DivaRangeFilter.this);
         lowerRangeSlider.removeValueChangeListener(DivaRangeFilter.this);
         lowerRangeSlider.setMin(min);
@@ -483,6 +514,14 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
     public String externalTitle() {
         chartTitle.setVisible(false);
         return chartTitle.getValue();
+    }
+    
+    @Override
+    protected AbsoluteLayoutState getState() {
+        if (super.isConnectorEnabled()) {
+            updateComponentSize();
+        }
+        return super.getState(); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

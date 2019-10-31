@@ -102,8 +102,9 @@ public abstract class GraphsContainerComponent extends VerticalLayout {
     public boolean isQuantDataSet() {
         return peptideShakerVisualizationDataset.isQuantDataset();
     }
-    public String getProteinName(String selectedProteinId){
-     return  peptideShakerVisualizationDataset.getProtein(selectedProteinId).getDescription();
+
+    public String getProteinName(String selectedProteinId) {
+        return peptideShakerVisualizationDataset.getProtein(selectedProteinId).getDescription();
     }
 
     public String updateGraphData(String selectedProteinId) {
@@ -114,7 +115,7 @@ public abstract class GraphsContainerComponent extends VerticalLayout {
         unrelatedPeptides.clear();
         edges.clear();
         if (peptideShakerVisualizationDataset == null || selectedProteinId == null || selectedProteinId.trim().equalsIgnoreCase("null") || peptideShakerVisualizationDataset.getProtein(selectedProteinId) == null) {
-            graphComponent.updateGraphData(null, null, null, null, null, peptideShakerVisualizationDataset.isQuantDataset(),null);
+            graphComponent.updateGraphData(null, null, null, null, null, peptideShakerVisualizationDataset.isQuantDataset(), null);
             thumbURL = null;
             return thumbURL;
         }
@@ -124,6 +125,9 @@ public abstract class GraphsContainerComponent extends VerticalLayout {
         Set<String> tunrelatedProt = new LinkedHashSet<>();
         maxPsms = 0;
         peptides.stream().map((peptide) -> {
+            if (peptide.isModified() && peptide.getVariableModificationsAsString().contains("0") && peptide.getSequence().startsWith("NH2")) {
+                peptide.setModifiedSequence(peptide.getModifiedSequence().replaceFirst("NH2", "pyro"));
+            }
             peptidesNodes.put(peptide.getModifiedSequence(), peptide);
             maxPsms = Math.max(maxPsms, peptide.getPSMsNumber());
             return peptide;
@@ -149,7 +153,7 @@ public abstract class GraphsContainerComponent extends VerticalLayout {
             proteinNodes.replace(accession, peptideShakerVisualizationDataset.updateProteinInformation(tempProteinNodes.get(accession), accession));
         });
         colorScale = new RangeColorGenerator(maxPsms);//update pathway information
-        graphComponent.updateGraphData(protein, proteinNodes, peptidesNodes, edges, colorScale, peptideShakerVisualizationDataset.isQuantDataset(),peptideShakerVisualizationDataset.getProteinIntensityColorGenerator());
+        graphComponent.updateGraphData(protein, proteinNodes, peptidesNodes, edges, colorScale, peptideShakerVisualizationDataset.isQuantDataset(), peptideShakerVisualizationDataset.getProteinIntensityColorGenerator());
         thumbURL = graphComponent.getThumbImgeUrl();
         return thumbURL;
 
@@ -167,8 +171,8 @@ public abstract class GraphsContainerComponent extends VerticalLayout {
             } else {
                 protein = proteinNodes.get(protId.toString());
             }
-            
-            if (protein !=null && protein.getValidation().contains("Confident")) {
+
+            if (protein != null && protein.getValidation().contains("Confident")) {
                 protoformProteinNodes.put(protein.getAccession(), protein);
             }
         }

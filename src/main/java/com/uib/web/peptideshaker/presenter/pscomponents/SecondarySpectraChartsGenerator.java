@@ -1,14 +1,19 @@
 package com.uib.web.peptideshaker.presenter.pscomponents;
 
-import com.compomics.util.experiment.biology.Peptide;
-import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
+import com.compomics.util.experiment.biology.proteins.Peptide;
 import com.compomics.util.experiment.identification.matches.IonMatch;
-import com.compomics.util.experiment.identification.spectrum_annotation.AnnotationSettings;
-import com.compomics.util.experiment.identification.spectrum_annotation.SpecificAnnotationSettings;
+import com.compomics.util.experiment.identification.matches.ModificationMatch;
+import com.compomics.util.experiment.identification.spectrum_annotation.AnnotationParameters;
+import com.compomics.util.experiment.identification.spectrum_annotation.SpecificAnnotationParameters;
 import com.compomics.util.experiment.identification.spectrum_annotation.spectrum_annotators.PeptideSpectrumAnnotator;
 import com.compomics.util.experiment.identification.spectrum_assumptions.PeptideAssumption;
+import com.compomics.util.experiment.io.biology.protein.SequenceProvider;
 import com.compomics.util.gui.spectrum.MassErrorPlot;
 import com.compomics.util.gui.spectrum.SequenceFragmentationPanel;
+import com.compomics.util.parameters.identification.IdentificationParameters;
+import com.compomics.util.parameters.identification.advanced.SequenceMatchingParameters;
+import com.compomics.util.parameters.identification.search.ModificationParameters;
+import com.compomics.util.parameters.identification.search.SearchParameters;
 import com.itextpdf.text.pdf.codec.Base64;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.Sizeable.Unit;
@@ -18,18 +23,15 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.HashSet;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
-import org.apache.commons.math.MathException;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.encoders.ImageEncoder;
 import org.jfree.chart.encoders.ImageEncoderFactory;
@@ -84,55 +86,77 @@ public class SecondarySpectraChartsGenerator {
         this.massErrorPlotComponent.setContentMode(ContentMode.HTML);
         this.massErrorPlotComponent.setHeight(100, Unit.PERCENTAGE);
         this.massErrorPlotComponent.setWidth(100, Unit.PERCENTAGE);
-
         this.sequenceFragmentationChart.addComponent(this.sequenceFragmentationChartComponent);
         this.massErrorPlot.addComponent(this.massErrorPlotComponent);
         sequenceFragmentationChart.setDescription(tooltip);
-//        this.sequenceLabel = new Label(sequence, ContentMode.HTML);
-//        this.sequenceLabel.setStyleName(ValoTheme.LABEL_SMALL);
-//        this.sequenceLabel.setSizeFull();
-//        SecondarySpectraChartsGenerator.this.addComponent(sequenceLabel);
-//        SecondarySpectraChartsGenerator.this.reset();
         this.objectId = objectId;
-
-        // create the sequence fragment ion view
         // create the sequence fragment ion view
         double accuracy = spectrumInformation.getFragmentIonAccuracy();
 
+        // get the spectrum annotations
         PeptideAssumption peptideAssumption = spectrumInformation.getSpectrumMatch().getBestPeptideAssumption();
         Peptide currentPeptide = peptideAssumption.getPeptide();
-        AnnotationSettings annotationPreferences = spectrumInformation.getIdentificationParameters().getAnnotationPreferences();
-        annotationPreferences.setIntensityLimit(0.75);
-        annotationPreferences.setFragmentIonAccuracy(accuracy);
         PeptideSpectrumAnnotator spectrumAnnotator = new PeptideSpectrumAnnotator();
+        AnnotationParameters annotationParameters = spectrumInformation.getIdentificationParameters().getAnnotationParameters();
+        annotationParameters.setIntensityLimit(0.75);
+        annotationParameters.setFragmentIonAccuracy(accuracy);
 
-        SpecificAnnotationSettings specificAnnotationPreferences = new SpecificAnnotationSettings(spectrumInformation.getSpectrum().getSpectrumKey(), peptideAssumption);
+        SequenceProvider sequenceProvider = spectrumInformation.getSequenceProvider();//peptideShakerGUI.getSequenceProvider();
+        IdentificationParameters identificationParameters = spectrumInformation.getIdentificationParameters();
+        ModificationParameters modificationParameters = identificationParameters.getSearchParameters().getModificationParameters();
+        identificationParameters.setAnnotationParameters(annotationParameters);
+        SequenceMatchingParameters modificationSequenceMatchingParameters = identificationParameters.getModificationLocalizationParameters().getSequenceMatchingParameters();
 
-        spectrumInformation.getIdentificationParameters().setAnnotationSettings(annotationPreferences);
-        try {
-            specificAnnotationPreferences = annotationPreferences.getSpecificAnnotationPreferences(spectrumInformation.getSpectrum().getSpectrumKey(), specificAnnotationPreferences.getSpectrumIdentificationAssumption(), spectrumInformation.getIdentificationParameters().getSequenceMatchingPreferences(), spectrumInformation.getIdentificationParameters().getPtmScoringPreferencesSequenceMatchingPreferences());
-        } catch (IOException | InterruptedException | ClassNotFoundException | SQLException ex) {
-           ex.printStackTrace();
+        SpecificAnnotationParameters specificAnnotationParameters = annotationParameters.getSpecificAnnotationParameters(spectrumInformation.getSpectrum().getSpectrumKey(), peptideAssumption, modificationParameters, sequenceProvider, modificationSequenceMatchingParameters, spectrumAnnotator);
+
+        IonMatch[] annotations = spectrumAnnotator.getSpectrumAnnotation(annotationParameters, specificAnnotationParameters, spectrumInformation.getSpectrum(), currentPeptide,
+                modificationParameters, sequenceProvider, modificationSequenceMatchingParameters);
+//        PeptideAssumption peptideAssumption = spectrumInformation.getSpectrumMatch().getBestPeptideAssumption();
+//        Peptide currentPeptide = peptideAssumption.getPeptide();
+//        AnnotationParameters annotationParameters = spectrumInformation.getIdentificationParameters().getAnnotationParameters();
+
+//        PeptideSpectrumAnnotator spectrumAnnotator = new PeptideSpectrumAnnotator();
+//        
+//        SpecificAnnotationParameters specificAnnotationParameters = new SpecificAnnotationParameters(spectrumInformation.getSpectrum().getSpectrumKey(), peptideAssumption);
+//
+//        spectrumInformation.getIdentificationParameters().setAnnotationParameters(annotationParameters);
+//        specificAnnotationParameters = annotationParameters.getSpecificAnnotationParameters(spectrumInformation.getSpectrum().getSpectrumKey(), peptideAssumption, modificationParameters, sequenceProvider, SequenceMatchingParameters.defaultStringMatching, spectrumAnnotator) //        specificAnnotationParameters = annotationParameters.getSpecificAnnotationParameters(spectrumInformation.getSpectrum().getSpectrumKey(), specificAnnotationParameters.getSpectrumIdentificationAssumption(), spectrumInformation.getIdentificationParameters().getSequenceMatchingParameters(),spectrumAnnotator);
+//
+//        SequenceProvider sequenceProvider = null;// spectrumInformation.getIdentificationParameters().gets
+//        SequenceMatchingParameters modificationSequenceMatchingParameters = spectrumInformation.getIdentificationParameters().getModificationLocalizationParameters().getSequenceMatchingParameters();
+//
+//        IonMatch[] annotations = spectrumAnnotator.getSpectrumAnnotation(annotationParameters, specificAnnotationParameters, spectrumInformation.getSpectrum(), currentPeptide,
+//                spectrumInformation.getIdentificationParameters().getSearchParameters().getModificationParameters(), sequenceProvider, modificationSequenceMatchingParameters);
+        Integer forwardIon = spectrumInformation.getIdentificationParameters().getSearchParameters().getForwardIons().get(0);
+        Integer rewindIon = spectrumInformation.getIdentificationParameters().getSearchParameters().getRewindIons().get(0);//
+
+        HashSet<String> modifications = new HashSet<>();
+        for (ModificationMatch mm : currentPeptide.getVariableModifications()) {
+            modifications.add(mm.getModification());
         }
+        String taggedPeptideSequence = currentPeptide.getTaggedModifiedSequence(modificationParameters, sequenceProvider, modificationSequenceMatchingParameters, false, false, true, modifications);
 
-        ArrayList<IonMatch> annotations;
-        try {
-            annotations = spectrumAnnotator.getSpectrumAnnotation(annotationPreferences, specificAnnotationPreferences, spectrumInformation.getSpectrum(), currentPeptide);
-        } catch (InterruptedException | MathException ex) {
-            Logger.getLogger(SecondarySpectraChartsGenerator.class.getName()).log(Level.SEVERE, null, ex);
-            return;
-        }
-        Integer forwardIon = spectrumInformation.getIdentificationParameters().getForwardIons().get(0);
-        Integer rewindIon = spectrumInformation.getIdentificationParameters().getRewindIons().get(0);//
-        String taggedPeptideSequence = currentPeptide.getTaggedModifiedSequence(spectrumInformation.getIdentificationParameters().getPtmSettings(), false, false, false);
-        SequenceFragmentationPanel sequenceFragmentationPanel = new SequenceFragmentationPanel(taggedPeptideSequence, annotations, currentPeptide.isModified(), spectrumInformation.getIdentificationParameters().getPtmSettings(), forwardIon, rewindIon);
+//        String taggedPeptideSequence = currentPeptide.getTaggedModifiedSequence(spectrumInformation.getIdentificationParameters().getSearchParameters().getModificationParameters(), sequenceProvider, modificationSequenceMatchingParameters, false, false, false,);
+        SequenceFragmentationPanel sequenceFragmentationPanel = new SequenceFragmentationPanel(
+                taggedPeptideSequence,
+                annotations, true, identificationParameters.getSearchParameters().getModificationParameters(), forwardIon, rewindIon);
+        sequenceFragmentationPanel.setMinimumSize(new Dimension(sequenceFragmentationPanel.getPreferredSize().width, sequenceFragmentationPanel.getHeight()));
+
+//
+//
+//SequenceFragmentationPanel sequenceFragmentationPanel = new SequenceFragmentationPanel(sequence, annotations, false, false, spectrumInformation.getIdentificationParameters().getSearchParameters().getModificationParameters(), forwardIon, rewindIon);
         sequenceFragmentationPanel.setOpaque(true);
         sequenceFragmentationPanel.setBackground(Color.WHITE);
         sequenceFragmentationPanel.setSize(1000, 68);
         sequenceFragmentationChartComponent.setSource(new ExternalResource(drawImage(sequenceFragmentationPanel)));
-        try {
-            errorPlot = new MassErrorPlot(annotations, spectrumInformation.getSpectrum(), accuracy, spectrumInformation.getIdentificationParameters().getFragmentAccuracyType() == SearchParameters.MassAccuracyType.PPM);
-            errorPlot.setSize(300, 68);
+        //            errorPlot = new MassErrorPlot(annotations, spectrumInformation.getSpectrum(), accuracy, spectrumInformation.getIdentificationParameters().getSearchParameters().getFragmentAccuracyType() == SearchParameters.MassAccuracyType.PPM);
+
+        // create the miniature mass error plot
+        errorPlot = new MassErrorPlot(annotations, spectrumInformation.getSpectrum(),
+                specificAnnotationParameters.getFragmentIonAccuracy(),
+                spectrumInformation.getIdentificationParameters().getSearchParameters().getFragmentAccuracyType() == SearchParameters.MassAccuracyType.PPM);
+        errorPlot.setSize(300, 68);
+        if (errorPlot.getChartPanel() != null) {
             errorPlot.getChartPanel().setSize(300, 68);
             errorPlot.updateUI();
             XYPlot plot = (XYPlot) errorPlot.getChartPanel().getChart().getPlot();
@@ -142,7 +166,7 @@ public class SecondarySpectraChartsGenerator {
             plot.setRangeZeroBaselineVisible(true);
             plot.setRangeZeroBaselinePaint(Color.LIGHT_GRAY);
             plot.setRangeZeroBaselineStroke(new BasicStroke(1.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[]{10.0f}, 0.0f));
-            plot.getDomainAxis().setUpperBound(plot.getDomainAxis().getUpperBound()+30);
+            plot.getDomainAxis().setUpperBound(plot.getDomainAxis().getUpperBound() + 30);
 //            plot.getRangeAxis().setUpperBound(plot.getRangeAxis().getUpperBound()+30);
 
             DefaultXYItemRenderer renderer = (DefaultXYItemRenderer) plot.getRenderer();
@@ -151,9 +175,8 @@ public class SecondarySpectraChartsGenerator {
             }
             plot.setRenderer(renderer);
             massErrorPlotComponent.setValue(drawImage(errorPlot.getChartPanel().getChart(), 270, 68));
-
-        } catch (InterruptedException ex) {
-            ex.printStackTrace();
+        } else {
+            System.out.println("at error plot panel was null");
         }
 
     }
@@ -196,16 +219,13 @@ public class SecondarySpectraChartsGenerator {
     }
 
     private String drawImage(JFreeChart chart, int imgW, int imgH) {
-        
-        
+
 //         chart.getLegend().setVisible(false);
 //        chart.fireChartChanged();
         SVGGraphics2D g2 = new SVGGraphics2D(imgW, imgH);
         Rectangle r = new Rectangle(0, 0, imgW, imgH);
         chart.draw(g2, r);
         return g2.getSVGElement();
-        
-        
 
 //        BufferedImage image = chart.createBufferedImage(imgW, imgH);
 //

@@ -109,21 +109,10 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
         PresenterManager.this.addComponent(middleLayoutContainer);
         PresenterManager.this.setExpandRatio(middleLayoutContainer, 100);
 
-//        topLayoutContainer = new HorizontalLayout();
-//        topLayoutContainer.setSizeFull();
-//        topLayoutContainer.setStyleName("topviewcontainer");
-//        middleLayoutContainer.addComponent(topLayoutContainer);
-//        middleLayoutContainer.setExpandRatio(topLayoutContainer, 0);
-//        this.topLayoutBtnsContainer = new HorizontalLayout();
-//        topLayoutBtnsContainer.setSizeFull();
-//        topLayoutBtnsContainer.setSpacing(false);
-//        topLayoutContainer.addComponent(this.topLayoutBtnsContainer);
-//        topLayoutContainer.setComponentAlignment(this.topLayoutBtnsContainer, Alignment.TOP_RIGHT);
         topMiddleLayoutContainer = new AbsoluteLayout();
         topMiddleLayoutContainer.setSizeFull();
         middleLayoutContainer.addComponent(topMiddleLayoutContainer);
         middleLayoutContainer.setExpandRatio(topMiddleLayoutContainer, 100);
-//        topLayoutContainer.addStyleName("hide");
 
         subPresenterButtonsContainer = new AbsoluteLayout();
         subPresenterButtonsContainer.setSizeFull();
@@ -138,40 +127,6 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
 
         this.presenterButtonsContainerLayout = new AbsoluteLayout();
         presenterButtonsContainerLayout.setSizeFull();
-//        presenterButtonsContainer.addComponent(this.presenterButtonsContainerLayout);
-//        presenterButtonsContainerLayout.addStyleName("actionButtonContainer");
-//        presenterButtonsContainerLayout.addStyleName("hideactionbutton");
-//        Canvas canvas = new Canvas();
-//        presenterButtonsContainer.addComponent(canvas);
-//        canvas.setSizeFull();
-//        canvas.setStyleName("sweepeventcanvas");
-//        canvas.addMouseMoveListener((MouseEventDetails mouseDetails) -> {
-//            if (startDrag) {
-//                if (startX == 1000000000) {
-//                    startX = mouseDetails.getClientX();
-//                }
-//                endX = mouseDetails.getClientX();
-//            }
-//        });
-//        canvas.addMouseDownListener(() -> {
-//            startX = 1000000000;
-//            startDrag = true;
-//        });
-//        middleLayoutContainer.addLayoutClickListener((LayoutEvents.LayoutClickEvent event) -> {
-//            if (event.getClickedComponent().getStyleName().contains("home")) {
-//                presenterButtonsContainerLayout.addStyleName("hideactionbutton");
-//            }
-//        });
-//
-//        canvas.addMouseUpListener(() -> {
-//            startDrag = false;
-//            if (endX < startX && presenterButtonsContainerLayout.getStyleName().contains("hideactionbutton")) {
-//                presenterButtonsContainerLayout.removeStyleName("hideactionbutton");
-//            } else {
-//                presenterButtonsContainerLayout.addStyleName("hideactionbutton");
-//            }
-//        });
-//        leftLayoutContainer.addComponent(presenterButtonsContainerLayout);
 
         signOutBtn = new Button("Signout");
         signOutBtn.addClickListener((Button.ClickEvent event) -> {
@@ -188,10 +143,8 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
     public void setSideButtonsVisible(boolean showSideButtons) {
         if (showSideButtons) {
             subPresenterButtonsContainer.removeStyleName("hide");
-//            topLayoutContainer.removeStyleName("hide");
         } else {
             subPresenterButtonsContainer.addStyleName("hide");
-//            topLayoutContainer.addStyleName("hide");
         }
 
     }
@@ -212,9 +165,6 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
             cBtn.removeLayoutClickListener(PresenterManager.this);
             subViewButtonsActionContainer.removeComponent(tview.getSubViewButtonsActionContainerLayout());
             topMiddleLayoutContainer.removeComponent(tview.getMainView());
-//            column = presenterButtonsContainerLayout.getComponentArea(cBtn).getColumn1();
-//            rows = presenterButtonsContainerLayout.getComponentArea(cBtn).getRow1();
-//            presenterButtonsContainerLayout.removeComponent(cBtn);
             y = presenterButtonsContainerLayout.getPosition(cBtn).getTopValue().intValue();
             x = presenterButtonsContainerLayout.getPosition(cBtn).getLeftValue().intValue();
             presenterButtonsContainerLayout.removeComponent(cBtn);
@@ -235,16 +185,9 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
                 y = 0;
                 x += 50;
             }
-//            presenterButtonsContainerLayout.addComponent(view.getLargePresenterControlButton(), column, rows++);
-//            if (rows == 2) {
-//                column++;
-//                rows = 0;
-//            }
 
         } else {
-//            view.getSubViewButtonsActionContainerLayout().addLayoutClickListener(PresenterManager.this);
             view.getSmallPresenterControlButton().addLayoutClickListener(PresenterManager.this);
-//             view.getLargePresenterControlButton().addLayoutClickListener(PresenterManager.this);
         }
         reOrganizePresenterButtons();
     }
@@ -314,7 +257,6 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
                 t = 45;
             }
         }
-        //subPresenterButtonsContainer.addComponent(view.getSmallPresenterControlButton());
     }
 
 }

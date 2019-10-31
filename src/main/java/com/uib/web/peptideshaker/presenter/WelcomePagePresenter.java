@@ -383,6 +383,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
                     connectinoWindow.setStyleName("connectionwindow");
 
                     List<String> userOverviewData = connectToGalaxy(userAPIFeald.getValue(), viewId);
+                    System.out.println("at update user data :-D "+ userOverviewData);
                     updateConnectionStatusToGalaxy(userOverviewData);
                 };
                 if (executorService.isShutdown()) {
@@ -466,7 +467,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
 
         }
 
-//        this.loginAsGuest();
+        this.loginAsGuest();
 
     }
 
@@ -647,7 +648,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
      *
      */
     private Label initLeftSideInfoLabel(String title, String value) {
-        Label label = new Label("<font style='width:120px;font-size: 14px;'>" + title + "</font><font style='width:60px; text-align: right !important;font-size: 14px; float: right !important;  color:#cd6e1d'>  " + value + " </font>");
+        Label label = new Label("<div style='width:120px;font-size: 14px;'>" + title + "</div><div style='white-space: nowrap;width: 65px;height: 20px;font-size: 12px;color:#cd6e1d;position: relative;top: -20px;left: 120px;text-overflow: ellipsis;overflow: hidden;'>  " + value + " </div>");
         label.setContentMode(ContentMode.HTML);
         label.setHeight(30, Sizeable.Unit.PIXELS);
         label.setWidth(180, Sizeable.Unit.PIXELS);
@@ -664,8 +665,8 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
      *
      */
     private void updateLeftSideInfoLabel(Label label, String value) {
-        String org = label.getValue().split("</font>")[0];
-        label.setValue(org + "</font><font style='width:60px; text-align: right !important;font-size: 14px;float: right !important;  color:#cd6e1d; margin-top:2px'>  " + value + " </font>");
+        String org = label.getValue().split("</div>")[0];
+        label.setValue(org + "</div><div style='white-space: nowrap;width: 65px;height: 20px;font-size: 12px;color:#cd6e1d;position: relative;top: -20px;left: 120px;text-overflow: ellipsis;overflow: hidden;'>  " + value + " </div>");
 
     }
 

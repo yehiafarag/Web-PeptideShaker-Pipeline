@@ -1,24 +1,18 @@
 package com.uib.web.peptideshaker.presenter.layouts.advancedsearchenginessettings;
 
 import com.compomics.util.experiment.identification.Advocate;
+import com.compomics.util.parameters.identification.IdentificationParameters;
 import com.compomics.util.parameters.identification.tool_specific.MsgfParameters;
-import com.compomics.util.parameters.identification.tool_specific.MyriMatchParameters;
-import com.compomics.util.preferences.SequenceMatchingPreferences;
-import com.uib.web.peptideshaker.model.core.WebSearchParameters;
 import com.uib.web.peptideshaker.presenter.core.Help;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabel2TextField;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelDropDounList;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelTextField;
-import com.vaadin.data.Property;
-import com.vaadin.data.validator.DoubleRangeValidator;
 import com.vaadin.data.validator.IntegerRangeValidator;
-import com.vaadin.data.validator.IntegerValidator;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import java.util.LinkedHashSet;
@@ -41,7 +35,7 @@ public class MsGFAdvancedSettingsPanel extends PopupWindow {
     private final HorizontalLabelDropDounList additionalOutput;
     private final HorizontalLabelTextField numberofTasks;
 
-    private WebSearchParameters webSearchParameters;
+    private IdentificationParameters webSearchParameters;
 
     public MsGFAdvancedSettingsPanel() {
         super(VaadinIcons.COG.getHtml() + " MS-GF+ Advanced Settings");
@@ -166,9 +160,9 @@ public class MsGFAdvancedSettingsPanel extends PopupWindow {
 
     }
 
-    public void updateGUI(WebSearchParameters webSearchParameters) {
+    public void updateGUI(IdentificationParameters webSearchParameters) {
         this.webSearchParameters = webSearchParameters;
-        MsgfParameters msgfParameters = (MsgfParameters) webSearchParameters.getUpdatedIdentificationParameters().getSearchParameters().getIdentificationAlgorithmParameter(Advocate.msgf.getIndex());
+        MsgfParameters msgfParameters = (MsgfParameters) webSearchParameters.getSearchParameters().getIdentificationAlgorithmParameter(Advocate.msgf.getIndex());
         if (msgfParameters.searchDecoyDatabase()) {
             searchDecoyDatabase.setSelected("Yes");
         } else {
@@ -208,7 +202,7 @@ public class MsGFAdvancedSettingsPanel extends PopupWindow {
     }
 
     private void updateParameters() {
-        MsgfParameters msgfParameters = (MsgfParameters) webSearchParameters.getUpdatedIdentificationParameters().getSearchParameters().getIdentificationAlgorithmParameter(Advocate.msgf.getIndex());
+        MsgfParameters msgfParameters = (MsgfParameters) webSearchParameters.getSearchParameters().getIdentificationAlgorithmParameter(Advocate.msgf.getIndex());
         msgfParameters.setSearchDecoyDatabase(searchDecoyDatabase.getSelectedValue().equalsIgnoreCase("Yes"));
         msgfParameters.setInstrumentID(Integer.valueOf(ms_msDetector.getSelectedValue()));
         msgfParameters.setProtocol(Integer.valueOf(protocol.getSelectedValue()));

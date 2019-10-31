@@ -5,7 +5,6 @@
  */
 package graphmatcher;
 
-import com.compomics.util.experiment.biology.PTMFactory;
 import com.compomics.util.experiment.biology.modifications.ModificationFactory;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
@@ -43,7 +42,7 @@ public abstract class NetworkGraphNode extends VerticalLayout implements LayoutE
     private final String accession;
     private final boolean parent;
     private NetworkGraphNode parentNode;
-    private final ModificationFactory PSIModificationFactory = new ModificationFactory();
+    private final ModificationFactory PSIModificationFactory = ModificationFactory.getInstance();
     private final Map<String, Integer> modificationsLocationsMap;
     private final Color finalColor;
     private Label modificationLabel;
@@ -51,7 +50,7 @@ public abstract class NetworkGraphNode extends VerticalLayout implements LayoutE
     /**
      * The post translational modifications factory.
      */
-    private final PTMFactory PTM = PTMFactory.getInstance();
+    private final ModificationFactory PTM = ModificationFactory.getInstance();
 
     public NetworkGraphNode getParentNode() {
         if (parent || parentNode == null) {
@@ -131,7 +130,9 @@ public abstract class NetworkGraphNode extends VerticalLayout implements LayoutE
                 if (!modMap.containsKey(modification)) {
                     modMap.put(modification, new ArrayList<>());
                 }
-                modMap.get(modification).addAll(modList);
+                if (modList != null) {
+                    modMap.get(modification).addAll(modList);
+                }
             });
 
             for (String key : modMap.keySet()) {
@@ -139,7 +140,7 @@ public abstract class NetworkGraphNode extends VerticalLayout implements LayoutE
                 String subtooltip = "";
                 newIds = newIds.replaceAll(key, moList.toString().replace(",", "-_-"));
                 for (String convMod : new LinkedHashSet<>(moList)) {
-                    Color modColor = PTM.getColor(convMod);
+                    Color modColor = new Color(PTM.getColor(convMod));
                     colorsSet.put(modColor.toString(), modColor);
                     covertedModColors.put(convMod, modColor);
                     subtooltip += "<font  style='color:rgb(" + modColor.getRed() + "," + modColor.getGreen() + "," + modColor.getBlue() + "); border-radius:100%;width: 100%;height: 100%;'>" + VaadinIcons.CIRCLE.getHtml() + "</font> " + convMod + " / ";

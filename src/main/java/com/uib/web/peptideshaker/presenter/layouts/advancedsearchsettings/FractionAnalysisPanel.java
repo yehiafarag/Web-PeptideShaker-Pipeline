@@ -1,10 +1,9 @@
 package com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings;
 
-import com.uib.web.peptideshaker.model.core.WebSearchParameters;
+import com.compomics.util.parameters.identification.IdentificationParameters;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelTextField;
 import com.vaadin.data.validator.DoubleRangeValidator;
-import com.vaadin.data.validator.IntegerRangeValidator;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
@@ -19,7 +18,7 @@ import com.vaadin.ui.themes.ValoTheme;
 public class FractionAnalysisPanel extends PopupWindow {
 
     private final HorizontalLabelTextField proteinConfidenceMW;
-    private WebSearchParameters webSearchParameters;
+    private IdentificationParameters webSearchParameters;
 
     public FractionAnalysisPanel() {
         super(VaadinIcons.COG.getHtml() + " Fraction Analysis");
@@ -63,10 +62,10 @@ public class FractionAnalysisPanel extends PopupWindow {
 
     }
 
-    public void updateGUI(WebSearchParameters webSearchParameters) {
+    public void updateGUI(IdentificationParameters webSearchParameters) {
         this.webSearchParameters = webSearchParameters;
-        proteinConfidenceMW.setSelectedValue(webSearchParameters.getUpdatedIdentificationParameters().getFractionParameters().getProteinConfidenceMwPlots());
-        super.setLabelValue(VaadinIcons.COG.getHtml() + " Fraction Analysis" + "<center>" + webSearchParameters.getUpdatedIdentificationParameters().getFractionParameters().getShortDescription() + "</center>");
+        proteinConfidenceMW.setSelectedValue(webSearchParameters.getFractionParameters().getProteinConfidenceMwPlots());
+        super.setLabelValue(VaadinIcons.COG.getHtml() + " Fraction Analysis" + "<center>" + webSearchParameters.getFractionParameters().getShortDescription() + "</center>");
 
     }
 
@@ -80,13 +79,13 @@ public class FractionAnalysisPanel extends PopupWindow {
             updateGUI(webSearchParameters);
         } else if (webSearchParameters != null) {
             updateParameters();
-            super.setLabelValue(VaadinIcons.COG.getHtml() + " Fraction Analysis" + "<center>" + webSearchParameters.getUpdatedIdentificationParameters().getFractionParameters().getShortDescription() + "</center>");
+            super.setLabelValue(VaadinIcons.COG.getHtml() + " Fraction Analysis" + "<center>" + webSearchParameters.getFractionParameters().getShortDescription() + "</center>");
         }
         super.setPopupVisible(visible); //To change body of generated methods, choose Tools | Templates.
     }
 
     private void updateParameters() {
-       webSearchParameters.getUpdatedIdentificationParameters().getFractionParameters().setProteinConfidenceMwPlots(Double.valueOf(proteinConfidenceMW.getSelectedValue()));
+       webSearchParameters.getFractionParameters().setProteinConfidenceMwPlots(Double.valueOf(proteinConfidenceMW.getSelectedValue()));
 
 
     }

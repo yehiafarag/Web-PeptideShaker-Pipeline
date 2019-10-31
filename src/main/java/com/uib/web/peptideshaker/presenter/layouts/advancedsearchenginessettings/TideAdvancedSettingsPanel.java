@@ -1,35 +1,26 @@
 package com.uib.web.peptideshaker.presenter.layouts.advancedsearchenginessettings;
 
-import static com.compomics.util.experiment.identification.IdentificationMatch.MatchType.PTM;
+import com.compomics.util.experiment.identification.Advocate;
+import com.compomics.util.parameters.identification.IdentificationParameters;
 import com.compomics.util.parameters.identification.tool_specific.TideParameters;
-import com.compomics.util.parameters.identification.tool_specific.XtandemParameters;
-import com.uib.web.peptideshaker.model.core.WebSearchParameters;
 import com.uib.web.peptideshaker.presenter.core.Help;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
-import com.uib.web.peptideshaker.presenter.core.form.ColorLabel;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabel2TextField;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelDropDounList;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelTextField;
-import com.uib.web.peptideshaker.presenter.core.form.SparkLine;
 import com.vaadin.data.Property;
 import com.vaadin.data.validator.DoubleRangeValidator;
 import com.vaadin.data.validator.IntegerRangeValidator;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
-import web.com.compomics.util.experiment.identification.Advocate;
 
 /**
  *
@@ -67,8 +58,7 @@ public class TideAdvancedSettingsPanel extends PopupWindow {
     private final HorizontalLabelDropDounList outputFormat;
 //
 
-    private final DecimalFormat df = new DecimalFormat("0.00E00");//new DecimalFormat("#.##");
-    private WebSearchParameters webSearchParameters;
+    private IdentificationParameters webSearchParameters;
 
     public TideAdvancedSettingsPanel() {
         super(VaadinIcons.COG.getHtml() + " Tide Advanced Settings");
@@ -246,10 +236,10 @@ public class TideAdvancedSettingsPanel extends PopupWindow {
         container.addComponent(cancelBtn, "bottom:10px;right:96px");
     }
 
-    public void updateGUI(WebSearchParameters webSearchParameters) {
+    public void updateGUI(IdentificationParameters webSearchParameters) {
         this.webSearchParameters = webSearchParameters;
 //        this.refModificationSelection.clear();
-        TideParameters oldTideParameters = (TideParameters) this.webSearchParameters.getUpdatedSearchParameter().getIdentificationAlgorithmParameter(Advocate.tide.getIndex());
+        TideParameters oldTideParameters = (TideParameters) this.webSearchParameters.getSearchParameters().getIdentificationAlgorithmParameter(Advocate.tide.getIndex());
         peptideLength.setFirstSelectedValue(oldTideParameters.getMinPeptideLength());
         peptideLength.setSecondSelectedValue(oldTideParameters.getMaxPeptideLength());
         precursorMass.setFirstSelectedValue(oldTideParameters.getMinPrecursorMass());
@@ -347,7 +337,7 @@ public class TideAdvancedSettingsPanel extends PopupWindow {
 
     private void updateParameters() {
 
-        TideParameters oldTideParameters = (TideParameters) this.webSearchParameters.getUpdatedSearchParameter().getIdentificationAlgorithmParameter(Advocate.tide.getIndex());
+        TideParameters oldTideParameters = (TideParameters) this.webSearchParameters.getSearchParameters().getIdentificationAlgorithmParameter(Advocate.tide.getIndex());
         oldTideParameters.setMinPeptideLength(Integer.valueOf(peptideLength.getFirstSelectedValue()));
         oldTideParameters.setMaxPeptideLength(Integer.valueOf(peptideLength.getSecondSelectedValue()));
         oldTideParameters.setMinPrecursorMass(Double.valueOf(precursorMass.getFirstSelectedValue()));

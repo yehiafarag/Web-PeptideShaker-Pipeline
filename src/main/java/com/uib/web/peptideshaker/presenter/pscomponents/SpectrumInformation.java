@@ -6,22 +6,24 @@
 package com.uib.web.peptideshaker.presenter.pscomponents;
 
 import com.compomics.util.experiment.identification.matches.SpectrumMatch;
-import com.compomics.util.experiment.massspectrometry.MSnSpectrum;
-import com.uib.web.peptideshaker.model.core.WebSearchParameters;
+import com.compomics.util.experiment.io.biology.protein.SequenceProvider;
+import com.compomics.util.experiment.mass_spectrometry.spectra.Spectrum;
+import com.compomics.util.parameters.identification.IdentificationParameters;
 
 /**
  *this class contain all the required information to load spectrum data
  * @author Yehia Farag
  */
 public class SpectrumInformation {
-    private   MSnSpectrum spectrum;
+    private   Spectrum spectrum;
     private String charge;
     private double fragmentIonAccuracy;
-    private WebSearchParameters identificationParameters;
+    private IdentificationParameters identificationParameters;
     private SpectrumMatch spectrumMatch;
     private Object spectrumId;
     private int maxCharge;
     private double mzError;
+    private SequenceProvider  sequenceProvider;
 
     public int getMaxCharge() {
         return maxCharge;
@@ -39,11 +41,11 @@ public class SpectrumInformation {
         this.spectrumId = spectrumId;
     }
 
-    public MSnSpectrum getSpectrum() {
+    public Spectrum getSpectrum() {
         return spectrum;
     }
 
-    public void setSpectrum(MSnSpectrum spectrum) {
+    public void setSpectrum(Spectrum spectrum) {
         this.spectrum = spectrum;
     }
 
@@ -63,11 +65,11 @@ public class SpectrumInformation {
         this.fragmentIonAccuracy = fragmentIonAccuracy;
     }
 
-    public WebSearchParameters getIdentificationParameters() {
+    public IdentificationParameters getIdentificationParameters() {
         return identificationParameters;
     }
 
-    public void setIdentificationParameters(WebSearchParameters identificationParameters) {
+    public void setIdentificationParameters(IdentificationParameters identificationParameters) {
         this.identificationParameters = identificationParameters;
     }
 
@@ -85,6 +87,14 @@ public class SpectrumInformation {
 
     public void setMzError(double mzError) {
         this.mzError = mzError;
+    }
+
+    public SequenceProvider getSequenceProvider() {
+        return sequenceProvider;
+    }
+
+    public void setSequenceProvider(SequenceProvider sequenceProvider) {
+        this.sequenceProvider = sequenceProvider;
     }
     
 }

@@ -1,6 +1,8 @@
 package com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings;
 
-import com.uib.web.peptideshaker.model.core.WebSearchParameters;
+import com.compomics.util.parameters.identification.IdentificationParameters;
+import com.compomics.util.parameters.identification.advanced.ValidationQcParameters;
+import com.compomics.util.parameters.identification.search.SearchParameters;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.AbsoluteLayout;
@@ -9,8 +11,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
-import web.com.compomics.util.parameters.identification.advanced.ValidationQcParameters;
-import web.com.compomics.util.parameters.identification.search.SearchParameters;
 
 /**
  *
@@ -19,7 +19,7 @@ import web.com.compomics.util.parameters.identification.search.SearchParameters;
 public class QualityControlPanel extends PopupWindow {
 
     private final OptionGroup generalSettingsQualityControl;
-    private WebSearchParameters webSearchParameters;
+    private IdentificationParameters webSearchParameters;
 
     public QualityControlPanel() {
         super(VaadinIcons.COG.getHtml() + " Quality Control (beta)");
@@ -73,9 +73,9 @@ public class QualityControlPanel extends PopupWindow {
 
     }
 
-    public void updateGUI(WebSearchParameters webSearchParameters) {
+    public void updateGUI(IdentificationParameters webSearchParameters) {
         this.webSearchParameters = webSearchParameters;
-        ValidationQcParameters validationQcParameters = webSearchParameters.getUpdatedIdentificationParameters().getIdValidationParameters().getValidationQCParameters();
+        ValidationQcParameters validationQcParameters = webSearchParameters.getIdValidationParameters().getValidationQCParameters();
         generalSettingsQualityControl.addItem("dbCheck");
         generalSettingsQualityControl.addItem("nTargetCheck");
         generalSettingsQualityControl.addItem("confidenceCheck");
@@ -95,7 +95,7 @@ public class QualityControlPanel extends PopupWindow {
             generalSettingsQualityControl.unselect("confidenceCheck");
         }
 
-        super.setLabelValue(VaadinIcons.COG.getHtml() + " Quality Control (beta)" + "<center>" + webSearchParameters.getUpdatedIdentificationParameters().getIdValidationParameters().getValidationQCParameters().getShortDescription() + "</center>");
+        super.setLabelValue(VaadinIcons.COG.getHtml() + " Quality Control (beta)" + "<center>" + webSearchParameters.getIdValidationParameters().getValidationQCParameters().getShortDescription() + "</center>");
 
     }
 
@@ -108,13 +108,13 @@ public class QualityControlPanel extends PopupWindow {
         if (visible && webSearchParameters != null) {
             updateGUI(webSearchParameters);
         } else if (webSearchParameters != null) {
-            super.setLabelValue(VaadinIcons.COG.getHtml() + " Quality Control (beta)" + "<center>" + webSearchParameters.getUpdatedIdentificationParameters().getIdValidationParameters().getValidationQCParameters().getShortDescription() + "</center>");
+            super.setLabelValue(VaadinIcons.COG.getHtml() + " Quality Control (beta)" + "<center>" + webSearchParameters.getIdValidationParameters().getValidationQCParameters().getShortDescription() + "</center>");
         }
         super.setPopupVisible(visible); //To change body of generated methods, choose Tools | Templates.
     }
 
     private void updateParameters() {
-        ValidationQcParameters validationQcParameters = webSearchParameters.getUpdatedIdentificationParameters().getIdValidationParameters().getValidationQCParameters();
+        ValidationQcParameters validationQcParameters = webSearchParameters.getIdValidationParameters().getValidationQCParameters();
         validationQcParameters.setDbSize(generalSettingsQualityControl.isSelected("dbCheck"));
         validationQcParameters.setFirstDecoy(generalSettingsQualityControl.isSelected("nTargetCheck"));
 

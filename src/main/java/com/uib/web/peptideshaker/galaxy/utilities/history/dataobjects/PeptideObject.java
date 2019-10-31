@@ -1,8 +1,8 @@
 package com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects;
 
-import com.compomics.util.experiment.biology.PTM;
-import com.compomics.util.experiment.biology.PTMFactory;
-import com.compomics.util.experiment.biology.Peptide;
+import com.compomics.util.experiment.biology.modifications.Modification;
+import com.compomics.util.experiment.biology.modifications.ModificationFactory;
+import com.compomics.util.experiment.biology.proteins.Peptide;
 import com.compomics.util.experiment.identification.matches.ModificationMatch;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -43,11 +43,11 @@ public class PeptideObject extends Peptide {
     /**
      * Protein variable modifications included in the peptide sequence.
      */
-    private String variableModifications;
+    private ModificationMatch[] variableModifications;
     /**
      * Protein fixed modifications included in the peptide sequence.
      */
-    private String fixedModifications;
+    private String fixedModifications="";
     /**
      * Localisation confidence.
      */
@@ -100,11 +100,11 @@ public class PeptideObject extends Peptide {
      * Instance of the PTM factory that is loading PTM from an XML file and
      * provide them on demand as standard class.
      */
-    private final PTMFactory ptmFactory = PTMFactory.getInstance();
+    private final ModificationFactory ptmFactory = ModificationFactory.getInstance();
     /**
      * The modifications carried by the peptide.
      */
-    private ArrayList<ModificationMatch> modificationMatches = null;
+//    private ArrayList<ModificationMatch> modificationMatches = null;
     /**
      * Intensity value of the quantification.
      */
@@ -116,11 +116,12 @@ public class PeptideObject extends Peptide {
     /**
      * Intensity hash-code colour of the psmNumber.
      */
-    private String psmColor = "RGB(120,120,120)";
+    private String psmColor = "rgb(120,120,120)";
     /**
      * Peptide not mapped to 3dView.
      */
     private boolean invisibleOn3d;
+    private String variableModificationsAsString="";
 
     public boolean isInvisibleOn3d() {
         return invisibleOn3d;
@@ -199,6 +200,7 @@ public class PeptideObject extends Peptide {
      *
      * @param sequence Standard peptide sequence.
      */
+    @Override
     public void setSequence(String sequence) {
         this.sequence = sequence;
     }
@@ -280,7 +282,11 @@ public class PeptideObject extends Peptide {
      *
      * @return modifications list.
      */
-    public String getVariableModifications() {
+    @Override
+    public ModificationMatch[] getVariableModifications() {
+        if (variableModifications == null) {
+            variableModifications = new ModificationMatch[]{};
+        }
         return variableModifications;
     }
 
@@ -290,23 +296,45 @@ public class PeptideObject extends Peptide {
      * @param variableModifications protein variable modifications list(as
      * string) included in the peptide sequence.
      */
-    public void setVariableModifications(String variableModifications) {
+    @Override
+    public void setVariableModifications(ModificationMatch[] variableModifications) {
         this.variableModifications = variableModifications;
-        if (variableModifications.trim().equalsIgnoreCase("")) {
+    }
+
+    /**
+     * Set protein variable modifications list included in the peptide sequence.
+     *
+     * @param variableModifications protein variable modifications list(as
+     * string) included in the peptide sequence.
+     */
+    public void setVariableModifications(String variableModifications) {
+
+        if (variableModifications == null || variableModifications.trim().equalsIgnoreCase("")) {
+            this.variableModifications = new ModificationMatch[]{};
             return;
         }
-        this.modificationMatches = new ArrayList<>();
+        ArrayList<ModificationMatch> modificationMatchesList = new ArrayList<>();
         for (String modStr : variableModifications.replace("),", "__").split("__")) {
             String[] modStrArr = modStr.trim().replace("(", "__").split("__");
-            PTM ptm = ptmFactory.getPTM(modStrArr[0].trim());
+            Modification ptm = ptmFactory.getModification(modStrArr[0].trim());
             String[] indexArr = modStrArr[1].trim().replace(")", "").trim().split(",");
             for (String modIndex : indexArr) {
-                ModificationMatch mod = new ModificationMatch(ptm.getName(), true, Integer.parseInt(modIndex.trim().split(";")[0]));
-                modificationMatches.add(mod);
+                ModificationMatch mod = new ModificationMatch(ptm.getName(), Integer.parseInt(modIndex.trim().split(";")[0]));
+                modificationMatchesList.add(mod);
             }
 
         }
+        this.variableModifications = new ModificationMatch[modificationMatchesList.size()];
+        for (int i = 0; i < this.variableModifications.length; i++) {
+            this.variableModifications[i] = modificationMatchesList.get(i);
+        }
+        this.variableModificationsAsString = variableModifications;
     }
+
+    public String getVariableModificationsAsString() {
+        return variableModificationsAsString;
+    }
+    
 
     /**
      * Get protein fixed modifications list included in the peptide sequence.
@@ -525,17 +553,14 @@ public class PeptideObject extends Peptide {
         this.index = index;
     }
 
-    @Override
     public boolean isModified() {
-        return !this.variableModifications.isEmpty();
+        return (this.variableModifications != null && this.variableModifications.length > 0);
 
     }
 
-    @Override
-    public ArrayList<ModificationMatch> getModificationMatches() {
-        return modificationMatches;
-    }
-
+//    public ArrayList<ModificationMatch> getModificationMatches() {
+//        return modificationMatches;
+//    }
     public String getIntensityColor() {
         return intensityColor;
     }

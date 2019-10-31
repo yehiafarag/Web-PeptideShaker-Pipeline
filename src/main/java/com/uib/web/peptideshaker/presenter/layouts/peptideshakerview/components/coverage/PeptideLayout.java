@@ -1,6 +1,6 @@
 package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components.coverage;
 
-import com.compomics.util.experiment.biology.PTMFactory;
+import com.compomics.util.experiment.biology.modifications.ModificationFactory;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideObject;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbsoluteLayout;
@@ -33,7 +33,7 @@ public class PeptideLayout extends AbsoluteLayout implements Comparable<PeptideL
     /**
      * The post translational modifications factory.
      */
-    private final PTMFactory PTM = PTMFactory.getInstance();
+    private final ModificationFactory PTM = ModificationFactory.getInstance();
 
     public PeptideObject getPeptide() {
         return peptide;
@@ -67,12 +67,12 @@ public class PeptideLayout extends AbsoluteLayout implements Comparable<PeptideL
         String subTooltip = "";
         Map<String, String> modificationsTooltip = new HashMap<>();
 
-        for (String mod : peptide.getVariableModifications().split("\\),")) {
+        for (String mod : peptide.getVariableModificationsAsString().split("\\),")) {
             if (mod.trim().equalsIgnoreCase("")){// || mod.contains("Pyrolidone") || mod.contains("Acetylation of protein N-term")) {
                 continue;
             }
             String[] tmod = mod.split("\\(");
-            Color c = PTMFactory.getDefaultColor(tmod[0].trim());
+            Color c = new Color(ModificationFactory.getDefaultColor(tmod[0].trim()));
             Label modification = new Label("<div  style='background:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ");;width: 100%;height: 100%;'></div>", ContentMode.HTML);
             modification.setSizeFull();
             modification.setData(peptide.getModifiedSequence());
@@ -80,8 +80,8 @@ public class PeptideLayout extends AbsoluteLayout implements Comparable<PeptideL
             modifiedPeptide=true;
             String[] indexArr = tmod[1].replace(")", "").replace(" ", "").split(",");
             for (String indexStr : indexArr) {
-                int i = Integer.valueOf(indexStr) - 1;
-                modificationsTooltip.put(peptide.getSequence().charAt(i) + "<" + PTM.getPTM(tmod[0].trim()).getShortName() + ">", "<font style='background-color:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")'>" + peptide.getSequence().charAt(i) + "</font>");
+                 int i = Math.max(Integer.valueOf(indexStr) - 1,0);
+                modificationsTooltip.put(peptide.getSequence().charAt(i) + "<" + PTM.getModification(tmod[0].trim()).getShortName() + ">", "<font style='background-color:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")'>" + peptide.getSequence().charAt(i) + "</font>");
                 if (!subTooltip.contains("</br><span style='width:20px;height:10px;background-color:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")'>" + peptide.getSequence().charAt(i) + "</span> - " + mod)) {
                     subTooltip += "</br><span style='width:20px;height:10px;background-color:rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")'>" + peptide.getSequence().charAt(i) + "</span> - " + mod;
                 }

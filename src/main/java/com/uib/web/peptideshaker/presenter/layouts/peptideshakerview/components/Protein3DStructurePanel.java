@@ -1,6 +1,6 @@
 package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components;
 
-import com.compomics.util.experiment.biology.PTMFactory;
+import com.compomics.util.experiment.biology.modifications.ModificationFactory;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideObject;
 import com.uib.web.peptideshaker.model.core.pdb.PDBMatch;
 import com.uib.web.peptideshaker.model.core.pdb.PdbHandler;
@@ -270,7 +270,7 @@ public class Protein3DStructurePanel extends AbsoluteLayout {
     /**
      * The post translational modifications factory.
      */
-    private final PTMFactory PTM = PTMFactory.getInstance();
+    private final ModificationFactory PTM = ModificationFactory.getInstance();
 
     private void selectPeptides(String peptideKey) {
         lastSelectedPeptideKey = peptideKey;
@@ -399,7 +399,7 @@ public class Protein3DStructurePanel extends AbsoluteLayout {
                         } else if (peptide.get("modifications") != null) {
                             Color c = Color.ORANGE;
                             if (peptide.get("modifications").toString().split(",").length == 1) {
-                                c = PTM.getColor(peptide.get("modifications").toString().trim());
+                                c = new Color(PTM.getColor(peptide.get("modifications").toString().trim()));
                             }
 
                             if (peptideKey == null || peptideKey.contains("null")) {
@@ -441,7 +441,7 @@ public class Protein3DStructurePanel extends AbsoluteLayout {
                         } else {
                             Color c = Color.ORANGE;
                             if (peptide.get("modifications").toString().split(",").length == 1) {
-                                c = PTM.getColor(peptide.get("modifications").toString().trim());
+                                c = new Color(PTM.getColor(peptide.get("modifications").toString().trim()));
                             }
                             peptide.put("color", initColorMap(c));
                         }
@@ -617,11 +617,11 @@ public class Protein3DStructurePanel extends AbsoluteLayout {
                             int end = start + peptide.getSequence().length() - 1;
                             current = end;
                             String varMod = null;
-                            if (!peptide.getVariableModifications().trim().equalsIgnoreCase("")) {
-                                varMod = peptide.getVariableModifications();
+                            if (!peptide.getVariableModificationsAsString().trim().equalsIgnoreCase("")) {
+                                varMod = peptide.getVariableModificationsAsString();
                             }
                             peptide.setInvisibleOn3d(false);
-                            peptidesQueryMap.get(peptide.getModifiedSequence()).add(initSequenceMap(chainId, lastSelectedMatch.getEntity_id(chainId), start, end, peptide.getValidation(), peptide.getModifiedSequence().contains("<"), varMod, peptide.getSequence(), peptide.getPsmColor(), peptide.getIntensityColor()));
+                            peptidesQueryMap.get(peptide.getModifiedSequence()).add(initSequenceMap(chainId, lastSelectedMatch.getEntity_id(chainId), start, end, peptide.getValidation(), peptide.getModifiedSequence().contains("<")||(!peptide.getModifiedSequence().startsWith("NH2")), varMod, peptide.getSequence(), peptide.getPsmColor(), peptide.getIntensityColor()));
                             break;
                         }
 

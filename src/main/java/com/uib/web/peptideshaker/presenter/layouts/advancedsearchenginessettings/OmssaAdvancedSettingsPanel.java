@@ -1,9 +1,8 @@
 package com.uib.web.peptideshaker.presenter.layouts.advancedsearchenginessettings;
 
-import com.compomics.util.parameters.identification.tool_specific.CometParameters;
-import com.compomics.util.parameters.identification.tool_specific.CometParameters.CometOutputFormat;
+import com.compomics.util.experiment.identification.Advocate;
+import com.compomics.util.parameters.identification.IdentificationParameters;
 import com.compomics.util.parameters.identification.tool_specific.OmssaParameters;
-import com.uib.web.peptideshaker.model.core.WebSearchParameters;
 import com.uib.web.peptideshaker.presenter.core.Help;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabel2TextField;
@@ -21,7 +20,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import web.com.compomics.util.experiment.identification.Advocate;
 
 /**
  *
@@ -71,7 +69,7 @@ public class OmssaAdvancedSettingsPanel extends PopupWindow {
     private final HorizontalLabelTextField maximumHitListLength;
     private final HorizontalLabelDropDounList omssaOutputFormat;
 
-    private WebSearchParameters webSearchParameters;
+    private IdentificationParameters webSearchParameters;
 
     public OmssaAdvancedSettingsPanel() {
         super(VaadinIcons.COG.getHtml() + " OMSSA Advanced Settings");
@@ -229,7 +227,7 @@ public class OmssaAdvancedSettingsPanel extends PopupWindow {
         values2.add("pepXML");
         omssaOutputFormat = new HorizontalLabelDropDounList("OMSSA Output Format");
         omssaOutputFormat.updateData(values2);
-        tab2.addComponent(this.omssaOutputFormat);
+//        tab2.addComponent(this.omssaOutputFormat);
 
         omssaOutputFormat.addValueChangeListener((Property.ValueChangeEvent event) -> {
             String selectedValue = searchFirstForwardIon_b1.getSelectedValue();
@@ -343,10 +341,10 @@ public class OmssaAdvancedSettingsPanel extends PopupWindow {
         container.addComponent(cancelBtn, "bottom:10px;right:96px");
     }
 
-    public void updateGUI(WebSearchParameters webSearchParameters) {
+    public void updateGUI(IdentificationParameters webSearchParameters) {
         this.webSearchParameters = webSearchParameters;
 
-        OmssaParameters oldOmssaParameters = (OmssaParameters) this.webSearchParameters.getUpdatedSearchParameter().getIdentificationAlgorithmParameter(Advocate.omssa.getIndex());
+        OmssaParameters oldOmssaParameters = (OmssaParameters) this.webSearchParameters.getSearchParameters().getIdentificationAlgorithmParameter(Advocate.omssa.getIndex());
         lowIntensityCutoff.setSelectedValue(oldOmssaParameters.getLowIntensityCutOff());
         highIntensityCutoff.setSelectedValue(oldOmssaParameters.getHighIntensityCutOff());
         intensityCutoffIncrement.setSelectedValue(oldOmssaParameters.getIntensityCutOffIncrement());
@@ -459,7 +457,7 @@ public class OmssaAdvancedSettingsPanel extends PopupWindow {
 
     private void updateParameters() {
 
-        OmssaParameters oldOmssaParameters = (OmssaParameters) this.webSearchParameters.getUpdatedSearchParameter().getIdentificationAlgorithmParameter(Advocate.omssa.getIndex());
+        OmssaParameters oldOmssaParameters = (OmssaParameters) this.webSearchParameters.getSearchParameters().getIdentificationAlgorithmParameter(Advocate.omssa.getIndex());
         oldOmssaParameters.setLowIntensityCutOff(Double.valueOf(lowIntensityCutoff.getSelectedValue()));
         oldOmssaParameters.setHighIntensityCutOff(Double.valueOf(highIntensityCutoff.getSelectedValue()));
         oldOmssaParameters.setEstimateCharge((this.precursorChargeEstimation.getSelectedValue().equalsIgnoreCase("Use Range")));

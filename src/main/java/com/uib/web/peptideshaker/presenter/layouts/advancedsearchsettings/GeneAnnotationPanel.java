@@ -1,6 +1,6 @@
 package com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings;
 
-import com.uib.web.peptideshaker.model.core.WebSearchParameters;
+import com.compomics.util.parameters.identification.IdentificationParameters;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelDropDounList;
 import com.vaadin.icons.VaadinIcons;
@@ -21,7 +21,7 @@ public class GeneAnnotationPanel extends PopupWindow {
     private final HorizontalLabelDropDounList useMapping;
     private final HorizontalLabelDropDounList autoUpdate;
 
-    private WebSearchParameters webSearchParameters;
+    private IdentificationParameters webSearchParameters;
 
     public GeneAnnotationPanel() {
         super(VaadinIcons.COG.getHtml() + " Gene Annotation");
@@ -72,20 +72,20 @@ public class GeneAnnotationPanel extends PopupWindow {
 
     }
 
-    public void updateGUI(WebSearchParameters webSearchParameters) {
+    public void updateGUI(IdentificationParameters webSearchParameters) {
         this.webSearchParameters = webSearchParameters;
-        if (webSearchParameters.getUpdatedIdentificationParameters().getGeneParameters().getUseGeneMapping()) {
+        if (webSearchParameters.getGeneParameters().getUseGeneMapping()) {
             useMapping.setSelected("Yes");
         } else {
             useMapping.setSelected("No");
         }
-        if (webSearchParameters.getUpdatedIdentificationParameters().getGeneParameters().getAutoUpdate()) {
+        if (webSearchParameters.getGeneParameters().getAutoUpdate()) {
             autoUpdate.setSelected("Yes");
         } else {
             autoUpdate.setSelected("No");
         }
 
-        super.setLabelValue(VaadinIcons.COG.getHtml() + " Gene Annotation" + "<center>" + webSearchParameters.getUpdatedIdentificationParameters().getGeneParameters().getShortDescription() + "</center>");
+        super.setLabelValue(VaadinIcons.COG.getHtml() + " Gene Annotation" + "<center>" + webSearchParameters.getGeneParameters().getShortDescription() + "</center>");
 
     }
 
@@ -99,14 +99,14 @@ public class GeneAnnotationPanel extends PopupWindow {
             updateGUI(webSearchParameters);
         } else if (webSearchParameters != null) {
             updateParameters();
-            super.setLabelValue(VaadinIcons.COG.getHtml() + " Gene Annotation" + "<center>" + webSearchParameters.getUpdatedIdentificationParameters().getGeneParameters().getShortDescription() + "</center>");
+            super.setLabelValue(VaadinIcons.COG.getHtml() + " Gene Annotation" + "<center>" + webSearchParameters.getGeneParameters().getShortDescription() + "</center>");
         }
         super.setPopupVisible(visible); //To change body of generated methods, choose Tools | Templates.
     }
 
     private void updateParameters() {
-        webSearchParameters.getUpdatedIdentificationParameters().getGeneParameters().setUseGeneMapping(useMapping.getSelectedValue().equalsIgnoreCase("Yes"));
-        webSearchParameters.getUpdatedIdentificationParameters().getGeneParameters().setUseGeneMapping(autoUpdate.getSelectedValue().equalsIgnoreCase("Yes"));
+        webSearchParameters.getGeneParameters().setUseGeneMapping(useMapping.getSelectedValue().equalsIgnoreCase("Yes"));
+        webSearchParameters.getGeneParameters().setUseGeneMapping(autoUpdate.getSelectedValue().equalsIgnoreCase("Yes"));
 
     }
 

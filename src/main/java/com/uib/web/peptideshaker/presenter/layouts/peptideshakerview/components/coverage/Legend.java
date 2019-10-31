@@ -1,5 +1,6 @@
 package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components.coverage;
 
+import com.compomics.util.experiment.identification.matches.ModificationMatch;
 import com.uib.web.peptideshaker.presenter.core.graph.Node;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
@@ -176,7 +177,6 @@ public abstract class Legend extends VerticalLayout {
 //            lowerContainer.addComponent(proteoformModificationsContainer);
 //            Legend.this.updateModificationLayout("No Modifications");
 //            Legend.this.updateModificationLayout("Two or More Modifications");
-
         } else {
 
             this.addStyleName("proteoformslegend");
@@ -339,13 +339,12 @@ public abstract class Legend extends VerticalLayout {
 //            lowerContainer.addComponent(proteoformModificationsContainer);
 //            Legend.this.updateModificationLayout("No Modifications");
 //            Legend.this.updateModificationLayout("Two or More Modifications");
-
         }
 
     }
 
     private Node generateNode(String defaultStyleName) {
-        Node node = new Node("prot", "prot", "", "", -1, "", -1000, "") {
+        Node node = new Node("prot", "prot", new ModificationMatch[]{}, "", -1, "", -1000, "") {
             @Override
             public void selected(String id) {
 
@@ -373,9 +372,49 @@ public abstract class Legend extends VerticalLayout {
 
     }
 
+    public void updateModificationLayout(ModificationMatch[] modMatch, String modifications) {
+//        modifications = modifications.split("\\(")[0];
+        if (modMatch == null || modMatch.length == 0) {// || modifications.split("\\(")[0].contains("Pyrolidone") || modifications.split("\\(")[0].contains("Acetylation of protein N-term")) {
+            return;
+        }
+
+//        currentModifications += modifications.split("\\(")[0] + ";";
+//       ModificationMatch[] modMatch=  new ModificationMatch[]{};
+        Node node = new Node("prot", "prot", modMatch, null, -1, "red", -1000, "") {
+            @Override
+            public void selected(String id) {
+
+            }
+        };
+        node.setDefaultStyleName("peptidenode");
+        node.setSelected(true);
+        node.addStyleName("defaultcursor");
+        node.setNodeStatues("Modification");
+        node.setDescription(modMatch[0].getModification());
+        layoutMap.get("Modification").addComponent(generateLabel(node, modMatch[0].getModification()));
+//
+//        Node node2 = new Node("prot", "prot", modifications, null, -1, "red", -1000, "") {
+//            @Override
+//            public void selected(String id) {
+//
+//            }
+//        };
+//        node2.setDefaultStyleName("peptidenode");
+//        node2.setSelected(true);
+//        node2.addStyleName("defaultcursor");
+//        node2.setNodeStatues("Modification");
+//        node2.setDescription(modifications.split("\\(")[0]);
+//        node2.addStyleName("proteoformnode");
+//        if (layoutMap.containsKey("proteoformType")) {
+//            layoutMap.get("proteoformType").addComponent(generateLabel(node2, modifications.split("\\(")[0]));
+//        } else {
+//            System.out.println("at layourt map " + layoutMap.keySet());
+//        }
+    }
+
     public void updateModificationLayout(String modifications) {
 //        modifications = modifications.split("\\(")[0];
-        if (modifications.split("\\(")[0].trim().equalsIgnoreCase("")){// || modifications.split("\\(")[0].contains("Pyrolidone") || modifications.split("\\(")[0].contains("Acetylation of protein N-term")) {
+        if (modifications.split("\\(")[0].trim().equalsIgnoreCase("")) {// || modifications.split("\\(")[0].contains("Pyrolidone") || modifications.split("\\(")[0].contains("Acetylation of protein N-term")) {
             return;
         }
         if (currentModifications.contains(modifications.split("\\(")[0])) {

@@ -1,8 +1,8 @@
 package com.uib.web.peptideshaker.presenter.layouts.advancedsearchenginessettings;
 
 import com.compomics.util.experiment.identification.Advocate;
+import com.compomics.util.parameters.identification.IdentificationParameters;
 import com.compomics.util.parameters.identification.tool_specific.NovorParameters;
-import com.uib.web.peptideshaker.model.core.WebSearchParameters;
 import com.uib.web.peptideshaker.presenter.core.Help;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelDropDounList;
@@ -25,7 +25,7 @@ public class NovorAdvancedSettingsPanel extends PopupWindow {
     private final HorizontalLabelDropDounList massAnalyzer;
    
 
-    private WebSearchParameters webSearchParameters;
+    private IdentificationParameters webSearchParameters;
 
     public NovorAdvancedSettingsPanel() {
         super(VaadinIcons.COG.getHtml() + " Novor Advanced Settings");
@@ -87,9 +87,9 @@ public class NovorAdvancedSettingsPanel extends PopupWindow {
 
     }
 
-    public void updateGUI(WebSearchParameters webSearchParameters) {
+    public void updateGUI(IdentificationParameters webSearchParameters) {
         this.webSearchParameters = webSearchParameters;
-        NovorParameters noverParameters = (NovorParameters) webSearchParameters.getUpdatedIdentificationParameters().getSearchParameters().getIdentificationAlgorithmParameter(Advocate.novor.getIndex());
+        NovorParameters noverParameters = (NovorParameters) webSearchParameters.getSearchParameters().getIdentificationAlgorithmParameter(Advocate.novor.getIndex());
         
 
         massAnalyzer.setSelected(noverParameters.getMassAnalyzer()+ "");
@@ -113,7 +113,7 @@ public class NovorAdvancedSettingsPanel extends PopupWindow {
     }
 
     private void updateParameters() {
-         NovorParameters noverParameters = (NovorParameters) webSearchParameters.getUpdatedIdentificationParameters().getSearchParameters().getIdentificationAlgorithmParameter(Advocate.novor.getIndex());
+         NovorParameters noverParameters = (NovorParameters) webSearchParameters.getSearchParameters().getIdentificationAlgorithmParameter(Advocate.novor.getIndex());
     
         noverParameters.setMassAnalyzer(massAnalyzer.getSelectedValue());
         noverParameters.setFragmentationMethod(fragmentaionMethod.getSelectedValue());

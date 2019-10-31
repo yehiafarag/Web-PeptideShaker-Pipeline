@@ -1,6 +1,8 @@
 package com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings;
 
-import com.uib.web.peptideshaker.model.core.WebSearchParameters;
+import com.compomics.util.experiment.biology.variants.AaSubstitutionMatrix;
+import com.compomics.util.parameters.identification.IdentificationParameters;
+import com.compomics.util.parameters.identification.advanced.PeptideVariantsParameters;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelDropDounList;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelTextField;
@@ -17,8 +19,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import web.com.compomics.util.experiment.biology.variants.AaSubstitutionMatrix;
-import web.com.compomics.util.parameters.identification.advanced.PeptideVariantsParameters;
 
 /**
  *
@@ -36,7 +36,7 @@ public class PeptideVariantsPanel extends PopupWindow {
     private final Image aminoAcidSubstitutionsMatrix;
     private AaSubstitutionMatrix aaSubstitutionMatrix;
 
-    private WebSearchParameters webSearchParameters;
+    private IdentificationParameters webSearchParameters;
 
     public PeptideVariantsPanel() {
         super(VaadinIcons.COG.getHtml() + " Peptide Variants");
@@ -169,16 +169,16 @@ public class PeptideVariantsPanel extends PopupWindow {
         });
     }
 
-    public void updateGUI(WebSearchParameters webSearchParameters) {
+    public void updateGUI(IdentificationParameters webSearchParameters) {
         this.webSearchParameters = webSearchParameters;
-        total.setSelectedValue(webSearchParameters.getUpdatedIdentificationParameters().getPeptideVariantsParameters().getnVariants());
-        variantType.setSelected(webSearchParameters.getUpdatedIdentificationParameters().getPeptideVariantsParameters().getVariantType().name());
-        aminoAcidDeletion.setSelectedValue(webSearchParameters.getUpdatedIdentificationParameters().getPeptideVariantsParameters().getnVariants());
-        aminoAcidInsertion.setSelectedValue(webSearchParameters.getUpdatedIdentificationParameters().getPeptideVariantsParameters().getnVariants());
-        aminoAcidSwap.setSelectedValue(webSearchParameters.getUpdatedIdentificationParameters().getPeptideVariantsParameters().getnVariants());
-        aminoAcidSubstitutions.setSelectedValue(webSearchParameters.getUpdatedIdentificationParameters().getPeptideVariantsParameters().getnVariants());
-        allowedAminoAcidSubstitutions.select(webSearchParameters.getUpdatedIdentificationParameters().getPeptideVariantsParameters().getAaSubstitutionMatrix().getName());
-        super.setLabelValue(VaadinIcons.COG.getHtml() + " Peptide Variants" + "<center>" + webSearchParameters.getUpdatedIdentificationParameters().getPeptideVariantsParameters().getShortDescription() + "</center>");
+        total.setSelectedValue(webSearchParameters.getPeptideVariantsParameters().getnVariants());
+        variantType.setSelected(webSearchParameters.getPeptideVariantsParameters().getVariantType().name());
+        aminoAcidDeletion.setSelectedValue(webSearchParameters.getPeptideVariantsParameters().getnVariants());
+        aminoAcidInsertion.setSelectedValue(webSearchParameters.getPeptideVariantsParameters().getnVariants());
+        aminoAcidSwap.setSelectedValue(webSearchParameters.getPeptideVariantsParameters().getnVariants());
+        aminoAcidSubstitutions.setSelectedValue(webSearchParameters.getPeptideVariantsParameters().getnVariants());
+        allowedAminoAcidSubstitutions.select(webSearchParameters.getPeptideVariantsParameters().getAaSubstitutionMatrix().getName());
+        super.setLabelValue(VaadinIcons.COG.getHtml() + " Peptide Variants" + "<center>" + webSearchParameters.getPeptideVariantsParameters().getShortDescription() + "</center>");
 
     }
 
@@ -192,19 +192,19 @@ public class PeptideVariantsPanel extends PopupWindow {
             updateGUI(webSearchParameters);
         } else if (webSearchParameters != null) {
             updateParameters();
-            super.setLabelValue(VaadinIcons.COG.getHtml() + " Peptide Variants" + "<center>" + webSearchParameters.getUpdatedIdentificationParameters().getPeptideVariantsParameters().getShortDescription() + "</center>");
+            super.setLabelValue(VaadinIcons.COG.getHtml() + " Peptide Variants" + "<center>" + webSearchParameters.getPeptideVariantsParameters().getShortDescription() + "</center>");
         }
         super.setPopupVisible(visible); //To change body of generated methods, choose Tools | Templates.
     }
 
     private void updateParameters() {
-        webSearchParameters.getUpdatedIdentificationParameters().getPeptideVariantsParameters().setVatiantType(PeptideVariantsParameters.VariantType.valueOf(variantType.getSelectedValue()));
-        webSearchParameters.getUpdatedIdentificationParameters().getPeptideVariantsParameters().setnVariants(Integer.parseInt(total.getSelectedValue()));
-        webSearchParameters.getUpdatedIdentificationParameters().getPeptideVariantsParameters().setnAaDeletions(Integer.parseInt(aminoAcidDeletion.getSelectedValue()));
-        webSearchParameters.getUpdatedIdentificationParameters().getPeptideVariantsParameters().setnAaInsertions(Integer.parseInt(aminoAcidInsertion.getSelectedValue()));
-        webSearchParameters.getUpdatedIdentificationParameters().getPeptideVariantsParameters().setnAaSwap(Integer.parseInt(aminoAcidSwap.getSelectedValue()));
-        webSearchParameters.getUpdatedIdentificationParameters().getPeptideVariantsParameters().setnAaSubstitutions(Integer.parseInt(aminoAcidSubstitutions.getSelectedValue()));
-        webSearchParameters.getUpdatedIdentificationParameters().getPeptideVariantsParameters().setAaSubstitutionMatrix(aaSubstitutionMatrix);
+        webSearchParameters.getPeptideVariantsParameters().setVatiantType(PeptideVariantsParameters.VariantType.valueOf(variantType.getSelectedValue()));
+        webSearchParameters.getPeptideVariantsParameters().setnVariants(Integer.parseInt(total.getSelectedValue()));
+        webSearchParameters.getPeptideVariantsParameters().setnAaDeletions(Integer.parseInt(aminoAcidDeletion.getSelectedValue()));
+        webSearchParameters.getPeptideVariantsParameters().setnAaInsertions(Integer.parseInt(aminoAcidInsertion.getSelectedValue()));
+        webSearchParameters.getPeptideVariantsParameters().setnAaSwap(Integer.parseInt(aminoAcidSwap.getSelectedValue()));
+        webSearchParameters.getPeptideVariantsParameters().setnAaSubstitutions(Integer.parseInt(aminoAcidSubstitutions.getSelectedValue()));
+        webSearchParameters.getPeptideVariantsParameters().setAaSubstitutionMatrix(aaSubstitutionMatrix);
 
     }
 

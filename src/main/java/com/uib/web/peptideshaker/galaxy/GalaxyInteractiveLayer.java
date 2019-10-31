@@ -1,6 +1,6 @@
 package com.uib.web.peptideshaker.galaxy;
 
-import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
+import com.compomics.util.parameters.identification.IdentificationParameters;
 import com.uib.web.peptideshaker.galaxy.utilities.GalaxyHistoryHandler;
 import com.uib.web.peptideshaker.galaxy.utilities.GalaxyToolsHandler;
 import com.github.jmchilton.blend4j.galaxy.GalaxyInstance;
@@ -10,7 +10,6 @@ import com.github.jmchilton.blend4j.galaxy.beans.User;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyTransferableFile;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyFileObject;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
-import com.uib.web.peptideshaker.model.core.WebSearchParameters;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinSession;
 import java.io.BufferedReader;
@@ -62,11 +61,9 @@ public abstract class GalaxyInteractiveLayer {
     private final DecimalFormat dsFormater = new DecimalFormat("#.##");
 
 //    private Set<String> csf_pr_Accession_List;
-
 //    public Set<String> getCsf_pr_Accession_List() {
 //        return csf_pr_Accession_List;
 //    }
-
     /**
      * Constructor to initialise the main Galaxy history handler.
      */
@@ -81,9 +78,9 @@ public abstract class GalaxyInteractiveLayer {
             public void synchronizeDataWithGalaxyServer(Map<String, GalaxyFileObject> historyFilesMap, boolean jobsInProgress, boolean updatePresenterView, Set<String> toDeleteMap) {
                 //update history in the system                 
                 GalaxyInteractiveLayer.this.synchronizeDataWithGalaxyServer(historyFilesMap, jobsInProgress, updatePresenterView);
-                if (!jobsInProgress && toDeleteMap!=null &&toolsHandler!=null) {
+                if (!jobsInProgress && toDeleteMap != null && toolsHandler != null) {
                     toDeleteMap.forEach((galaxyId) -> {
-                        toolsHandler.deleteDataset(Galaxy_Instance.getGalaxyUrl(), galaxyId.split(";")[0], galaxyId.split(";")[1], true,false);
+                        toolsHandler.deleteDataset(Galaxy_Instance.getGalaxyUrl(), galaxyId.split(";")[0], galaxyId.split(";")[1], true, false);
                     });
                     System.out.println("done deleting files");
                     toDeleteMap.clear();
@@ -106,39 +103,37 @@ public abstract class GalaxyInteractiveLayer {
             userOverViewList.clear();
             Galaxy_Instance = GalaxyInstanceFactory.get(galaxyServerUrl, userAPI);
             Galaxy_Instance.getHistoriesClient().getHistories();
-            System.out.println("check connection "+Galaxy_Instance.getUsersClient()==null);
+            user_folder = new File(userDataFolderUrl, Galaxy_Instance.getApiKey() + "");
+            user_folder.mkdir();
+            historyHandler.connectToGalaxy(Galaxy_Instance, user_folder);
+            toolsHandler = new GalaxyToolsHandler(Galaxy_Instance.getToolsClient(), Galaxy_Instance.getWorkflowsClient(), Galaxy_Instance.getHistoriesClient()) {
+                @Override
+                public void synchronizeDataWithGalaxyServer(boolean updatePresenterView) {
+                    historyHandler.updateHistory(updatePresenterView);
+                    userOverViewList.set(1, historyHandler.getDatasetsNumber() + "");
+                    userOverViewList.set(2, historyHandler.getFilesNumber() + "");
+                    userOverViewList.set(3, dsFormater.format(historyHandler.getMemoryUsage()) + " GB");
+                }
+            };
+            VaadinSession.getCurrent().setAttribute("ApiKey", Galaxy_Instance.getApiKey());
 
-//            user_folder = new File(userDataFolderUrl, Galaxy_Instance.getApiKey() + "");
-//            user_folder.mkdir();
-//            historyHandler.connectToGalaxy(Galaxy_Instance, user_folder);
-//            toolsHandler = new GalaxyToolsHandler(Galaxy_Instance.getToolsClient(), Galaxy_Instance.getWorkflowsClient(), Galaxy_Instance.getHistoriesClient()) {
-//                @Override
-//                public void synchronizeDataWithGalaxyServer(boolean updatePresenterView) {
-//                    historyHandler.updateHistory(updatePresenterView);
-//                    userOverViewList.set(1, historyHandler.getDatasetsNumber() + "");
-//                    userOverViewList.set(2, historyHandler.getFilesNumber() + "");
-//                    userOverViewList.set(3, dsFormater.format(historyHandler.getMemoryUsage()) + " GB");
-//                }
-//            };
-//            VaadinSession.getCurrent().setAttribute("ApiKey", Galaxy_Instance.getApiKey());
-//
-//            UsersClient userClient = Galaxy_Instance.getUsersClient();
-//            User user = userClient.getUsers().get(0);
-//            userOverViewList.add(user.getUsername().replace("guest_user", "Guest User <i style='font-size: 10px;'>(public data)</i>"));
-//            userOverViewList.add(historyHandler.getDatasetsNumber() + "");
-//            userOverViewList.add(historyHandler.getFilesNumber() + "");
-//            userOverViewList.add(dsFormater.format(historyHandler.getMemoryUsage()) + " GB");
-//            userOverViewList.add(toolsHandler.getSearch_GUI_Tool().getVersion());
-//            userOverViewList.add(toolsHandler.getPeptideShaker_Tool().getVersion());
+            UsersClient userClient = Galaxy_Instance.getUsersClient();
+            User user = userClient.getUsers().get(0);
+            userOverViewList.add(user.getUsername().replace("public_user", "Guest User <i style='font-size: 10px;position: relative;top: -23px;left: 101px;'>(public data)</i>"));
+            userOverViewList.add(historyHandler.getDatasetsNumber() + "");
+            userOverViewList.add(historyHandler.getFilesNumber() + "");
+            userOverViewList.add(historyHandler.getMemoryUsage());
+            userOverViewList.add(toolsHandler.getSearch_GUI_Tool_version());
+            userOverViewList.add(toolsHandler.getPeptideShaker_Tool_Version());
         } catch (Exception e) {
-            System.out.println("exception in galaxy connection cought " + e.getMessage());
+            e.printStackTrace();
+            System.out.println("at ---->>>>exception in galaxy connection cought " + e.getMessage());
             if (VaadinSession.getCurrent().getSession() != null) {
                 VaadinSession.getCurrent().getSession().invalidate();
             }
             Page.getCurrent().reload();
             return false;
         }
-
         return true;
     }
 
@@ -162,7 +157,7 @@ public abstract class GalaxyInteractiveLayer {
      * @param searchEnginesList List of selected search engine names
      * @param searchParameters User input search parameters
      */
-    public void execute_SearchGUI_PeptideShaker_WorkFlow(String projectName, String fastaFileId, String searchParameterFileId, Set<String> inputFilesIdsList, Set<String> searchEnginesList, WebSearchParameters searchParameters, boolean quant) {
+    public void execute_SearchGUI_PeptideShaker_WorkFlow(String projectName, String fastaFileId, String searchParameterFileId, Set<String> inputFilesIdsList, Set<String> searchEnginesList, IdentificationParameters searchParameters, boolean quant) {
         Map<String, String> inputFilesMap = new LinkedHashMap<>();
         inputFilesIdsList.forEach((inputFileId) -> {
             if (quant) {
@@ -184,7 +179,7 @@ public abstract class GalaxyInteractiveLayer {
      * @param searchEnginesList List of selected search engine names
      * @param searchParameters User input search parameters
      */
-    public void execute_SearchGUI_PeptideShaker_PathwayMatcher_WorkFlow(String projectName, String fastaFileId, Set<String> mgfIdsList, Set<String> searchEnginesList, WebSearchParameters searchParameters) {
+    public void execute_SearchGUI_PeptideShaker_PathwayMatcher_WorkFlow(String projectName, String fastaFileId, Set<String> mgfIdsList, Set<String> searchEnginesList, IdentificationParameters searchParameters) {
         Map<String, String> mgfMap = new LinkedHashMap<>();
         mgfIdsList.forEach((mgfId) -> {
             mgfMap.put(mgfId, historyHandler.getMgfFilesMap().get(mgfId).getName());
@@ -200,7 +195,7 @@ public abstract class GalaxyInteractiveLayer {
      * @param newFile is new or just edited file
      * @return updated get user Search Settings Files Map
      */
-    public Map<String, GalaxyTransferableFile> saveSearchGUIParameters(WebSearchParameters searchParameters, boolean newFile) {
+    public Map<String, GalaxyTransferableFile> saveSearchGUIParameters(IdentificationParameters searchParameters, boolean newFile) {
         if (toolsHandler != null) {
             return toolsHandler.saveSearchGUIParameters(Galaxy_Instance.getGalaxyUrl(), user_folder, historyHandler.getSearchSettingsFilesMap(), historyHandler.getWorkingHistoryId(), searchParameters, newFile);
         }
@@ -282,13 +277,13 @@ public abstract class GalaxyInteractiveLayer {
         if (fileObject.getType().equalsIgnoreCase("Web Peptide Shaker Dataset")) {
             PeptideShakerVisualizationDataset vDs = (PeptideShakerVisualizationDataset) fileObject;
             vDs.getInputMGFFiles().values().forEach((galaxyFile) -> {
-                toolsHandler.deleteDataset(Galaxy_Instance.getGalaxyUrl(), vDs.getHistoryId(), galaxyFile.getGalaxyId(), true,true);
+                toolsHandler.deleteDataset(Galaxy_Instance.getGalaxyUrl(), vDs.getHistoryId(), galaxyFile.getGalaxyId(), true, true);
             });
-            toolsHandler.deleteDataset(Galaxy_Instance.getGalaxyUrl(), vDs.getHistoryId(), vDs.getGalaxyId(), true,true);
-            toolsHandler.deleteDataset(Galaxy_Instance.getGalaxyUrl(), vDs.getHistoryId(), vDs.getSearchGUIFile().getGalaxyId(), true,true);
+            toolsHandler.deleteDataset(Galaxy_Instance.getGalaxyUrl(), vDs.getHistoryId(), vDs.getGalaxyId(), true, true);
+            toolsHandler.deleteDataset(Galaxy_Instance.getGalaxyUrl(), vDs.getHistoryId(), vDs.getSearchGUIFile().getGalaxyId(), true, true);
 
         } else {
-            toolsHandler.deleteDataset(Galaxy_Instance.getGalaxyUrl(), fileObject.getHistoryId(), fileObject.getGalaxyId(), true,true);
+            toolsHandler.deleteDataset(Galaxy_Instance.getGalaxyUrl(), fileObject.getHistoryId(), fileObject.getGalaxyId(), true, true);
         }
     }
 
@@ -313,6 +308,7 @@ public abstract class GalaxyInteractiveLayer {
             System.out.println(
                     "Unable to open file '" + "'");
         } catch (IOException ex) {
+             ex.printStackTrace();
             System.out.println("Error reading file '" + "'");
         }
         return csfprAccList;

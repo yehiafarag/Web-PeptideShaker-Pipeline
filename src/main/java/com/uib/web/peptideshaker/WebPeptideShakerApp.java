@@ -1,11 +1,12 @@
 package com.uib.web.peptideshaker;
 
+import com.compomics.util.parameters.identification.IdentificationParameters;
+import com.compomics.util.parameters.identification.search.SearchParameters;
 import com.uib.web.peptideshaker.presenter.PresenterManager;
 import com.uib.web.peptideshaker.galaxy.GalaxyInteractiveLayer;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyFileObject;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyTransferableFile;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
-import com.uib.web.peptideshaker.model.core.WebSearchParameters;
 import com.uib.web.peptideshaker.presenter.FileSystemPresenter;
 import com.uib.web.peptideshaker.presenter.InteractivePSPRojectResultsPresenter;
 import com.uib.web.peptideshaker.presenter.SearchGUI_PeptideShaker_Tool_Presenter;
@@ -64,7 +65,7 @@ public class WebPeptideShakerApp extends VerticalLayout {
     public WebPeptideShakerApp() {
         WebPeptideShakerApp.this.setSizeFull();
         WebPeptideShakerApp.this.setMargin(new MarginInfo(true, true, true, true));
-         WebPeptideShakerApp.this.addStyleName("mainapplicationframe");
+        WebPeptideShakerApp.this.addStyleName("mainapplicationframe");
         WebPeptideShakerApp.this.addStyleName("frame");
 
         this.Galaxy_Interactive_Layer = new GalaxyInteractiveLayer() {
@@ -84,7 +85,7 @@ public class WebPeptideShakerApp extends VerticalLayout {
         presentationManager = new PresenterManager();
         presentationManager.addStyleName("mainapplicationframe");
         WebPeptideShakerApp.this.addComponent(presentationManager);
-         WebPeptideShakerApp.this.setComponentAlignment(presentationManager, Alignment.TOP_CENTER);
+        WebPeptideShakerApp.this.setComponentAlignment(presentationManager, Alignment.TOP_CENTER);
 
         /**
          * landing page initialisation.
@@ -115,19 +116,19 @@ public class WebPeptideShakerApp extends VerticalLayout {
 
         SearchGUI_PeptideShaker_Tool_Presenter = new SearchGUI_PeptideShaker_Tool_Presenter() {
             @Override
-            public void execute_SearchGUI_PeptideShaker_WorkFlow(String projectName, String fastaFileId,String searchParameterFileId, Set<String> inputFilesIdsList, Set<String> searchEnginesList, WebSearchParameters searchParameters,boolean quant) {
-                Galaxy_Interactive_Layer.execute_SearchGUI_PeptideShaker_WorkFlow(projectName, fastaFileId,searchParameterFileId, inputFilesIdsList, searchEnginesList, searchParameters,quant);
+            public void execute_SearchGUI_PeptideShaker_WorkFlow(String projectName, String fastaFileId, String searchParameterFileId, Set<String> inputFilesIdsList, Set<String> searchEnginesList, IdentificationParameters searchParameters, boolean quant) {
+                Galaxy_Interactive_Layer.execute_SearchGUI_PeptideShaker_WorkFlow(projectName, fastaFileId, searchParameterFileId, inputFilesIdsList, searchEnginesList, searchParameters, quant);
                 presentationManager.viewLayout(fileSystemPresenter.getViewId());
             }
 
             @Override
-            public Map<String, GalaxyTransferableFile> saveSearchGUIParameters(WebSearchParameters searchParameters, boolean isNew) {
+            public Map<String, GalaxyTransferableFile> saveSearchGUIParameters(IdentificationParameters searchParameters, boolean isNew) {
                 return Galaxy_Interactive_Layer.saveSearchGUIParameters(searchParameters, isNew);
             }
 
             @Override
             public void maximizeView() {
-                updatePeptideShakerToolInputForm(Galaxy_Interactive_Layer.getSearchSettingsFilesMap(), Galaxy_Interactive_Layer.getFastaFilesMap(), Galaxy_Interactive_Layer.getMgfFilesMap(),Galaxy_Interactive_Layer.getRawFilesMap());
+                updatePeptideShakerToolInputForm(Galaxy_Interactive_Layer.getSearchSettingsFilesMap(), Galaxy_Interactive_Layer.getFastaFilesMap(), Galaxy_Interactive_Layer.getMgfFilesMap(), Galaxy_Interactive_Layer.getRawFilesMap());
                 super.maximizeView(); //To change body of generated methods, choose Tools | Templates.
             }
 

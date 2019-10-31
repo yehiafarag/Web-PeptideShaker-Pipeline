@@ -1,6 +1,9 @@
 package com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings;
 
-import com.uib.web.peptideshaker.model.core.WebSearchParameters;
+import com.compomics.util.experiment.identification.Advocate;
+import com.compomics.util.experiment.identification.psm_scoring.PsmScore;
+import com.compomics.util.parameters.identification.IdentificationParameters;
+import com.compomics.util.parameters.identification.advanced.PsmScoringParameters;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
 import com.vaadin.data.Item;
 import com.vaadin.icons.VaadinIcons;
@@ -17,9 +20,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-import web.com.compomics.util.experiment.identification.Advocate;
-import web.com.compomics.util.experiment.identification.psm_scoring.PsmScore;
-import web.com.compomics.util.parameters.identification.advanced.PsmScoringParameters;
 
 /**
  *
@@ -27,7 +27,7 @@ import web.com.compomics.util.parameters.identification.advanced.PsmScoringParam
  */
 public class PSMScoringPanel extends PopupWindow {
 
-    private WebSearchParameters webSearchParameters;
+    private IdentificationParameters webSearchParameters;
     private Table psmScoreSelectionTable;
     private final VerticalLayout subContainer;
     private HashMap<Integer, HashSet<Integer>> spectrumMatchingScores;
@@ -91,9 +91,9 @@ public class PSMScoringPanel extends PopupWindow {
     }
     private ArrayList<String> scoresNames;
 
-    public void updateGUI(WebSearchParameters webSearchParameters) {
+    public void updateGUI(IdentificationParameters webSearchParameters) {
         this.webSearchParameters = webSearchParameters;
-        PsmScoringParameters psmScoringPreferences = webSearchParameters.getUpdatedIdentificationParameters().getPsmScoringParameters();
+        PsmScoringParameters psmScoringPreferences = webSearchParameters.getPsmScoringParameters();
         //init table
         subContainer.removeAllComponents();
         psmScoreSelectionTable = new Table();
@@ -172,7 +172,7 @@ public class PSMScoringPanel extends PopupWindow {
             psmScoreSelectionTable.addItem(item, index);
             index++;
         }
-        super.setLabelValue(VaadinIcons.COG.getHtml() + " PSM Scoring" + "<center>" + webSearchParameters.getUpdatedIdentificationParameters().getPsmScoringParameters().getShortDescription() + "</center>");
+        super.setLabelValue(VaadinIcons.COG.getHtml() + " PSM Scoring" + "<center>" + webSearchParameters.getPsmScoringParameters().getShortDescription() + "</center>");
 
     }
 
@@ -191,7 +191,7 @@ public class PSMScoringPanel extends PopupWindow {
     private void updateParameters() {
         PsmScoringParameters psmScoringPreferences = new PsmScoringParameters();
         psmScoringPreferences.clearAllScores();
-        psmScoringPreferences.getDefaultScores().addAll(webSearchParameters.getUpdatedIdentificationParameters().getPsmScoringParameters().getDefaultScores());
+        psmScoringPreferences.getDefaultScores().addAll(webSearchParameters.getPsmScoringParameters().getDefaultScores());
 
         Collection ids = psmScoreSelectionTable.getItemIds();
         ids.forEach((_item) -> {
@@ -212,10 +212,10 @@ public class PSMScoringPanel extends PopupWindow {
             });
 
         });
-        webSearchParameters.getUpdatedIdentificationParameters().setPsmScoringParameters(psmScoringPreferences);
-        super.setLabelValue(VaadinIcons.COG.getHtml() + " PSM Scoring" + "<center>" + webSearchParameters.getUpdatedIdentificationParameters().getPsmScoringParameters().getShortDescription() + "</center>");
+        webSearchParameters.setPsmScoringParameters(psmScoringPreferences);
+        super.setLabelValue(VaadinIcons.COG.getHtml() + " PSM Scoring" + "<center>" + webSearchParameters.getPsmScoringParameters().getShortDescription() + "</center>");
 
-//       webSearchParameters.getUpdatedIdentificationParameters().getPsmScoringParameters().setProteinConfidenceMwPlots(Double.valueOf(proteinConfidenceMW.getSelectedValue()));
+//       webSearchParametersgetPsmScoringParameters().setProteinConfidenceMwPlots(Double.valueOf(proteinConfidenceMW.getSelectedValue()));
     }
 
     /**

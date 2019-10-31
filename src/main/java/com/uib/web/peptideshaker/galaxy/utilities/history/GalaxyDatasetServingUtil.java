@@ -1,9 +1,9 @@
 package com.uib.web.peptideshaker.galaxy.utilities.history;
 
-import com.compomics.util.experiment.massspectrometry.Charge;
-import com.compomics.util.experiment.massspectrometry.MSnSpectrum;
-import com.compomics.util.experiment.massspectrometry.Peak;
-import com.compomics.util.experiment.massspectrometry.Precursor;
+import com.compomics.util.experiment.biology.ions.Charge;
+import com.compomics.util.experiment.mass_spectrometry.spectra.Peak;
+import com.compomics.util.experiment.mass_spectrometry.spectra.Precursor;
+import com.compomics.util.experiment.mass_spectrometry.spectra.Spectrum;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,6 +15,12 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 
 /**
  * Utility class for galaxy files that helps in managing the integration and
@@ -43,7 +49,7 @@ public class GalaxyDatasetServingUtil {
     public GalaxyDatasetServingUtil(String galaxyLink, String userApiKey) {
         this.galaxyLink = galaxyLink;
         params = new GalaxyDatasetServingUtil.ParameterNameValue[]{
-            new GalaxyDatasetServingUtil.ParameterNameValue("key", userApiKey),};
+            new GalaxyDatasetServingUtil.ParameterNameValue("key", userApiKey), new GalaxyDatasetServingUtil.ParameterNameValue("offset", ""),};
 
     }
 
@@ -57,134 +63,243 @@ public class GalaxyDatasetServingUtil {
      * @param MGFFileName The MGF file name
      * @return MSnSpectrum spectrum object
      */
-    public MSnSpectrum getSpectrum(long startIndex, String historyId, String MGFGalaxyID, String MGFFileName) {
-
+    public Spectrum getSpectrum(long startIndex, String historyId, String MGFGalaxyID, String MGFFileName) {
+//MGFGalaxyID="5a9381f02a7b89af";
         try {
-            StringBuilder locationBuilder = new StringBuilder(galaxyLink + "/datasets/"+ MGFGalaxyID + "/display?");//"/api/histories/" + historyId + "/contents/" + MGFGalaxyID + "/display?"
-//            StringBuilder locationBuilder = new StringBuilder(galaxyLink + "/api/histories/" + "df7a1f0c02a5b08e" + "/contents/" + "9f916718ff70f082" + "/display?");
+//            StringBuilder locationBuilder = new StringBuilder(galaxyLink + "/datasets/"+ MGFGalaxyID + "/display?");//"/api/histories/" + historyId + "/contents/" + MGFGalaxyID + "/display?" 
+            StringBuilder locationBuilder = new StringBuilder(galaxyLink + "/api/histories/" + historyId + "/contents/" + MGFGalaxyID + "/display?");
+            params[1].value = (startIndex - 11) + "";
             for (int i = 0; i < params.length; i++) {
                 if (i > 0) {
                     locationBuilder.append('&');
                 }
                 locationBuilder.append(params[i].name).append('=').append(params[i].value);
             }
-            String location = locationBuilder.toString();
+            String location = locationBuilder.toString();//         
             URL website = new URL(location);
-
             URLConnection conn = website.openConnection();
             conn.addRequestProperty("Accept", "application/json, text/javascript, */*; q=0.01");
-            conn.addRequestProperty("Accept-Encoding", "gzip, deflate, sdch, br");
-            conn.addRequestProperty("Accept-Language", "ar,en-US;q=0.8,en;q=0.6,en-GB;q=0.4");
-            conn.addRequestProperty("Cache-Control", "no-cache");
-            conn.addRequestProperty("Connection", "keep-alive");
-            conn.addRequestProperty("Range", "bytes=" + startIndex + "-" + Long.MAX_VALUE);
-            conn.addRequestProperty("DNT", "1");
-            conn.addRequestProperty("X-Requested-With", "XMLHttpRequest");
-            conn.addRequestProperty("Pragma", "no-cache");
-            conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36");
-            conn.setDoInput(true);
+//            conn.addRequestProperty("Accept-Encoding", "gzip, deflate, sdch, br");
+//            conn.addRequestProperty("Accept-Language", "ar,en-US;q=0.8,en;q=0.6,en-GB;q=0.4");
+//            conn.addRequestProperty("Cache-Control", "no-cache");
+//            conn.addRequestProperty("Connection", "keep-alive");
+//            conn.addRequestProperty("Range", "bytes=" + startIndex + "-" + Long.MAX_VALUE);
+//            conn.addRequestProperty("DNT", "1");
+//            conn.addRequestProperty("X-Requested-With", "XMLHttpRequest");
+//            conn.addRequestProperty("Pragma", "no-cache");
+//            conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36");
+//            conn.setDoInput(true);
 
             double precursorMz = 0, precursorIntensity = 0, rt = -1.0, rt1 = -1, rt2 = -1;
-            ArrayList<Charge> precursorCharges = new ArrayList<>();
+            ArrayList<Integer> precursorCharges = new ArrayList<>();
             String scanNumber = "", spectrumTitle = "";
             HashMap<Double, Peak> spectrum = new HashMap<>();
             String line;
             boolean insideSpectrum = false;
 
-            try (BufferedReader bin = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
-               
-                while ((line = bin.readLine()) != null) { 
-                    // fix for lines ending with \r
-                    if (line.endsWith("\r")) {
-                        line = line.replace("\r", "");
+            try (BufferedReader bin = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"))) {
+
+                while ((line = bin.readLine()) != null) {
+
+                    JSONObject jsonObject = new JSONObject(line);
+
+                    if (jsonObject != JSONObject.NULL) {
+                        Map<String, Object> map = jsonToMap(jsonObject);
+                        line = map.get("ck_data").toString();
                     }
 
-                    if (line.startsWith("BEGIN IONS")) {
-                        insideSpectrum = true;
-                        spectrum = new HashMap<>();
-                    } else if (line.startsWith("TITLE")) {
-                        insideSpectrum = true;
-                        spectrumTitle = line.substring(line.indexOf('=') + 1);
-                        try {
-                            spectrumTitle = URLDecoder.decode(spectrumTitle, "utf-8");
-                        } catch (UnsupportedEncodingException e) {
-                            System.out.println("An exception was thrown when trying to decode an mgf title: " + spectrumTitle);
-                            e.printStackTrace();
+//                    line = "BEGIN IONS \\n" + line.split("END\tIONS")[0];
+//                    line = line.replace("\n", "\\n").replace("\t", " ");
+                    String[] spectrumData = line.split("\n");
+                    for (String str : spectrumData) {
+                        line = str;
+                        // fix for lines ending with \r
+                        if (line.endsWith("\r")) {
+                            line = line.replace("\r", "");
                         }
-                    } else if (line.startsWith("CHARGE")) {
-                        precursorCharges = parseCharges(line);
-                    } else if (line.startsWith("PEPMASS")) {
-                        String temp = line.substring(line.indexOf("=") + 1);
-                        String[] values = temp.split("\\s");
-                        precursorMz = Double.parseDouble(values[0]);
-                        if (values.length > 1) {
-                            precursorIntensity = Double.parseDouble(values[1]);
-                        } else {
-                            precursorIntensity = 0.0;
-                        }
-                    } else if (line.startsWith("RTINSECONDS")) {
-                        try {
-                            String rtInput = line.substring(line.indexOf('=') + 1);
-                            String[] rtWindow = rtInput.split("-");
-                            if (rtWindow.length == 1) {
-                                String tempRt = rtWindow[0];
-                                // possible fix for values like RTINSECONDS=PT121.250000S
-                                if (tempRt.startsWith("PT") && tempRt.endsWith("S")) {
-                                    tempRt = tempRt.substring(2, tempRt.length() - 1);
-                                }
-                                rt = new Double(tempRt);
-                            } else if (rtWindow.length == 2) {
-                                rt1 = new Double(rtWindow[0]);
-                                rt2 = new Double(rtWindow[1]);
+
+                        if (line.startsWith("BEGIN")) {
+                            insideSpectrum = true;
+                            spectrum = new HashMap<>();
+                        } else if (line.startsWith("TITLE")) {
+                            insideSpectrum = true;
+                            spectrumTitle = line.substring(line.indexOf('=') + 1);
+                            try {
+                                spectrumTitle = URLDecoder.decode(spectrumTitle, "utf-8");
+                            } catch (UnsupportedEncodingException e) {
+                                System.out.println("An exception was thrown when trying to decode an mgf title: " + spectrumTitle);
+                                e.printStackTrace();
                             }
-                        } catch (NumberFormatException e) {
-                            System.out.println("An exception was thrown when trying to decode the retention time: " + spectrumTitle);
-                            e.printStackTrace();
-                            // ignore exception, RT will not be parsed
-                        }
-                    } else if (line.startsWith("TOLU")) {
-                        // peptide tolerance unit not implemented
-                    } else if (line.startsWith("TOL")) {
-                        // peptide tolerance not implemented
-                    } else if (line.startsWith("SEQ")) {
-                        // sequence qualifier not implemented
-                    } else if (line.startsWith("COMP")) {
-                        // composition qualifier not implemented
-                    } else if (line.startsWith("ETAG")) {
-                        // error tolerant search sequence tag not implemented
-                    } else if (line.startsWith("TAG")) {
-                        // sequence tag not implemented
-                    } else if (line.startsWith("SCANS")) {
-                        try {
-                            scanNumber = line.substring(line.indexOf('=') + 1);
-                        } catch (Exception e) {
-                            throw new IllegalArgumentException("Cannot parse scan number.");
-                        }
-                    } else if (line.startsWith("INSTRUMENT")) {
-                        // ion series not implemented
-                    } else if (line.startsWith("END IONS")) {
+                        } else if (line.startsWith("CHARGE")) {
+                            precursorCharges = parseCharges(line);
+                        } else if (line.startsWith("PEPMASS")) {
+                            String temp = line.substring(line.indexOf("=") + 1);
+                            String[] values = temp.split("\\s");
+                            precursorMz = Double.parseDouble(values[0]);
+                            if (values.length > 1) {
+                                precursorIntensity = Double.parseDouble(values[1]);
+                            } else {
+                                precursorIntensity = 0.0;
+                            }
+                        } else if (line.startsWith("RTINSECONDS")) {
+                            try {
+                                String rtInput = line.substring(line.indexOf('=') + 1);
+                                String[] rtWindow = rtInput.split("-");
+                                if (rtWindow.length == 1) {
+                                    String tempRt = rtWindow[0];
+                                    // possible fix for values like RTINSECONDS=PT121.250000S
+                                    if (tempRt.startsWith("PT") && tempRt.endsWith("S")) {
+                                        tempRt = tempRt.substring(2, tempRt.length() - 1);
+                                    }
+                                    rt = new Double(tempRt);
+                                } else if (rtWindow.length == 2) {
+                                    rt1 = new Double(rtWindow[0]);
+                                    rt2 = new Double(rtWindow[1]);
+                                }
+                            } catch (NumberFormatException e) {
+                                System.out.println("An exception was thrown when trying to decode the retention time: " + spectrumTitle);
+                                e.printStackTrace();
+                                // ignore exception, RT will not be parsed
+                            }
+                        } else if (line.startsWith("TOLU")) {
+                            // peptide tolerance unit not implemented
+                        } else if (line.startsWith("TOL")) {
+                            // peptide tolerance not implemented
+                        } else if (line.startsWith("SEQ")) {
+                            // sequence qualifier not implemented
+                        } else if (line.startsWith("COMP")) {
+                            // composition qualifier not implemented
+                        } else if (line.startsWith("ETAG")) {
+                            // error tolerant search sequence tag not implemented
+                        } else if (line.startsWith("TAG")) {
+                            // sequence tag not implemented
+                        } else if (line.startsWith("SCANS")) {
+                            try {
+                                scanNumber = line.substring(line.indexOf('=') + 1);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                                throw new IllegalArgumentException("Cannot parse scan number.");
+                            }
+                        } else if (line.startsWith("INSTRUMENT")) {
+                            // ion series not implemented
+                        } else if (line.startsWith("END")) {
 
-                        Precursor precursor;
-                        if (rt1 != -1 && rt2 != -1) {
-                            precursor = new Precursor(precursorMz, precursorIntensity, precursorCharges, rt1, rt2);
-                        } else {
-                            precursor = new Precursor(rt, precursorMz, precursorIntensity, precursorCharges);
+                            Precursor precursor;
+                            if (rt1 != -1 && rt2 != -1) {
+                                precursor = new Precursor(precursorMz, precursorIntensity, precursorCharges, rt1, rt2);
+                            } else {
+                                precursor = new Precursor(rt, precursorMz, precursorIntensity, precursorCharges);
+                            }
+                            Spectrum msnSpectrum = new Spectrum(2, precursor, spectrumTitle, spectrum, MGFFileName);
+                            msnSpectrum.setScanNumber(scanNumber);
+                            return msnSpectrum;
+                        } else if (insideSpectrum && !line.equals("")) {
+                            try {
+                                String values[] = line.split("\\s+");
+                                Double mz = new Double(values[0]);
+                                Double intensity = new Double(values[1]);
+                                spectrum.put(mz, new Peak(mz, intensity));
+                            } catch (NumberFormatException e1) {
+                                e1.printStackTrace();
+                                // ignore comments and all other lines
+                            }
                         }
-                        MSnSpectrum msnSpectrum = new MSnSpectrum(2, precursor, spectrumTitle, spectrum, MGFFileName);
-                        msnSpectrum.setScanNumber(scanNumber);
-                        return msnSpectrum;
-                    } else if (insideSpectrum && !line.equals("")) {
-                        try {
-                            String values[] = line.split("\\s+");
-                            Double mz = new Double(values[0]);
-                            Double intensity = new Double(values[1]);
-                            spectrum.put(mz, new Peak(mz, intensity));
-                        } catch (NumberFormatException e1) {
-                            // ignore comments and all other lines
-                        }
+
                     }
+
+//                    // fix for lines ending with \r
+//                    if (line.endsWith("\r")) {
+//                        line = line.replace("\r", "");
+//                    }
+//
+//                    if (line.startsWith("BEGIN")) {
+//                        insideSpectrum = true;
+//                        spectrum = new HashMap<>();
+//                    } else if (line.startsWith("TITLE")) {
+//                        insideSpectrum = true;
+//                        spectrumTitle = line.substring(line.indexOf('=') + 1);
+//                        try {
+//                            spectrumTitle = URLDecoder.decode(spectrumTitle, "utf-8");
+//                        } catch (UnsupportedEncodingException e) {
+//                            System.out.println("An exception was thrown when trying to decode an mgf title: " + spectrumTitle);
+//                            e.printStackTrace();
+//                        }
+//                    } else if (line.startsWith("CHARGE")) {
+//                        precursorCharges = parseCharges(line);
+//                    } else if (line.startsWith("PEPMASS")) {
+//                        String temp = line.substring(line.indexOf("=") + 1);
+//                        String[] values = temp.split("\\s");
+//                        precursorMz = Double.parseDouble(values[0]);
+//                        if (values.length > 1) {
+//                            precursorIntensity = Double.parseDouble(values[1]);
+//                        } else {
+//                            precursorIntensity = 0.0;
+//                        }
+//                    } else if (line.startsWith("RTINSECONDS")) {
+//                        try {
+//                            String rtInput = line.substring(line.indexOf('=') + 1);
+//                            String[] rtWindow = rtInput.split("-");
+//                            if (rtWindow.length == 1) {
+//                                String tempRt = rtWindow[0];
+//                                // possible fix for values like RTINSECONDS=PT121.250000S
+//                                if (tempRt.startsWith("PT") && tempRt.endsWith("S")) {
+//                                    tempRt = tempRt.substring(2, tempRt.length() - 1);
+//                                }
+//                                rt = new Double(tempRt);
+//                            } else if (rtWindow.length == 2) {
+//                                rt1 = new Double(rtWindow[0]);
+//                                rt2 = new Double(rtWindow[1]);
+//                            }
+//                        } catch (NumberFormatException e) {
+//                            System.out.println("An exception was thrown when trying to decode the retention time: " + spectrumTitle);
+//                            e.printStackTrace();
+//                            // ignore exception, RT will not be parsed
+//                        }
+//                    } else if (line.startsWith("TOLU")) {
+//                        // peptide tolerance unit not implemented
+//                    } else if (line.startsWith("TOL")) {
+//                        // peptide tolerance not implemented
+//                    } else if (line.startsWith("SEQ")) {
+//                        // sequence qualifier not implemented
+//                    } else if (line.startsWith("COMP")) {
+//                        // composition qualifier not implemented
+//                    } else if (line.startsWith("ETAG")) {
+//                        // error tolerant search sequence tag not implemented
+//                    } else if (line.startsWith("TAG")) {
+//                        // sequence tag not implemented
+//                    } else if (line.startsWith("SCANS")) {
+//                        try {
+//                            scanNumber = line.substring(line.indexOf('=') + 1);
+//                        } catch (Exception e) {
+//                            throw new IllegalArgumentException("Cannot parse scan number.");
+//                        }
+//                    } else if (line.startsWith("INSTRUMENT")) {
+//                        // ion series not implemented
+//                    } else if (line.startsWith("END IONS")) {
+//
+//                        Precursor precursor;
+//                        if (rt1 != -1 && rt2 != -1) {
+//                            precursor = new Precursor(precursorMz, precursorIntensity, precursorCharges, rt1, rt2);
+//                        } else {
+//                            precursor = new Precursor(rt, precursorMz, precursorIntensity, precursorCharges);
+//                        }
+//                        MSnSpectrum msnSpectrum = new MSnSpectrum(2, precursor, spectrumTitle, spectrum, MGFFileName);
+//                        msnSpectrum.setScanNumber(scanNumber);
+//                        return msnSpectrum;
+//                    } else if (insideSpectrum && !line.equals("")) {
+//                        try {
+//                            String values[] = line.split("\\s+");
+//                            Double mz = new Double(values[0]);
+//                            Double intensity = new Double(values[1]);
+//                            spectrum.put(mz, new Peak(mz, intensity));
+//                        } catch (NumberFormatException e1) {
+//                            // ignore comments and all other lines
+//                        }
+//                    }
                 }
 
+            } catch (JSONException ex) {
+                ex.printStackTrace();
             }
 
         } catch (MalformedURLException ex) {
@@ -203,39 +318,45 @@ public class GalaxyDatasetServingUtil {
      * @return the possible charges found
      * @throws IllegalArgumentException
      */
-    private ArrayList<Charge> parseCharges(String chargeLine) throws IllegalArgumentException {
-        ArrayList<Charge> result = new ArrayList<>(1);
+    private  ArrayList<Integer> parseCharges(String chargeLine) {
+
+        ArrayList<Integer> result = new ArrayList<>(1);
         String tempLine = chargeLine.substring(chargeLine.indexOf("=") + 1);
         String[] chargesAnd = tempLine.split(" and ");
         ArrayList<String> chargesAsString = new ArrayList<>();
+
         for (String charge : chargesAnd) {
             for (String charge2 : charge.split(",")) {
                 chargesAsString.add(charge2.trim());
             }
         }
 
-        chargesAsString.forEach((chargeAsString) -> {
-            Integer value;
+        for (String chargeAsString : chargesAsString) {
+
             chargeAsString = chargeAsString.trim();
+
             if (!chargeAsString.isEmpty()) {
                 try {
                     if (chargeAsString.endsWith("+")) {
-                        value = new Integer(chargeAsString.substring(0, chargeAsString.length() - 1));
-                        result.add(new Charge(Charge.PLUS, value));
+                        int value = Integer.parseInt(chargeAsString.substring(0, chargeAsString.length() - 1));
+                        result.add(value);
                     } else if (chargeAsString.endsWith("-")) {
-                        value = new Integer(chargeAsString.substring(0, chargeAsString.length() - 1));
-                        result.add(new Charge(Charge.MINUS, value));
+                        int value = Integer.parseInt(chargeAsString.substring(0, chargeAsString.length() - 1));
+                        result.add(value);
                     } else if (!chargeAsString.equalsIgnoreCase("Mr")) {
-                        result.add(new Charge(Charge.PLUS, new Integer(chargeAsString)));
+                        int value = Integer.parseInt(chargeAsString);
+                        result.add(value);
                     }
                 } catch (NumberFormatException e) {
                     e.printStackTrace();
                     throw new IllegalArgumentException("\'" + chargeAsString + "\' could not be processed as a valid precursor charge!");
                 }
             }
-        });
+        }
+
+        // if empty, add a default charge of 1
         if (result.isEmpty()) {
-            result.add(new Charge(Charge.PLUS, 1));
+            result.add(1);
         }
 
         return result;
@@ -273,5 +394,51 @@ public class GalaxyDatasetServingUtil {
                 ex.printStackTrace();
             }
         }
+    }
+
+    /**
+     * Convert JSON object to Java readable map
+     *
+     * @param object JSON object to be converted
+     * @return Java Hash map has all the data
+     * @throws JSONException in case of error in reading JSON file
+     */
+    private Map<String, Object> jsonToMap(JSONObject object) throws JSONException {
+        Map<String, Object> map = new HashMap<>();
+
+        Iterator<String> keysItr = object.keys();
+        while (keysItr.hasNext()) {
+            String key = keysItr.next();
+            Object value = object.get(key);
+
+            if (value instanceof JSONArray) {
+                value = toList((JSONArray) value);
+            } else if (value instanceof JSONObject) {
+                value = jsonToMap((JSONObject) value);
+            }
+            map.put(key, value);
+        }
+        return map;
+    }
+
+    /**
+     * Convert JSON object to Java readable list
+     *
+     * @param object JSON object to be converted
+     * @return Java List has all the data
+     * @throws JSONException in case of error in reading JSON file
+     */
+    private List<Object> toList(JSONArray array) throws JSONException {
+        List<Object> list = new ArrayList<>();
+        for (int i = 0; i < array.length(); i++) {
+            Object value = array.get(i);
+            if (value instanceof JSONArray) {
+                value = toList((JSONArray) value);
+            } else if (value instanceof JSONObject) {
+                value = jsonToMap((JSONObject) value);
+            }
+            list.add(value);
+        }
+        return list;
     }
 }

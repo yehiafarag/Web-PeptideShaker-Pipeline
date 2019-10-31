@@ -97,7 +97,7 @@ public class PeptideVisulizationLevelContainer extends HorizontalLayout implemen
 
         psmViewComponent = new PSMViewComponent() {
             @Override
-            public Map<Object, SpectrumInformation> getSpectrumData(List<PSMObject> psms) {
+            public Map<Object, SpectrumInformation> getSpectrumInformationMap(List<PSMObject> psms) {
                 return peptideShakerVisualizationDataset.getSelectedSpectrumData(psms, Selection_Manager.getSelectedPeptide());
             }
 

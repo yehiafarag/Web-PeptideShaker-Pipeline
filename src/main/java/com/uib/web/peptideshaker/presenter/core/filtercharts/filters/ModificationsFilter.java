@@ -49,6 +49,7 @@ public class ModificationsFilter extends AbsoluteLayout implements RegistrableFi
     private final VennDiagram vennDiagram;
     
     public ModificationsFilter(String title, String filterId, SelectionManager Selection_Manager) {
+         System.out.println("at ---------------------------------------------------------------------------------------create venn diagram ----------------->>>>");
         this.filterId = filterId;
         this.Selection_Manager = Selection_Manager;
         this.Selection_Manager.RegistrDatasetsFilter(ModificationsFilter.this);
@@ -86,6 +87,7 @@ public class ModificationsFilter extends AbsoluteLayout implements RegistrableFi
         };
         ModificationsFilter.this.addComponent(matrixDiagram, "left:10px;top:30px;right:10px;bottom:10px;");
         matrixDiagram.setVisible(false);
+       
         this.vennDiagram = new VennDiagram() {
             @Override
             public void compleateLoading(boolean done) {

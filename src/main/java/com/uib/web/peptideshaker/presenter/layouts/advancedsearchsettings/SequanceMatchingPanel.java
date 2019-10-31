@@ -1,8 +1,8 @@
 
 package com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings;
 
-import com.compomics.util.preferences.SequenceMatchingPreferences;
-import com.uib.web.peptideshaker.model.core.WebSearchParameters;
+import com.compomics.util.parameters.identification.IdentificationParameters;
+import com.compomics.util.parameters.identification.advanced.SequenceMatchingParameters;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelDropDounList;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelTextField;
@@ -24,7 +24,7 @@ public class SequanceMatchingPanel extends PopupWindow {
 
     private final HorizontalLabelTextField shareOfX;
     private final HorizontalLabelDropDounList matchingMethodList;
-    private WebSearchParameters webSearchParameters;
+    private IdentificationParameters webSearchParameters;
 
     public SequanceMatchingPanel() {
         super(VaadinIcons.COG.getHtml() + " Sequance Matching");
@@ -32,14 +32,14 @@ public class SequanceMatchingPanel extends PopupWindow {
 
         matchingMethodList = new HorizontalLabelDropDounList("Matching Method");
         Set<String> values = new LinkedHashSet<>();
-        values.add(SequenceMatchingPreferences.MatchingType.string.name());
+        values.add(SequenceMatchingParameters.MatchingType.string.name());
 
-        values.add(SequenceMatchingPreferences.MatchingType.aminoAcid.name());
-        values.add(SequenceMatchingPreferences.MatchingType.indistiguishableAminoAcids.name());
+        values.add(SequenceMatchingParameters.MatchingType.aminoAcid.name());
+        values.add(SequenceMatchingParameters.MatchingType.indistiguishableAminoAcids.name());
         matchingMethodList.updateData(values);
-        matchingMethodList.setItemCaption(SequenceMatchingPreferences.MatchingType.string.name(), "Character Sequence");
-        matchingMethodList.setItemCaption(SequenceMatchingPreferences.MatchingType.aminoAcid.name(), "Amino Acids");
-        matchingMethodList.setItemCaption(SequenceMatchingPreferences.MatchingType.indistiguishableAminoAcids.name(), "Indistinguishable Amino Acids");
+        matchingMethodList.setItemCaption(SequenceMatchingParameters.MatchingType.string.name(), "Character Sequence");
+        matchingMethodList.setItemCaption(SequenceMatchingParameters.MatchingType.aminoAcid.name(), "Amino Acids");
+        matchingMethodList.setItemCaption(SequenceMatchingParameters.MatchingType.indistiguishableAminoAcids.name(), "Indistinguishable Amino Acids");
         shareOfX = new HorizontalLabelTextField("Maximum Share ofX's", 0.30, new DoubleRangeValidator("Range allowed between 0.05 and 0.95", 0.05, 0.95));
         AbsoluteLayout container = new AbsoluteLayout();
         container.setStyleName("popuppanelmaincontainer");
@@ -77,11 +77,11 @@ public class SequanceMatchingPanel extends PopupWindow {
 
     }
 
-    public void updateGUI(WebSearchParameters webSearchParameters) {
+    public void updateGUI(IdentificationParameters webSearchParameters) {
         this.webSearchParameters = webSearchParameters;
-        shareOfX.setSelectedValue(webSearchParameters.getSequenceMatchingPreferences().getLimitX());
-        matchingMethodList.setSelected(webSearchParameters.getSequenceMatchingPreferences().getSequenceMatchingType().name());
-        super.setLabelValue(VaadinIcons.COG.getHtml() + " Sequance Matching" + "<center>" + webSearchParameters.getSequenceMatchingPreferences().getShortDescription() + "</center>");
+        shareOfX.setSelectedValue(webSearchParameters.getSequenceMatchingParameters().getLimitX());
+        matchingMethodList.setSelected(webSearchParameters.getSequenceMatchingParameters().getSequenceMatchingType().name());
+        super.setLabelValue(VaadinIcons.COG.getHtml() + " Sequance Matching" + "<center>" + webSearchParameters.getSequenceMatchingParameters().getShortDescription() + "</center>");
 
     }
 
@@ -95,16 +95,16 @@ public class SequanceMatchingPanel extends PopupWindow {
             updateGUI(webSearchParameters);
         } else if (webSearchParameters != null) {
             updateParameters();
-            super.setLabelValue(VaadinIcons.COG.getHtml() + " Sequance Matching" + "<center>" + webSearchParameters.getSequenceMatchingPreferences().getShortDescription() + "</center>");
+            super.setLabelValue(VaadinIcons.COG.getHtml() + " Sequance Matching" + "<center>" + webSearchParameters.getSequenceMatchingParameters().getShortDescription() + "</center>");
         }
         super.setPopupVisible(visible); //To change body of generated methods, choose Tools | Templates.
     }
 
     private void updateParameters() {
         if (shareOfX.isValid()) {
-            webSearchParameters.getSequenceMatchingPreferences().setLimitX(Double.valueOf(shareOfX.getSelectedValue()));
+            webSearchParameters.getSequenceMatchingParameters().setLimitX(Double.valueOf(shareOfX.getSelectedValue()));
         }
-        webSearchParameters.getSequenceMatchingPreferences().setSequenceMatchingType(SequenceMatchingPreferences.MatchingType.valueOf(matchingMethodList.getSelectedValue()));
+        webSearchParameters.getSequenceMatchingParameters().setSequenceMatchingType(SequenceMatchingParameters.MatchingType.valueOf(matchingMethodList.getSelectedValue()));
 
     }
 

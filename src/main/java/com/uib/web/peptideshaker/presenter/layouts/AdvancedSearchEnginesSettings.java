@@ -1,6 +1,6 @@
 package com.uib.web.peptideshaker.presenter.layouts;
 
-import com.uib.web.peptideshaker.model.core.WebSearchParameters;
+import com.compomics.util.parameters.identification.IdentificationParameters;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
 import com.uib.web.peptideshaker.presenter.layouts.advancedsearchenginessettings.AndromedaAdvancedSettingsPanel;
 import com.uib.web.peptideshaker.presenter.layouts.advancedsearchenginessettings.CometAdvancedSettingsPanel;
@@ -12,12 +12,6 @@ import com.uib.web.peptideshaker.presenter.layouts.advancedsearchenginessettings
 import com.uib.web.peptideshaker.presenter.layouts.advancedsearchenginessettings.OmssaAdvancedSettingsPanel;
 import com.uib.web.peptideshaker.presenter.layouts.advancedsearchenginessettings.TideAdvancedSettingsPanel;
 import com.uib.web.peptideshaker.presenter.layouts.advancedsearchenginessettings.XTandemAdvancedSettingsPanel;
-import com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings.FractionAnalysisPanel;
-
-import com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings.GeneAnnotationPanel;
-import com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings.PeptideVariantsPanel;
-import com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings.ProteinInferencePanel;
-import com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings.QualityControlPanel;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Label;
@@ -32,7 +26,7 @@ import com.vaadin.ui.VerticalLayout;
 public class AdvancedSearchEnginesSettings extends VerticalLayout {
 
     private final PopupWindow popupAdvancedSettingLayout;
-    private WebSearchParameters webSearchParam;
+    private IdentificationParameters webSearchParam;
     private XTandemAdvancedSettingsPanel xTandemAdvancedSettingsPanel;
     private MyriMatchAdvancedSettingsPanel myriMatchAdvancedSettingsPanel;
     private MSAmandaAdvancedSettingsPanel mSAmandaAdvancedSettingsPanel;
@@ -113,22 +107,20 @@ public class AdvancedSearchEnginesSettings extends VerticalLayout {
      *
      * @param searchParameters search parameter object from selected parameter
      */
-    public void updateAdvancedSearchParamForms(WebSearchParameters searchParameters) {
+    public void updateAdvancedSearchParamForms(IdentificationParameters searchParameters) {
         this.webSearchParam = searchParameters;
-        if (webSearchParam.isNewVersionParFile()) {
-            web.com.compomics.util.parameters.identification.IdentificationParameters idSearchParameter = webSearchParam.getUpdatedIdentificationParameters();
-            if (idSearchParameter != null) {
-                xTandemAdvancedSettingsPanel.updateGUI(searchParameters);
-                myriMatchAdvancedSettingsPanel.updateGUI(searchParameters);
-                mSAmandaAdvancedSettingsPanel.updateGUI(searchParameters);
-                msGFAdvancedSettingsPanel.updateGUI(searchParameters);
-                novorAdvancedSettingsPanel.updateGUI(searchParameters);
-                andromedaAdvancedSettingsPanel.updateGUI(searchParameters);
-                tideAdvancedSettingsPanel.updateGUI(searchParameters);
-                omssaAdvancedSettingsPanel.updateGUI(searchParameters);
-                direcTagAdvancedSettingsPanel.updateGUI(searchParameters);
-                cometAdvancedSettingsPanel.updateGUI(searchParameters);
-            }
+        IdentificationParameters idSearchParameter = webSearchParam;
+        if (idSearchParameter != null) {
+            xTandemAdvancedSettingsPanel.updateGUI(searchParameters);
+            myriMatchAdvancedSettingsPanel.updateGUI(searchParameters);
+            mSAmandaAdvancedSettingsPanel.updateGUI(searchParameters);
+            msGFAdvancedSettingsPanel.updateGUI(searchParameters);
+            novorAdvancedSettingsPanel.updateGUI(searchParameters);
+            andromedaAdvancedSettingsPanel.updateGUI(searchParameters);
+            tideAdvancedSettingsPanel.updateGUI(searchParameters);
+            omssaAdvancedSettingsPanel.updateGUI(searchParameters);
+            direcTagAdvancedSettingsPanel.updateGUI(searchParameters);
+            cometAdvancedSettingsPanel.updateGUI(searchParameters);
         }
 
     }

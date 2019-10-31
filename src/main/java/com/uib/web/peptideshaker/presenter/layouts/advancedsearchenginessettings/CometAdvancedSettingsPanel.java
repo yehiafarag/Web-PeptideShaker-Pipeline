@@ -1,8 +1,9 @@
 package com.uib.web.peptideshaker.presenter.layouts.advancedsearchenginessettings;
 
+import com.compomics.util.experiment.identification.Advocate;
+import com.compomics.util.parameters.identification.IdentificationParameters;
 import com.compomics.util.parameters.identification.tool_specific.CometParameters;
 import com.compomics.util.parameters.identification.tool_specific.CometParameters.CometOutputFormat;
-import com.uib.web.peptideshaker.model.core.WebSearchParameters;
 import com.uib.web.peptideshaker.presenter.core.Help;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabel2TextField;
@@ -20,7 +21,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import web.com.compomics.util.experiment.identification.Advocate;
 
 /**
  *
@@ -48,7 +48,7 @@ public class CometAdvancedSettingsPanel extends PopupWindow {
     private final HorizontalLabelDropDounList outputFormat;
     private final HorizontalLabelDropDounList printExpectScore;
 
-    private WebSearchParameters webSearchParameters;
+    private IdentificationParameters webSearchParameters;
 
     public CometAdvancedSettingsPanel() {
         super(VaadinIcons.COG.getHtml() + " Comet Advanced Settings");
@@ -240,10 +240,10 @@ public class CometAdvancedSettingsPanel extends PopupWindow {
         container.addComponent(cancelBtn, "bottom:10px;right:96px");
     }
 
-    public void updateGUI(WebSearchParameters webSearchParameters) {
+    public void updateGUI(IdentificationParameters webSearchParameters) {
         this.webSearchParameters = webSearchParameters;
 
-        CometParameters oldCometParameters = (CometParameters) this.webSearchParameters.getUpdatedSearchParameter().getIdentificationAlgorithmParameter(Advocate.comet.getIndex());
+        CometParameters oldCometParameters = (CometParameters) this.webSearchParameters.getSearchParameters().getIdentificationAlgorithmParameter(Advocate.comet.getIndex());
         minimumNumberofPeaks.setSelectedValue(oldCometParameters.getMinPeaks());
         minimalPeakIntensity.setSelectedValue(oldCometParameters.getMinPeakIntensity());
         removePrecursorPeak.setSelected(oldCometParameters.getRemovePrecursor() + "");
@@ -291,7 +291,7 @@ public class CometAdvancedSettingsPanel extends PopupWindow {
 
     private void updateParameters() {
 
-        CometParameters oldCometParameters = (CometParameters) this.webSearchParameters.getUpdatedSearchParameter().getIdentificationAlgorithmParameter(Advocate.comet.getIndex());
+        CometParameters oldCometParameters = (CometParameters) this.webSearchParameters.getSearchParameters().getIdentificationAlgorithmParameter(Advocate.comet.getIndex());
         oldCometParameters.setMinPeaks(Integer.valueOf(minimumNumberofPeaks.getSelectedValue()));
         oldCometParameters.setMinPeakIntensity(Double.valueOf(minimalPeakIntensity.getSelectedValue()));
         oldCometParameters.setRemovePrecursor(Integer.valueOf(removePrecursorPeak.getSelectedValue()));

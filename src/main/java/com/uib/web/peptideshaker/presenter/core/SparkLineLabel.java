@@ -42,7 +42,7 @@ public abstract class SparkLineLabel extends AbsoluteLayout implements Comparabl
             dataLayout.setStyleName(style);
             dataLayout.setSizeFull();
             container.addComponent(dataLayout);
-            container.setExpandRatio(dataLayout, (float) values.get(style));
+            container.setExpandRatio(dataLayout, Math.max((float) values.get(style),0f));
             left = left - (float) values.get(style);
 
         }

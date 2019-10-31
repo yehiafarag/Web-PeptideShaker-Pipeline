@@ -1,6 +1,6 @@
 package com.uib.web.peptideshaker.presenter.layouts;
 
-import com.uib.web.peptideshaker.model.core.WebSearchParameters;
+import com.compomics.util.parameters.identification.IdentificationParameters;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
 import com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings.DatabaseProcessingPanel;
 import com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings.FractionAnalysisPanel;
@@ -28,7 +28,7 @@ import com.vaadin.ui.VerticalLayout;
 public class AdvancedSearchSettings extends VerticalLayout {
 
     private final PopupWindow popupAdvancedSettingLayout;
-    private WebSearchParameters webSearchParam;
+    private IdentificationParameters webSearchParam;
     private SpectrumAnnotationPanel spectrumAnnotationPanel;
     private SequanceMatchingPanel sequanceMatchingPanel;
     private ImportFiltersPanel importFilters;
@@ -39,7 +39,7 @@ public class AdvancedSearchSettings extends VerticalLayout {
     private PTMLocalizationPanel ptmLocalization;
     private DatabaseProcessingPanel databaseProcessing;
     private PeptideVariantsPanel peptideVariants;
-    private  PSMScoringPanel psmScoring;
+    private PSMScoringPanel psmScoring;
     private QualityControlPanel qualityControl;
 
     public AdvancedSearchSettings() {
@@ -114,24 +114,21 @@ public class AdvancedSearchSettings extends VerticalLayout {
      *
      * @param searchParameters search parameter object from selected parameter
      */
-    public void updateAdvancedSearchParamForms(WebSearchParameters searchParameters) {
+    public void updateAdvancedSearchParamForms(IdentificationParameters searchParameters) {
         this.webSearchParam = searchParameters;
-        if (webSearchParam.isNewVersionParFile()) {
-            web.com.compomics.util.parameters.identification.IdentificationParameters idSearchParameter = webSearchParam.getUpdatedIdentificationParameters();
-            if (idSearchParameter != null) {
-                spectrumAnnotationPanel.updateGUI(searchParameters);
-                sequanceMatchingPanel.updateGUI(searchParameters);
-                importFilters.updateGUI(searchParameters);
-                validationLevel.updateGUI(searchParameters);
-                fractionAnalysis.updateGUI(searchParameters);
-                proteinInference.updateGUI(searchParameters);
-                geneAnnotation.updateGUI(searchParameters);
-                ptmLocalization.updateGUI(searchParameters);
-                databaseProcessing.updateGUI(searchParameters);
-                peptideVariants.updateGUI(searchParameters);
-                psmScoring.updateGUI(searchParameters);
-                qualityControl.updateGUI(searchParameters);
-            }
+        if (webSearchParam != null) {
+            spectrumAnnotationPanel.updateGUI(searchParameters);
+            sequanceMatchingPanel.updateGUI(searchParameters);
+            importFilters.updateGUI(searchParameters);
+            validationLevel.updateGUI(searchParameters);
+            fractionAnalysis.updateGUI(searchParameters);
+            proteinInference.updateGUI(searchParameters);
+            geneAnnotation.updateGUI(searchParameters);
+            ptmLocalization.updateGUI(searchParameters);
+            databaseProcessing.updateGUI(searchParameters);
+            peptideVariants.updateGUI(searchParameters);
+            psmScoring.updateGUI(searchParameters);
+            qualityControl.updateGUI(searchParameters);
         }
 
     }

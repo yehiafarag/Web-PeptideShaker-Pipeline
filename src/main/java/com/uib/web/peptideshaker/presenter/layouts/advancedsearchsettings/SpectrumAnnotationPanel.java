@@ -5,7 +5,14 @@
  */
 package com.uib.web.peptideshaker.presenter.layouts.advancedsearchsettings;
 
-import com.uib.web.peptideshaker.model.core.WebSearchParameters;
+import com.compomics.util.experiment.biology.ions.Ion.IonType;
+import com.compomics.util.experiment.biology.ions.IonFactory;
+import com.compomics.util.experiment.biology.ions.NeutralLoss;
+import com.compomics.util.experiment.biology.ions.impl.PeptideFragmentIon;
+import com.compomics.util.experiment.biology.ions.impl.TagFragmentIon;
+import com.compomics.util.experiment.identification.spectrum_annotation.AnnotationParameters;
+import com.compomics.util.experiment.identification.spectrum_annotation.SpectrumAnnotator;
+import com.compomics.util.parameters.identification.IdentificationParameters;
 import com.uib.web.peptideshaker.presenter.core.MultiSelectOptionGroup;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
 import com.uib.web.peptideshaker.presenter.core.form.HorizontalLabelTextField;
@@ -24,13 +31,6 @@ import com.vaadin.ui.themes.ValoTheme;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import web.com.compomics.util.experiment.biology.ions.Ion.IonType;
-import web.com.compomics.util.experiment.biology.ions.IonFactory;
-import web.com.compomics.util.experiment.biology.ions.NeutralLoss;
-import web.com.compomics.util.experiment.biology.ions.impl.PeptideFragmentIon;
-import web.com.compomics.util.experiment.biology.ions.impl.TagFragmentIon;
-import web.com.compomics.util.experiment.identification.spectrum_annotation.AnnotationParameters;
-import web.com.compomics.util.experiment.identification.spectrum_annotation.SpectrumAnnotator;
 
 /**
  *
@@ -46,7 +46,7 @@ public class SpectrumAnnotationPanel extends PopupWindow {
     private final OptionGroup listII;
     private final ComboBox list;
     private final GridLayout peakMatchingContainer;
-    private WebSearchParameters webSearchParameters;
+    private IdentificationParameters webSearchParameters;
     private final AbsoluteLayout subSubContainer;
     private ArrayList<NeutralLoss> possibleNeutralLosses;
     /**
@@ -191,11 +191,11 @@ public class SpectrumAnnotationPanel extends PopupWindow {
         super.setPopupVisible(visible); //To change body of generated methods, choose Tools | Templates.
     }
 
-    public void updateGUI(WebSearchParameters webSearchParameters) {
+    public void updateGUI(IdentificationParameters webSearchParameters) {
         this.webSearchParameters = webSearchParameters;
 
-        annotationParameters = new AnnotationParameters(webSearchParameters.getUpdatedSearchParameter());
-        reporterIons = new ArrayList<>(IonFactory.getReporterIons(webSearchParameters.getUpdatedSearchParameter().getModificationParameters()));
+        annotationParameters = new AnnotationParameters(webSearchParameters.getSearchParameters());
+        reporterIons = new ArrayList<>(IonFactory.getReporterIons(webSearchParameters.getSearchParameters().getModificationParameters()));
         super.setLabelValue(VaadinIcons.COG.getHtml() + " Spectrum Annotation" + "<center>" + annotationParameters.getShortDescription() + "</center>");
         ionTypesList.unselectAll();
         annotationParameters.getIonTypes().keySet().stream().map((it) -> {
@@ -248,7 +248,7 @@ public class SpectrumAnnotationPanel extends PopupWindow {
 
     private void saveParameters() {
         annotationParameters = getAnnotationSettings();
-        this.webSearchParameters.getUpdatedIdentificationParameters().setAnnotationParameters(annotationParameters);
+        this.webSearchParameters.setAnnotationParameters(annotationParameters);
 
         this.setPopupVisible(false);
 

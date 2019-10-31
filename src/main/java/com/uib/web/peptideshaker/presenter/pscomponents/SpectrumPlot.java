@@ -1,32 +1,35 @@
 package com.uib.web.peptideshaker.presenter.pscomponents;
 
-import com.compomics.util.experiment.biology.AminoAcid;
-import com.compomics.util.experiment.biology.AminoAcidPattern;
-import com.compomics.util.experiment.biology.Ion;
-import com.compomics.util.experiment.biology.IonFactory;
-import com.compomics.util.experiment.biology.NeutralLoss;
-import com.compomics.util.experiment.biology.PTM;
-import com.compomics.util.experiment.biology.PTMFactory;
-import com.compomics.util.experiment.biology.Peptide;
-import com.compomics.util.experiment.biology.ions.PeptideFragmentIon;
-import com.compomics.util.experiment.identification.Identification;
-import com.compomics.util.experiment.identification.identification_parameters.PtmSettings;
-import com.compomics.util.experiment.identification.identification_parameters.SearchParameters;
+import com.compomics.util.experiment.biology.aminoacids.AminoAcid;
+import com.compomics.util.experiment.biology.aminoacids.sequence.AminoAcidPattern;
+import com.compomics.util.experiment.biology.ions.Charge;
+import com.compomics.util.experiment.biology.ions.Ion.IonType;
+import com.compomics.util.experiment.biology.ions.IonFactory;
+import com.compomics.util.experiment.biology.ions.NeutralLoss;
+import com.compomics.util.experiment.biology.ions.impl.PeptideFragmentIon;
+import com.compomics.util.experiment.biology.modifications.Modification;
+import com.compomics.util.experiment.biology.modifications.ModificationFactory;
+import com.compomics.util.experiment.biology.modifications.ModificationType;
+import com.compomics.util.experiment.biology.proteins.Peptide;
 import com.compomics.util.experiment.identification.matches.IonMatch;
 import com.compomics.util.experiment.identification.matches.SpectrumMatch;
-import com.compomics.util.experiment.identification.spectrum_annotation.AnnotationSettings;
-import com.compomics.util.experiment.identification.spectrum_annotation.SpecificAnnotationSettings;
+import com.compomics.util.experiment.identification.spectrum_annotation.AnnotationParameters;
+import com.compomics.util.experiment.identification.spectrum_annotation.SpecificAnnotationParameters;
 import com.compomics.util.experiment.identification.spectrum_annotation.SpectrumAnnotator;
 import com.compomics.util.experiment.identification.spectrum_annotation.spectrum_annotators.PeptideSpectrumAnnotator;
 import com.compomics.util.experiment.identification.spectrum_assumptions.PeptideAssumption;
-import com.compomics.util.experiment.massspectrometry.MSnSpectrum;
-import com.compomics.util.experiment.massspectrometry.Precursor;
-import com.compomics.util.preferences.IdentificationParameters;
+import com.compomics.util.experiment.io.biology.protein.SequenceProvider;
+import com.compomics.util.experiment.mass_spectrometry.spectra.Precursor;
+import com.compomics.util.experiment.mass_spectrometry.spectra.Spectrum;
+import com.compomics.util.gui.spectrum.SpectrumPanel;
+import com.compomics.util.parameters.identification.IdentificationParameters;
+import com.compomics.util.parameters.identification.advanced.SequenceMatchingParameters;
+import com.compomics.util.parameters.identification.search.ModificationParameters;
+import com.compomics.util.parameters.identification.search.SearchParameters;
 import com.ejt.vaadin.sizereporter.ComponentResizeEvent;
 import com.ejt.vaadin.sizereporter.ComponentResizeListener;
 import com.ejt.vaadin.sizereporter.SizeReporter;
 import com.itextpdf.text.pdf.codec.Base64;
-import com.uib.web.peptideshaker.model.core.WebSearchParameters;
 import com.vaadin.data.Property;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ExternalResource;
@@ -46,14 +49,12 @@ import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import javax.swing.JPanel;
 import javax.swing.Timer;
-import org.apache.commons.math.MathException;
 import org.jfree.chart.encoders.ImageEncoder;
 import org.jfree.chart.encoders.ImageEncoderFactory;
 import org.jfree.chart.encoders.ImageFormat;
@@ -81,7 +82,7 @@ public class SpectrumPlot extends AbsoluteLayout {
     private final MenuItem lossItem;
     private final MenuItem chargeItem;
     private final LinkedHashMap<String, Integer> ions;
-    private final LinkedHashMap<String, Ion.IonType> others;
+    private final LinkedHashMap<String, IonType> others;
     private final MenuItem resetAnnoItem;
     private final MenuItem deNovoItem;
     private final MenuItem settingsItem;
@@ -89,6 +90,7 @@ public class SpectrumPlot extends AbsoluteLayout {
     private final ComponentResizeListener compResizeListener;
     private int updatedComponentWidth;
     private int updatedComponentHeight;
+    private SequenceProvider sequenceProvider;
     /**
      * Time to wait
      */
@@ -123,10 +125,10 @@ public class SpectrumPlot extends AbsoluteLayout {
         ions.put("z", PeptideFragmentIon.Z_ION);
 
         others = new LinkedHashMap<>();
-        others.put("Precursor", Ion.IonType.PRECURSOR_ION);
-        others.put("Immonium", Ion.IonType.IMMONIUM_ION);
-        others.put("Related", Ion.IonType.RELATED_ION);
-        others.put("Reporter", Ion.IonType.REPORTER_ION);
+        others.put("Precursor", IonType.PRECURSOR_ION);
+        others.put("Immonium", IonType.IMMONIUM_ION);
+        others.put("Related", IonType.RELATED_ION);
+        others.put("Reporter", IonType.REPORTER_ION);
 //                   
 //        SpectrumPlot.this.setWidth(1000, Unit.PIXELS);
 //        SpectrumPlot.this.setHeight(500, Unit.PIXELS);
@@ -328,10 +330,11 @@ public class SpectrumPlot extends AbsoluteLayout {
         ionsItem.getChildren().forEach((mi) -> {
             mi.setChecked(false);
         });
-        identificationParameters.getForwardIons().forEach((i) -> {
+        System.out.println("at farward ions " + identificationParameters.getSearchParameters().getForwardIons());
+        identificationParameters.getSearchParameters().getForwardIons().forEach((i) -> {
             ionsItem.getChildren().get(i).setChecked(true);
         });
-        identificationParameters.getRewindIons().forEach((i) -> {
+        identificationParameters.getSearchParameters().getRewindIons().forEach((i) -> {
             ionsItem.getChildren().get(i + 1).setChecked(true);
         });
         otherItem.getChildren().forEach((mi) -> {
@@ -387,8 +390,8 @@ public class SpectrumPlot extends AbsoluteLayout {
     }
 
     private void reDraw() {
-        int w = /*mainSizeReporter.getWidth()*/ updatedComponentWidth ;
-        int h = /*mainSizeReporter.getHeight()*/ updatedComponentHeight-50 ;
+        int w = /*mainSizeReporter.getWidth()*/ updatedComponentWidth;
+        int h = /*mainSizeReporter.getHeight()*/ updatedComponentHeight - 50;
         if (w <= 0 || h <= 0) {
             return;
         }
@@ -417,105 +420,100 @@ public class SpectrumPlot extends AbsoluteLayout {
      * in the specific annotation preferences.
      */
     public void updateAnnotationPreferences() {
-        try {
-            levelSlider.setCaption("Intensity <br/>" + ((int) ((double) levelSlider.getValue())) + " %");
-            levelSlider.setDescription("Intensity level : " + ((int) ((double) levelSlider.getValue())) + " %");
-            double accuracy = (annotationAccuracySlider.getValue() / 100.0) * fragmentIonAccuracy;
-            annotationAccuracySlider.setCaption("Accuracy<br/>" + String.format("%.2f", accuracy) + " Da");
-            annotationAccuracySlider.setDescription("Annotation accuracy : " + accuracy + " Da");
-            PeptideAssumption peptideAssumption = spectrumMatch.getBestPeptideAssumption();
-            currentPeptide = peptideAssumption.getPeptide();
-            AnnotationSettings annotationPreferences = getIdentificationParameters().getAnnotationPreferences();
-            annotationPreferences.setIntensityLimit(levelSlider.getValue() / 100.0);
-            annotationPreferences.setFragmentIonAccuracy(accuracy);
-
-            specificAnnotationPreferences = new SpecificAnnotationSettings(currentSpectrum.getSpectrumKey(), peptideAssumption);
-            try {
-                identificationParameters.setAnnotationSettings(annotationPreferences);
-                specificAnnotationPreferences = annotationPreferences.getSpecificAnnotationPreferences(currentSpectrum.getSpectrumKey(), specificAnnotationPreferences.getSpectrumIdentificationAssumption(), identificationParameters.getSequenceMatchingPreferences(), identificationParameters.getPtmScoringPreferencesSequenceMatchingPreferences());
-                if (!defaultAnnotationInUse) {
-                    specificAnnotationPreferences.getIonTypes().get(Ion.IonType.PEPTIDE_FRAGMENT_ION).clear();
-                    specificAnnotationPreferences.getIonTypes().get(Ion.IonType.TAG_FRAGMENT_ION).clear();
-                    specificAnnotationPreferences.clearIonTypes();
-                    ionsItem.getChildren().forEach((mi) -> {
-                        if (mi.isChecked()) {
-                            specificAnnotationPreferences.addIonType(Ion.IonType.PEPTIDE_FRAGMENT_ION, ions.get(mi.getText()));
-                            specificAnnotationPreferences.addIonType(Ion.IonType.TAG_FRAGMENT_ION, ions.get(mi.getText()));
-                        }
-                    });
-                    otherItem.getChildren().forEach((mi) -> {
-                        if (mi.isChecked()) {
-                            if (mi.getText().equalsIgnoreCase("Reporter")) {
-                                ArrayList<Integer> reporterIons = new ArrayList<>(IonFactory.getReporterIons(getIdentificationParameters().getPtmSettings()));
-                                reporterIons.forEach((subtype) -> {
-                                    specificAnnotationPreferences.addIonType(Ion.IonType.REPORTER_ION, subtype);
-                                });
-                            } else {
-                                specificAnnotationPreferences.addIonType(others.get(mi.getText()));
-                            }
-                        }
-                    });
-
-                    MenuItem adaptItem = lossItem.getChildren().get(3);
-                    if (!adaptItem.isChecked()) {
-                        specificAnnotationPreferences.setNeutralLossesAuto(false);
-                        specificAnnotationPreferences.clearNeutralLosses();
-                        lossItem.getChildren().forEach((mi) -> {
-                            if (mi.isChecked()) {
-                                if (mi.getText().equalsIgnoreCase("NH3")) {
-                                    specificAnnotationPreferences.addNeutralLoss(NeutralLoss.NH3);
-                                } else if (mi.getText().equalsIgnoreCase("H2O")) {
-                                    specificAnnotationPreferences.addNeutralLoss(NeutralLoss.H2O);
-                                }
-                            }
+        levelSlider.setCaption("Intensity <br/>" + ((int) ((double) levelSlider.getValue())) + " %");
+        levelSlider.setDescription("Intensity level : " + ((int) ((double) levelSlider.getValue())) + " %");
+        double accuracy = (annotationAccuracySlider.getValue() / 100.0) * fragmentIonAccuracy;
+        annotationAccuracySlider.setCaption("Accuracy<br/>" + String.format("%.2f", accuracy) + " Da");
+        annotationAccuracySlider.setDescription("Annotation accuracy : " + accuracy + " Da");
+        PeptideAssumption peptideAssumption = spectrumMatch.getBestPeptideAssumption();
+        currentPeptide = peptideAssumption.getPeptide();
+        AnnotationParameters annotationParameters = identificationParameters.getAnnotationParameters();
+        annotationParameters.setIntensityLimit(levelSlider.getValue() / 100.0);
+        annotationParameters.setFragmentIonAccuracy(accuracy);
+        specificAnnotationParameters = new SpecificAnnotationParameters(currentSpectrum.getSpectrumKey(), peptideAssumption);
+        ModificationParameters modificationParameters = identificationParameters.getSearchParameters().getModificationParameters();
+        SequenceMatchingParameters modificationSequenceMatchingParameters = identificationParameters.getModificationLocalizationParameters().getSequenceMatchingParameters();
+        identificationParameters.setAnnotationParameters(annotationParameters);
+        //                identificationParameters.setAnnotationSettings(annotationPreferences);
+        specificAnnotationParameters = annotationParameters.getSpecificAnnotationParameters(currentSpectrum.getSpectrumKey(), peptideAssumption, modificationParameters, sequenceProvider, modificationSequenceMatchingParameters, spectrumAnnotator);
+        //                specificAnnotationParameters = annotationParameters.getSpecificAnnotationParameters(currentSpectrum.getSpectrumKey(), specificAnnotationParameters.getSpectrumIdentificationAssumption(), identificationParameters.getSequenceMatchingPreferences(), identificationParameters.getPtmScoringPreferencesSequenceMatchingPreferences());
+        if (!defaultAnnotationInUse) {
+            specificAnnotationParameters.getIonTypes().get(IonType.PEPTIDE_FRAGMENT_ION).clear();
+            specificAnnotationParameters.getIonTypes().get(IonType.TAG_FRAGMENT_ION).clear();
+            specificAnnotationParameters.clearIonTypes();
+            ionsItem.getChildren().forEach((mi) -> {
+                if (mi.isChecked()) {
+                    specificAnnotationParameters.addIonType(IonType.PEPTIDE_FRAGMENT_ION, ions.get(mi.getText()));
+                    specificAnnotationParameters.addIonType(IonType.TAG_FRAGMENT_ION, ions.get(mi.getText()));
+                }
+            });
+            otherItem.getChildren().forEach((mi) -> {
+                if (mi.isChecked()) {
+                    if (mi.getText().equalsIgnoreCase("Reporter")) {
+                        ArrayList<Integer> reporterIons = new ArrayList<>(IonFactory.getReporterIons(getIdentificationParameters().getSearchParameters().getModificationParameters()));
+                        reporterIons.forEach((subtype) -> {
+                            specificAnnotationParameters.addIonType(IonType.REPORTER_ION, subtype);
                         });
-
+                    } else {
+                        specificAnnotationParameters.addIonType(others.get(mi.getText()));
                     }
-
-                    specificAnnotationPreferences.clearCharges();
-                    chargeItem.getChildren().stream().filter((charge) -> (charge.isChecked())).forEachOrdered((charge) -> {
-                        specificAnnotationPreferences.addSelectedCharge(Integer.parseInt(charge.getText().replace("+", "").trim()));
-                    });
                 }
+            });
 
-// The following preferences are kept for all spectra
-                annotationPreferences.setShowForwardIonDeNovoTags(deNovoItem.getChildren().get(0).isChecked());
-                annotationPreferences.setShowRewindIonDeNovoTags(deNovoItem.getChildren().get(1).isChecked());
-                if (deNovoItem.getChildren().get(3).isChecked()) {
-                    annotationPreferences.setDeNovoCharge(1);
-                } else {
-                    annotationPreferences.setDeNovoCharge(2);
-                }
+            MenuItem adaptItem = lossItem.getChildren().get(3);
+            if (!adaptItem.isChecked()) {
+                specificAnnotationParameters.setNeutralLossesAuto(false);
+                specificAnnotationParameters.clearNeutralLosses();
+                lossItem.getChildren().forEach((mi) -> {
+                    if (mi.isChecked()) {
+                        if (mi.getText().equalsIgnoreCase("NH3")) {
+                            specificAnnotationParameters.addNeutralLoss(NeutralLoss.NH3);
+                        } else if (mi.getText().equalsIgnoreCase("H2O")) {
+                            specificAnnotationParameters.addNeutralLoss(NeutralLoss.H2O);
+                        }
+                    }
+                });
 
-                SpectrumAnnotator.TiesResolution tiesResolution = settingsItem.getChildren().get(1).isChecked() ? SpectrumAnnotator.TiesResolution.mostAccurateMz : SpectrumAnnotator.TiesResolution.mostIntense;
-                annotationPreferences.setTiesResolution(tiesResolution); //@TODO: replace by a drop down menu               
-                annotationPreferences.setShowAllPeaks(settingsItem.getChildren().get(0).isChecked());//@TODO:implement control btns
-                annotationPreferences.setAutomaticAnnotation(settingsItem.getChildren().get(3).isChecked());
-
-            } catch (IOException | ClassNotFoundException | InterruptedException | SQLException e) {
-                e.printStackTrace();
             }
 
-            spectrumPanel.removeAllReferenceAreasXAxis();
-            spectrumPanel.removeAllReferenceAreasYAxis();
-            spectrumPanel.setDeltaMassWindow(accuracy);
-            ArrayList<IonMatch> annotations = spectrumAnnotator.getSpectrumAnnotation(annotationPreferences, specificAnnotationPreferences, currentSpectrum, currentPeptide);
-            spectrumPanel.setAnnotations(SpectrumAnnotator.getSpectrumAnnotation(annotations));
-            spectrumPanel.showAnnotatedPeaksOnly(!annotationPreferences.showAllPeaks());
-            spectrumPanel.setYAxisZoomExcludesBackgroundPeaks(annotationPreferences.yAxisZoomExcludesBackgroundPeaks());//
-            Integer forwardIon = identificationParameters.getForwardIons().get(0);
-            Integer rewindIon = identificationParameters.getRewindIons().get(0);//
-
-            spectrumPanel.addAutomaticDeNovoSequencing(currentPeptide, annotations,
-                    forwardIon, rewindIon, annotationPreferences.getDeNovoCharge(),
-                    annotationPreferences.showForwardIonDeNovoTags(),
-                    annotationPreferences.showRewindIonDeNovoTags(), false);
-            spectrumPanel.setAnnotateHighestPeak(annotationPreferences.getTiesResolution() == SpectrumAnnotator.TiesResolution.mostIntense); //@TODO: implement ties resolution in the spectrum panel
-            spectrumPanel.setAnnotations(SpectrumAnnotator.getSpectrumAnnotation(annotations), annotationPreferences.getTiesResolution() == SpectrumAnnotator.TiesResolution.mostIntense); //@TODO: the selection of the peak to annotate should be done outside the spectrum panel          
-
-        } catch (InterruptedException | MathException e) {
-            e.printStackTrace();
+            specificAnnotationParameters.clearCharges();
+            chargeItem.getChildren().stream().filter((charge) -> (charge.isChecked())).forEachOrdered((charge) -> {
+                specificAnnotationParameters.addSelectedCharge(Integer.parseInt(charge.getText().replace("+", "").trim()));
+            });
         }
+        // The following preferences are kept for all spectra
+        annotationParameters.setShowForwardIonDeNovoTags(deNovoItem.getChildren().get(0).isChecked());
+        annotationParameters.setShowRewindIonDeNovoTags(deNovoItem.getChildren().get(1).isChecked());
+        if (deNovoItem.getChildren().get(3).isChecked()) {
+            annotationParameters.setDeNovoCharge(1);
+        } else {
+            annotationParameters.setDeNovoCharge(2);
+        }
+        SpectrumAnnotator.TiesResolution tiesResolution = settingsItem.getChildren().get(1).isChecked() ? SpectrumAnnotator.TiesResolution.mostAccurateMz : SpectrumAnnotator.TiesResolution.mostIntense;
+        annotationParameters.setTiesResolution(tiesResolution); //@TODO: replace by a drop down menu
+        annotationParameters.setShowAllPeaks(settingsItem.getChildren().get(0).isChecked());//@TODO:implement control btns
+        annotationParameters.setAutomaticAnnotation(settingsItem.getChildren().get(3).isChecked());
+        spectrumPanel.removeAllReferenceAreasXAxis();
+        spectrumPanel.removeAllReferenceAreasYAxis();
+        spectrumPanel.setDeltaMassWindow(accuracy);
+        //            System.out.println("at check for errors "+ double intensityLimit = useIntensityFilter ? spectrum.getIntensityLimit(annotationSettings.getIntensityThresholdType(), annotationSettings.getAnnotationIntensityLimit()) : 0.0;
+//           );
+//            spectrumAnnotator.setPeptide(currentPeptide, specificAnnotationPreferences.getPrecursorCharge(), specificAnnotationPreferences);
+        IonMatch[] annotations = spectrumAnnotator.getSpectrumAnnotation(annotationParameters, specificAnnotationParameters, currentSpectrum, currentPeptide,
+                modificationParameters, sequenceProvider, modificationSequenceMatchingParameters);
+        System.out.println("at current spectrum key 1 ------->>> update annotaion prefrencve " + annotations);
+        spectrumPanel.setAnnotations(SpectrumAnnotator.getSpectrumAnnotation(annotations));
+        spectrumPanel.showAnnotatedPeaksOnly(!annotationParameters.showAllPeaks());
+        spectrumPanel.setYAxisZoomExcludesBackgroundPeaks(annotationParameters.yAxisZoomExcludesBackgroundPeaks());//
+        Integer forwardIon = identificationParameters.getSearchParameters().getForwardIons().get(0);
+        Integer rewindIon = identificationParameters.getSearchParameters().getRewindIons().get(0);//
+        spectrumPanel.addAutomaticDeNovoSequencing(currentPeptide, annotations,
+                forwardIon, rewindIon, annotationParameters.getDeNovoCharge(),
+                annotationParameters.showForwardIonDeNovoTags(),
+                annotationParameters.showRewindIonDeNovoTags(), false,
+                modificationParameters, sequenceProvider, modificationSequenceMatchingParameters);
+        spectrumPanel.setAnnotateHighestPeak(annotationParameters.getTiesResolution() == SpectrumAnnotator.TiesResolution.mostIntense); //@TODO: implement ties resolution in the spectrum panel
+        spectrumPanel.setAnnotations(SpectrumAnnotator.getSpectrumAnnotation(annotations), annotationParameters.getTiesResolution() == SpectrumAnnotator.TiesResolution.mostIntense); //@TODO: the selection of the peak to annotate should be done outside the spectrum panel
     }
 
     private void initIonsItem(MenuItem parent, MenuBar.Command mainCommand) {
@@ -530,21 +528,22 @@ public class SpectrumPlot extends AbsoluteLayout {
             subItem.setCheckable(true);
         });
     }
-    private WebSearchParameters identificationParameters;
-    private SpecificAnnotationSettings specificAnnotationPreferences;
+    private IdentificationParameters identificationParameters;
+    private SpecificAnnotationParameters specificAnnotationParameters;
     private boolean defaultAnnotationInUse;
-    private MSnSpectrum currentSpectrum;
+    private Spectrum currentSpectrum;
     private Peptide currentPeptide;
     private double fragmentIonAccuracy;
     private SpectrumMatch spectrumMatch;
     private Thread selectedSpectrumThread;
 
-    public void selectedSpectrum(MSnSpectrum currentSpectrum, String charge, double fragmentIonAccuracy, WebSearchParameters identificationParameters, SpectrumMatch spectrumMatch) {
+    public void selectedSpectrum(Spectrum currentSpectrum,SequenceProvider sequanceProvider, String charge, double fragmentIonAccuracy, IdentificationParameters identificationParameters, SpectrumMatch spectrumMatch) {
         mainSizeReporter.removeResizeListener(compResizeListener);
         this.identificationParameters = identificationParameters;
         this.currentSpectrum = currentSpectrum;
         this.fragmentIonAccuracy = fragmentIonAccuracy;
         this.spectrumMatch = spectrumMatch;
+        this.sequenceProvider=sequanceProvider;
         if (spectrumPanel != null) {
             spectrumPanel.reset();
             if (selectedSpectrumThread.isAlive()) {
@@ -553,66 +552,68 @@ public class SpectrumPlot extends AbsoluteLayout {
         }
         selectedSpectrumThread = new Thread(() -> {
             Precursor precursor = currentSpectrum.getPrecursor();
-            try {
-                spectrumPanel = new WebSpectrumPanel(currentSpectrum.getMzValuesAsArray(), currentSpectrum.getIntensityValuesAsArray(), precursor.getMz(), charge, "", 40, false, false, false, 2, false);
-                spectrumPanel.setBorder(null);
-                int w = mainSizeReporter.getWidth() - 52;
-                int h = mainSizeReporter.getHeight() - 92;
-                if (w <= 0 || h <= 0) {
-                    w = Math.max(h, w);
-                    h = Math.max(h, w);
-                }
-                spectrumPanel.setSize(w, h);
-                plot.setWidth(w, Unit.PIXELS);
-                plot.setHeight(h, Unit.PIXELS);
-                spectrumPanel.setDataPointAndLineColor(Color.RED, 0);
-                spectrumPanel.setSpectrumPeakColor(Color.RED);
-                spectrumPanel.setSpectrumProfileModeLineColor(Color.RED);
-                spectrumPanel.rescale(0.0, spectrumPanel.getMaxXAxisValue());
-                this.defaultAnnotationInUse = true;
-                chargeItem.removeChildren();
-                int precursorCharge = 1;
-                int currentCharge = spectrumMatch.getBestPeptideAssumption().getIdentificationCharge().value;
-
-                if (currentCharge > precursorCharge) {
-                    precursorCharge = currentCharge;
-                }
-                if (precursorCharge == 1) {
-                    precursorCharge = 2;
-                }
-                for (Integer tcharge = 1; tcharge < precursorCharge; tcharge++) {
-                    MenuItem item = chargeItem.addItem(tcharge + "+", annotationsItemsCommand);
-                    item.setCheckable(true);
-                    item.setChecked(true);
-                }
-                resetAnnotations();
-                Property.ValueChangeListener listener = (Property.ValueChangeEvent event) -> {
-                    updateAnnotationPreferences();
-                    updateImage(spectrumPanel);
-                };
-                annotationAccuracySlider.setValue(100.0);
-                levelSlider.setValue(75.0);
-                levelSlider.addValueChangeListener(listener);
-                annotationAccuracySlider.addValueChangeListener(listener);
-                updateAnnotationPreferences();
-                if (plotThumbImage != null) {
-                    spectrumPanel.setMiniature(true);
-                    spectrumPanel.setSize(100, 100);
-                    spectrumPanel.setPeakWidth(2f);
-                    spectrumPanel.setBackgroundPeakWidth(0.5f);
-                    spectrumPanel.setMaxPadding(10);
-                    plotThumbImage.setSource(new ExternalResource(drawImage(spectrumPanel, true)));
-                    spectrumPanel.setMiniature(false);
-                    spectrumPanel.setPeakWidth(1f);
-                    spectrumPanel.setBackgroundPeakWidth(1f);
-                    spectrumPanel.setMaxPadding(50);
-                }
-                reDraw();
-                mainSizeReporter.addResizeListener(compResizeListener);
-
-            } catch (InterruptedException ex) {
-                ex.printStackTrace();
+            spectrumPanel =  new WebSpectrumPanel(
+                            currentSpectrum.getOrderedMzValues(), currentSpectrum.getIntensityValuesAsArray(),
+                            precursor.getMz(), Charge.toString(spectrumMatch.getBestPeptideAssumption().getIdentificationCharge()),
+                            "", 40, false, false, false, 2, false);
+                    
+                    
+//                    
+//                    new WebSpectrumPanel(currentSpectrum.getOrderedMzValues(), currentSpectrum.getIntensityValuesNormalizedAsArray(), 500, "2",
+//                    "", 40, false, false, false, 2, false);
+            spectrumPanel.setBorder(null);
+            int w = mainSizeReporter.getWidth() - 52;
+            int h = mainSizeReporter.getHeight() - 92;
+            if (w <= 0 || h <= 0) {
+                w = Math.max(h, w);
+                h = Math.max(h, w);
             }
+            spectrumPanel.setSize(w, h);
+            plot.setWidth(w, Unit.PIXELS);
+            plot.setHeight(h, Unit.PIXELS);
+            spectrumPanel.setDataPointAndLineColor(Color.RED, 0);
+            spectrumPanel.setSpectrumPeakColor(Color.RED);
+            spectrumPanel.setSpectrumProfileModeLineColor(Color.RED);
+            spectrumPanel.rescale(0.0, spectrumPanel.getMaxXAxisValue());
+            this.defaultAnnotationInUse = true;
+            chargeItem.removeChildren();
+            int precursorCharge = 1;
+            int currentCharge = spectrumMatch.getBestPeptideAssumption().getIdentificationCharge();
+            if (currentCharge > precursorCharge) {
+                precursorCharge = currentCharge;
+            }
+            if (precursorCharge == 1) {
+                precursorCharge = 2;
+            }
+            for (Integer tcharge = 1; tcharge < precursorCharge; tcharge++) {
+                MenuItem item = chargeItem.addItem(tcharge + "+", annotationsItemsCommand);
+                item.setCheckable(true);
+                item.setChecked(true);
+            }
+            resetAnnotations();
+            Property.ValueChangeListener listener = (Property.ValueChangeEvent event) -> {
+                updateAnnotationPreferences();
+                updateImage(spectrumPanel);
+            };
+            annotationAccuracySlider.setValue(100.0);
+            levelSlider.setValue(75.0);
+            levelSlider.addValueChangeListener(listener);
+            annotationAccuracySlider.addValueChangeListener(listener);
+            updateAnnotationPreferences();
+            if (plotThumbImage != null) {
+                spectrumPanel.setMiniature(true);
+                spectrumPanel.setSize(100, 100);
+                spectrumPanel.setPeakWidth(2f);
+                spectrumPanel.setBackgroundPeakWidth(0.5f);
+                spectrumPanel.setMaxPadding(10);
+                plotThumbImage.setSource(new ExternalResource(drawImage(spectrumPanel, true)));
+                spectrumPanel.setMiniature(false);
+                spectrumPanel.setPeakWidth(1f);
+                spectrumPanel.setBackgroundPeakWidth(1f);
+                spectrumPanel.setMaxPadding(50);
+            }
+            reDraw();
+            mainSizeReporter.addResizeListener(compResizeListener);
         });
         selectedSpectrumThread.start();
         try {
@@ -622,7 +623,7 @@ public class SpectrumPlot extends AbsoluteLayout {
         }
     }
 
-    public WebSearchParameters getIdentificationParameters() {
+    public IdentificationParameters getIdentificationParameters() {
         return identificationParameters;
     }
 
@@ -656,18 +657,6 @@ public class SpectrumPlot extends AbsoluteLayout {
         String base64 = Base64.encodeBytes(imageData);
         base64 = "data:image/png;base64," + base64;
         return base64;
-    }
-
-    /**
-     * Returns the reference identifying the identification under process.
-     *
-     * @return a String identifying the identification under process
-     */
-    public String getIdentificationReference() {
-        String expRef = "experiment.getReference()";//experment id    'Galaxy_Experiment_2018032217121521735147' -sample 'Sample_2018032217121521735147'
-        String sampleRef = "sample.getReference()";//sample id
-        int replicateNumber = 1; //replicats number (1 default until )
-        return Identification.getDefaultReference(expRef, sampleRef, replicateNumber);
     }
 
     /**
@@ -713,20 +702,20 @@ public class SpectrumPlot extends AbsoluteLayout {
 //        knownMassDeltas.put(44d, "PEG"); // @TODO: should this be added to neutral losses??
         // add the modifications
         SearchParameters searchParameters = identificationParameters.getSearchParameters();
-        PtmSettings modificationProfile = searchParameters.getPtmSettings();
+        ModificationParameters modificationProfile = searchParameters.getModificationParameters();
         ArrayList<String> modificationList = modificationProfile.getAllModifications();
         Collections.sort(modificationList);
 
         // iterate the modifications list and add the non-terminal modifications
         modificationList.forEach((modification) -> {
-            PTM ptm = PTMFactory.getInstance().getPTM(modification);
+            Modification ptm = ModificationFactory.getInstance().getModification(modification);
 
             if (ptm != null) {
 
                 String shortName = ptm.getShortName();
                 double mass = ptm.getMass();
 
-                if (ptm.getType() == PTM.MODAA) {
+                if (ptm.getModificationType() == ModificationType.modaa) {
                     AminoAcidPattern ptmPattern = ptm.getPattern();
                     ptmPattern.getAminoAcidsAtTarget().stream().filter((aa) -> (!knownMassDeltas.containsValue(aa + "<" + shortName + ">"))).forEachOrdered((aa) -> {
                         AminoAcid aminoAcid = AminoAcid.getAminoAcid(aa);

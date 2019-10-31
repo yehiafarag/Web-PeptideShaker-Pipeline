@@ -47,8 +47,8 @@ public class FiltersContainer extends HorizontalLayout {
     private final AbsoluteLayout intinsityContainer;
     private final DivaRangeFilter intensityAllPeptidesRange;
     private final DivaRangeFilter intensityUniquePeptidesRange;
-    
-    private final  VerticalLayout filterRightPanelContainer ;
+
+    private final VerticalLayout filterRightPanelContainer;
     private final VerticalLayout filterLeftPanelContainer;
 
     private final Map<String, Color> PIColorMap;// new Color[]{Color.DARK_GRAY, new Color(4, 180, 95), new Color(245, 226, 80), new Color(213, 8, 8), Color.ORANGE};
@@ -98,7 +98,7 @@ public class FiltersContainer extends HorizontalLayout {
             }
 
         };
-ProteinInferenceFilter.addStyleName("pifilter");
+        ProteinInferenceFilter.addStyleName("pifilter");
         filterLeftPanelContainer = new VerticalLayout();
         filterLeftPanelContainer.setHeight(100, Unit.PERCENTAGE);
         filterLeftPanelContainer.setWidth(100, Unit.PERCENTAGE);
@@ -181,7 +181,7 @@ ProteinInferenceFilter.addStyleName("pifilter");
             }
 
         };
-intensityAllPeptidesRange.addStyleName("intallpepfilter");
+        intensityAllPeptidesRange.addStyleName("intallpepfilter");
         intensityUniquePeptidesRange = new DivaRangeFilter("Intensity (% - Unique peptides)", "intensityUniquePep_filter", this.Selection_Manager) {
             @Override
             public void selectionChange(String type) {
@@ -194,7 +194,7 @@ intensityAllPeptidesRange.addStyleName("intallpepfilter");
         intinsityContainer.addComponent(intensityAllPeptidesRange, "left:0px;top:5px;bottom:0px !important;right:0px;");
         intensityAllPeptidesRange.setVisible(true);
         intinsityContainer.addComponent(intensityUniquePeptidesRange, "left:0px;top:5px;bottom:0px;right:0px;");
-intinsityContainer.addStyleName("intinsfilter");
+        intinsityContainer.addStyleName("intinsfilter");
         peptidesNumberFilter = new DivaRangeFilter("#Peptides", "peptidesNum_filter", this.Selection_Manager) {
             @Override
             public void selectionChange(String type) {
@@ -261,13 +261,13 @@ intinsityContainer.addStyleName("intinsfilter");
         psmNumberFilter.initializeFilterData(proteinPSMNumberMap);
         coverageFilter.initializeFilterData(proteinCoverageMap);
         if (proteinIntinsityAllPepMap.isEmpty()) {
-            Label noquant = new Label("<center> No quant data available </center>",ContentMode.HTML);
+            Label noquant = new Label("<center> No quant data available </center>", ContentMode.HTML);
             noquant.setSizeFull();
             noquant.setStyleName("noquantlabel");
             intensityAllPeptidesRange.addComponent(noquant);
             intensityUniquePeptidesRange.suspendFilter(true);
-             intensityAllPeptidesRange.suspendFilter(true);
-            
+            intensityAllPeptidesRange.suspendFilter(true);
+
         } else {
             intensityAllPeptidesRange.initializeFilterData(proteinIntinsityAllPepMap);
             intensityUniquePeptidesRange.initializeFilterData(proteinIntinsityUniquePepMap);
@@ -312,8 +312,6 @@ intinsityContainer.addStyleName("intinsfilter");
         return chromosomeFilter;
     }
 
-   
-
     public ModificationsFilter getModificationFilter() {
         return modificationFilter;
     }
@@ -341,7 +339,5 @@ intinsityContainer.addStyleName("intinsfilter");
     public DivaRangeFilter getIntensityUniquePeptidesRange() {
         return intensityUniquePeptidesRange;
     }
-    
-    
 
 }

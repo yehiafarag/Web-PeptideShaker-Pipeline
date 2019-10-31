@@ -1,6 +1,6 @@
 package com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.components;
 
-import com.compomics.util.experiment.biology.PTMFactory;
+import com.compomics.util.experiment.biology.modifications.ModificationFactory;
 import com.ejt.vaadin.sizereporter.ComponentResizeEvent;
 import com.ejt.vaadin.sizereporter.ComponentResizeListener;
 import com.ejt.vaadin.sizereporter.SizeReporter;
@@ -62,7 +62,7 @@ public class DatasetVisulizationLevelComponent extends AbsoluteLayout implements
     /**
      * The post translational modifications factory.
      */
-    private final PTMFactory PTM = PTMFactory.getInstance();
+    private final ModificationFactory PTM = ModificationFactory.getInstance();
 
     public DatasetVisulizationLevelComponent(SelectionManager Selection_Manager) {
         DatasetVisulizationLevelComponent.this.setSizeFull();
@@ -303,8 +303,8 @@ public class DatasetVisulizationLevelComponent extends AbsoluteLayout implements
             return;
         }
         modificationMatrix.getRows().keySet().forEach((mod) -> {
-            if (PTM.containsPTM(mod)) {
-                ModificationColorMap.put(mod, PTMFactory.getDefaultColor(mod));
+            if (PTM.containsModification(mod)) {
+                ModificationColorMap.put(mod,new Color(ModificationFactory.getDefaultColor(mod)));
             } else {
                 ModificationColorMap.put(mod, Color.LIGHT_GRAY);
             }

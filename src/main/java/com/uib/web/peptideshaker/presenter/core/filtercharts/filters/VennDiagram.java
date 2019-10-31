@@ -10,10 +10,13 @@ import com.ejt.vaadin.sizereporter.SizeReporter;
 import com.google.common.collect.Sets;
 import com.uib.web.peptideshaker.model.core.ModificationMatrix;
 import com.vaadin.event.LayoutEvents;
+import com.vaadin.server.Page;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.JavaScript;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
 import d3diagrams.VennDiagramComponent;
@@ -45,10 +48,18 @@ public abstract class VennDiagram extends AbsoluteLayout {
     private JSONArray unselectedDatasetColors;
     private final SizeReporter legendSizeReported;
     private final Set<Integer> selectedIndexes;
-
+    private final String vennDiagramfilter = "vennDiagramfilter";
     private final Map<String, JSONObject> tempDataset;
 
     private final String alphabet = "abcdefghijklmnopqrstuvwxyz".toUpperCase();
+    /**
+     * The width of the chart.
+     */
+    private int mainWidth;
+    /**
+     * The height of the chart.
+     */
+    private int mainHeight;
 
     private final Map<String, String> nameToCharMap;
 
@@ -120,6 +131,37 @@ public abstract class VennDiagram extends AbsoluteLayout {
             updateVennDiagramSelectionStyle();
             applyFilter(selectedIndexes);
         });
+
+        VennDiagram.this.setId(vennDiagramfilter);
+        JavaScript.getCurrent().addFunction("getElSizeof" + vennDiagramfilter,
+                (arg) -> {
+                    int width = (int) arg.getNumber(0);
+                    int height = (int) arg.getNumber(1);
+                    if (mainWidth == width && mainHeight == height) {
+                        return;
+                    }
+                    sizeChanged(width, height);
+
+                });
+        Page.getCurrent().addBrowserWindowResizeListener((Page.BrowserWindowResizeEvent event) -> {
+            updateComponentSize();
+        });
+        updateComponentSize();
+
+    }
+
+    private void updateComponentSize() {
+        JavaScript.getCurrent().execute(" var elem = document.getElementById('" + vennDiagramfilter + "'); "
+                + " if(elem){ getElSizeof" + vennDiagramfilter + "(elem.clientWidth, elem.clientHeight); }");
+    }
+
+    private void sizeChanged(int tChartWidth, int tChartHeight) {
+        if (tChartWidth > 0 && tChartHeight > 0) {
+            mainWidth = tChartWidth;
+            mainHeight = tChartHeight;
+            vennDiagramComponent.setSize(mainWidth - 40, mainHeight - 60);
+            VaadinSession.getCurrent().setAttribute("modificationLayoutSize", new int[]{mainWidth, mainHeight});
+        }
 
     }
 
@@ -244,10 +286,17 @@ public abstract class VennDiagram extends AbsoluteLayout {
                 dataset.put(tempDataset.get(key));
             }
         }
-        if (legendContainer.getComponentCount() >5) {
+        if (legendContainer.getComponentCount() > 5) {
             compleateLoading(false);
         } else {
-            vennDiagramComponent.setValue(dataset.toString() + ";" + selectedDatasetColors.toString() + ";" + unselectedDatasetColors.toString());
+
+            if (mainWidth <= 0 || mainHeight <= 0) {
+                int[] size = (int[]) VaadinSession.getCurrent().getAttribute("modificationLayoutSize");
+                mainWidth = size[0];
+                mainHeight = size[1];
+            }
+            vennDiagramComponent.setValue(dataset.toString() + ";" + selectedDatasetColors.toString() + ";" + unselectedDatasetColors.toString(), mainWidth - 40, mainHeight - 60);
+
         }
 
     }
@@ -273,12 +322,19 @@ public abstract class VennDiagram extends AbsoluteLayout {
         selectedIndexes.forEach((i) -> {
             selection.put(i);
         });
-        vennDiagramComponent.setValue(":selection:" + selection.toString());
+          if (mainWidth <= 0 || mainHeight <= 0) {
+                int[] size = (int[]) VaadinSession.getCurrent().getAttribute("modificationLayoutSize");
+                mainWidth = size[0];
+                mainHeight = size[1];
+            }
+            vennDiagramComponent.setValue(":selection:" + selection.toString(), (mainWidth - 40), (mainHeight - 60));
+        
+//        updateComponentSize();
 
     }
 
     public void updateFilterSelection(Set<Comparable> selectedItems, Set<Comparable> selectedCategories, boolean topFilter, boolean singleProteinsFilter, boolean selfAction) {
-       
+
         if (!selfAction) {
 //            intersectionMap.clear();
             nameToCharMap.clear();

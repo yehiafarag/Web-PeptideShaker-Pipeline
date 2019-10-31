@@ -1,8 +1,9 @@
 package com.uib.web.peptideshaker.presenter.layouts;
 
+import com.compomics.util.parameters.identification.IdentificationParameters;
+import com.compomics.util.parameters.identification.search.SearchParameters;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyFileObject;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyTransferableFile;
-import com.uib.web.peptideshaker.model.core.WebSearchParameters;
 import com.uib.web.peptideshaker.presenter.core.DropDownList;
 import com.uib.web.peptideshaker.presenter.core.MultiSelectOptionGroup;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
@@ -79,7 +80,7 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
     /**
      * selected search parameters to perform the search at galaxy server.
      */
-    protected WebSearchParameters _searchParameters;
+    protected IdentificationParameters _searchParameters;
     /**
      * updated search parameters to perform the search at galaxy server.
      */
@@ -314,7 +315,7 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
     protected SearchSettingsLayout setAndGetLayoutSearchSettingsLayout() {
         SearchSettingsLayout searchSettingsLayout = new SearchSettingsLayout(false) {
             @Override
-            public void saveSearchingFile(WebSearchParameters searchParameters, boolean isNew) {
+            public void saveSearchingFile(IdentificationParameters searchParameters, boolean isNew) {
                 checkAndSaveSearchSettingsFile(searchParameters, isNew);
                 _editSearchOption.setPopupVisible(false);
                 if (!_fastaFileInputLayout.getSelectedValue().trim().equalsIgnoreCase("")) {
@@ -499,7 +500,7 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
                     //new File(basepath + "/VAADIN/SEARCHGUI_IdentificationParameters.par")    /VAADIN/default_searching.par SEARCHGUI_IdentificationParameters.par
                     try {
                         File file = new File(basepath + "/VAADIN/SEARCHGUI_IdentificationParameters_1.par");
-                        WebSearchParameters searchParamUtil = new WebSearchParameters(file);
+                        IdentificationParameters searchParamUtil = IdentificationParameters.getIdentificationParameters(file);
                         _searchSettingsLayout.updateForms(searchParamUtil);
                         _editSearchOption.setPopupVisible(true);
                     } catch (Exception ex) {
@@ -511,9 +512,9 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
 
                 try {
                     File file = _searchSettingsMap.get(_searchSettingsFileList.getSelectedValue()).getFile();
-                    _searchParameters = new WebSearchParameters(file);
-                    _searchParameters.setGalaxyId( _searchSettingsMap.get(_searchSettingsFileList.getSelectedValue()).getGalaxyId());
-                    String descrip = _searchParameters.getShortDescription();
+                    _searchParameters =  IdentificationParameters.getIdentificationParameters(file);
+//                    _searchParameters.setGalaxyId( _searchSettingsMap.get(_searchSettingsFileList.getSelectedValue()).getGalaxyId());
+                    String descrip = _searchParameters.getDescription();
                     for (String mod : _searchSettingsLayout.getUpdatedModiList().keySet()) {
                         if (descrip.contains(mod)) {
                             descrip = descrip.replace(mod, _searchSettingsLayout.getUpdatedModiList().get(mod));
@@ -609,7 +610,7 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
      * @param searchParameters searching parameters // * @param searchEngines
      * search engines
      */
-    public abstract void executeWorkFlow(String projectName, String fastaFileId,String searchParameterFileId, Set<String> inputIdsList, Set<String> searchEnginesList, WebSearchParameters searchParameters, boolean quant);
+    public abstract void executeWorkFlow(String projectName, String fastaFileId,String searchParameterFileId, Set<String> inputIdsList, Set<String> searchEnginesList, IdentificationParameters searchParameters, boolean quant);
 
     /**
      * Validate and save search setting .par file on galaxy server for future
@@ -618,7 +619,7 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
      * @param searchParameters selected search parameters
      * @param isNew create new file or edit exist file
      */
-    private void checkAndSaveSearchSettingsFile(WebSearchParameters searchParameters, boolean isNew) {
+    private void checkAndSaveSearchSettingsFile(IdentificationParameters searchParameters, boolean isNew) {
         this._searchParameters = searchParameters;
         _searchSettingsMap = saveSearchGUIParameters(searchParameters, isNew);
         Map<String, String> searchSettingsFileIdToNameMap = new LinkedHashMap<>();
@@ -682,7 +683,7 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
      * @param isNew create new file or edit exist file
      * @return updated search parameters files map
      */
-    public abstract Map<String, GalaxyTransferableFile> saveSearchGUIParameters(WebSearchParameters searchParameters, boolean isNew);
+    public abstract Map<String, GalaxyTransferableFile> saveSearchGUIParameters(IdentificationParameters  searchParameters, boolean isNew);
 
     private void activateTilStep(int step) {
 
