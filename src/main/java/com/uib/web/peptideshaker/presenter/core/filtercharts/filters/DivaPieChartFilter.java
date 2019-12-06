@@ -91,7 +91,7 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
     private final LayoutEvents.LayoutClickListener dountChartListener;
     private Map<String, Set<Comparable>> fullData;
     private List<Color> colorsList;
-
+    
     public DivaPieChartFilter(String title, String filterId, SelectionManager Selection_Manager) {
         this.mainWidth = -1;
         this.mainHeight = -1;
@@ -103,9 +103,8 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
         this.appliedFilter = new LinkedHashSet<>();
         this.dountChartListener = (LayoutEvents.LayoutClickEvent event) -> {
             Component clickedComponent = event.getClickedComponent();
-            System.out.println("at click listener is working "+clickedComponent.toString() );
             if (clickedComponent instanceof Label && clickedComponent.getId() != null && clickedComponent.getId().equalsIgnoreCase(this.title)) {
-
+                
                 ChartEntity ent = mainChartRenderingInfo.getEntityCollection().getEntity(event.getRelativeX(), event.getRelativeY());
                 if (ent instanceof PieSectionEntity) {
                     applyFilter(((PieSectionEntity) ent).getSectionKey() + "");
@@ -115,9 +114,9 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
             }
         };
         this.initlayout();
-
+        
     }
-
+    
     private void initlayout() {
         DivaPieChartFilter.this.setSizeFull();
         AbsoluteLayout frame = new AbsoluteLayout();
@@ -126,7 +125,7 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
         frame.addStyleName("thumbfilterframe");
         frame.addStyleName("reorderlayout");
         DivaPieChartFilter.this.addComponent(frame);
-
+        
         chartTitle = new Label("<font>" + title + "</font>", ContentMode.HTML);
         chartTitle.setStyleName(ValoTheme.LABEL_BOLD);
         chartTitle.setWidth(100, Unit.PIXELS);
@@ -142,14 +141,14 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
         rightLayout.addStyleName("autooverflow");
         rightLayout.addStyleName("piechartlegend");
         frame.addComponent(rightLayout, "top: 10px; right: 0px; bottom: 0px;");
-
+        
         mainChartContainer = new AbsoluteLayout();
         mainChartContainer.setWidth(100, Unit.PERCENTAGE);
         mainChartContainer.setHeight(100, Unit.PERCENTAGE);
         mainChartContainer.addStyleName("divapiechartcontainerstyle");
         frame.addComponent(mainChartContainer, "left:-10px; top:20px;right:70px;bottom:5px");
         mainChartContainer.addLayoutClickListener(dountChartListener);
-
+        
         middleDountLayout = new VerticalLayout();
         middleDountLayout.setSizeFull();
         middleDountLayout.setVisible(false);
@@ -159,10 +158,10 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
         selectAllLabel.addStyleName(ValoTheme.LABEL_TINY);
         selectAllLabel.addStyleName(ValoTheme.LABEL_SMALL);
         selectAllLabel.setReadOnly(true);
-
+        
         middleDountLayout.addComponent(selectAllLabel);
         middleDountLayout.setComponentAlignment(selectAllLabel, Alignment.MIDDLE_CENTER);
-
+        
         mainChartImg = new Label("", ContentMode.HTML);
         mainChartImg.setVisible(true);
         mainChartImg.setId(title);
@@ -172,7 +171,7 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
         mainChartImg.setHeight(100, Unit.PERCENTAGE);
         mainChartImg.setWidth(100, Unit.PERCENTAGE);
         mainChartContainer.addComponent(mainChartImg);
-
+        
         JavaScript.getCurrent().addFunction("getElSizeof" + filterId,
                 (arg) -> {
                     int width = (int) arg.getNumber(0);
@@ -180,9 +179,10 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
                     if (mainWidth == width && mainHeight == height) {
                         return;
                     }
+                    filterSizeChanged(width, height);
                     sizeChanged(width, height);
                 });
-
+        
         Page.getCurrent().addBrowserWindowResizeListener(new Page.BrowserWindowResizeListener() {
             @Override
             public void browserWindowResized(Page.BrowserWindowResizeEvent event) {
@@ -195,7 +195,7 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
             public void layoutClick(LayoutEvents.LayoutClickEvent event) {
                 appliedFilter.clear();
                 applyFilter(null);
-
+                
             }
         };
         resetFilterBtn.setWidth(15, Unit.PIXELS);
@@ -204,38 +204,30 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
         resetFilterBtn.addStyleName("btninframe");
         DivaPieChartFilter.this.addComponent(resetFilterBtn, "top:0px;right:0px;");
     }
-
+    
     private void updateComponentSize() {
         JavaScript.getCurrent().execute(" var elem = document.getElementById('" + title + "'); "
                 + " if(elem){ getElSizeof" + filterId + "(elem.clientWidth, elem.clientHeight); }");
     }
-
-    private void sizeChanged(int tChartWidth, int tChartHeight) {
+    
+    public void sizeChanged(int tChartWidth, int tChartHeight) {
         try {
-
+            
             if (tChartWidth <= 0 || tChartHeight <= 0) {
                 return;
             }
-//            if ((tChartWidth == mainWidth || Math.abs(tChartWidth - mainWidth) < 10) && (mainHeight == tChartHeight || Math.abs(tChartHeight - mainHeight) < 10)) {
-//                return;
-//            }
-//            if (imageRepaintCounter < 1) {
-//                imageRepaintCounter++;
-//                return;
-//            }
             mainWidth = tChartWidth;
             mainHeight = tChartHeight;
             updateComponentSize();
-            redrawChart();
-
+            redrawChart();            
             middleDountLayout.setVisible(true);
             mainChartImg.setVisible(true);
         } catch (Exception ex) {
             System.out.println("at error " + this.getClass().getName() + "  " + ex);
         }
-
+        
     }
-
+    
     public void initializeFilterData(Map<String, Set<Comparable>> fullData, List<Color> colorsArr) {
         activateFilter = true;
         Map<String, Set<Comparable>> filterfullData = new LinkedHashMap<>(fullData);
@@ -252,11 +244,11 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
         fullData.keySet().forEach((key) -> {
             fullItemsSet.addAll(fullData.get(key));
         });
-        updateChartDataset(fullData);
-        updateComponentSize();
-
+        updateChartDataset(fullData);        
+        sizeChanged(mainWidth, mainHeight);
+        
     }
-
+    
     public void initializeFilterData(Map<String, Set<Comparable>> fullData, Map<String, Color> colorMap) {
         activateFilter = true;
         Map<String, Set<Comparable>> filterfullData = new LinkedHashMap<>(fullData);
@@ -273,9 +265,10 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
             fullItemsSet.addAll(fullData.get(key));
         });
         updateChartDataset(fullData);
-
+        sizeChanged(mainWidth, mainHeight);
+        
     }
-
+    
     private void reDrawLayout() {
         //calc 60% of width
         double w = Math.min(mainWidth, mainHeight);
@@ -283,7 +276,7 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
         selectAllLabel.setWidth((float) w, Unit.PIXELS);
         selectAllLabel.setHeight((float) w, Unit.PIXELS);
     }
-
+    
     private void unselectAll() {
         PiePlot plot = ((PiePlot) chart.getPlot());
         fullData.keySet().stream().map((sliceKey) -> {
@@ -292,9 +285,9 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
         }).forEachOrdered((sliceKey) -> {
             plot.setSectionPaint(sliceKey, colorsList.get(plot.getDataset().getIndex(sliceKey)));
         });
-
+        
     }
-
+    
     @Override
     public void redrawChart() {
         if (mainWidth < 1 || mainHeight < 1 || !activateFilter) {
@@ -303,14 +296,14 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
         reDrawLayout();
         String genImgUrl = saveToFile(chart, mainChartRenderingInfo, mainWidth, mainHeight);
         mainChartImg.setValue(genImgUrl);
-
+        
     }
-
+    
     @Override
     public String getFilterId() {
         return filterId;
     }
-
+    
     @Override
     public void updateFilterSelection(Set<Comparable> selectedItems, Set<Comparable> selectedCategories, boolean topFilter, boolean singleProteinsFilter, boolean selfAction) {
         if (!selfAction) {
@@ -349,17 +342,17 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
                 appliedFilter.add(sliceKey);
             });
         }
-
+        
         redrawChart();
     }
-
+    
     private void applyFilter(String pieSlice) {
         if ((appliedFilter.size() >= rightLayout.getComponentCount() && (rightLayout.getComponentCount() != fullData.size())) || rightLayout.getComponentCount() == 1) {
             return;
         }
         PiePlot plot = ((PiePlot) chart.getPlot());
         if (pieSlice != null) {
-
+            
             if (plot.getSectionOutlinePaint(pieSlice) != null) {
                 appliedFilter.remove(pieSlice);
             } else {
@@ -370,7 +363,7 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
                 }
             }
         }
-
+        
         Selection_Manager.setSelection("dataset_filter_selection", new LinkedHashSet<>(appliedFilter), null, filterId);
     }
 
@@ -396,7 +389,7 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
      */
     private void initChart() {
         DefaultPieDataset dataset = new DefaultPieDataset();
-
+        
         PiePlot plot = new PiePlot(dataset);
         plot.setNoDataMessage("No data available");
         plot.setCircular(true);
@@ -420,13 +413,13 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
         plot.setOutlineVisible(false);
         plot.setShadowYOffset(0);
         plot.setShadowXOffset(0);
-
+        
         chart.setBorderPaint(null);
         chart.setBackgroundPaint(null);
         chart.getLegend().setFrame(BlockBorder.NONE);
-
+        
     }
-
+    
     private void updateChartDataset(Map<String, Set<Comparable>> datasetValuesData) {
         // column keys...    
         int counter = 0;
@@ -434,7 +427,7 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
         rightLayout.removeAllComponents();
         DefaultPieDataset dataset = (DefaultPieDataset) ((PiePlot) chart.getPlot()).getDataset();
         dataset.clear();
-
+        
         for (String key : datasetValuesData.keySet()) {
             dataset.setValue(key, scaleValues(datasetValuesData.get(key).size(), 100, 20));
             ((PiePlot) chart.getPlot()).setSectionPaint(key, this.colorsList.get(counter));
@@ -444,7 +437,7 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
             }
             counter++;
         }
-
+        
     }
 
     /**
@@ -463,7 +456,7 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
         logValue = ((max / logMax) * logValue) + lowerLimit;
         return logValue;
     }
-
+    
     private void setMainAppliedFilter(boolean mainAppliedFilter) {
         resetFilterBtn.setVisible(mainAppliedFilter);
         if (mainAppliedFilter) {
@@ -471,13 +464,13 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
         } else {
             this.removeStyleName("highlightfilter");
         }
-
+        
     }
-
+    
     @Override
     public void suspendFilter(boolean suspend) {
     }
-
+    
     @Override
     protected AbsoluteLayoutState getState() {
         if (super.isConnectorEnabled()) {
@@ -485,6 +478,8 @@ public abstract class DivaPieChartFilter extends AbsoluteLayout implements Regis
         }
         return super.getState(); //To change body of generated methods, choose Tools | Templates.
     }
+
+    public abstract void filterSizeChanged(int w, int h);
 
 //
 }

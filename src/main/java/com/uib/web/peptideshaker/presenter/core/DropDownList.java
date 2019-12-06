@@ -3,8 +3,10 @@ package com.uib.web.peptideshaker.presenter.core;
 import com.vaadin.data.Property;
 import com.vaadin.server.Page;
 import com.vaadin.server.Resource;
+import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.AbstractSelect;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.PopupView;
 import com.vaadin.ui.VerticalLayout;
 import java.util.Map;
 
@@ -13,7 +15,7 @@ import java.util.Map;
  *
  * @author Yehia Farag
  */
-public class DropDownList extends VerticalLayout {
+public class DropDownList extends AbsoluteLayout {
 
     /**
      * Drop down list component.
@@ -21,6 +23,7 @@ public class DropDownList extends VerticalLayout {
     private final ComboBox list;
     private Property.ValueChangeListener listener;
     private Object lastSelectedId;
+    private final VerticalLayout container ;
 
     /**
      * Constructor to initialise the main attributes.
@@ -28,17 +31,28 @@ public class DropDownList extends VerticalLayout {
      * @param title the title of the list
      */
     public DropDownList(String title) {
+        
+       
         DropDownList.this.setSizeFull();
-        DropDownList.this.setSpacing(true);
         DropDownList.this.setStyleName("dropdownlistframe");
-
+ 
+        container = new VerticalLayout();
+        container.setSizeFull();
+        container.setStyleName("dropdownlistframe");
+        DropDownList.this.addComponent(container);
         list = new ComboBox(title);
         list.setStyleName("dropdownlist");
         list.setInputPrompt("Please select from the list");
         list.setNullSelectionAllowed(false);
-        DropDownList.this.addComponent(list);
+       container.addComponent(list);
         list.setTextInputAllowed(false);
 
+    }
+    public void addUploadBtn(PopupView uploader){
+         DropDownList.this.removeAllComponents();
+     DropDownList.this.addComponent(container,"right:36px;");
+     DropDownList.this.addComponent(uploader,"right: 24px;top: 4px;");
+    
     }
 
     /**

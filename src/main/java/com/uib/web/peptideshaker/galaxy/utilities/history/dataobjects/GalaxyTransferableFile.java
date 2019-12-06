@@ -134,17 +134,18 @@ public class GalaxyTransferableFile extends GalaxyFileObject {
             return file;
         }
         if (zipped) {
+            
             FileOutputStream fos = null;
             try {
                 URL downloadableFile = new URL(galaxyFileObject.getDownloadUrl());//"http://localhost:8084/web-peptide-shaker/VAADIN/non_validated_tes-ZIP.zip"                
                 URLConnection conn = downloadableFile.openConnection();
                 conn.addRequestProperty("Accept", "*/*");
-                conn.addRequestProperty("Accept-Encoding", "gzip, deflate, sdch, br");
-                conn.addRequestProperty("Accept-Language", "ar,en-US;q=0.8,en;q=0.6,en-GB;q=0.4");
-                conn.addRequestProperty("Cache-Control", "no-cache");
-                conn.addRequestProperty("Connection", "keep-alive");
-                conn.addRequestProperty("DNT", "1");
-                conn.addRequestProperty("Pragma", "no-cache");
+//                conn.addRequestProperty("Accept-Encoding", "gzip, deflate, sdch, br");
+//                conn.addRequestProperty("Accept-Language", "ar,en-US;q=0.8,en;q=0.6,en-GB;q=0.4");
+//                conn.addRequestProperty("Cache-Control", "no-cache");
+//                conn.addRequestProperty("Connection", "keep-alive");
+//                conn.addRequestProperty("DNT", "1");
+//                conn.addRequestProperty("Pragma", "no-cache");
                 conn.setDoInput(true);
                 ZipInputStream Zis = new ZipInputStream(conn.getInputStream());
                 int counter = 0;
@@ -162,8 +163,9 @@ public class GalaxyTransferableFile extends GalaxyFileObject {
                             Zis.close();
                             break;
                         }
-                    } else if (!entry.isDirectory() && entry.getName().endsWith(galaxyFileObject.getGalaxyId().split("__")[1].replace("reports/", "").replace("data/", ""))) //do something with entry  
+                    } else if (!entry.isDirectory() && (entry.getName().endsWith(galaxyFileObject.getGalaxyId().split("__")[1].replace("reports/", "").replace("data/", "")))||entry.getName().endsWith(".cui")) //do something with entry  
                     {
+                        
                         try (ReadableByteChannel rbc = Channels.newChannel(Zis)) {
                             fos = new FileOutputStream(file);
                             fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
@@ -173,10 +175,10 @@ public class GalaxyTransferableFile extends GalaxyFileObject {
                             break;
                         }
                     }
+                   
                     entry = Zis.getNextEntry();
                     counter++;
-                }
-                System.out.println("to test reader : " + file.getName() + "  " + (System.currentTimeMillis() - start) + "ms");
+                }                
 
             } catch (MalformedURLException ex) {
                 ex.printStackTrace();
@@ -228,7 +230,7 @@ public class GalaxyTransferableFile extends GalaxyFileObject {
             } catch (MalformedURLException ex) {
                 ex.printStackTrace();
             }
-            System.out.println("to test reader : " + galaxyFileObject.getDownloadUrl() + "  " + getType() + "  " + (System.currentTimeMillis() - start) + "ms");
+            System.out.println("to test reader : " + galaxyFileObject.getDownloadUrl() + "  " + getType() + "  " + (System.currentTimeMillis() - start) + "ms 2 "+file.getAbsolutePath());
         }
 
         return file;

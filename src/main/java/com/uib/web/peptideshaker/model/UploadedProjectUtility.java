@@ -1,0 +1,126 @@
+package com.uib.web.peptideshaker.model;
+
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.ProteinGroupObject;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+import pl.exsio.plupload.PluploadFile;
+
+/**
+ * This class responsible for process project uploaded files and generate
+ * compatible visualisation Dataset
+ *
+ * @author Yehia Farag
+ */
+public abstract class UploadedProjectUtility {
+
+    public boolean[] processVisualizationDataset(String projectName, Map<String, PluploadFile> uploadedFileMap, Set<String> csf_pr_Accession_List) {
+
+        File fastaFile = null;
+        File proteinFile = null;
+        File peptideFile = null;
+        boolean[] checkFiles = new boolean[2];
+        for (String key : uploadedFileMap.keySet()) {
+            switch (key) {
+                case "Fasta":
+                    fastaFile = (File) uploadedFileMap.get(key).getUploadedFile();
+                    break;
+                case "Protein":
+                    proteinFile = (File) uploadedFileMap.get(key).getUploadedFile();
+                   checkFiles[0]=  checkProteinsFile(proteinFile);
+                    break;
+                case "Peptide":
+                    peptideFile = (File) uploadedFileMap.get(key).getUploadedFile();
+                    checkFiles[1]= checkPeptideFile(peptideFile);
+                    break;
+
+            }
+        }
+         if (!checkFiles[0] || !checkFiles[1]) {
+             return checkFiles;
+         }
+
+        projectName = projectName.replace(" ", "_").replace("-", "_") + "___" + (new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Timestamp(System.currentTimeMillis())));
+        PeptideShakerVisualizationDataset psDs = new PeptideShakerVisualizationDataset(projectName, fastaFile, proteinFile, peptideFile, csf_pr_Accession_List) {
+            @Override
+            public Set<String[]> getPathwayEdges(Set<String> proteinAcc) {
+                return new HashSet<>();
+            }
+        };
+        viewUploadedProjectDataset(psDs);
+        return checkFiles;
+
+    }
+
+    private boolean checkPeptideFile(File peptides_file) {
+        try {
+            File f = peptides_file;
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(f), 1024 * 100);
+            HashSet<String> peptideFileHeaderIndexerMap = new HashSet<>();
+            peptideFileHeaderIndexerMap.add("Protein Group(s)");
+            peptideFileHeaderIndexerMap.add("Sequence");
+            peptideFileHeaderIndexerMap.add("Modified Sequence");
+            peptideFileHeaderIndexerMap.add("Variable Modifications");
+            peptideFileHeaderIndexerMap.add("Fixed Modifications");
+            peptideFileHeaderIndexerMap.add("#Validated PSMs");
+            peptideFileHeaderIndexerMap.add("#PSMs");
+            peptideFileHeaderIndexerMap.add("Confidence [%]");
+            peptideFileHeaderIndexerMap.add("Validation");
+            String line = bufferedReader.readLine();
+            line = line.replace("\"", "");
+            for (String str : line.split("\\t")) {
+                str = str.trim();
+               peptideFileHeaderIndexerMap.remove(str) ;
+            }
+            return peptideFileHeaderIndexerMap.isEmpty();
+        } catch (IOException e) {
+
+        }
+        return false;
+    }
+
+
+    private boolean checkProteinsFile(File proteins_file) {
+
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(proteins_file), 1024 * 100);
+            String line;
+            /**
+             * escape header
+             */
+            line = bufferedReader.readLine();
+            line = line.replace("\"", "");
+            HashSet<String> proteinFileHeaderIndexerMap = new HashSet<>();
+            proteinFileHeaderIndexerMap.add("Main Accession");
+            proteinFileHeaderIndexerMap.add("Description");
+            proteinFileHeaderIndexerMap.add("Chromosome");
+            proteinFileHeaderIndexerMap.add("Protein Inference");
+            proteinFileHeaderIndexerMap.add("Protein Group");
+            proteinFileHeaderIndexerMap.add("#Validated Peptides");
+            proteinFileHeaderIndexerMap.add("#Peptides");
+            proteinFileHeaderIndexerMap.add("#Validated PSMs");
+            proteinFileHeaderIndexerMap.add("#PSMs");
+            proteinFileHeaderIndexerMap.add("Confidence [%]");
+            proteinFileHeaderIndexerMap.add("Validation");
+            for (String str : line.split("\\t")) {
+                str = str.trim();
+                proteinFileHeaderIndexerMap.remove(str);
+            }
+            return proteinFileHeaderIndexerMap.isEmpty();
+        } catch (IOException e) {
+
+        }
+        return false;
+    }
+
+    public abstract void viewUploadedProjectDataset(PeptideShakerVisualizationDataset psDs);
+}

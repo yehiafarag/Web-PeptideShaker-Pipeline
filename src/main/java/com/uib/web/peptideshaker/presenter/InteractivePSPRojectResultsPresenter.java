@@ -9,21 +9,24 @@ import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
 import com.uib.web.peptideshaker.presenter.core.ButtonWithLabel;
 import com.uib.web.peptideshaker.presenter.core.SmallSideBtn;
 import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.PeptideVisulizationLevelContainer;
+import com.uib.web.peptideshaker.presenter.layouts.peptideshakerview.UserUploadFilesContainer;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import pl.exsio.plupload.PluploadFile;
 
 /**
  * This class represent PeptideShaker view presenter which is responsible for
@@ -31,7 +34,7 @@ import java.util.logging.Logger;
  *
  * @author Yehia Farag
  */
-public class InteractivePSPRojectResultsPresenter extends VerticalLayout implements ViewableFrame, LayoutEvents.LayoutClickListener {
+public abstract class InteractivePSPRojectResultsPresenter extends VerticalLayout implements ViewableFrame, LayoutEvents.LayoutClickListener {
 
     /**
      * The small side button (normal size screen).
@@ -73,6 +76,9 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
      * The view is in maximised mode.
      */
     private boolean maximisedMode;
+    private BigSideBtn datasetsOverviewBtn;
+    private BigSideBtn uploadOwnDataBtn;
+    private UserUploadFilesContainer userUploadDataLayoutContainer;
 
     /**
      * Constructor to initialise the main layout and attributes.
@@ -82,20 +88,20 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
         InteractivePSPRojectResultsPresenter.this.setStyleName("activelayout");
 
         this.smallControlButton = new SmallSideBtn(VaadinIcons.CLUSTER);
-        smallControlButton.updateIconURL("img/venn.png");
-        smallControlButton.setDescription("Selected projects");
+        smallControlButton.updateIconURL("img/venn_color.png");
+        smallControlButton.setDescription("Visualize selected projects / Upload your own project files");
         this.smallControlButton.setData(InteractivePSPRojectResultsPresenter.this.getViewId());
-        this.smallControlButton .addStyleName("resultsmallbtn");
+        this.smallControlButton.addStyleName("resultsmallbtn");
 
-        this.controlButton = new ButtonWithLabel("Results</br><font>Interactive results visualization</font>", 1);
+        this.controlButton = new ButtonWithLabel("Visualise Data</br><font>Visualise project (Upload your own project files)</font>", 1);
         this.controlButton.setData(InteractivePSPRojectResultsPresenter.this.getViewId());
         this.controlButton.updateIcon(VaadinIcons.CLUSTER.getHtml());
-        this.controlButton.updateIconResource(new ThemeResource("img/venn.png"));
-        this.controlButton.setDescription("Selected projects");
-        this.controlButton.setEnabled(false);
+        this.controlButton.updateIconResource(new ThemeResource("img/venn_color.png"));
+        this.controlButton.setDescription("Visualize selected projects / Upload your own project files");
+        this.controlButton.setEnabled(true);
         this.controlButton.addStyleName("orangeiconcolor");
-        this.controlButton .addStyleName("resultsbtn");
-        this.smallControlButton.setEnabled(false);
+        this.controlButton.addStyleName("resultsbtn");
+        this.smallControlButton.setEnabled(true);
         this.Selection_Manager = new SelectionManager();
         this.initLayout();
         InteractivePSPRojectResultsPresenter.this.minimizeView();
@@ -112,9 +118,55 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
         viewControlButtonContainer.setSpacing(false);
         viewControlButtonContainer.setMargin(new MarginInfo(false, false, true, false));
 
-        BigSideBtn datasetsOverviewBtn = new BigSideBtn("Dataset overview", 1);
+        uploadOwnDataBtn = new BigSideBtn("upload-project", 1);
+        viewControlButtonContainer.addComponent(uploadOwnDataBtn);
+        viewControlButtonContainer.setComponentAlignment(uploadOwnDataBtn, Alignment.MIDDLE_CENTER);
+        uploadOwnDataBtn.addLayoutClickListener(InteractivePSPRojectResultsPresenter.this);
+        userUploadDataLayoutContainer = new UserUploadFilesContainer(Selection_Manager, uploadOwnDataBtn) {
+            @Override
+            public boolean[] processVisualizationDataset(String projectName, Map<String, PluploadFile> uploadedFileMap) {
+                final boolean[] checkFiles = new boolean[2];
+                Thread t = new Thread(() -> {
+                    uploadOwnDataBtn.updateIconResource(new ThemeResource("img/loading.gif"));
+                });
+                t.start();
+                try {
+                    t.join();
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+                Thread t2 = new Thread(() -> {
+                    boolean[] reCheck = InteractivePSPRojectResultsPresenter.this.processVisualizationDataset(projectName, uploadedFileMap);
+                    checkFiles[0] = reCheck[0];
+                    checkFiles[1] = reCheck[1];
+                });
+                t2.start();
+                while (t2.isAlive()) {
+
+                }
+                if (!checkFiles[0] || !checkFiles[1]) {
+                    uploadOwnDataBtn.updateIcon(VaadinIcons.FILE_TEXT_O.getHtml() + "<div class='overlayicon'>" + VaadinIcons.ARROW_CIRCLE_UP_O.getHtml() + "</div>");//VaadinIcons.UPLOAD.getHtml()
+                }
+                return checkFiles;
+            }
+
+        };
+        userUploadDataLayoutContainer.setSizeFull();
+        Selection_Manager.addBtnLayout(uploadOwnDataBtn, userUploadDataLayoutContainer);
+
+        datasetsOverviewBtn = new BigSideBtn("Dataset overview", 2) {
+            public void setId(String id) {
+                Iterator<Component> itr = this.iterator();
+                while (itr.hasNext()) {
+                    itr.next().setId(id);
+                }
+                super.setId(id);
+            }
+
+        };
         datasetsOverviewBtn.addStyleName("dsoverviewbtn");
         datasetsOverviewBtn.setData("datasetoverview");
+        datasetsOverviewBtn.addStyleName("inactive");
         datasetsOverviewBtn.setDescription("Dataset Overview");
         viewControlButtonContainer.addComponent(datasetsOverviewBtn);
         viewControlButtonContainer.setComponentAlignment(datasetsOverviewBtn, Alignment.MIDDLE_CENTER);
@@ -123,7 +175,7 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
         datasetVisulizationLevelContainer.setSizeFull();
         Selection_Manager.addBtnLayout(datasetsOverviewBtn, datasetVisulizationLevelContainer);
 
-        BigSideBtn proteinoverviewBtn = new BigSideBtn("Protein Overview", 2);
+        BigSideBtn proteinoverviewBtn = new BigSideBtn("Protein Overview", 3);
         proteinoverviewBtn.setDescription("Protein Overview");
         proteinoverviewBtn.updateIconResource(null);
         proteinoverviewBtn.setData("proteinoverview");
@@ -135,7 +187,7 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
         proteinsVisulizationLevelContainer = new ProteinVisulizationLevelContainer(Selection_Manager, proteinoverviewBtn);
         Selection_Manager.addBtnLayout(proteinoverviewBtn, proteinsVisulizationLevelContainer);
 
-        BigSideBtn psmoverviewBtn = new BigSideBtn("PSM Overview", 3);
+        BigSideBtn psmoverviewBtn = new BigSideBtn("PSM Overview", 4);
         psmoverviewBtn.updateIconResource(null);
         psmoverviewBtn.setDescription("Peptide Spectrum Matches");
         psmoverviewBtn.setData("psmoverview");
@@ -158,24 +210,20 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
         toolViewFrameContent.addStyleName("viewframecontent");
         toolViewFrameContent.setSizeFull();
         toolViewFrame.addComponent(toolViewFrameContent);
-
+        toolViewFrameContent.addComponent(userUploadDataLayoutContainer);
         toolViewFrameContent.addComponent(datasetVisulizationLevelContainer);
         toolViewFrameContent.addComponent(proteinsVisulizationLevelContainer);
         toolViewFrameContent.addComponent(peptideVisulizationLevelContainer);
-//
-//        bottomSideButtonsContainer = new HorizontalLayout();
-//        bottomSideButtonsContainer.setHeight(100, Unit.PERCENTAGE);
-//        bottomSideButtonsContainer.setWidthUndefined();
-//        bottomSideButtonsContainer.setSpacing(true);
-//        bottomSideButtonsContainer.setStyleName("bottomsidebtncontainer");
-//
-//        bottomSideButtonsContainer.addComponent(datasetsOverviewBtn.getMobileModeBtn());
-//        bottomSideButtonsContainer.setComponentAlignment(datasetsOverviewBtn.getMobileModeBtn(), Alignment.TOP_CENTER);
-        datasetsOverviewBtn.setSelected(true);
-//        bottomSideButtonsContainer.addComponent(proteinoverviewBtn.getMobileModeBtn());
-//        bottomSideButtonsContainer.setComponentAlignment(proteinoverviewBtn.getMobileModeBtn(), Alignment.TOP_CENTER);
-//        bottomSideButtonsContainer.addComponent(psmoverviewBtn.getMobileModeBtn());
-//        bottomSideButtonsContainer.setComponentAlignment(psmoverviewBtn.getMobileModeBtn(), Alignment.TOP_CENTER);
+
+        LayoutEvents.LayoutClickListener notificationListener = (LayoutEvents.LayoutClickEvent event) -> {
+            Component c = event.getClickedComponent();
+
+            if (c != null && c.getId() != null && c.getId().contains("suspend")) {
+                Notification.show("You need to select Project or upload your own files to visualize data", Notification.Type.WARNING_MESSAGE);
+            }
+        };
+        viewControlButtonContainer.addLayoutClickListener(notificationListener);
+        uploadOwnDataBtn.setSelected(true);
 
     }
 
@@ -229,13 +277,27 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
     @Override
     public void maximizeView() {
         if (maximisedMode) {
+
             return;
         }
+
         smallControlButton.setSelected(true);
         controlButton.setSelected(true);
         datasetVisulizationLevelContainer.setMargin(new MarginInfo(false, false, false, false));
         this.maximisedMode = true;
         this.viewControlButtonContainer.addStyleName("visible");
+        if (dataprocessFuture == null) {
+            datasetsOverviewBtn.setId("suspend");
+            datasetsOverviewBtn.setEnabled(false);
+            datasetsOverviewBtn.setDescription("Select project or upload your own project data");
+            datasetsOverviewBtn.addStyleName("inactive");
+            selectBtn(uploadOwnDataBtn);
+            this.removeStyleName("hidepanel");
+            return;
+
+        }
+        datasetsOverviewBtn.setId(null);
+        datasetsOverviewBtn.setEnabled(true);
         while (!dataprocessFuture.isDone()) {
             try {
                 Thread.sleep(500);
@@ -244,7 +306,8 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
             }
         }
         this.removeStyleName("hidepanel");
-
+        selectBtn(datasetsOverviewBtn);
+        datasetsOverviewBtn.removeStyleName("inactive");
     }
 
     /**
@@ -258,7 +321,18 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
         BigSideBtn comp = (BigSideBtn) event.getComponent();
         Selection_Manager.selectBtn(comp);
         if (proteinsVisulizationLevelContainer != null) {
-            if (comp.getBtnId() == 2 && lastSelectedBtn != 2) {
+            if (comp.getBtnId() == 3 && lastSelectedBtn != 3) {
+                proteinsVisulizationLevelContainer.activate3DProteinView();
+            }
+        }
+        lastSelectedBtn = comp.getBtnId();
+
+    }
+
+    public void selectBtn(BigSideBtn comp) {
+        Selection_Manager.selectBtn(comp);
+        if (proteinsVisulizationLevelContainer != null) {
+            if (comp.getBtnId() == 3 && lastSelectedBtn != 3) {
                 proteinsVisulizationLevelContainer.activate3DProteinView();
             }
         }
@@ -292,7 +366,6 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
      */
     public void setSelectedDataset(PeptideShakerVisualizationDataset peptideShakerVisualizationDataset) {
         start = System.currentTimeMillis();
-
         ExecutorService executorService = Executors.newFixedThreadPool(2);
         Runnable runnableTask = () -> {
             controlButton.setEnabled(peptideShakerVisualizationDataset != null);
@@ -306,8 +379,9 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
             smallControlButton.setEnabled(peptideShakerVisualizationDataset != null);
             Selection_Manager.reset();
             Selection_Manager.selectBtn(0);
-                datasetVisulizationLevelContainer.selectDataset(peptideShakerVisualizationDataset);
-           
+            datasetVisulizationLevelContainer.selectDataset(peptideShakerVisualizationDataset);
+            
+
         };
         Runnable runnableTask2 = () -> {
 
@@ -315,7 +389,9 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
 
         };
         Runnable runnableTask3 = () -> {
-            peptideVisulizationLevelContainer.selectDataset(peptideShakerVisualizationDataset);
+//            if (!peptideShakerVisualizationDataset.isUploadedProject()) {
+                peptideVisulizationLevelContainer.selectDataset(peptideShakerVisualizationDataset);
+//            }
 
         };
         dataprocessFuture = executorService.submit(runnableTask1);
@@ -323,6 +399,24 @@ public class InteractivePSPRojectResultsPresenter extends VerticalLayout impleme
         executorService.submit(runnableTask2);
         executorService.submit(runnableTask3);
         executorService.shutdown();
+        while (!dataprocessFuture.isDone()) {
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException ex) {
+
+            }
+        }
+        uploadOwnDataBtn.updateIcon(VaadinIcons.FILE_TEXT_O.getHtml() + "<div class='overlayicon'>" + VaadinIcons.ARROW_CIRCLE_UP_O.getHtml() + "</div>");
+        maximisedMode = false;
+        this.maximizeView();
 
     }
+
+    /**
+     * Visualise dataset
+     *
+     * @param projectName
+     * @param uploadedFileMap
+     */
+    public abstract boolean[] processVisualizationDataset(String projectName, Map<String, PluploadFile> uploadedFileMap);
 }

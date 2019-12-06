@@ -1,7 +1,7 @@
 package com.uib.web.peptideshaker.presenter.core;
 
+import com.compomics.util.experiment.biology.modifications.ModificationFactory;
 import com.compomics.util.parameters.identification.IdentificationParameters;
-import temp.suspend.com.compomics.util.experiment.biology.modifications.ModificationFactory;
 
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
 
@@ -41,7 +41,7 @@ public abstract class DatasetOverviewLayout extends VerticalLayout {
     /**
      * The post translational modifications factory.
      */
-    private final ModificationFactory PTM = new ModificationFactory();
+    private final ModificationFactory PTM =  ModificationFactory.getInstance();
     /**
      * Convenience array for forward ion type selection.
      */

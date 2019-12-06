@@ -16916,15 +16916,10 @@ div.v-layout.v-horizontal.v-widget {
 	margin-top: -20px !important;
 }
 
-.webpeptideshakertheme .btnwithtext.smaller font {
+.webpeptideshakertheme .btnwithtext.smaller {
 	font-size: 13px !important;
 	height: 10px !important;
 	line-height: 10px !important;
-	margin-top: -20px !important;
-}
-
-.webpeptideshakertheme .galaxylabel img {
-	padding: 15px !important;
 }
 
 .webpeptideshakertheme .psprojectname {
@@ -16970,7 +16965,7 @@ div.v-layout.v-horizontal.v-widget {
 	max-height: 135px;
 	overflow-y: auto;
 	overflow-x: hidden;
-	width: 495px !important;
+	width: 450px !important;
 	text-overflow: ellipsis;
 }
 
@@ -19779,4 +19774,514 @@ div.v-layout.v-horizontal.v-widget {
 .webpeptideshakertheme .v-label-slowdrawingimg {
 	z-index: 2 !important;
 	position: absolute;
+}
+
+.webpeptideshakertheme .frametitle.maintitleheader {
+	font-size: 18px !important;
+}
+
+.webpeptideshakertheme .mainsubheadergroup {
+	color: gray !important;
+	border-color: transparent !important;
+	z-index: 3 !important;
+	position: relative;
+}
+
+.webpeptideshakertheme .mainsubheadergroup font {
+	font-size: 15px !important;
+	border-color: transparent !important;
+	color: #599de2 !important;
+}
+
+.webpeptideshakertheme .maincontentcontainer {
+	border: 2px solid lightgray;
+	border-radius: 5px;
+	background-color: whitesmoke;
+	z-index: 1 !important;
+	position: absolute !important;
+}
+
+.webpeptideshakertheme .mainsubheadergroup .v-radiobutton.v-select-option {
+	color: gray;
+}
+
+.webpeptideshakertheme .mainsubheadergroup .v-radiobutton > input:checked ~ label:after {
+	background: #faa200 !important;
+}
+
+.webpeptideshakertheme .uploaderbtnonly .v-button {
+	width: 20px !important;
+	height: 20px !important;
+	position: relative !important;
+	margin-top: -10px !important;
+	float: right !important;
+}
+
+.webpeptideshakertheme .uploaderbtnonly .v-icon.FontAwesome {
+	margin-left: -5px;
+}
+
+.webpeptideshakertheme .uploaderbtnonly .v-button-caption {
+	max-width: 0px;
+	display: none !important;
+	visibility: hidden !important;
+}
+
+.webpeptideshakertheme .v-slot-popupuploader {
+	position: relative !important;
+	margin-top: -56px !important;
+	float: right;
+	max-width: 100px !important;
+	border: 1px solid gray;
+}
+
+.webpeptideshakertheme .popupuploader .v-icon {
+	color: gray;
+	margin-left: 50%;
+	left: -7px !important;
+	position: relative !important;
+	top: -3px !important;
+}
+
+.webpeptideshakertheme .popupuploader {
+	border: 1px solid lightgray;
+	max-height: 23px;
+	border-radius: 5px;
+	position: absolute !important;
+	width: 23px !important;
+}
+
+.webpeptideshakertheme .v-absolutelayout-dropdownlistframe .v-absolutelayout-margin {
+	height: 50px !important;
+	overflow: visible !important;
+}
+
+.webpeptideshakertheme .dropdownlistframe .v-filterselect-dropdownlist {
+	min-width: 100% !important;
+}
+
+.webpeptideshakertheme .controllercombobox {
+	margin-left: 20px;
+	font-size: 12px;
+	font-weight: 400;
+}
+
+.webpeptideshakertheme .inputdatafilecontainer {
+	border: 1px solid whitesmoke;
+	margin-left: 20px;
+	border-radius: 5px;
+	margin-top: -5px;
+}
+
+.webpeptideshakertheme .inputdatafilecontainer .v-absolutelayout-margin {
+	overflow: visible !important;
+}
+
+.webpeptideshakertheme .inputdatafilecontainer .popupuploader {
+	background-color: white;
+	top: -20px;
+	right: -20px;
+}
+
+.webpeptideshakertheme .table_radio_btn {
+	border: 1px solid gray;
+	border-radius: 15px;
+	background-image: radial, circle, white, white;
+	background-repeat: no-repeat;
+	background-size: 15px;
+	background-position: center;
+	overflow: hidden !important;
+}
+
+.webpeptideshakertheme .selectedraw .table_radio_btn {
+	border: 3px solid lightgray !important;
+	border-radius: 15px !important;
+	background-color: #5aa8e9 !important;
+	background-image: radial, circle, gray, black !important;
+	background-repeat: no-repeat !important;
+	background-size: 15px !important;
+	background-position: center !important;
+	overflow: hidden !important;
+}
+
+.webpeptideshakertheme .inputdatafilecontainer .row {
+	border: none;
+}
+
+.webpeptideshakertheme .inputdatafilecontainer .v-slot-row {
+	border-bottom: 1px solid whitesmoke;
+	max-height: 30.1px;
+	min-height: 30.1px;
+	cursor: pointer;
+}
+
+.webpeptideshakertheme .inputdatafilecontainer .v-verticallayout {
+	overflow-y: scroll !important;
+	overflow-x: hidden !important;
+	margin-left: 1px;
+}
+
+.webpeptideshakertheme .table_radio_btn.v-verticallayout-table_radio_btn {
+	overflow: hidden !important;
+}
+
+.webpeptideshakertheme .inputdatafilecontainer img {
+	position: absolute !important;
+	top: 7px;
+	left: 10px;
+	overflow: hidden !important;
+	clip: rect(0px, 16px, 16px, 0px) !important;
+}
+
+.webpeptideshakertheme .selectedraw, .webpeptideshakertheme .selectedraw b {
+	color: #5aa8e9 !important;
+	font-weight: bold !important;
+}
+
+.webpeptideshakertheme .errorstyle input, .webpeptideshakertheme .errorstyle.inputdatafilecontainer {
+	border-color: red !important;
+	padding: 1px;
+}
+
+.webpeptideshakertheme .v-textfield-psprojectname.v-textfield-errorstyle {
+	border-color: red !important;
+}
+
+.webpeptideshakertheme .v-absolutelayout-wrapper-addprojectbtn {
+	top: -24px;
+	border: 1px solid #599de2;
+	padding: 2px;
+	background-color: whitesmoke;
+	border-radius: 5px;
+	width: 100px;
+	height: 23px !important;
+	text-align: center;
+	z-index: 3 !important;
+}
+
+.webpeptideshakertheme .v-popupview-addprojectbtn {
+	text-decoration: none !important;
+	color: #111318 !important;
+	font-size: 13px;
+	font-weight: bold !important;
+}
+
+.webpeptideshakertheme .maincontentcontainer .v-absolutelayout-margin {
+	overflow: visible !important;
+}
+
+.webpeptideshakertheme .homepagepresenterbtn .v-icon {
+	color: #006d98;
+}
+
+.webpeptideshakertheme .glubimg .v-image {
+	padding: 15px !important;
+}
+
+.webpeptideshakertheme .dataoverviewsmallbtn.glubimg .v-image {
+	padding: 5px !important;
+}
+
+.webpeptideshakertheme .selectedbiglbtn .presenterbtn.uploaderbtn .v-icon {
+	color: #5aa8e9;
+	font-size: 16px !important;
+	font-weight: normal !important;
+	line-height: 32px !important;
+}
+
+.webpeptideshakertheme .uploadbigbtn {
+	color: gray;
+}
+
+.webpeptideshakertheme .v-horizontallayout-bigmenubtn.searchguiicon .v-image {
+	padding: 20px !important;
+}
+
+.webpeptideshakertheme .v-absolutelayout-smalltoolsbtn.searchguiicon .v-image {
+	padding: 5px;
+}
+
+.webpeptideshakertheme .v-horizontallayout-btnwithtext.searchguiicon .v-image {
+	padding: 15px;
+}
+
+.webpeptideshakertheme .searchinputcontainer {
+	margin-left: -264px;
+	margin-top: -416px;
+}
+
+.webpeptideshakertheme .v-caption-controllercombobox {
+	font-size: 12px !important;
+	font-weight: bold !important;
+	margin-left: 20px;
+	margin-top: 10px;
+}
+
+.webpeptideshakertheme .v-horizontallayout-actionlabel img {
+	position: absolute;
+	margin-left: 5px;
+}
+
+.webpeptideshakertheme .actionlabel .v-icon-eye {
+	margin-left: 20px;
+	border: 2px solid orange;
+	background-color: whitesmoke;
+	text-align: center;
+	line-height: 18px;
+	position: absolute !important;
+	border-radius: 100%;
+	width: 20px;
+	height: 18px;
+}
+
+.webpeptideshakertheme .v-label-maintitleheader {
+	border: 2px solid lightgray;
+	width: auto !important;
+	padding-left: 10px !important;
+	padding-top: 0px !important;
+	padding-right: 10px !important;
+	padding-bottom: 0px !important;
+	border-radius: 5px;
+	background-color: white !important;
+	z-index: 2 !important;
+	position: relative !important;
+}
+
+.webpeptideshakertheme .frametitle.maintitleheader.v-label {
+	font-size: 15px !important;
+	color: #619ce3 !important;
+}
+
+.webpeptideshakertheme .titleinborder {
+	border: 1px solid lightgray;
+	border-radius: 5px;
+}
+
+.webpeptideshakertheme .v-caption-titleinborder .v-captiontext {
+	margin-top: 8px;
+	margin-left: 25px;
+	background-color: white;
+	padding-left: 5px;
+	padding-right: 5px;
+	font-weight: 550 !important;
+}
+
+.webpeptideshakertheme .marginleft-250, .webpeptideshakertheme .v-caption-marginleft-250 {
+	margin-left: -250px !important;
+}
+
+.webpeptideshakertheme .margintop-198 {
+	margin-top: -198px !important;
+}
+
+.webpeptideshakertheme .datainputsubcontainer {
+	background-color: white;
+	border: 1px solid lightgray;
+	border-radius: 5px;
+}
+
+.webpeptideshakertheme .titleinborder .dropdownlist, .webpeptideshakertheme .titleinborder .v-absolutelayout-dropdownlistframe, .webpeptideshakertheme .titleinborder .bottomformlayout, .webpeptideshakertheme .titleinborder .v-absolutelayout-inputdatafilecontainer {
+	margin-left: 0px !important;
+	margin-top: 0px !important;
+}
+
+.webpeptideshakertheme .titleinborder .optiongroup {
+	padding-left: 0px;
+	min-width: 180px !important;
+}
+
+.webpeptideshakertheme .titleinborder .psprojectname {
+	margin: 0px !important;
+	border-color: lightgray !important;
+}
+
+.webpeptideshakertheme .uploaderfilefield {
+	border: 1px solid whitesmoke;
+	font-size: 14px;
+	line-height: 30px !important;
+}
+
+.webpeptideshakertheme .uploaderfilefield {
+	border: 1px solid whitesmoke;
+	font-size: 14px;
+	line-height: 30px !important;
+}
+
+.webpeptideshakertheme .uploaderfilefield .uploaderlayout {
+	max-height: 20px;
+	top: 0px !important;
+	width: 100px;
+	position: absolute !important;
+}
+
+.webpeptideshakertheme .uploaderfilefield .uploaderlayout .v-button {
+	max-height: 23px !important;
+	top: 0px !important;
+	line-height: 20px !important;
+	width: 50px !important;
+	font-size: 18px;
+}
+
+.webpeptideshakertheme .uploaderfilefield .v-absolutelayout-uploaderlayout {
+	margin: 5px !important;
+	padding: 0px !important;
+}
+
+.webpeptideshakertheme .inactive {
+	border-radius: 100%;
+	background-color: lightgrey;
+	border: 1px solid lightgray;
+}
+
+.webpeptideshakertheme .active {
+	border-radius: 100%;
+	background-color: green;
+	border: 1px solid green;
+}
+
+.webpeptideshakertheme .uploaderfilefield .infopopupcontainer {
+	padding: 0px !important;
+	margin: 0px !important;
+	height: 29px !important;
+}
+
+.webpeptideshakertheme .uploaderfilefield .v-absolutelayout-wrapper-infopopup {
+	max-height: 100% !important;
+	line-height: 30px !important;
+	padding: 0px !important;
+	margin: 0px !important;
+	left: auto !important;
+	position: absolute !important;
+	max-width: 30px !important;
+	right: 5px !important;
+}
+
+.webpeptideshakertheme .uploaderfilefield .v-popupview-infopopup .v-icon {
+	margin-top: 0px !important;
+	max-height: 100% !important;
+	position: relative !important;
+	line-height: 20px !important;
+	font-size: 18px;
+	margin-top: 4px !important;
+}
+
+.webpeptideshakertheme .uploaderfilefield .v-absolutelayout-infopopupcontainer .v-absolutelayout-wrapper .v-label {
+	display: none !important;
+}
+
+.webpeptideshakertheme .aligntoleft {
+	margin-left: -107.5px !important;
+}
+
+.webpeptideshakertheme .aligntoright {
+	margin-left: 7.5px !important;
+}
+
+.webpeptideshakertheme .uploadedfilelabel {
+	background-color: rgba(255, 255, 255, 0.5);
+	border: 1px solid lightgray;
+	color: black !important;
+	font-weight: 550 !important;
+	font-size: 12px;
+	padding: 0px !important;
+	margin: 0px !important;
+	line-height: 15px !important;
+	text-align: center;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	padding-left: 5px !important;
+	padding-right: 5px !important;
+}
+
+.webpeptideshakertheme .uploadedfilelabel.done {
+	background-color: white;
+}
+
+.webpeptideshakertheme .titleinborder .psprojectname.v-textfield-errorstyle, .webpeptideshakertheme .titleinborder .v-absolutelayout-uploaderfilefield.v-absolutelayout-errorstyle {
+	border-color: rgba(255, 0, 0, 0.4) !important;
+}
+
+.webpeptideshakertheme .v-horizontallayout-dsoverviewbtn.v-horizontallayout-inactive {
+	border-radius: 5px !important;
+	background-color: whitesmoke;
+}
+
+.webpeptideshakertheme .v-horizontallayout-dsoverviewbtn.v-horizontallayout-inactive img {
+	border-radius: 5px !important;
+	background-color: whitesmoke;
+	opacity: 0.5 !important;
+}
+
+.webpeptideshakertheme .uploadbigbtn .v-label .v-icon-file_text_o {
+	font-size: 42px !important;
+}
+
+.webpeptideshakertheme .uploadbigbtn .v-label div .v-icon-arrow_circle_up_o {
+	background-color: white !important;
+	position: relative !important;
+	z-index: 5 !important;
+	line-height: 20px !important;
+	top: -47px !important;
+	font-size: 20px !important;
+	right: 12px !important;
+	left: 43px !important;
+	border: 1px solid white !important;
+	height: 21px !important;
+	width: 21px !important;
+	border-radius: 100% !important;
+}
+
+.webpeptideshakertheme .overlayicon {
+	max-height: 0px;
+	color: #5aa7e9 !important;
+}
+
+.webpeptideshakertheme .v-slot-windowtitle .v-disabled.v-label-windowtitle {
+	opacity: 1 !important;
+	color: gray !important;
+	text-decoration: none !important;
+}
+
+.webpeptideshakertheme .v-slot-windowtitle .v-disabled.v-label-windowtitle:hover {
+	text-decoration: none !important;
+	color: gray !important;
+}
+
+.webpeptideshakertheme .v-label-smalliconlabel.v-label-datatypeicon {
+	position: absolute;
+	left: -25px;
+	top: 8px;
+}
+
+.webpeptideshakertheme .v-label-datatypeicon.v-label-smalliconlabel span.v-icon {
+	color: #5aa7e9 !important;
+	margin-left: 11px;
+	font-size: 10px !important;
+	background-color: white;
+	border: 1px solid white;
+	border-radius: 100% !important;
+	height: 11px !important;
+	width: 11px !important;
+	position: absolute !important;
+	margin-top: -18px;
+	line-height: 12px !important;
+	font-weight: 500 !important;
+	color: #5aa7e9 !important;
+}
+
+.webpeptideshakertheme .v-label-datatypeicon.v-label-smalliconlabel font {
+	margin-left: 24px;
+	margin-top: -20px !important;
+	position: absolute;
+}
+
+.webpeptideshakertheme .v-label-datatypeicon.v-label-smalliconlabel span.v-icon-file_text_o {
+	font-size: 16px !important;
+	margin-left: 2px !important;
+	margin-top: 20px;
+	position: relative !important;
+	border-radius: 2px !important;
+	height: 16px !important;
+	width: 16px !important;
+	color: gray !important;
 }

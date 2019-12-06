@@ -1,6 +1,8 @@
 package com.uib.web.peptideshaker.listeners;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
 
@@ -19,20 +21,46 @@ public class VaadinSessionListener implements HttpSessionListener {
 
     @Override
     public void sessionDestroyed(HttpSessionEvent hse) {
-        String ApiKey = hse.getSession().getAttribute("ApiKey") + "";
-        if (ApiKey == null || ApiKey.equalsIgnoreCase(hse.getSession().getAttribute("testUserAPIKey") + "")) {
-            return;
-        }
+        try { String ApiKey = hse.getSession().getAttribute("ApiKey") + "";
+//        if (ApiKey == null || ApiKey.equalsIgnoreCase(hse.getSession().getAttribute("testUserAPIKey") + "")) {
+//            return;
+//        }
         String userDataFolderUrl = hse.getSession().getAttribute("userDataFolderUrl").toString();
-        File user_folder = new File(userDataFolderUrl, ApiKey);
-        if (user_folder.exists()) {
+        File user_folder = new File(userDataFolderUrl);
+       if (user_folder.exists()) {
             for (File tFile : user_folder.listFiles()) {
-                tFile.delete();
+               
+                    deletFile(tFile);                  
+
+                
             }
         }
-        boolean cleaned = user_folder.delete();
-        System.out.println("at session is ready to distroy ..Good bye...folder (" + user_folder.getName() + " are cleaned (" + cleaned + ") and folder exist (" + user_folder.exists() + ")");
-        System.out.println("no more cookies exist");
+         Files.deleteIfExists(user_folder.toPath());
+        System.out.println("at session is ready to distroy ..Good bye...folder (" + user_folder.getName() + " are cleaned ("  + ") and folder exist (" + user_folder.exists() + ")");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+    
+        private void deletFile(File file) throws IOException {
+        if (file.isDirectory()) {
+            deleteDirectory(file);
+        } else {
+            Files.deleteIfExists(file.toPath());
+
+        }
+
+    }
+
+    private void deleteDirectory(File file) throws IOException {
+        for (File tFile : file.listFiles()) {
+            if (tFile.isDirectory()) {
+                deleteDirectory(tFile);
+            } else {
+               Files.deleteIfExists(tFile.toPath());
+            }
+        }
+        Files.deleteIfExists(file.toPath());
     }
 
   

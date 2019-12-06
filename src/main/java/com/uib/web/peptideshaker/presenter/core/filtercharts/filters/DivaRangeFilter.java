@@ -179,13 +179,6 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
     }
 
     private void sizeChanged(int tChartWidth, int tChartHeight) {
-   
-//            if (tChartWidth <= 0 || tChartHeight <= 0) {
-//                return;
-//            }
-//            if ((tChartWidth == chartWidth || Math.abs(tChartWidth - chartWidth) < 10) && (chartHeight == tChartHeight || Math.abs(tChartHeight - chartHeight) < 10)) {
-//                return;
-//            }
             chartWidth = tChartWidth;
             chartHeight = tChartHeight;
             chartImage.setValue(saveToFile(mainChart, chartWidth, chartHeight));}
@@ -224,6 +217,7 @@ public abstract class DivaRangeFilter extends AbsoluteLayout implements Property
         if (this.data == null) {
             this.data = data;
         }
+        sizeChanged(chartWidth, chartHeight);
 
     }
 

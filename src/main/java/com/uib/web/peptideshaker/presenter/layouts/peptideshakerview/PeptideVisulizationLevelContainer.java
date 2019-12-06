@@ -165,7 +165,8 @@ public class PeptideVisulizationLevelContainer extends HorizontalLayout implemen
 
     @Override
     public void selectionChange(String type) {
-        if (type.equalsIgnoreCase("peptide_selection")) {
+        if (type.equalsIgnoreCase("peptide_selection") && !peptideShakerVisualizationDataset.isUploadedProject()) {      
+            
             if (Selection_Manager.getSelectedPeptide() != null) {
                 headerLabel.setValue("Peptide Spectrum Matches (" + Selection_Manager.getSelectedPeptide().getModifiedSequence() + ")");
                 this.psmViewComponent.updateView(peptideShakerVisualizationDataset.getPSM(Selection_Manager.getSelectedPeptide().getModifiedSequence()), Selection_Manager.getSelectedPeptide().getTooltip(), Selection_Manager.getSelectedPeptide().getModifiedSequence().length(),peptideShakerVisualizationDataset.isQuantDataset());

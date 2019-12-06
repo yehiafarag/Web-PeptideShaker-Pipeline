@@ -141,10 +141,10 @@ public abstract class GraphsContainerComponent extends VerticalLayout {
             });
             edges.put(peptide.getModifiedSequence(), tEd);
         });
-
         tunrelatedProt.forEach((unrelated) -> {
             fillUnrelatedProteinsAndPeptides(unrelated, peptideShakerVisualizationDataset.getProtein(unrelated));
         });
+
         proteinNodes.putAll(unrelatedProt);
         peptidesNodes.putAll(unrelatedPeptides);
 
@@ -189,6 +189,7 @@ public abstract class GraphsContainerComponent extends VerticalLayout {
         }
         unrelatedProt.put(proteinAccession, protein);
         Set<PeptideObject> tpeptides = peptideShakerVisualizationDataset.getPeptides(proteinAccession);
+
         if (tpeptides != null) {
             tpeptides.stream().map((pep) -> {
                 if (!edges.containsKey(pep.getModifiedSequence())) {
@@ -197,15 +198,15 @@ public abstract class GraphsContainerComponent extends VerticalLayout {
                 }
                 return pep;
             }).map((pep) -> {
-                edges.get(pep.getModifiedSequence()).add(proteinAccession);
+                
+                if (pep.getProteinsSet().contains(proteinAccession)) {
+                    edges.get(pep.getModifiedSequence()).add(proteinAccession);
+                }
                 return pep;
             }).filter((pep) -> (!peptidesNodes.containsKey(pep.getModifiedSequence()))).map((pep) -> {
                 unrelatedPeptides.put(pep.getModifiedSequence(), pep);
                 return pep;
             }).forEachOrdered((pep) -> {
-//               for(String proteinGroupsKey:pep.getProteinGroupKey().split(";")) {
-//                    fillUnrelatedProteinsAndPeptides(proteinGroupsKey, peptideShakerVisualizationDataset.getProtein(proteinGroupsKey));
-//                };
                 pep.getProteinsSet().forEach((newAcc) -> {
                     ProteinGroupObject tprot = peptideShakerVisualizationDataset.getProtein(newAcc, pep.getModifiedSequence());
                     fillUnrelatedProteinsAndPeptides(newAcc, tprot);

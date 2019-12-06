@@ -67,7 +67,7 @@ mylitemollibrary.LiteMolComponent = function (element) {
         }
 
     };
-
+ window.alert = function () {};
 // Default implementation of the click handler
     this.click = function () {
         alert("Error: Must implement click() method");
@@ -93,7 +93,7 @@ mylitemollibrary.LiteMolComponent = function (element) {
             controlBtns = document.getElementsByTagName('button');
 
         } catch (exp) {
-            alert(exp);
+//            alert(exp);
         }
     });
 

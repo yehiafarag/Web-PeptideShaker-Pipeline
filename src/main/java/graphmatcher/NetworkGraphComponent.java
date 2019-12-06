@@ -282,7 +282,6 @@ public abstract class NetworkGraphComponent extends VerticalLayout {
         nodeControl.select("Proteoform");
         nodeControl.select("External");
         nodeControl.addValueChangeListener((Property.ValueChangeEvent event) -> {
-            System.out.println("at event " + event.getProperty().getValue());
 //            if()
 //                setShowLabels(nodeControl.getValue().toString().contains("Labels"));
 //            else

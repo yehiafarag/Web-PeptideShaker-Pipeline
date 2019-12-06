@@ -119,7 +119,6 @@ public class PSMScoringPanel extends PopupWindow {
         advocates.forEach((advocate) -> {
             HashSet<Integer> scores = new HashSet<>(psmScoringPreferences.getScoreForAlgorithm(advocate));
             spectrumMatchingScores.put(advocate, scores);
-            System.out.println("at initial scores for " + Advocate.getAdvocate(advocate).getName() + "  are  " + scores);
         });
         HashSet<Integer> defaultScores = new HashSet<>(psmScoringPreferences.getDefaultScores());
 

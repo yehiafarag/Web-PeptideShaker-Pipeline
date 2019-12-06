@@ -96,6 +96,9 @@ public class FiltersContainer extends HorizontalLayout {
 
                 }
             }
+              @Override
+            public void filterSizeChanged(int w, int h) {
+            }
 
         };
         ProteinInferenceFilter.addStyleName("pifilter");
@@ -116,6 +119,11 @@ public class FiltersContainer extends HorizontalLayout {
                 if (type.equalsIgnoreCase("dataset_filter_selection")) {
 
                 }
+            }
+
+            @Override
+            public void filterSizeChanged(int w, int h) {
+               ProteinInferenceFilter.sizeChanged(w, h);
             }
         };
         validationFilter.addStyleName("validationfilter");

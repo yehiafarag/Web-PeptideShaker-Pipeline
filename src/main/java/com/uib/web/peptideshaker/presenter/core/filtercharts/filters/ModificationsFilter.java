@@ -49,7 +49,6 @@ public class ModificationsFilter extends AbsoluteLayout implements RegistrableFi
     private final VennDiagram vennDiagram;
     
     public ModificationsFilter(String title, String filterId, SelectionManager Selection_Manager) {
-         System.out.println("at ---------------------------------------------------------------------------------------create venn diagram ----------------->>>>");
         this.filterId = filterId;
         this.Selection_Manager = Selection_Manager;
         this.Selection_Manager.RegistrDatasetsFilter(ModificationsFilter.this);

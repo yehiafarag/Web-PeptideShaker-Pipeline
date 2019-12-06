@@ -8,17 +8,15 @@ import com.uib.web.peptideshaker.presenter.layouts.DataViewLayout;
 import com.uib.web.peptideshaker.presenter.core.ButtonWithLabel;
 import com.uib.web.peptideshaker.presenter.core.SmallSideBtn;
 import com.vaadin.event.LayoutEvents;
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ThemeResource;
-import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import pl.exsio.plupload.PluploadFile;
 
 /**
  * This class represent PeptideShaker view presenter which is responsible for
@@ -61,14 +59,17 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
         FileSystemPresenter.this.setStyleName("activelayout");
         FileSystemPresenter.this.addStyleName("hidelowerpanel");
 
-        this.smallControlButton = new SmallSideBtn(VaadinIcons.GLOBE);
+        this.smallControlButton = new SmallSideBtn("img/globeearthanimation.png");//VaadinIcons.GLOBE
         this.smallControlButton.setData(FileSystemPresenter.this.getViewId());
-        smallControlButton.setDescription("Available datastes");
-        this.smallControlButton .addStyleName("dataoverviewsmallbtn");
-        this.controlButton = new ButtonWithLabel("Data Overview</br><font>Available files and projects</font>", 1);
-        this.controlButton.updateIcon(VaadinIcons.GLOBE.getHtml());
+        this.smallControlButton.addStyleName("glubimg");
+        smallControlButton.setDescription("Projects and available data files");
+        this.smallControlButton.addStyleName("dataoverviewsmallbtn");
+        this.controlButton = new ButtonWithLabel("Projects Overview</br><font>Available projects and data files</font>", 1);
+//        this.controlButton.updateIcon(VaadinIcons.GLOBE.getHtml());
         this.controlButton.setData(FileSystemPresenter.this.getViewId());
-        this.controlButton.setDescription("Available datastes");
+        this.controlButton.setDescription("Projects and available data files");
+        this.controlButton.updateIconResource(new ThemeResource("img/globeearthanimation.png"));
+        this.controlButton.addStyleName("glubimg");
 //         this.controlButton.addStyleName("hidetopbtn");
         this.btnsLayoutMap = new LinkedHashMap<>();
         this.initLayout();
@@ -88,7 +89,10 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
         leftSideButtonsContainer.addStyleName("singlebtn");
         viewDataBtn = new BigSideBtn("Data Overview", 1);
         viewDataBtn.setDescription("Available datasets and files");
-        viewDataBtn.updateIcon(VaadinIcons.GLOBE.getHtml());
+//        viewDataBtn.updateIcon(VaadinIcons.GLOBE.getHtml());
+        viewDataBtn.updateIconResource(new ThemeResource("img/globeearthanimation.png"));
+        viewDataBtn.addStyleName("glubimg");
+
         viewDataBtn.setData("datasetoverview");
         leftSideButtonsContainer.addComponent(viewDataBtn);
         leftSideButtonsContainer.setComponentAlignment(viewDataBtn, Alignment.TOP_CENTER);
@@ -106,7 +110,13 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
         AbsoluteLayout dataViewFrameContent = new AbsoluteLayout();
         dataViewFrameContent.addStyleName("viewframecontent");
         dataViewFrameContent.setSizeFull();
-        dataViewFrame.addComponent(dataViewFrameContent);
+        
+        dataViewFrame.addComponent(dataViewFrameContent); 
+        
+        Label titleLabel = new Label("Projects Overview");
+        titleLabel.setStyleName("frametitle");
+        titleLabel.addStyleName("maintitleheader");
+        dataViewFrameContent.addComponent(titleLabel, "left:40px;top:13px");
         dataViewFrameContent.addComponent(dataContainerLayout);
         viewDataBtn.setSelected(true);
 
@@ -125,7 +135,6 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
         dataLayout = new DataViewLayout() {
             @Override
             public void deleteDataset(GalaxyFileObject ds) {
-                System.out.println("at user "+(VaadinSession.getCurrent().getAttribute("ApiKey").toString().equals(VaadinSession.getCurrent().getAttribute("testUserAPIKey"))));
                 FileSystemPresenter.this.deleteDataset(ds);
             }
 
@@ -142,13 +151,7 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
             @Override
             public boolean getFromNels(GalaxyFileObject ds) {
                 return FileSystemPresenter.this.getFromNels(ds);
-            }
-
-            @Override
-            public boolean uploadToGalaxy(PluploadFile[] toUploadFiles) {
-                boolean check = FileSystemPresenter.this.uploadToGalaxy(toUploadFiles);
-                return check;
-            }
+            }           
 
         };
         container.addComponent(dataLayout);
@@ -156,7 +159,8 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
 
         return container;
     }
-
+private Map<String, GalaxyFileObject> historyFilesMap;
+private boolean jobInProgress;
     /**
      * Update Online PeptideShaker files from Galaxy Server
      *
@@ -164,18 +168,30 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
      * @param jobInProgress Jobs are running
      */
     public void updateSystemData(Map<String, GalaxyFileObject> historyFilesMap, boolean jobInProgress) {
+        this.historyFilesMap= historyFilesMap;
+        this.jobInProgress=jobInProgress;
         if (jobInProgress) {
             smallControlButton.updateIconURL("img/globeearthanimation1.gif");
             controlButton.updateIconResource(new ThemeResource("img/globeearthanimation1.gif"));
             viewDataBtn.updateIconResource(new ThemeResource("img/globeearthanimation1.gif"));
         } else {
-            smallControlButton.updateIconURL(VaadinIcons.GLOBE);
-            controlButton.updateIcon(VaadinIcons.GLOBE.getHtml());
-            viewDataBtn.updateIcon(VaadinIcons.GLOBE.getHtml());
+            smallControlButton.updateIconURL("img/globeearthanimation.png");
+            controlButton.updateIconResource(new ThemeResource("img/globeearthanimation.png"));
+            viewDataBtn.updateIconResource(new ThemeResource("img/globeearthanimation.png"));
+//            controlButton.updateIcon(VaadinIcons.GLOBE.getHtml());
+//            viewDataBtn.updateIcon(VaadinIcons.GLOBE.getHtml());
         }
         if (historyFilesMap != null) {
             this.dataLayout.updateDatasetsTable(historyFilesMap);
         }
+    }
+
+    public Map<String, GalaxyFileObject> getHistoryFilesMap() {
+        return historyFilesMap;
+    }
+
+    public boolean isJobInProgress() {
+        return jobInProgress;
     }
 
     /**
@@ -307,13 +323,6 @@ public abstract class FileSystemPresenter extends VerticalLayout implements View
      */
     public abstract boolean getFromNels(GalaxyFileObject fileObject);
 
-    /**
-     * Abstract method to allow customised uploading action for files from user
-     * local computer to Galaxy Server
-     *
-     * @param toUploadFiles array of files to be uploaded
-     * @return successfully uploaded files
-     */
-    public abstract boolean uploadToGalaxy(PluploadFile[] toUploadFiles);
+ 
 
 }

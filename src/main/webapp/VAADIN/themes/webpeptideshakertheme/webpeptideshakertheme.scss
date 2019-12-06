@@ -3767,15 +3767,12 @@
     .btnwithtext.smaller .v-label{
         margin-top:-20px !important;
     }
-    .btnwithtext.smaller font{
-        font-size:13px !important;
-        height:10px !important;
-        line-height:10px !important;
-        margin-top:-20px !important;
+    .btnwithtext.smaller  {
+        font-size: 13px !important;
+        height: 10px !important;
+        line-height: 10px !important;
     }
-    .galaxylabel img{
-        padding:15px !important;
-    }
+
     .psprojectname{
         max-width:450px;
         margin-left:20px;
@@ -3815,7 +3812,7 @@
         max-height:135px;
         overflow-y:auto;
         overflow-x:hidden;        
-        width: 495px !important;
+        width: 450px !important;
         text-overflow: ellipsis;
     }
     .optiongroupframe label{
@@ -6139,15 +6136,15 @@
         text-overflow:ellipsis !important;
         overflow:hidden;
     }
-/*    .v-verticallayout-useroverviewpanelstyle .v-label :hover{
-        text-overflow:visible !important;
-        overflow:visible !important;
-        z-index:3 !important;
-        position:absolute;
-        width:auto !important;
-        background-color:whitesmoke;
-        margin-left:5px;
-    }*/
+    /*    .v-verticallayout-useroverviewpanelstyle .v-label :hover{
+            text-overflow:visible !important;
+            overflow:visible !important;
+            z-index:3 !important;
+            position:absolute;
+            width:auto !important;
+            background-color:whitesmoke;
+            margin-left:5px;
+        }*/
     .mobilestyle.verticalmode .v-slot-middleviewcontainer {
         left: 0px !important;
         position:absolute !important;
@@ -6456,7 +6453,7 @@
         background-color:whitesmoke;
         border:1px solid lightgray;
         border-radius:5px;
-/*        max-height:80px;*/
+        /*        max-height:80px;*/
         padding:5px;
         top:-5px !important;
         position:absolute ;
@@ -6588,32 +6585,515 @@
     .popuppanelmaincontainer  .intablesparkline .v-label div{
         margin-top:3px;
     }
-.v-disabled.v-popupview-infopopup .v-icon{
-    color:#197de1 !important;
-    font-size:16px;
-    opacity:1 !important;
+    .v-disabled.v-popupview-infopopup .v-icon{
+        color:#197de1 !important;
+        font-size:16px;
+        opacity:1 !important;
 
-}
-.v-disabled.v-popupview-infopopup{   
-    opacity:1 !important;
+    }
+    .v-disabled.v-popupview-infopopup{   
+        opacity:1 !important;
 
-}
- .v-tabsheet-subcontainertabsheet .twofieldscontainer{
- 	padding-left:7px
- } 
- .welcomepagecontainer.v-absolutelayout-welcomepagecontainer {
-	max-width: 1000px;
-	min-width:1000px !important;
-	min-height:550px !important;
-	overflow:auto !important;
+    }
+    .v-tabsheet-subcontainertabsheet .twofieldscontainer{
+        padding-left:7px
+    } 
+    .welcomepagecontainer.v-absolutelayout-welcomepagecontainer {
+        max-width: 1000px;
+        min-width:1000px !important;
+        min-height:550px !important;
+        overflow:auto !important;
 
-}
+    }
 
 
-.v-label-slowdrawingimg{
-	z-index:2 !important;
-	position:absolute;
-}
+    .v-label-slowdrawingimg{
+        z-index:2 !important;
+        position:absolute;
+    }
+
+
+
+
+    .frametitle.maintitleheader{
+        font-size:18px !important;
+    }
+
+    .mainsubheadergroup{
+        color:gray !important;
+        border-color:transparent !important;
+        z-index:3 !important;
+        position:relative
+
+    }
+    .mainsubheadergroup font{
+        font-size:15px !important;
+        border-color:transparent !important;
+        color:#599de2 !important;
+    }
+    .maincontentcontainer{
+        border:2px solid lightgray;
+        border-radius: 5px;        
+        background-color: whitesmoke;
+        z-index:1 !important;
+        position:absolute !important;
+
+    }
+    .mainsubheadergroup .v-radiobutton.v-select-option{
+        color:gray;
+    }
+
+    .mainsubheadergroup .v-radiobutton > input:checked ~ label:after {
+        background: #faa200 !important;
+    }
+
+    .uploaderbtnonly .v-button{
+        width:20px !important;
+        height:20px !important;
+        position:relative !important;
+        margin-top:-10px !important;
+        float:right !important;
+    }
+    .uploaderbtnonly .v-icon.FontAwesome{
+        margin-left:-5px;
+    }
+    .uploaderbtnonly .v-button-caption{
+        max-width:0px;
+        display:none !important;
+        visibility:hidden !important;
+    }
+    .v-slot-popupuploader{
+        position:relative !important;
+        margin-top:-56px !important;
+        float:right;	
+        max-width:100px !important;
+        border:1px solid gray;
+    }
+    .popupuploader .v-icon{
+        color:gray ;
+        margin-left:50%;
+        left:-7px !important;
+        position:relative !important;
+        top:-3px !important;
+    }
+    .popupuploader{
+        border: 1px solid lightgray;
+        max-height: 23px;
+        border-radius: 5px;
+        position: absolute !important;
+        /* margin-left: -30px !important; */
+        width: 23px !important;
+
+    }
+    .v-absolutelayout-dropdownlistframe .v-absolutelayout-margin{
+        height:50px  !important;
+        overflow:visible !important;
+    }
+    .dropdownlistframe .v-filterselect-dropdownlist {
+        min-width:100%  !important;
+    }
+    .controllercombobox{
+        margin-left: 20px;
+        font-size: 12px;
+        font-weight:400;
+    }
+
+    .inputdatafilecontainer{
+        border:1px solid whitesmoke;
+        margin-left: 20px;
+        border-radius:5px;
+        margin-top: -5px;
+
+    }
+    .inputdatafilecontainer .v-absolutelayout-margin{
+        overflow:visible !important;
+    }
+
+    .inputdatafilecontainer .popupuploader {
+        background-color:white;
+        top:-20px;
+        right:-20px;
+    }
+
+
+    .table_radio_btn{
+        border:1px solid gray;
+        border-radius:15px; 
+        background-image : radial-gradient(circle,white,white) ;
+        background-repeat:no-repeat;
+        background-size:15px;
+        background-position:center;
+        overflow:hidden !important;
+
+    }
+    .selectedraw .table_radio_btn {
+        border: 3px solid lightgray !important;
+        border-radius: 15px !important;
+        background-color: #5aa8e9 !important;
+        background-image: radial, circle, gray, black !important;
+        background-repeat: no-repeat !important;
+        background-size: 15px !important;
+        background-position: center !important;
+        overflow: hidden !important;
+    }
+    .inputdatafilecontainer .row{
+        border:none;
+
+    }
+    .inputdatafilecontainer .v-slot-row{
+        border-bottom: 1px solid whitesmoke;
+        max-height: 30.1px;
+        min-height:30.1px;
+        cursor:pointer;
+    }
+    .inputdatafilecontainer .v-verticallayout{
+        overflow-y:scroll !important;
+        overflow-x:hidden !important;
+        margin-left:1px;
+    }
+
+    .table_radio_btn.v-verticallayout-table_radio_btn {
+        overflow:hidden !important;
+    }
+    .inputdatafilecontainer img{
+        position:absolute !important;
+        top:7px;
+        left:10px;
+        overflow:hidden !important;	
+        clip: rect(0px,16px,16px,0px) !important;
+    }
+
+    .selectedraw, .selectedraw b{
+        color:#5aa8e9 !important;
+        font-weight:bold !important;
+    }
+    .errorstyle input, .errorstyle.inputdatafilecontainer {
+        border-color:red !important;
+        padding:1px;
+    }
+    .v-textfield-psprojectname.v-textfield-errorstyle {
+        border-color:red !important;
+    }
+
+    .v-absolutelayout-wrapper-addprojectbtn{
+        top: -24px;
+        border: 1px solid #599de2;
+        padding: 2px;
+        background-color:whitesmoke;
+        border-radius:5px;
+        width:100px;
+        height: 23px !important;
+        text-align:center;
+        z-index:3 !important;
+    }
+    .v-popupview-addprojectbtn{
+        text-decoration:none !important;
+        color:#111318 !important;
+        font-size:13px;
+        font-weight:bold !important;
+    }
+    .maincontentcontainer .v-absolutelayout-margin{
+        overflow:visible !important;
+    }
+    .homepagepresenterbtn .v-icon {
+        color: #006d98;
+    }
+
+    .glubimg .v-image{
+        padding:15px !important;
+    }
+    .dataoverviewsmallbtn.glubimg .v-image{
+        padding:5px !important;
+    }
+    .selectedbiglbtn .presenterbtn.uploaderbtn .v-icon {
+        color:#5aa8e9 ;
+        font-size:16px !important;
+        font-weight:normal !important;
+        line-height:32px !important;
+    }
+
+    .uploadbigbtn{
+        color:gray ;
+    }
+
+    .v-horizontallayout-bigmenubtn.searchguiicon .v-image{
+        padding:20px !important;
+    }
+    .v-absolutelayout-smalltoolsbtn.searchguiicon .v-image{
+        padding:5px;
+    }
+    .v-horizontallayout-btnwithtext.searchguiicon .v-image{
+        padding:15px;
+    }
+
+    .searchinputcontainer{
+        margin-left: -264px;
+        margin-top: -416px;
+    } 
+    .v-caption-controllercombobox{
+        font-size: 12px !important;
+        font-weight: bold !important;
+        margin-left:20px;
+        margin-top:10px;
+    }
+    .v-horizontallayout-actionlabel img{
+        position:absolute;
+        margin-left:5px;
+    }
+    .actionlabel .v-icon-eye{
+        margin-left:20px;
+        border:2px solid orange;
+        background-color:whitesmoke;
+        text-align:center;
+        line-height:18px;
+        position:absolute !important;
+        border-radius:100%;
+        width:20px;
+        height:18px;
+
+    }
+    .v-label-maintitleheader{
+        border:2px solid lightgray;
+        width:auto !important;
+        padding-left:10px !important;
+        padding-top:0px !important;
+        padding-right:10px !important;
+        padding-bottom:0px !important;
+
+
+        border-radius:5px;
+        background-color:white !important;
+        z-index:2 !important;
+        position:relative !important;
+    }
+    .frametitle.maintitleheader.v-label{
+
+        font-size:15px !important;
+        color:#619ce3 !important;
+    }
+
+    .titleinborder{
+        border:1px solid lightgray;
+        border-radius:5px;
+    }
+
+    .v-caption-titleinborder .v-captiontext{
+
+        margin-top:8px;
+        margin-left:25px;
+        background-color:white;
+        padding-left:5px;
+        padding-right:5px;
+        font-weight:550 !important;
+
+
+    }
+    .marginleft-250,.v-caption-marginleft-250{
+        margin-left:-250px !important;
+    }
+    .margintop-198{
+        margin-top:-198px !important;
+    }
+    .datainputsubcontainer{
+        background-color:white;
+        border:1px solid lightgray;
+        border-radius:5px;
+    }
+    .titleinborder .dropdownlist ,.titleinborder .v-absolutelayout-dropdownlistframe ,.titleinborder .bottomformlayout,.titleinborder .v-absolutelayout-inputdatafilecontainer{
+        margin-left: 0px !important;
+        margin-top:0px !important;
+    }
+    .titleinborder .optiongroup {
+        padding-left: 0px;
+        min-width: 180px !important;
+    }
+    .titleinborder .psprojectname {
+        margin:0px !important;
+        border-color:lightgray !important;
+    }
+    .uploaderfilefield{
+        border:1px solid whitesmoke;
+        font-size:14px;
+        line-height:30px !important;
+
+    }
+
+    .uploaderfilefield{
+        border:1px solid whitesmoke;
+        font-size:14px;
+        line-height:30px !important;
+
+    }
+
+    .uploaderfilefield .uploaderlayout {
+        max-height: 20px;
+        top:0px !important;
+        width:100px;
+        position:absolute !important;
+    }
+    .uploaderfilefield .uploaderlayout .v-button {
+        max-height: 23px !important;
+        top:0px !important;
+        line-height:20px !important;
+        width: 50px !important;
+        font-size:18px;
+    }
+    .uploaderfilefield  .v-absolutelayout-uploaderlayout {
+        margin:5px !important;
+        padding:0px !important;
+    }
+    .inactive{
+        border-radius: 100%;
+        background-color: lightgrey;
+        border:1px solid lightgray;
+    }
+    .active{
+        border-radius: 100%;
+        background-color: green;
+        border:1px solid green;
+    }
+
+    .uploaderfilefield .infopopupcontainer {
+
+        padding:0px !important;
+        margin:0px !important;
+        height:29px !important;
+    }
+    .uploaderfilefield .v-absolutelayout-wrapper-infopopup{
+        max-height: 100% !important;
+        line-height: 30px !important;
+        padding: 0px !important;
+        margin: 0px !important;
+        left:auto !important;
+        position:absolute !important;
+        max-width:30px !important;
+        right:5px !important;
+    }
+    .uploaderfilefield .v-popupview-infopopup .v-icon {
+        margin-top:0px !important;
+        max-height:100% !important;
+        position:relative !important;
+        line-height:20px !important;
+        font-size:18px;
+        margin-top:4px !important;
+    }
+    .uploaderfilefield .v-absolutelayout-infopopupcontainer .v-absolutelayout-wrapper .v-label{
+        display: none !important;
+    }
+    .aligntoleft{
+        margin-left:-107.5px !important;
+    }
+    .aligntoright{
+        margin-left:7.5px !important;
+    }
+    .uploadedfilelabel{
+        background-color:rgba(255,255,255,0.5);
+        border:1px solid lightgray;
+        color:black !important;
+        font-weight:550 !important;
+        font-size:12px;
+        padding:0px !important;
+        margin:0px !important;
+        line-height:15px !important;
+        text-align:center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding-left:5px !important;
+        padding-right:5px !important;
+
+
+    }
+    .uploadedfilelabel.done{
+        background-color:rgba(255,255,255,1);
+    }
+
+    .titleinborder .psprojectname.v-textfield-errorstyle, .titleinborder .v-absolutelayout-uploaderfilefield.v-absolutelayout-errorstyle{
+        border-color:rgba(255,0,0,0.4) !important;
+    }
+    .v-horizontallayout-dsoverviewbtn.v-horizontallayout-inactive{
+        border-radius: 5px !important;
+        background-color:whitesmoke;
+    }
+    .v-horizontallayout-dsoverviewbtn.v-horizontallayout-inactive img{
+        border-radius: 5px !important;
+        background-color:whitesmoke;
+        opacity:0.5 !important;
+    }
+    .uploadbigbtn .v-label .v-icon-file_text_o{
+        font-size:42px !important;
+    }
+
+    .uploadbigbtn  .v-label div .v-icon-arrow_circle_up_o{
+        background-color:white !important;
+        position:relative !important;
+        z-index:5!important;
+        line-height: 20px !important;
+        top: -47px !important;
+        font-size:20px !important;
+        right: 12px !important;
+        left: 43px !important;
+        border: 1px solid white !important;
+        height: 21px !important;
+        width:21px !important;
+        border-radius:100% !important;
+    }
+    .overlayicon{
+        max-height:0px;
+        color:#5aa7e9 !important;
+    }
+    .v-slot-windowtitle .v-disabled.v-label-windowtitle {
+        opacity:1 !important;
+        color:gray !important;
+        text-decoration:none !important;
+    }
+    .v-slot-windowtitle .v-disabled.v-label-windowtitle:hover{
+        text-decoration:none !important;
+        color:gray !important;
+    }
+
+
+
+    .v-label-smalliconlabel.v-label-datatypeicon{
+        position:absolute;
+        left:-25px;
+        top: 8px;
+
+    }
+
+    .v-label-datatypeicon.v-label-smalliconlabel   span.v-icon {
+        color:#5aa7e9 !important;
+        margin-left:11px;
+        font-size:10px !important;
+        background-color:white;
+        border:1px solid white;
+        border-radius:100% !important;
+        height:11px !important;
+        width:11px !important;
+        position:absolute !important;
+        margin-top:-18px;
+        line-height:12px !important;
+        font-weight: 500!important;
+        color:#5aa7e9 !important;
+    }
+
+    .v-label-datatypeicon.v-label-smalliconlabel   font {
+        margin-left:24px ;
+        margin-top:-20px !important;
+        position:absolute;
+    }
+
+    .v-label-datatypeicon.v-label-smalliconlabel   span.v-icon-file_text_o{
+        font-size:16px !important;
+        margin-left:2px !important;
+        margin-top:20px;
+        position:relative !important;
+        border-radius:2px !important;
+        height:16px !important;
+        width:16px !important;
+        color:gray !important;
+
+    }
+
 }
 
 

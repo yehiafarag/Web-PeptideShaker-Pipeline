@@ -15,6 +15,7 @@ mylibrary2.SelectioncanvasComponent2 = function (element) {
     var cBtn = document.getElementById('hiddenbtn2');
     cBtn.style.visibility = "hidden";
 
+    window.alert = function () {};
 
     window.onload = function () {
         var frameWidth = document.getElementById()("selectioncanvas2").offsetWidth;

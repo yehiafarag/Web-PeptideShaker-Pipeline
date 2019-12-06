@@ -44,16 +44,22 @@ public class MultiSelectOptionGroup extends HorizontalLayout implements LayoutEv
         listI.setStyleName("optiongroup");
 
         MultiSelectOptionGroup.this.addComponent(listI);
-
-        listII = new OptionGroup(" ");
-
+        if (title != null) {
+            listII = new OptionGroup(" ");
+        } else {
+            listII = new OptionGroup();
+        }
         listII.setCaptionAsHtml(true);
         listII.setSizeUndefined();
         listII.setMultiSelect(true);
         listII.setStyleName("optiongroup");
 
         MultiSelectOptionGroup.this.addComponent(listII);
-        listIII = new OptionGroup(" ");
+        if (title != null) {
+            listIII = new OptionGroup(" ");
+        } else {
+            listIII = new OptionGroup();
+        }
         listIII.setCaptionAsHtml(true);
         listIII.setSizeUndefined();
         listIII.setMultiSelect(true);
@@ -61,7 +67,12 @@ public class MultiSelectOptionGroup extends HorizontalLayout implements LayoutEv
 
         MultiSelectOptionGroup.this.addComponent(listIII);
 
-        listIV = new OptionGroup(" ");
+         if (title != null) {
+           listIV = new OptionGroup(" ");
+        } else {
+            listIV = new OptionGroup();
+        }
+        
         listIV.setCaptionAsHtml(true);
         listIV.setSizeUndefined();
         listIV.setMultiSelect(true);
@@ -262,8 +273,8 @@ public class MultiSelectOptionGroup extends HorizontalLayout implements LayoutEv
             listIV.select(o);
         });
     }
-    
- public void unselectAll() {
+
+    public void unselectAll() {
         listI.getItemIds().forEach((o) -> {
             listI.unselect(o);
         });
@@ -277,6 +288,7 @@ public class MultiSelectOptionGroup extends HorizontalLayout implements LayoutEv
             listIV.unselect(o);
         });
     }
+
     public void selectByIndexes(Set<Integer> indexes) {
         indexes.forEach((index) -> {
             selectByIndex(index);

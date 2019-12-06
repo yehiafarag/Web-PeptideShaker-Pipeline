@@ -93,6 +93,8 @@ public class BigSideBtn extends HorizontalLayout {
     }
 
     public void updateIconResource(Resource imageURL) {
+         iconLabel.setVisible(false);
+         btnThumbIconImage.setVisible(true);
         btnThumbIconImage.setSource(imageURL);
     }
 

@@ -1,6 +1,7 @@
 package com.uib.web.peptideshaker;
 
 import com.uib.web.peptideshaker.galaxy.nelsgalaxy.NeLSStorageInteractiveLayer;
+import com.uib.web.peptideshaker.presenter.core.BasicUploader;
 import javax.servlet.annotation.WebServlet;
 
 import com.vaadin.annotations.Theme;
@@ -19,6 +20,11 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.LinkedHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.ServletContext;
 
@@ -51,7 +57,8 @@ public class PeptidShakerUI extends UI {
      */
     @Override
     protected void init(VaadinRequest vaadinRequest) {
-
+        String localFileSystemFolderPath = "";//(scx.getInitParameter("filesURL"));   
+        String tempFolder = "";
         try {
             PeptidShakerUI.this.addStyleName("uicontainer");
 
@@ -60,13 +67,28 @@ public class PeptidShakerUI extends UI {
             notification.setDelayMsec(10000);
             notification.setHtmlContentAllowed(true);
             notification.setStyleName("mobilealertnotification");
+            Path path;
+            try {
+                path = Files.createTempDirectory("userTempFolder");
+                System.out.println(path);
+                boolean b = Files.isDirectory(path);
+                path.toFile().deleteOnExit();
+
+                localFileSystemFolderPath = path.toFile().getAbsolutePath();
+                tempFolder = path.toFile().getParentFile().getAbsolutePath();
+//         userUploadFolder = n
+            } catch (IOException ex) {
+
+                Logger.getLogger(BasicUploader.class.getName()).log(Level.SEVERE, null, ex);
+            }
 
             /**
              * Initialise the context parameters and store them in
              * VaadinSession.
              */
             ServletContext scx = VaadinServlet.getCurrent().getServletContext();
-            String localFileSystemFolderPath = (scx.getInitParameter("filesURL"));
+            scx.setAttribute("tempFolder", tempFolder);
+
             VaadinSession.getCurrent().setAttribute("userDataFolderUrl", localFileSystemFolderPath);
             VaadinSession.getCurrent().getSession().setAttribute("userDataFolderUrl", localFileSystemFolderPath);
             VaadinSession.getCurrent().setAttribute("ctxPath", vaadinRequest.getContextPath());
@@ -84,7 +106,10 @@ public class PeptidShakerUI extends UI {
             VaadinSession.getCurrent().setAttribute("dbUserName", dbUserName);
             VaadinSession.getCurrent().setAttribute("dbPassword", dbPassword);
             VaadinSession.getCurrent().setAttribute("csfprLink", csfprLink);
-          
+            if (VaadinSession.getCurrent().getAttribute("uploaded_projects") == null) {
+                VaadinSession.getCurrent().setAttribute("uploaded_projects", new LinkedHashMap<>());
+            }
+
             if (testUserAPIKey == null || galaxyServerUrl == null || !checkConnectionToGalaxy(galaxyServerUrl)) {
 //              updateCSFPRProteinsList(csfProteinsListURL);
                 notification = new Notification("<center style=' color: black;>'><font style='font-size: 14px;font-weight: 600;line-height: 31px;word-spacing: 4px; letter-spacing: 1px;'>Contact administrator !</font><br>Galaxy server is not available</center>", Notification.Type.WARNING_MESSAGE);
@@ -127,7 +152,7 @@ public class PeptidShakerUI extends UI {
              * to the page center.
              */
             Page.getCurrent().addBrowserWindowResizeListener((Page.BrowserWindowResizeEvent event) -> {
-                System.out.println("window resize listener invoked");
+
                 if (mobileScreenComp && (Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight())) {
                     if (Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile")) {
                         notification.show(Page.getCurrent());

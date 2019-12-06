@@ -5,6 +5,7 @@ import com.compomics.util.experiment.biology.modifications.ModificationFactory;
 import com.compomics.util.experiment.biology.proteins.Peptide;
 import com.compomics.util.experiment.identification.matches.ModificationMatch;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -44,10 +45,14 @@ public class PeptideObject extends Peptide {
      * Protein variable modifications included in the peptide sequence.
      */
     private ModificationMatch[] variableModifications;
+      /**
+     * Protein variable modifications included in the peptide sequence.
+     */
+    private ModificationMatch[] fixedModifications;
     /**
      * Protein fixed modifications included in the peptide sequence.
      */
-    private String fixedModifications="";
+    private String fixedModificationsAsString = "";
     /**
      * Localisation confidence.
      */
@@ -121,7 +126,7 @@ public class PeptideObject extends Peptide {
      * Peptide not mapped to 3dView.
      */
     private boolean invisibleOn3d;
-    private String variableModificationsAsString="";
+    private String variableModificationsAsString = "";
 
     public boolean isInvisibleOn3d() {
         return invisibleOn3d;
@@ -180,7 +185,7 @@ public class PeptideObject extends Peptide {
      * @param proteins ';'separated strings of accessions
      */
     public void setProteins(String proteins) {
-        for (String acc : proteins.split(";")) {
+        for (String acc : proteins.split(",")) {
             proteinsSet.add(acc.replace(" ", ""));
         }
     }
@@ -313,6 +318,7 @@ public class PeptideObject extends Peptide {
             this.variableModifications = new ModificationMatch[]{};
             return;
         }
+        variableModifications = variableModifications.replaceAll("\"", "");
         ArrayList<ModificationMatch> modificationMatchesList = new ArrayList<>();
         for (String modStr : variableModifications.replace("),", "__").split("__")) {
             String[] modStrArr = modStr.trim().replace("(", "__").split("__");
@@ -334,25 +340,48 @@ public class PeptideObject extends Peptide {
     public String getVariableModificationsAsString() {
         return variableModificationsAsString;
     }
-    
 
     /**
      * Get protein fixed modifications list included in the peptide sequence.
      *
      * @return set of modifications name.
      */
-    public String getFixedModifications() {
-        return fixedModifications;
+    public String getFixedModificationsAsString() {
+        return fixedModificationsAsString;
     }
 
     /**
      * Set protein fixed modifications list included in the peptide sequence.
      *
-     * @param fixedModifications protein fixed modifications list(as string)
+     * @param fixedModificationsAsString protein fixed modifications list(as string)
      * included in the peptide sequence.
      */
-    public void setFixedModifications(String fixedModifications) {
-        this.fixedModifications = fixedModifications;
+    public void setFixedModificationsAsString(String fixedModificationsAsString) {
+        this.fixedModificationsAsString = fixedModificationsAsString;
+        if (fixedModificationsAsString == null || fixedModificationsAsString.trim().equalsIgnoreCase("")) {
+            this.fixedModifications = new ModificationMatch[]{};
+            return;
+        }
+        fixedModificationsAsString = fixedModificationsAsString.replaceAll("\"", "");
+        ArrayList<ModificationMatch> modificationMatchesList = new ArrayList<>();
+        for (String modStr : fixedModificationsAsString.replace("),", "__").split("__")) {
+            String[] modStrArr = modStr.trim().replace("(", "__").split("__");
+            Modification ptm = ptmFactory.getModification(modStrArr[0].trim());
+            String[] indexArr = modStrArr[1].trim().replace(")", "").trim().split(",");
+            for (String modIndex : indexArr) {
+                ModificationMatch mod = new ModificationMatch(ptm.getName(), Integer.parseInt(modIndex.trim().split(";")[0]));
+                modificationMatchesList.add(mod);
+            }
+
+        }
+        this.fixedModifications = new ModificationMatch[modificationMatchesList.size()];
+        for (int i = 0; i < this.fixedModifications.length; i++) {
+            this.fixedModifications[i] = modificationMatchesList.get(i);
+        }
+    }
+
+    public ModificationMatch[] getFixedModifications() {
+        return fixedModifications;
     }
 
     /**
@@ -397,6 +426,13 @@ public class PeptideObject extends Peptide {
      * @return set of main protein accessions for the peptide
      */
     public Set<String> getProteinsSet() {
+        if (proteinsSet.isEmpty()) {
+
+            for (String acc : proteinGroupsSet) {
+                acc = acc.replace("(Doubtful)", "").replace("(Confident)", "").replace("(NotValidated)", "").replace(" ", "").replace(",", ";");
+                proteinsSet.addAll(Arrays.asList(acc.split(";")));
+            }
+        }
         return proteinsSet;
     }
 

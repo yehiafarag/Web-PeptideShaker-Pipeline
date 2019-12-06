@@ -11,6 +11,7 @@ import com.uib.web.peptideshaker.presenter.layouts.SearchSettingsLayout;
 import com.vaadin.event.LayoutEvents;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ThemeResource;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
@@ -127,20 +128,24 @@ public class DatasetVisulizationLevelContainer extends HorizontalLayout {
     }
 
     public void selectDataset(PeptideShakerVisualizationDataset peptideShakerVisualizationDataset) {
-        headerLabel.setLabelValue("Dataset: " + peptideShakerVisualizationDataset.getName().split("___")[0]);
 
-        SearchSettingsLayout dsOverview = new SearchSettingsLayout((PeptideShakerVisualizationDataset) peptideShakerVisualizationDataset, true) {
-            @Override
-            public void saveSearchingFile(IdentificationParameters searchParameters, boolean isNew) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
+        headerLabel.setLabelValue("Dataset: " + peptideShakerVisualizationDataset.getProjectName().split("___")[0]);
+        if (!peptideShakerVisualizationDataset.isUploadedProject()) {
+            SearchSettingsLayout dsOverview = new SearchSettingsLayout((PeptideShakerVisualizationDataset) peptideShakerVisualizationDataset, true) {
+                @Override
+                public void saveSearchingFile(IdentificationParameters searchParameters, boolean isNew) {
+                    throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                }
 
-            @Override
-            public void cancel() {
-                headerLabel.setPopupVisible(false);
-            }
-        };
-        headerLabel.setContent(dsOverview);
+                @Override
+                public void cancel() {
+                    headerLabel.setPopupVisible(false);
+                }
+
+            };
+            headerLabel.setContent(dsOverview);
+        }
+        headerLabel.setEnabled(!peptideShakerVisualizationDataset.isUploadedProject());
         datasetVisulizationLevelComponent.updateData(peptideShakerVisualizationDataset);
 
     }

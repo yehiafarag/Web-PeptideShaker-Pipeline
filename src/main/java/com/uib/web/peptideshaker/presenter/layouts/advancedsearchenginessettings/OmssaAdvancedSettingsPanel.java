@@ -373,8 +373,6 @@ public class OmssaAdvancedSettingsPanel extends PopupWindow {
         fractionofPrecursorsMZforChargeOneEstimation.setSelectedValue(oldOmssaParameters.getFractionOfPeaksForChargeEstimation());
         minimalNumberofPeaks.setSelectedValue(oldOmssaParameters.getMinPeaks());
         intensityCutoffIncrement.setSelectedValue(oldOmssaParameters.getIntensityCutOffIncrement());
-        System.out.println("at in cutoff "+oldOmssaParameters.getIntensityCutOffIncrement());
-
         /*tab 2*/
         if (oldOmssaParameters.isMemoryMappedSequenceLibraries()) {
             sequencesMappinginMemory.setSelected("Yes");

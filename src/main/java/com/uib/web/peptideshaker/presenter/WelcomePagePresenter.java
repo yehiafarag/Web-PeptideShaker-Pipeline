@@ -134,7 +134,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         mainHeaderPanel.setMargin(new MarginInfo(false, false, false, false));
 
         galaxyLloginBtn = new ButtonWithLabel("Galaxy Login<br/><font>Login using API key</font>", 0);
-        galaxyLloginBtn.updateIconResource(new ThemeResource("img/galaxyLogo.png"));//galaxyLogo_2.png
+        galaxyLloginBtn.updateIconResource(new ThemeResource("img/galaxylogocolor.png"));//galaxyLogo_2.png
         galaxyLloginBtn.addStyleName("galaxylabel");
         galaxyLloginBtn.setDescription("Login to Galaxy - API key required");
 
@@ -321,7 +321,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         userConnectionPanel.setComponentAlignment(serviceButtonContainer, Alignment.TOP_LEFT);
 
         galaxyLoginConnectionBtnLabel = new ButtonWithLabel("<font style='width: 100%;height: 100%;font-size: 14px;font-weight: 600;text-align: justify;line-height: 70px;'>Login to Galaxy Server using your API Key</font>", 1);
-        galaxyLoginConnectionBtnLabel.updateIconResource(new ThemeResource("img/galaxyLogo.png"));
+        galaxyLoginConnectionBtnLabel.updateIconResource(new ThemeResource("img/galaxylogocolor.png"));
 
         galaxyLoginConnectionBtnLabel.addStyleName("smaller");
         serviceButtonContainer.addComponent(galaxyLoginConnectionBtnLabel);

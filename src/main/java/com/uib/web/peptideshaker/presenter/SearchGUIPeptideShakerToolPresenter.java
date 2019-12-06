@@ -1,22 +1,28 @@
 package com.uib.web.peptideshaker.presenter;
 
 import com.compomics.util.parameters.identification.IdentificationParameters;
+import com.google.common.collect.HashBiMap;
 import com.uib.web.peptideshaker.presenter.core.ViewableFrame;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyFileObject;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyTransferableFile;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
 
 import com.uib.web.peptideshaker.presenter.layouts.SearchGUIPeptideShakerWorkFlowInputLayout;
 import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
 import com.uib.web.peptideshaker.presenter.core.ButtonWithLabel;
 import com.uib.web.peptideshaker.presenter.core.SmallSideBtn;
 import com.vaadin.event.LayoutEvents;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.VerticalLayout;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+import pl.exsio.plupload.PluploadFile;
 
 /**
  * This class represent web tool presenter which is responsible for managing the
@@ -24,8 +30,9 @@ import java.util.Set;
  *
  * @author Yehia Farag
  */
-public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLayout implements ViewableFrame, LayoutEvents.LayoutClickListener {
- /**
+public abstract class SearchGUIPeptideShakerToolPresenter extends VerticalLayout implements ViewableFrame, LayoutEvents.LayoutClickListener {
+
+    /**
      * The tools layout side button.
      */
     protected SmallSideBtn smallControlButton;
@@ -46,10 +53,11 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
      * Initialise the web tool main attributes
      *
      */
-    public SearchGUI_PeptideShaker_Tool_Presenter() {
-        SearchGUI_PeptideShaker_Tool_Presenter.this.setSizeFull();
-        SearchGUI_PeptideShaker_Tool_Presenter.this.setStyleName("activelayout");
-        SearchGUI_PeptideShaker_Tool_Presenter.this.addStyleName("integratedframe");    }
+    public SearchGUIPeptideShakerToolPresenter() {
+        SearchGUIPeptideShakerToolPresenter.this.setSizeFull();
+        SearchGUIPeptideShakerToolPresenter.this.setStyleName("activelayout");
+        SearchGUIPeptideShakerToolPresenter.this.addStyleName("integratedframe");
+    }
 
     /**
      * Update the work-flow input files
@@ -61,23 +69,23 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
      * @param rawFilesMap The main Raw file map (ID to Name).
      */
     public void updatePeptideShakerToolInputForm(Map<String, GalaxyTransferableFile> searchSettingFilesMap, Map<String, GalaxyFileObject> fastaFilesMap, Map<String, GalaxyFileObject> mgfFilesMap, Map<String, GalaxyFileObject> rawFilesMap) {
-        peptideshakerToolInputForm.updateForm(searchSettingFilesMap, fastaFilesMap, mgfFilesMap,rawFilesMap);
+//        peptideshakerToolInputForm.updateForm(searchSettingFilesMap, fastaFilesMap, mgfFilesMap, rawFilesMap, new HashMap<>());
     }
 
     /**
      * Initialise the main forms for user data input that is required for
      * performing search.
      */
-    public void initLayout() {        
-        smallControlButton = new SmallSideBtn("img/sgui.png");//spectra2.pngimg/searchgui-medium-shadow-2.png
-        smallControlButton.setData(SearchGUI_PeptideShaker_Tool_Presenter.this.getViewId());
-        smallControlButton.setDescription("Run SearchGUI and PeptideShaker");
+    public void initLayout() {
+        smallControlButton = new SmallSideBtn("img/searchguiblue.png");//spectra2.pngimg/searchgui-medium-shadow-2.png
+        smallControlButton.setData(SearchGUIPeptideShakerToolPresenter.this.getViewId());
+        smallControlButton.setDescription("Search and process data (SearchGUI and PeptideShaker)");
         smallControlButton.addStyleName("smalltoolsbtn");
-        controlButton = new ButtonWithLabel("SearchGUI & PeptideShaker</br><font>Run SearchGUI and PeptideShaker</font>",1);//spectra2.png
-        controlButton.setData(SearchGUI_PeptideShaker_Tool_Presenter.this.getViewId());
-        controlButton.updateIconResource(new ThemeResource("img/sgui.png"));//img/workflow3.png
-
-        
+         smallControlButton.addStyleName("searchguiicon");
+        controlButton = new ButtonWithLabel("Analyze Data</br><font>Search and process data</font>", 1);//spectra2.png
+        controlButton.setData(SearchGUIPeptideShakerToolPresenter.this.getViewId());
+        controlButton.updateIconResource(new ThemeResource("img/searchguiblue.png"));//img/workflow3.png
+        controlButton.addStyleName("searchguiicon");
         btnContainer = new VerticalLayout();
         btnContainer.setWidth(100, Unit.PERCENTAGE);
         btnContainer.setHeightUndefined();
@@ -87,26 +95,32 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
 
         peptideshakerToolInputForm = new SearchGUIPeptideShakerWorkFlowInputLayout() {
             @Override
-            public void executeWorkFlow(String projectName, String fastaFileId,String searchParameterFileId, Set<String> inputFilesIdsList, Set<String> searchEnginesList, IdentificationParameters searchParam,boolean quant) {
-                SearchGUI_PeptideShaker_Tool_Presenter.this.execute_SearchGUI_PeptideShaker_WorkFlow(projectName, fastaFileId, searchParameterFileId,inputFilesIdsList, searchEnginesList, searchParam,quant);
-                
+            public void executeWorkFlow(String projectName, String fastaFileId, String searchParameterFileId, Set<String> inputFilesIdsList, Set<String> searchEnginesList, IdentificationParameters searchParam, boolean quant) {
+                SearchGUIPeptideShakerToolPresenter.this.execute_SearchGUI_PeptideShaker_WorkFlow(projectName, fastaFileId, searchParameterFileId, inputFilesIdsList, searchEnginesList, searchParam, quant);
+
             }
 
-           @Override
+            @Override
+            public boolean uploadToGalaxy(PluploadFile[] toUploadFiles) {
+                return SearchGUIPeptideShakerToolPresenter.this.uploadToGalaxy(toUploadFiles);
+            }
+
+            @Override
             public Map<String, GalaxyTransferableFile> saveSearchGUIParameters(IdentificationParameters searchParameters, boolean isNEw) {
-                return SearchGUI_PeptideShaker_Tool_Presenter.this.saveSearchGUIParameters(searchParameters, isNEw);
+                return SearchGUIPeptideShakerToolPresenter.this.saveSearchGUIParameters(searchParameters, isNEw);
             }
 
         };
         peptideshakerToolInputForm.initLayout();
-        
+
         BigSideBtn workFlowBtn = new BigSideBtn("Work-Flow", 2);
-        workFlowBtn.updateIconResource(new ThemeResource("img/sgui.png"));
+        workFlowBtn.updateIconResource(new ThemeResource("img/searchguiblue.png"));
+        workFlowBtn.addStyleName("searchguiicon");
         workFlowBtn.addStyleName("padding20");
         workFlowBtn.setData("workflow");
         btnContainer.addComponent(workFlowBtn);
         btnContainer.setComponentAlignment(workFlowBtn, Alignment.TOP_CENTER);
-        workFlowBtn.addLayoutClickListener(SearchGUI_PeptideShaker_Tool_Presenter.this);
+        workFlowBtn.addLayoutClickListener(SearchGUIPeptideShakerToolPresenter.this);
         workFlowBtn.setSelected(true);
 
         VerticalLayout toolViewFrame = new VerticalLayout();
@@ -122,9 +136,51 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
         toolViewFrame.addComponent(toolViewFrameContent);
         toolViewFrameContent.addComponent(peptideshakerToolInputForm);
 
-        SearchGUI_PeptideShaker_Tool_Presenter.this.minimizeView();
-        this.controlButton.setDescription("Run SearchGUI and PeptideShaker tool");
+        SearchGUIPeptideShakerToolPresenter.this.minimizeView();
+        this.controlButton.setDescription("Search and process data (SearchGUI and PeptideShaker)");
 //         this.controlButton.addStyleName("hidetopbtn");
+    }
+
+    /**
+     * Update Online PeptideShaker files from Galaxy Server
+     *
+     * @param historyFilesMap List of available files on Galaxy Server
+     * @param jobInProgress Jobs are running
+     */
+    public void updateSystemData(Map<String, GalaxyFileObject> historyFilesMap) {
+
+        if (historyFilesMap != null) {
+            Map<String, GalaxyTransferableFile> searchSettingFilesMap = new LinkedHashMap<>();
+            Map<String, GalaxyFileObject> fastaFilesMap = new LinkedHashMap<>();
+            Map<String, GalaxyFileObject> mgfFilesMap = new LinkedHashMap<>();
+            Map<String, GalaxyFileObject> rawFilesMap = new LinkedHashMap<>();
+//            Map<String, PeptideShakerVisualizationDataset> psDatasetFilesMap = new LinkedHashMap<>();
+            for (String fileKey : historyFilesMap.keySet()) {
+                GalaxyFileObject fileObject = historyFilesMap.get(fileKey);
+                String type = fileObject.getType();
+                switch (type) {
+                    case "MGF":
+                        mgfFilesMap.put(fileKey, fileObject);
+                        break;
+                    case "FASTA":
+                        fastaFilesMap.put(fileKey, fileObject);
+                        break;
+
+                    case "Parameters File (JSON)":
+                        searchSettingFilesMap.put(fileKey, (GalaxyTransferableFile) fileObject);
+                        break;
+
+                    case "Thermo.raw":
+                        rawFilesMap.put(fileKey, fileObject);
+                        break;
+//                    case "Web Peptide Shaker Dataset":
+//                        psDatasetFilesMap.put(fileKey, (PeptideShakerVisualizationDataset) fileObject);
+//                        break;
+                }
+
+            }
+            peptideshakerToolInputForm.updateForm(searchSettingFilesMap, fastaFilesMap, mgfFilesMap, rawFilesMap);
+        }
     }
 
     /**
@@ -144,7 +200,8 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
     public SmallSideBtn getSmallPresenterControlButton() {
         return smallControlButton;
     }
-     @Override
+
+    @Override
     public ButtonWithLabel getLargePresenterControlButton() {
         return controlButton;
     }
@@ -155,7 +212,7 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
      */
     @Override
     public String getViewId() {
-        return SearchGUI_PeptideShaker_Tool_Presenter.class.getName();
+        return SearchGUIPeptideShakerToolPresenter.class.getName();
     }
 
     /**
@@ -163,7 +220,7 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
      */
     @Override
     public void minimizeView() {
-         smallControlButton.setSelected(false);
+        smallControlButton.setSelected(false);
         controlButton.setSelected(false);
         this.addStyleName("hidepanel");
         this.btnContainer.removeStyleName("visible");
@@ -175,7 +232,7 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
      */
     @Override
     public void maximizeView() {
-        
+
         smallControlButton.setSelected(true);
         controlButton.setSelected(true);
         this.btnContainer.addStyleName("visible");
@@ -196,19 +253,16 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
         return btnContainer;
     }
 
-
-
     /**
      * Run Online Peptide-Shaker work-flow
      *
      * @param projectName The project name
      * @param fastaFileId FASTA file dataset id
-     *  @param searchParameterFileId .par file id
+     * @param searchParameterFileId .par file id
      * @param mgfIdsList list of MGF file dataset ids
      * @param searchEnginesList List of selected search engine names
-     * @param historyId galaxy history id that will store the results
      */
-    public abstract void execute_SearchGUI_PeptideShaker_WorkFlow(String projectName, String fastaFileId,String searchParameterFileId, Set<String> mgfIdsList, Set<String> searchEnginesList, IdentificationParameters searchParam,boolean quant);
+    public abstract void execute_SearchGUI_PeptideShaker_WorkFlow(String projectName, String fastaFileId, String searchParameterFileId, Set<String> mgfIdsList, Set<String> searchEnginesList, IdentificationParameters searchParam, boolean quant);
 
     /**
      * Save search settings file into galaxy
@@ -219,5 +273,14 @@ public abstract class SearchGUI_PeptideShaker_Tool_Presenter extends VerticalLay
      * @return updated search parameters file list
      */
     public abstract Map<String, GalaxyTransferableFile> saveSearchGUIParameters(IdentificationParameters searchParameters, boolean isNew);
+
+    /**
+     * upload file into galaxy
+     *
+     *
+     * @param toUploadFiles files to be uploaded to galaxy
+     * @return updated files map
+     */
+    public abstract boolean uploadToGalaxy(PluploadFile[] toUploadFiles);
 
 }

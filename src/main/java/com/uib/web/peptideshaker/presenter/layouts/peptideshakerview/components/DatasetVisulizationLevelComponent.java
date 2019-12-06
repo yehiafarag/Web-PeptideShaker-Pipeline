@@ -58,7 +58,7 @@ public class DatasetVisulizationLevelComponent extends AbsoluteLayout implements
     private int currentFilterView = 0;
     private final DecimalFormat df = new DecimalFormat("#.##");
     private final DecimalFormat df1 = new DecimalFormat("0.00E00");// new DecimalFormat("#.##");
-    
+
     /**
      * The post translational modifications factory.
      */
@@ -116,8 +116,9 @@ public class DatasetVisulizationLevelComponent extends AbsoluteLayout implements
             proteinTableContainer.getMainTable().setValue(((AbstractOrderedLayout) event.getComponent()).getData());
         };
         SizeReporter reporter = new SizeReporter(proteinTableContainer.getMainTable());
-        reporter.addResizeListener(new ComponentResizeListener() {            
+        reporter.addResizeListener(new ComponentResizeListener() {
             private int lastWidth = -1;
+
             @Override
             public void sizeChanged(ComponentResizeEvent event) {
                 Table mainTable = proteinTableContainer.getMainTable();
@@ -131,21 +132,21 @@ public class DatasetVisulizationLevelComponent extends AbsoluteLayout implements
                     corrector = (double) lastWidth / (770.0 + intensityColumnWidth);
                 }
                 proteinTableContainer.suspendColumnResizeListener();
-                mainTable.setColumnWidth("index",Math.max(50,(int) (50 * corrector)));
-                mainTable.setColumnWidth("proteinIntensity",Math.max(120, (int) (intensityColumnWidth * corrector)));
-                mainTable.setColumnWidth("proteinInference",Math.max(37, (int) (37 * corrector)));
-                mainTable.setColumnWidth("Accession",Math.max(60, (int) (60 * corrector)));
-                mainTable.setColumnWidth("csf", Math.max(50,(int) (50 * corrector)));
-                mainTable.setColumnWidth("coverage",Math.max(120, (int) (120 * corrector)));
-                mainTable.setColumnWidth("peptides_number",Math.max(120, (int) (120 * corrector)));
-                mainTable.setColumnWidth("psm_number",Math.max(120, (int) (120 * corrector)));
-                mainTable.setColumnWidth("ms2Quant", Math.max(120,(int) (120 * corrector)));
-                mainTable.setColumnWidth("mwkDa", Math.max(120,(int) (120 * corrector)));
-                mainTable.setColumnWidth("chromosom", Math.max(50,(int) (50 * corrector)));
-                mainTable.setColumnWidth("validation",Math.max(32, (int) (32 * corrector)));
-                mainTable.setColumnWidth("confidence", Math.max(120,(int) (120 * corrector)));
-                mainTable.setColumnWidth("chromosom", Math.max(37,(int) (37 * corrector)));
-                mainTable.setColumnWidth("Name",Math.max(282, lastWidth - ((int) ((775 + intensityColumnWidth) * corrector))));
+                mainTable.setColumnWidth("index", Math.max(50, (int) (50 * corrector)));
+                mainTable.setColumnWidth("proteinIntensity", Math.max(120, (int) (intensityColumnWidth * corrector)));
+                mainTable.setColumnWidth("proteinInference", Math.max(37, (int) (37 * corrector)));
+                mainTable.setColumnWidth("Accession", Math.max(60, (int) (60 * corrector)));
+                mainTable.setColumnWidth("csf", Math.max(50, (int) (50 * corrector)));
+                mainTable.setColumnWidth("coverage", Math.max(120, (int) (120 * corrector)));
+                mainTable.setColumnWidth("peptides_number", Math.max(120, (int) (120 * corrector)));
+                mainTable.setColumnWidth("psm_number", Math.max(120, (int) (120 * corrector)));
+                mainTable.setColumnWidth("ms2Quant", Math.max(120, (int) (120 * corrector)));
+                mainTable.setColumnWidth("mwkDa", Math.max(120, (int) (120 * corrector)));
+                mainTable.setColumnWidth("chromosom", Math.max(50, (int) (50 * corrector)));
+                mainTable.setColumnWidth("validation", Math.max(32, (int) (32 * corrector)));
+                mainTable.setColumnWidth("confidence", Math.max(120, (int) (120 * corrector)));
+                mainTable.setColumnWidth("chromosom", Math.max(37, (int) (37 * corrector)));
+                mainTable.setColumnWidth("Name", Math.max(282, lastWidth - ((int) ((775 + intensityColumnWidth) * corrector))));
                 proteinTableContainer.activateColumnResizeListener();
             }
         });
@@ -163,13 +164,12 @@ public class DatasetVisulizationLevelComponent extends AbsoluteLayout implements
     }
 
     public void updateData(PeptideShakerVisualizationDataset peptideShakerVisualizationDataset) {
-
         this.peptideShakerVisualizationDataset = peptideShakerVisualizationDataset;
-
-        peptideShakerVisualizationDataset.processDataFiles();
+        if (!peptideShakerVisualizationDataset.isUploadedProject()) {
+            peptideShakerVisualizationDataset.processDataFiles();
+        }
         proteinTableMap = peptideShakerVisualizationDataset.getProteinsMap();
         final Table mainTable = proteinTableContainer.getMainTable();
-
         mainTable.sort(new Object[]{"peptides_number", "psm_number"}, new boolean[]{false, false});
         mainTable.setColumnCollapsible("protein_group", true);
         mainTable.setColumnCollapsed("protein_group", true);
@@ -285,6 +285,7 @@ public class DatasetVisulizationLevelComponent extends AbsoluteLayout implements
                 ColorLabelWithPopupTooltip intinsity = new ColorLabelWithPopupTooltip(protein.getAllPeptidesIntensity(), protein.getAllPeptideIintensityColor(), protein.getPercentageAllPeptidesIntensity());
                 proteinTableContainer.addTableItem(protein.getProteinGroupKey(), new Object[]{protein.getIndex(), piLabel, proteinAccLink, csfprLink, protein.getDescription(), intinsity, protein.getProteinGroup(), protein.getGeneName(), new AlphanumComparator(protein.getChromosome()), coverageLabel, peptidesNumberLabelLabel, psmNumberLabelLabel, ms2QuantLabelLabel, mwLabel, confidentLabel, validation}, searchKey);
             } catch (Exception e) {
+                e.printStackTrace();
                 System.out.println("at prot acc error " + protein.getAccession() + "  " + protein.getProteinInference() + "--" + protein.getProteinGroupKey() + " -- " + inferenceMap.containsKey(protein.getProteinInference()));
 
             }
@@ -304,7 +305,7 @@ public class DatasetVisulizationLevelComponent extends AbsoluteLayout implements
         }
         modificationMatrix.getRows().keySet().forEach((mod) -> {
             if (PTM.containsModification(mod)) {
-                ModificationColorMap.put(mod,new Color(ModificationFactory.getDefaultColor(mod)));
+                ModificationColorMap.put(mod, new Color(ModificationFactory.getDefaultColor(mod)));
             } else {
                 ModificationColorMap.put(mod, Color.LIGHT_GRAY);
             }
@@ -419,7 +420,7 @@ public class DatasetVisulizationLevelComponent extends AbsoluteLayout implements
         if (currentFilterView <= 2) {
             return 1;
         }
-        return currentFilterView-1;
+        return currentFilterView - 1;
     }
 
     public int showBefore() {
@@ -443,8 +444,9 @@ public class DatasetVisulizationLevelComponent extends AbsoluteLayout implements
         if (currentFilterView <= 2) {
             return 1;
         }
-        return currentFilterView-1;
+        return currentFilterView - 1;
     }
+
     /**
      * Returns the color object corresponding to the given rgb representation.
      *
@@ -452,7 +454,7 @@ public class DatasetVisulizationLevelComponent extends AbsoluteLayout implements
      *
      * @return the color object
      */
-    private  Color getColor(int colorRGB) {
+    private Color getColor(int colorRGB) {
         return new Color((colorRGB >> 16) & 0xFF, (colorRGB >> 8) & 0xFF, colorRGB & 0xFF);
     }
 

@@ -8,10 +8,13 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.PopupView;
 import com.vaadin.ui.ProgressBar;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import java.io.File;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import pl.exsio.plupload.Plupload;
 import pl.exsio.plupload.PluploadError;
 import pl.exsio.plupload.PluploadFile;
@@ -28,12 +31,18 @@ public abstract class Uploader extends AbsoluteLayout {
     private Plupload uploaderComponent;
     private final Label info;
     private final Button uploaderBtn;
+    private final Button closeBtn;
     private final ProgressBar bar;
+    private final Set<String> filterSet;
+
+    private PopupView popupUploaderUnit;
 
     public Uploader() {
-        Uploader.this.setHeight(25, Unit.PIXELS);
+
+        Uploader.this.setHeight(28, Unit.PIXELS);
         Uploader.this.setWidth(100, Unit.PERCENTAGE);
         Uploader.this.setStyleName("uploaderlayout");
+        this.filterSet = new LinkedHashSet<>();
 
         VerticalLayout uploaderLayout = new VerticalLayout();
         uploaderLayout.setWidth(300, Unit.PIXELS);
@@ -60,11 +69,41 @@ public abstract class Uploader extends AbsoluteLayout {
         uploaderComponent.addStyleName("hidebywidth");
 
         uploaderBtn = new Button("Upload", FontAwesome.UPLOAD);
-        uploaderBtn.setWidth(25, Unit.PIXELS);
-        uploaderBtn.setHeight(25, Unit.PIXELS);
+        uploaderBtn.setWidth(28, Unit.PIXELS);
+        uploaderBtn.setHeight(28, Unit.PIXELS);
         uploaderBtn.addStyleName(ValoTheme.BUTTON_TINY);
         uploaderBtn.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
-        Uploader.this.addComponent(uploaderBtn, "right:0px;top:0px");
+        Uploader.this.addComponent(uploaderBtn, "right:2px;top:2px");
+
+        closeBtn = new Button();
+        closeBtn.setIcon(FontAwesome.CLOSE);
+        closeBtn.setWidth(28, Unit.PIXELS);
+        closeBtn.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+        closeBtn.setHeight(28, Unit.PIXELS);
+        closeBtn.addStyleName(ValoTheme.BUTTON_TINY);
+        closeBtn.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
+        Uploader.this.addComponent(closeBtn, "right:2px;top:2px");
+        closeBtn.addClickListener((Button.ClickEvent event) -> {
+            if (popupUploaderUnit != null) {
+                popupUploaderUnit.setPopupVisible(false);
+                bar.setValue(0.0f);
+
+            } else {
+                closeBtn.setVisible(false);
+                uploaderBtn.setVisible(true);
+                uploaderLayout.addStyleName("hidebywidth");
+                uploaderComponent.addStyleName("hidebywidth");
+            }
+            initUploaderComponent();
+            if (userUploadFolder != null) {
+                while (userUploadFolder.listFiles() != null && userUploadFolder.listFiles().length > 0) {
+                    for (File f : userUploadFolder.listFiles()) {
+                        f.delete();
+                    }
+                }
+            }
+        });
+
         uploaderBtn.addClickListener((Button.ClickEvent event) -> {
             if (userUploadFolder == null) {
                 String userDataFolderUrl = VaadinSession.getCurrent().getAttribute("userDataFolderUrl") + "";
@@ -76,24 +115,57 @@ public abstract class Uploader extends AbsoluteLayout {
                 userUploadFolder = new File(user_folder, "uploadedFiles");
                 userUploadFolder.mkdir();
                 uploaderComponent.setUploadPath(userUploadFolder.getAbsolutePath());
-            }
-            if (uploaderBtn.getCaption().equals("Upload")) {
-                uploaderLayout.removeStyleName("hidebywidth");
-                uploaderComponent.removeStyleName("hidebywidth");
-                uploaderBtn.setCaption("");
-                uploaderBtn.setIcon(FontAwesome.CLOSE);
-                uploaderBtn.setWidth(28, Unit.PIXELS);
-                uploaderBtn.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
 
-            } else {
-                uploaderLayout.addStyleName("hidebywidth");
-                uploaderComponent.addStyleName("hidebywidth");
-                uploaderBtn.setCaption("Upload");
-                uploaderBtn.setWidth(88, Unit.PIXELS);
-                uploaderBtn.setIcon(FontAwesome.UPLOAD);
-                uploaderBtn.removeStyleName(ValoTheme.BUTTON_ICON_ONLY);
             }
+            uploaderLayout.removeStyleName("hidebywidth");
+            uploaderComponent.removeStyleName("hidebywidth");
+            uploaderBtn.setVisible(false);
+            closeBtn.setVisible(true);
+
         });
+    }
+
+    public PopupView getPopupUploaderUnit() {
+        if (popupUploaderUnit == null) {
+            Uploader.this.setWidth(375, Unit.PIXELS);
+            Uploader.this.setHeight(32, Unit.PIXELS);
+            popupUploaderUnit = new PopupView(FontAwesome.UPLOAD.getHtml(), Uploader.this) {
+                @Override
+                public void setPopupVisible(boolean visible) {
+                    if (!filterSet.isEmpty()) {
+                        info.setValue("Upload " + filterSet);
+                    }
+                    if (visible) {
+                        uploaderBtn.click();
+                    } else {
+                               bar.setValue(0.0f);  initUploaderComponent();
+            if (userUploadFolder != null) {
+                while (userUploadFolder.listFiles() != null && userUploadFolder.listFiles().length > 0) {
+                    for (File f : userUploadFolder.listFiles()) {
+                        f.delete();
+                    }
+                }
+            }
+                    }
+                    if (!busy) {
+                        super.setPopupVisible(visible); //To change body of generated methods, choose Tools | Templates.
+                    } else {
+                        super.setPopupVisible(false);
+                    }
+                }
+
+            };
+            popupUploaderUnit.setHideOnMouseOut(false);
+            popupUploaderUnit.setCaptionAsHtml(true);
+            popupUploaderUnit.setWidth(100, Unit.PIXELS);
+            popupUploaderUnit.setHeight(28, Unit.PIXELS);
+            popupUploaderUnit.addStyleName("popupuploader");
+        }
+        return popupUploaderUnit;
+    }
+
+    public Plupload getUploaderComponent() {
+        return uploaderComponent;
     }
 
     private void initUploaderComponent() {
@@ -106,6 +178,10 @@ public abstract class Uploader extends AbsoluteLayout {
         uploaderComponent.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
         uploaderComponent.addStyleName("smooth");
         Uploader.this.addComponent(uploaderComponent, "right:35px;top:2px");
+        info.setValue("Upload " + filterSet);
+        filterSet.forEach((ext) -> {
+            this.addUploaderFilter(ext);
+        });
         //show notification after file is uploaded
         uploaderComponent.addFileUploadedListener((PluploadFile file) -> {
             Notification.show("I've just uploaded file: " + file.getName());
@@ -119,6 +195,7 @@ public abstract class Uploader extends AbsoluteLayout {
                 bar.setValue((float) file.getPercent() / 100.0f);
             } else {
                 bar.setValue(0.0f);
+
             }
 
         });
@@ -128,6 +205,8 @@ public abstract class Uploader extends AbsoluteLayout {
         uploaderComponent.addFilesAddedListener((PluploadFile[] files) -> {
             uploaderComponent.start();
         });
+        uploaderComponent.addUploadStopListener(() -> {
+        });
 
 //notify, when the upload process is completed
         uploaderComponent.addUploadCompleteListener(() -> {
@@ -136,17 +215,39 @@ public abstract class Uploader extends AbsoluteLayout {
             filesUploaded(uploaderComponent.getUploadedFiles());
             initUploaderComponent();
             uploaderComponent.removeStyleName("hidebywidth");
-
+            if (popupUploaderUnit != null) {
+                popupUploaderUnit.setPopupVisible(false);
+            }
         });
 
 //handle errors
         uploaderComponent.addErrorListener((PluploadError error) -> {
-            Notification.show("Error in uploading file, only MGF and Fasta file format allowed", Notification.Type.ERROR_MESSAGE);
-            info.setValue("Only MGF and Fasta file format allowed " + FontAwesome.FROWN_O.getHtml());
+            Notification.show("Error in uploading file, only " + filterSet + " file format allowed", Notification.Type.ERROR_MESSAGE);
+            info.setValue("Not Supported File Format " + filterSet + " " + FontAwesome.FROWN_O.getHtml());
         });
-        uploaderComponent.addFilter(new PluploadFilter("mgf", "mgf"));
-        uploaderComponent.addFilter(new PluploadFilter("fasta", "fasta"));
 
+    }
+
+    private final String htmlLoadingImg = "<img src='VAADIN/themes/webpeptideshakertheme/img/globeearthanimation.gif' alt='' style='width: 22px; top:0px; margin-left: -1px;position: absolute;'>";
+
+    private boolean busy = false;
+
+    public void setBusy(boolean busy) {
+        if (popupUploaderUnit == null) {
+            return;
+        }
+        this.busy = busy;
+        if (busy) {
+            popupUploaderUnit.setCaption(htmlLoadingImg);
+        } else {
+            popupUploaderUnit.setCaption(null);
+        }
+
+    }
+
+    public void addUploaderFilter(String extensionFileFilter) {
+        uploaderComponent.addFilter(new PluploadFilter(extensionFileFilter, extensionFileFilter));
+        filterSet.add(extensionFileFilter);
     }
 
     public abstract void filesUploaded(PluploadFile[] uploadedFiles);

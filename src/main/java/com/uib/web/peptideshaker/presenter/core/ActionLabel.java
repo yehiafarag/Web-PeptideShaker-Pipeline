@@ -114,6 +114,7 @@ public abstract class ActionLabel extends HorizontalLayout implements LayoutEven
         ActionLabel.this.addLayoutClickListener(ActionLabel.this);
 
     }
+
     public ActionLabel(String text, String description) {
         ActionLabel.this.setSizeUndefined();
         label = new Label(text);
@@ -142,11 +143,19 @@ public abstract class ActionLabel extends HorizontalLayout implements LayoutEven
         iconLabel.setIcon(icon);
         wrapper.addComponent(iconLabel);
         wrapper.setComponentAlignment(iconLabel, Alignment.MIDDLE_LEFT);
-        label = new Label(name);
+        label = new Label(name, ContentMode.HTML);
         label.setSizeFull();
-        wrapper.addComponent(label);       
+        wrapper.addComponent(label);
         ActionLabel.this.addLayoutClickListener(ActionLabel.this);
 
+    }
+
+    public String getLabelName() {
+        return label.getValue();
+    }
+
+    public void updateLabelName(String update) {
+        label.setValue(update);
     }
 
 }

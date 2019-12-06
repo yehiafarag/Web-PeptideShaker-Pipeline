@@ -6,6 +6,7 @@ import com.uib.web.peptideshaker.galaxy.utilities.GalaxyToolsHandler;
 import com.github.jmchilton.blend4j.galaxy.GalaxyInstance;
 import com.github.jmchilton.blend4j.galaxy.GalaxyInstanceFactory;
 import com.github.jmchilton.blend4j.galaxy.UsersClient;
+import com.github.jmchilton.blend4j.galaxy.beans.OutputDataset;
 import com.github.jmchilton.blend4j.galaxy.beans.User;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyTransferableFile;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyFileObject;
@@ -60,10 +61,9 @@ public abstract class GalaxyInteractiveLayer {
      */
     private final DecimalFormat dsFormater = new DecimalFormat("#.##");
 
-//    private Set<String> csf_pr_Accession_List;
-//    public Set<String> getCsf_pr_Accession_List() {
-//        return csf_pr_Accession_List;
-//    }
+    public Set<String> getCsf_pr_Accession_List() {
+        return historyHandler.getCsf_pr_Accession_List();
+    }
     /**
      * Constructor to initialise the main Galaxy history handler.
      */
@@ -82,7 +82,6 @@ public abstract class GalaxyInteractiveLayer {
                     toDeleteMap.forEach((galaxyId) -> {
                         toolsHandler.deleteDataset(Galaxy_Instance.getGalaxyUrl(), galaxyId.split(";")[0], galaxyId.split(";")[1], true, false);
                     });
-                    System.out.println("done deleting files");
                     toDeleteMap.clear();
                 }
             }
@@ -112,7 +111,11 @@ public abstract class GalaxyInteractiveLayer {
                     historyHandler.updateHistory(updatePresenterView);
                     userOverViewList.set(1, historyHandler.getDatasetsNumber() + "");
                     userOverViewList.set(2, historyHandler.getFilesNumber() + "");
-                    userOverViewList.set(3, dsFormater.format(historyHandler.getMemoryUsage()) + " GB");
+                    try {
+                        userOverViewList.set(3, dsFormater.format(historyHandler.getMemoryUsage()) + " GB");
+                    } catch (IllegalArgumentException exp) {
+                        userOverViewList.set(3, (historyHandler.getMemoryUsage()) + "");
+                    }
                 }
             };
             VaadinSession.getCurrent().setAttribute("ApiKey", Galaxy_Instance.getApiKey());
@@ -264,8 +267,9 @@ public abstract class GalaxyInteractiveLayer {
      * @return files are successfully uploaded to Galaxy Server
      */
     public boolean uploadToGalaxy(PluploadFile[] toUploadFiles) {
-        return toolsHandler.uploadToGalaxy(historyHandler.getWorkingHistoryId(), toUploadFiles);
 
+        boolean check = toolsHandler.uploadToGalaxy(historyHandler.getWorkingHistoryId(), toUploadFiles);
+        return check;
     }
 
     /**
@@ -308,7 +312,7 @@ public abstract class GalaxyInteractiveLayer {
             System.out.println(
                     "Unable to open file '" + "'");
         } catch (IOException ex) {
-             ex.printStackTrace();
+            ex.printStackTrace();
             System.out.println("Error reading file '" + "'");
         }
         return csfprAccList;

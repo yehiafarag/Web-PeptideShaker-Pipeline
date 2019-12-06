@@ -43,6 +43,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
@@ -500,60 +502,22 @@ public abstract class GalaxyToolsHandler {
         try {
             String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
             File workflowFile;
-            WorkflowInputs.WorkflowInput workflowInput2;
+            WorkflowInputs.WorkflowInput raw_mgf_FileInputData;
 
-            if (quant) {
-                workflowFile = new File(basepath + "/VAADIN/Galaxy-Workflow-Final-full-pipeline-quant-2019.ga");//Galaxy-Workflow-Web-Peptide-Shaker-Multi-MGF-2018.ga
-//            workflowInput2 = prepareWorkflowCollectionList(WorkflowInputs.InputSourceType.HDCA, inputFileIdsList.keySet(), historyId);
-                workflowInput2 = new WorkflowInputs.WorkflowInput(inputFileIdsList.keySet().iterator().next(), WorkflowInputs.InputSourceType.HDA);
+            if (quant && inputFileIdsList.size() ==1) {
+                workflowFile = new File(basepath + "/VAADIN/Galaxy-Workflow-Full_workflow_quant_single_RAW.ga");//Galaxy-Workflow-Web-Peptide-Shaker-Multi-MGF-2018.ga
+                raw_mgf_FileInputData = new WorkflowInputs.WorkflowInput(inputFileIdsList.keySet().iterator().next(), WorkflowInputs.InputSourceType.HDA);
 
-            } else if (inputFileIdsList.size() > 1) {
+            } else if (quant && inputFileIdsList.size() > 1) {
                 workflowFile = new File(basepath + "/VAADIN/Galaxy-Workflow-Web-Peptide-Shaker-Multi-MGF-2018-updated-i.ga");//Galaxy-Workflow-Web-Peptide-Shaker-Multi-MGF-2018.ga
-                workflowInput2 = prepareWorkflowCollectionList(WorkflowInputs.InputSourceType.HDCA, inputFileIdsList.keySet(), historyId);
+                raw_mgf_FileInputData = prepareWorkflowCollectionList(WorkflowInputs.InputSourceType.HDCA, inputFileIdsList.keySet(), historyId);
             } else {
                 workflowFile = new File(basepath + "/VAADIN/Galaxy-Workflow-Web-Peptide-Shaker-Single-MGF-2018-updated-i.ga");
-                workflowInput2 = new WorkflowInputs.WorkflowInput(inputFileIdsList.keySet().iterator().next(), WorkflowInputs.InputSourceType.HDA);
+                raw_mgf_FileInputData = new WorkflowInputs.WorkflowInput(inputFileIdsList.keySet().iterator().next(), WorkflowInputs.InputSourceType.HDA);
             }
             String jsonWorkflow = readWorkflowFile(workflowFile);
 
-            /**
-             * @todo: find better way to override the search parameters ?
-             */
-//            json = json.replace("3.3.5", search_GUI_Tool.getVersion().trim());//4.0.1_SNAPSHOT.1    //2.0.1_SNAPSHOT.5
-//            json = json.replace("3.3.3.0", search_GUI_Tool.getVersion().trim()); //for multi mgf workflow
-            jsonWorkflow = jsonWorkflow.replace("Label-SearchGUI", projectName + "-SearchGUI Results").replace("Label-PS", projectName + "-ZIP").replace("Label-MOFF", projectName + "-MOFF").replace("Label-MGF", projectName + "-MGF");
-//            String createDecoy = searchParameters.getFastaFile().getName().split("__")[2];
-//            json = json.replace("\\\\\\\"create_decoy\\\\\\\": \\\\\\\"true\\\\\\\"", "\\\\\\\"create_decoy\\\\\\\": \\\\\\\"" + createDecoy + "\\\\\\\"");
-            /**
-             * Protein_digest_options. //
-             */
-////            switch (searchParameters.getDigestionPreferences().getCleavagePreference().index) {
-////                case 0:
-////                    if (searchParameters.getDigestionPreferences().getEnzymes().get(0).getName().equalsIgnoreCase("Trypsin")) {//
-////                        json = json.replace("{\\\\\\\"cleavage\\\\\\\": \\\\\\\"default\\\\\\\", \\\\\\\"missed_cleavages\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 0}}\\\",", "{\\\\\\\"cleavage\\\\\\\": \\\\\\\"default\\\\\\\", \\\\\\\"missed_cleavages\\\\\\\": \\\\\\\"" + searchParameters.getDigestionPreferences().getnMissedCleavages(searchParameters.getDigestionPreferences().getEnzymes().get(0).getName()) + "\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 0}}\\\",");
-////                    } else {
-////                        json = json.replace("{\\\\\\\"cleavage\\\\\\\": \\\\\\\"default\\\\\\\", \\\\\\\"missed_cleavages\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 0}}\\\",", "{\\\\\\\"cleavage\\\\\\\": \\\\\\\"0\\\\\\\", \\\\\\\"digests\\\\\\\": [{\\\\\\\"__index__\\\\\\\": 0, \\\\\\\"enzyme\\\\\\\": \\\\\\\"" + searchParameters.getDigestionPreferences().getEnzymes().get(0).getName() + "\\\\\\\", \\\\\\\"missed_cleavages\\\\\\\": \\\\\\\"" + searchParameters.getDigestionPreferences().getnMissedCleavages(searchParameters.getDigestionPreferences().getEnzymes().get(0).getName()) + "\\\\\\\"}], \\\\\\\"__current_case__\\\\\\\": 1}}\\\",");
-////                    }
-////                    break;
-////                case 1:
-////                    json = json.replace("{\\\\\\\"cleavage\\\\\\\": \\\\\\\"default\\\\\\\", \\\\\\\"missed_cleavages\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 0}}\\\",", "{\\\\\\\"cleavage\\\\\\\": \\\\\\\"1\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 2}}\\\",");
-////                    break;
-////                case 2:
-////                    json = json.replace("{\\\\\\\"cleavage\\\\\\\": \\\\\\\"default\\\\\\\", \\\\\\\"missed_cleavages\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 0}}\\\",", "{\\\\\\\"cleavage\\\\\\\": \\\\\\\"2\\\\\\\", \\\\\\\"__current_case__\\\\\\\": 3}}\\\",");
-////                    break;
-////            }
-//            /**
-//             * Protein_modification_options.
-//             */
-//            if (!searchParameters.getPtmSettings().getVariableModifications().isEmpty()) {
-//                Set<String> modifications = new HashSet<>();
-//                searchParameters.getPtmSettings().getVariableModifications().forEach((modification) -> {
-//                    modifications.add("\\\\\\\"" + modification + "\\\\\\\"");
-//                });
-//                json = json.replace("\\\\\\\"variable_modifications\\\\\\\": null", "\\\\\\\"variable_modifications\\\\\\\": " + modifications.toString());
-//            }
-
-//            String jsonWorkflow = get_json_for_SearchGUI_PeptideShaker_WorkFlow(workflowFile, projectName, searchParameters, searchEnginesList);
+            jsonWorkflow = jsonWorkflow.replace("Label-SearchGUI Results", projectName + "-SearchGUI Results").replace("Label-PS", projectName + "-PS").replace("Label-MOFF", projectName + "-MOFF").replace("Label-Indexed-MGF", projectName + "-Indexed-MGF").replace("Label-ToDelete-MGF", projectName + "-ToDelete-MGF");
             /**
              * Search engines options.
              */
@@ -561,7 +525,7 @@ public abstract class GalaxyToolsHandler {
             searchEnginesList.forEach((searchEng) -> {
                 search_engines.add(("\\\\\\\"" + searchEng + "\\\\\\\"").replace(" (Select for noncommercial use only)", "").replace("+", "").replace("-", ""));
             });
-            jsonWorkflow = jsonWorkflow.replace("\\\"{\\\\\\\"engines\\\\\\\": null}\\\"", "\\\"{\\\\\\\"engines\\\\\\\": " + search_engines.toString() + "}\\\"");
+            jsonWorkflow = jsonWorkflow.replace("\\\"{\\\\\\\"engines\\\\\\\": [\\\\\\\"X!Tandem\\\\\\\"]}\\\"", "\\\"{\\\\\\\"engines\\\\\\\": " + search_engines.toString() + "}\\\"");
             selectedWf = galaxyWorkFlowClient.importWorkflow(jsonWorkflow);
 
             WorkflowInputs workflowInputs = new WorkflowInputs();
@@ -570,9 +534,9 @@ public abstract class GalaxyToolsHandler {
 
             WorkflowInputs.WorkflowInput workflowInput0 = new WorkflowInputs.WorkflowInput(searchParameterFileId, WorkflowInputs.InputSourceType.HDA);
             WorkflowInputs.WorkflowInput workflowInput1 = new WorkflowInputs.WorkflowInput(fastaFileId, WorkflowInputs.InputSourceType.HDA);
-            workflowInputs.setInput("0", workflowInput0);
-            workflowInputs.setInput("1", workflowInput1);
-            workflowInputs.setInput("2", workflowInput2);
+            workflowInputs.setInput("0", workflowInput1);
+            workflowInputs.setInput("1", workflowInput0);            
+            workflowInputs.setInput("2", raw_mgf_FileInputData);
 
             Thread t = new Thread(() -> {
                 galaxyWorkFlowClient.runWorkflow(workflowInputs);
@@ -581,21 +545,21 @@ public abstract class GalaxyToolsHandler {
             /**
              * Re-index MGF files.
              */
-            Thread t1 = new Thread(() -> {
-                int index = 1;
-                if (!quant) {
-                    if (inputFileIdsList.size() == 1) {
-                        for (String mgfId : inputFileIdsList.keySet()) {
-                            this.reIndexFile(mgfId, projectName + "-" + inputFileIdsList.get(mgfId) + "-" + (index++) + "-MGFFile", historyId);
-                        }
-                    } else {
-                        for (String mgfId : inputFileIdsList.keySet()) {
-                            this.reIndexFile(mgfId, projectName + "-" + mgfId + "-" + (index++) + "-MGFFile", historyId);
-                        }
-                    }
-                }
-            });
-            t1.start();
+//            Thread t1 = new Thread(() -> {
+//                int index = 1;
+//                if (!quant) {
+//                    if (inputFileIdsList.size() == 1) {
+//                        for (String mgfId : inputFileIdsList.keySet()) {
+//                            this.reIndexFile(mgfId, projectName + "-" + inputFileIdsList.get(mgfId) + "-" + (index++) + "-MGFFile", historyId);
+//                        }
+//                    } else {
+//                        for (String mgfId : inputFileIdsList.keySet()) {
+//                            this.reIndexFile(mgfId, projectName + "-" + mgfId + "-" + (index++) + "-MGFFile", historyId);
+//                        }
+//                    }
+//                }
+//            });
+//            t1.start();
 
             galaxyWorkFlowClient.deleteWorkflowRequest(selectedWf.getId());
             while (t.isAlive()) {
@@ -941,10 +905,12 @@ public abstract class GalaxyToolsHandler {
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
-            synchronizeDataWithGalaxyServer(true);
+            synchronizeDataWithGalaxyServer(true); 
+            
         });
         t.start();
-        return true;
+     
+      return true;
     }
 
     /**

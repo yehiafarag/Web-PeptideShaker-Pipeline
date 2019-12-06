@@ -1,24 +1,29 @@
 package com.uib.web.peptideshaker.presenter.layouts;
 
 import com.compomics.util.parameters.identification.IdentificationParameters;
-import com.compomics.util.parameters.identification.search.SearchParameters;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyFileObject;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyTransferableFile;
+import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
 import com.uib.web.peptideshaker.presenter.core.DropDownList;
 import com.uib.web.peptideshaker.presenter.core.MultiSelectOptionGroup;
 import com.uib.web.peptideshaker.presenter.core.PopupWindow;
+import com.uib.web.peptideshaker.presenter.core.RadioButton;
+import com.uib.web.peptideshaker.presenter.core.StatusLabel;
+import com.uib.web.peptideshaker.presenter.core.Uploader;
 import com.vaadin.data.Property;
-import com.vaadin.event.FieldEvents;
+import com.vaadin.event.LayoutEvents;
+import com.vaadin.event.LayoutEvents.LayoutClickListener;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.server.VaadinService;
 import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.TextField;
@@ -29,9 +34,12 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import pl.exsio.plupload.PluploadFile;
 
 /**
  * This class represents SearchGUI-Peptide-Shaker work-flow which include input
@@ -52,11 +60,11 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
     /**
      * MGF file list available for user to select from.
      */
-    protected MultiSelectOptionGroup _mgfFileList;
+    private final Set<String> _mgfFileList;
     /**
      * Raw file list available for user to select from.
      */
-    protected MultiSelectOptionGroup _rawFileList;
+    private final Set<String> _rawFileList;
     /**
      * layout contain project name field and execute button.
      */
@@ -66,9 +74,9 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
      */
     protected SearchSettingsLayout _searchSettingsLayout;
     /**
-     * Input files type (MGF or raw files).
+     * Input files type (MGF or raw files). //
      */
-    private OptionGroup _inputFileList;
+//    private OptionGroup _inputFileList;
     /**
      * Pop-up layout container for edit user search input.
      */
@@ -97,8 +105,18 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
      * Execution button for the work-flow
      */
     private Button _executeWorkFlowBtn;
+    private AbsoluteLayout inputDataFilesContainer;
+    private Uploader mgf_raw_dataUploader;
+    private VerticalLayout rawDataListLayout;
+    private VerticalLayout mgfDataListLayout;
+    private LayoutClickListener rawClickListener;
+    private LayoutClickListener mgfClickListener;
+    private Uploader fastaFileUploader;
+    private int indexer = 0;
+    private final float[] expandingRatio = new float[]{5f, 5f, 58f, 25f, 8f};
+//    private OptionGroup projectSupHeader;
+//    private final ProjectOverviewLayout existedProjectLayout;
 
-     
     /**
      * Create decoy database file list.
      */
@@ -108,10 +126,27 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
     @SuppressWarnings("Convert2Lambda")
     public SearchGUIPeptideShakerWorkFlowInputLayout() {
         fastaFileIdToNameMap = new LinkedHashMap<>();
-//        fastaFileIdToNameMap.put(dataset.getFastaFileName(), dataset.getFastaFileName());
-//        fastaFileList.updateList(fastaFileIdToNameMap);
-//        fastaFileList.setSelected(dataset.getFastaFileName());
-//        fastaFileList.setEnabled(false);
+        _mgfFileList = new LinkedHashSet<>();
+        _rawFileList = new LinkedHashSet<>();
+//        this.existedProjectLayout = new ProjectOverviewLayout() {
+//            @Override
+//            public void deleteDataset(PeptideShakerVisualizationDataset ds) {
+//            }
+//
+//            @Override
+//            public boolean sendToNeLS(PeptideShakerVisualizationDataset ds) {
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean getFromNels(PeptideShakerVisualizationDataset ds) {
+//                return false;
+//            }
+//
+//            @Override
+//            public void viewDataset(PeptideShakerVisualizationDataset ds) {
+//            }
+//        };
 
     }
 
@@ -121,143 +156,200 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
         SearchGUIPeptideShakerWorkFlowInputLayout.this.setHeight(100, Unit.PERCENTAGE);
 
         // MAIN LAYOUT CONFIGURATION
-        VerticalLayout content = new VerticalLayout();
-        content.setHeightUndefined();
-
-        content.setWidth(100, Unit.PERCENTAGE);
-        SearchGUIPeptideShakerWorkFlowInputLayout.this.setContent(content);
+        AbsoluteLayout container = new AbsoluteLayout();
+        container.setHeight(100, Unit.PERCENTAGE);
+        container.setWidth(100, Unit.PERCENTAGE);
+        SearchGUIPeptideShakerWorkFlowInputLayout.this.setContent(container);
         SearchGUIPeptideShakerWorkFlowInputLayout.this.setStyleName("subframe");
         SearchGUIPeptideShakerWorkFlowInputLayout.this.addStyleName("floatrightinyscreen");
-        content.setSpacing(true);
 
         // CONFIGURING GRAPHICAL COMPONENTS...
         // Title
-        Label titleLabel = new Label("SearchGUI-PeptideShaker");
+        Label titleLabel = new Label("Analyze Data");
         titleLabel.setStyleName("frametitle");
-        content.addComponent(titleLabel);
+        titleLabel.addStyleName("maintitleheader");
+        container.addComponent(titleLabel, "left:40px;top:13px");
 
-        // Project name field
-        _projectNameField = setAndGetLayoutProjectNameField();
-        content.addComponent(_projectNameField);
+        AbsoluteLayout mainContainerLayout = new AbsoluteLayout();
+        mainContainerLayout.setSizeFull();
+        mainContainerLayout.setStyleName("maincontentcontainer");
+        container.addComponent(mainContainerLayout, "left:25px;top:25px;bottom:25px;right:25px");
 
-        // Search settings
+        AbsoluteLayout newProjectContainer = new AbsoluteLayout();
+        newProjectContainer.setWidth(530, Unit.PIXELS);
+        newProjectContainer.setHeight(832, Unit.PIXELS);
+        newProjectContainer.addStyleName("searchinputcontainer");
+        newProjectContainer.addStyleName("datainputsubcontainer");
+        mainContainerLayout.addComponent(newProjectContainer, "left:50%;top:50%");
+
+        /**
+         * Search settings *
+         */
+        AbsoluteLayout searchParameterContainer = new AbsoluteLayout();
+        searchParameterContainer.setCaption("Search Settings (Search Parameter File)");
+        searchParameterContainer.setWidth(480, Unit.PIXELS);
+        searchParameterContainer.setHeight(152, Unit.PIXELS);
+        searchParameterContainer.setStyleName("titleinborder");
+        newProjectContainer.addComponent(searchParameterContainer, "left:25px;top:25px;right:25px");
         _searchSettingsFileList = setAndGetLayoutSearchSettingsFileList();
-        content.addComponent(_searchSettingsFileList);
+        searchParameterContainer.addComponent(_searchSettingsFileList, "left:15px;top:15px;right:15px");
         // Search settings layout
         _searchSettingsLayout = setAndGetLayoutSearchSettingsLayout();
-
         // Edit search option
         _editSearchOption = setAndGetLayoutEditSearchOption(_searchSettingsLayout);
-
         // Search settings info
         Label searchSettingInfo = setAndGetLayoutSearchSettingInfo();
-        content.addComponent(searchSettingInfo);
-        
-        
+        searchParameterContainer.addComponent(searchSettingInfo, "left:15px;top:47px;right:15px");
 
-        //Fasta file dropdown list (opon select popup option)
+        /**
+         * FASTA file drop-down list (open select pop-up option) *
+         */
+        AbsoluteLayout fastaFileContainer = new AbsoluteLayout();
+        fastaFileContainer.setCaption("Protein Database (FASTA File)");
+        fastaFileContainer.setWidth(480, Unit.PIXELS);
+        fastaFileContainer.setHeight(55, Unit.PIXELS);
+        fastaFileContainer.setStyleName("titleinborder");
+        newProjectContainer.addComponent(fastaFileContainer, "left:25px;top:202px;right:25px");
+
         _fastaFileInputLayout = setAndGetLayoutFastaFileList();
-        content.addComponent(_fastaFileInputLayout);
+        fastaFileContainer.addComponent(_fastaFileInputLayout, "left:15px;top:15px;right:15px");
 
-        _inputFileList = new OptionGroup();
-        _inputFileList.setStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
-        _inputFileList.addItem("rawFile");
-        _inputFileList.addItem("spectrumFile");
-        _inputFileList.setItemCaption("rawFile", "Raw File(s)");
-        _inputFileList.setItemCaption("spectrumFile", "Spectrum File(s) - Protein Identification Only!");
-        _inputFileList.addStyleName("smallcombobox");
-        content.addComponent(_inputFileList);
+        /**
+         * Initialise Raw/MGF available files controller.
+         */
+        AbsoluteLayout spectrumFileContainer = new AbsoluteLayout();
+        spectrumFileContainer.setCaption("Spectrum Files (Raw/MGF Files)");
+        spectrumFileContainer.setWidth(480, Unit.PIXELS);
+        spectrumFileContainer.setHeight(232, Unit.PIXELS);
+        spectrumFileContainer.setStyleName("titleinborder");
+        newProjectContainer.addComponent(spectrumFileContainer, "left:25px;top:282px;right:25px");
 
-        // Raw file list
-        _rawFileList = setAndGetLayoutInputFileList("Raw File (s)");
-        content.addComponent(_rawFileList);
-
-        // MGF file list
-        _mgfFileList = setAndGetLayoutInputFileList("Spectrum File (s)");
-        content.addComponent(_mgfFileList);
-
-        _inputFileList.addValueChangeListener((Property.ValueChangeEvent event) -> {
-            _rawFileList.setVisible(_inputFileList.getValue().toString().equalsIgnoreCase("rawFile"));
-            _mgfFileList.setVisible(!_rawFileList.isVisible());
-            _rawFileList.setSelectedValue("");
-            _mgfFileList.setSelectedValue("");
+        OptionGroup rawMgfController = new OptionGroup();
+        rawMgfController.setStyleName("controllercombobox");
+        rawMgfController.addItem("rawFiles");
+        rawMgfController.addItem("mgfFiles");
+        rawMgfController.setHeight(60, Unit.PIXELS);
+        rawMgfController.setHtmlContentAllowed(true);
+        rawMgfController.setItemCaption("rawFiles", "Raw File(s)");
+        rawMgfController.setItemCaption("mgfFiles", "MGF File(s)");
+        spectrumFileContainer.addComponent(rawMgfController, "left:15px;top:15px;right:150px");
+        rawMgfController.addValueChangeListener((Property.ValueChangeEvent event) -> {
+            mgfDataListLayout.setVisible(rawMgfController.getValue().toString().equalsIgnoreCase("mgfFiles"));
+            if (mgfDataListLayout.isVisible()) {
+                _rawFileList.clear();
+            } else {
+                _mgfFileList.clear();
+            }
+            updateMgfFilesTable();
+            updateRawFilesTable();
         });
-        _rawFileList.setVisible(false);
-        _mgfFileList.setVisible(false);
+        inputDataFilesContainer = new AbsoluteLayout();
+        inputDataFilesContainer.setHeight(135, Unit.PIXELS);
+        inputDataFilesContainer.setWidth(450, Unit.PIXELS);
+        inputDataFilesContainer.setStyleName("inputdatafilecontainer");
+        spectrumFileContainer.addComponent(inputDataFilesContainer, "left:15px;top:80px;right:15px");
+        mgf_raw_dataUploader = new Uploader() {
+            @Override
+            public void filesUploaded(PluploadFile[] uploadedFiles) {
+                mgf_raw_dataUploader.setBusy(true);
+                uploadToGalaxy(uploadedFiles);
+            }
+        };
+        mgf_raw_dataUploader.addUploaderFilter("mgf");
+        mgf_raw_dataUploader.addUploaderFilter("thermo.raw");
+        inputDataFilesContainer.addComponent(mgf_raw_dataUploader.getPopupUploaderUnit(), "right:19px;top:-13px");
 
-        // Search engines list
+        rawDataListLayout = new VerticalLayout();
+        rawDataListLayout.setSizeFull();
+        rawDataListLayout.setSpacing(true);
+        rawDataListLayout.setStyleName("astablelayout");
+        inputDataFilesContainer.addComponent(rawDataListLayout, "top:0px;");
+
+        mgfDataListLayout = new VerticalLayout() {
+            @Override
+            public void setVisible(boolean visible) {
+                rawDataListLayout.setVisible(!visible);
+                super.setVisible(visible); //To change body of generated methods, choose Tools | Templates.
+            }
+
+        };
+        mgfDataListLayout.setSizeFull();
+        mgfDataListLayout.setStyleName("astablelayout");
+        inputDataFilesContainer.addComponent(mgfDataListLayout, "top:0px;");
+        rawMgfController.select("rawFiles");
+
+        /**
+         * Initialise Search Engines container.
+         */
+        AbsoluteLayout searchEnginesContainer = new AbsoluteLayout();
+        searchEnginesContainer.setCaption("Search Engines");
+        searchEnginesContainer.setWidth(480, Unit.PIXELS);
+        searchEnginesContainer.setHeight(123, Unit.PIXELS);
+        searchEnginesContainer.setStyleName("titleinborder");
+        newProjectContainer.addComponent(searchEnginesContainer, "left:25px;top:539px;right:25px");
         Map<String, String> searchEnginesList = getSearchEnginesList();
         _searchEngines = setAndGetLayoutMultiSelectOptionGroup(searchEnginesList);
-        content.addComponent(_searchEngines);
+        searchEnginesContainer.addComponent(_searchEngines, "left:15px;top:15px;right:15px;");
         _searchEngines.addValueChangeListener((Property.ValueChangeEvent event) -> {
             if (_searchEngines.getSelectedValue() == null) {
                 _searchEngines.selectAll();
             }
         });
 
+        /**
+         * Project name field.
+         */
+        AbsoluteLayout projectNameContainer = new AbsoluteLayout();
+        projectNameContainer.setCaption("Project Name");
+        projectNameContainer.setWidth(480, Unit.PIXELS);
+        projectNameContainer.setHeight(55, Unit.PIXELS);
+        projectNameContainer.setStyleName("titleinborder");
+        newProjectContainer.addComponent(projectNameContainer, "left:25px;top:687px;right:25px");
+        _projectNameField = setAndGetLayoutProjectNameField();
+        projectNameContainer.addComponent(_projectNameField, "left:15px;top:15px;right:15px;");
+
         // BOTTOM LAYOUT
+        AbsoluteLayout _executeWorkFlowButtonLayoutContainer = new AbsoluteLayout();
+        _executeWorkFlowButtonLayoutContainer.setWidth(100, Unit.PERCENTAGE);
+        _executeWorkFlowButtonLayoutContainer.setHeight(40, Unit.PIXELS);
+        _executeWorkFlowButtonLayoutContainer.setStyleName("titleinborder");
+
         HorizontalLayout bottomLayout = new HorizontalLayout();
-        bottomLayout.setStyleName("bottomformlayout");
-        bottomLayout.setWidth(450, Unit.PIXELS);
+//        bottomLayout.setStyleName("bottomformlayout");
+        bottomLayout.setSizeFull();
         bottomLayout.setSpacing(true);
-        content.addComponent(bottomLayout);
-
+        _executeWorkFlowButtonLayoutContainer.addComponent(bottomLayout, "top:7.5px;bottom:7.5px");
+        newProjectContainer.addComponent(_executeWorkFlowButtonLayoutContainer, "left:25px;top:767px;right:25px");
         _executeWorkFlowBtn = setAndGetLayoutExecuteWorkFlowBtn(bottomLayout, _searchEngines, searchEnginesList);
-        _fastaFileInputLayout.setEnabled(false);
-        _mgfFileList.setEnabled(false);
-        _searchEngines.setEnabled(false);
-        _projectNameField.setEnabled(true);
-
-//        editSearchSettings.setEnabled(false);
-        _executeWorkFlowBtn.setEnabled(false);
+        _executeWorkFlowBtn.setEnabled(true);
 
         setLayoutSearchSettingsFileListListeners(_searchSettingsFileList, searchSettingInfo, _searchEngines, _executeWorkFlowBtn);
-
-        _projectNameField.addTextChangeListener((FieldEvents.TextChangeEvent event) -> {
-
-            if (event.getText() != null && !event.getText().trim().equals("")) {
-                _projectNameField.removeStyleName("focos");
-                activateTilStep(1);
-                _searchSettingsFileList.addStyleName("focos");
-                if (_searchSettingsFileList.getSelectedValue() != null) {
-                    activateTilStep(2);
-                }
-            } else {
-                _projectNameField.addStyleName("focos");
-                _searchSettingsFileList.removeStyleName("focos");
-
-                activateTilStep(0);
-            }
-        });
-
-        _mgfFileList.addValueChangeListener((Property.ValueChangeEvent event) -> {
-            if (_mgfFileList.getSelectedValue() == null) {
-                _mgfFileList.setRequired(true, "Select at least one file");
-                activateTilStep(2);
-            } else {
-                _mgfFileList.setRequired(false, "Select at least one file");
-                activateTilStep(3);
-
-            }
-        });
-        _rawFileList.addValueChangeListener((Property.ValueChangeEvent event) -> {
-            if (_rawFileList.getSelectedValue() == null) {
-                _rawFileList.setRequired(true, "Select at least one file");
-                activateTilStep(2);
-            } else {
-                _rawFileList.setRequired(false, "Select at least one file");
-                activateTilStep(3);
-
-            }
-        });
-        _projectNameField.setTextChangeTimeout(3000);
         _projectNameField.addStyleName("focos");
-        activateTilStep(0);
+        rawClickListener = (LayoutEvents.LayoutClickEvent event) -> {
+            String id = event.getComponent().getId();
+
+            if (_rawFileList.contains(id)) {
+                _rawFileList.remove(id);
+            } else {
+                _rawFileList.add(id);
+            }
+            updateRawFilesTable();
+        };
+        mgfClickListener = (LayoutEvents.LayoutClickEvent event) -> {
+            String id = event.getComponent().getId();
+            if (_mgfFileList.contains(id)) {
+                _mgfFileList.remove(id);
+            } else {
+                _mgfFileList.add(id);
+            }
+
+            updateMgfFilesTable();
+        };
 
     }
 
     protected TextField setAndGetLayoutProjectNameField() {
-        TextField projectNameField = new TextField("<b>Project Name</b>");
+        TextField projectNameField = new TextField();
         projectNameField.setInputPrompt("New Project Name");
         projectNameField.setCaptionAsHtml(true);
         projectNameField.setWidth(100, Unit.PERCENTAGE);
@@ -267,7 +359,7 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
     }
 
     protected DropDownList setAndGetLayoutSearchSettingsFileList() {
-        DropDownList searchSettingsFileList = new DropDownList("Search Settings") {
+        DropDownList searchSettingsFileList = new DropDownList(null) {
             @Override
             public void setEnabled(boolean enable) {
 
@@ -284,7 +376,17 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
     }
 
     protected DropDownList setAndGetLayoutFastaFileList() {
-        final DropDownList fastaFileList = new DropDownList("Protein Database (FASTA)") {
+        fastaFileUploader = new Uploader() {
+            @Override
+            public void filesUploaded(PluploadFile[] uploadedFiles) {
+                fastaFileUploader.setBusy(true);
+                uploadToGalaxy(uploadedFiles);
+                _fastaFileInputLayout.setEnabled(false);
+            }
+
+        };
+        fastaFileUploader.addUploaderFilter("fasta");
+        final DropDownList fastaFileList = new DropDownList(null) {
             @Override
             public boolean isValid() {
                 this.setRequired(true, "No FASTA FILE AVAILABLE");
@@ -306,7 +408,8 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
 
         fastaFileList.addStyleName("v-caption-on-left");;
         fastaFileList.setWidth(450, Unit.PIXELS);
-        fastaFileList.addStyleName("nomargintop");
+//        fastaFileList.addStyleName("nomargintop");
+        fastaFileList.addUploadBtn(fastaFileUploader.getPopupUploaderUnit());
         fastaFileList.setReadOnly(true);
 
         return fastaFileList;
@@ -318,10 +421,6 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
             public void saveSearchingFile(IdentificationParameters searchParameters, boolean isNew) {
                 checkAndSaveSearchSettingsFile(searchParameters, isNew);
                 _editSearchOption.setPopupVisible(false);
-                if (!_fastaFileInputLayout.getSelectedValue().trim().equalsIgnoreCase("")) {
-                    activateTilStep(2);
-                    _mgfFileList.setRequired(true, "Select at least one file");
-                }
                 _searchSettingsFileList.removeStyleName("focos");
             }
 
@@ -390,10 +489,9 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
     }
 
     protected MultiSelectOptionGroup setAndGetLayoutMultiSelectOptionGroup(Map<String, String> searchEnginesList) {
-        MultiSelectOptionGroup searchEngines = new MultiSelectOptionGroup("Search Engines", false) {
+        MultiSelectOptionGroup searchEngines = new MultiSelectOptionGroup(null, false) {
             @Override
             public void setEnabled(boolean enable) {
-
                 if (!enable) {
                     this.removeStyleName("focos");
                 }
@@ -404,7 +502,6 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
         searchEngines.setRequired(false, "Select at least 1 search engine");
         searchEngines.setViewList(true);
         searchEngines.addStyleName("searchenginesstyle");
-
         searchEngines.updateList(searchEnginesList);
         searchEngines.setSelectedValue("X!Tandem");
         searchEngines.setSelectedValue("MS-GF+");
@@ -414,82 +511,69 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
 
     protected Button setAndGetLayoutExecuteWorkFlowBtn(AbstractOrderedLayout layout, MultiSelectOptionGroup searchEngines, Map<String, String> searchEnginesList) {
 
-        Button executeWorkFlowBtn = new Button("Execute") {
-            @Override
-            public void setEnabled(boolean enable) {
-
-                if (!enable) {
-                    this.removeStyleName("focos");
-                }
-                super.setEnabled(enable);
-            }
-        };
+        Button executeWorkFlowBtn = new Button("Execute");
         executeWorkFlowBtn.setStyleName(ValoTheme.BUTTON_SMALL);
         executeWorkFlowBtn.addStyleName(ValoTheme.BUTTON_TINY);
+        executeWorkFlowBtn.setWidth(100,Unit.PIXELS);
+        executeWorkFlowBtn.setHeight(100,Unit.PERCENTAGE);
         layout.addComponent(executeWorkFlowBtn);
         layout.setComponentAlignment(executeWorkFlowBtn, Alignment.TOP_CENTER);
 
         executeWorkFlowBtn.addClickListener((Button.ClickEvent event) -> {
-            _mgfFileList.setRequired(true, "Select at least 1 MGF file");
-            _rawFileList.setRequired(true, "Select at least 1 MGF file");
-            searchEngines.setRequired(true, "Select at least 1 search engine");
+            if (_searchSettingsFileList.getSelectedValue() == null || _searchSettingsFileList.getSelectedValue().equalsIgnoreCase("null")) {
+                _searchSettingsFileList.addStyleName("errorstyle");
+                return;
+            } else {
+                _searchSettingsFileList.removeStyleName("errorstyle");
+            }
+            if (_fastaFileInputLayout.getSelectedValue() == null || _fastaFileInputLayout.getSelectedValue().equalsIgnoreCase("null")) {
+                _fastaFileInputLayout.addStyleName("errorstyle");
+                return;
+            } else {
+                _fastaFileInputLayout.removeStyleName("errorstyle");
+            }
+            if (_mgfFileList.isEmpty() && _rawFileList.isEmpty()) {
+                inputDataFilesContainer.addStyleName("errorstyle");
+                return;
+            } else {
+                inputDataFilesContainer.removeStyleName("errorstyle");
+            }
+            System.out.println("at search settings ?? " + _searchSettingsFileList.getSelectedValue());
+
+            if (searchEngines.getSelectedValue() == null || searchEngines.getSelectedValue().isEmpty()) {
+                searchEngines.setRequired(true, "Select at least 1 search engine");
+                return;
+            } else {
+                searchEngines.setRequired(false, "");
+            }
+            if (_projectNameField.getValue() == null || _projectNameField.getValue().trim().equalsIgnoreCase("")) {
+                _projectNameField.addStyleName("errorstyle");
+                return;
+            } else {
+                _projectNameField.removeStyleName("errorstyle");
+            }
 
             String fastFileId = this.getFastaFileId();
-            Set<String> spectrumIds = _mgfFileList.getSelectedValue();
-            Set<String> rawIds = _rawFileList.getSelectedValue();
+            Set<String> spectrumIds = _mgfFileList;
+            Set<String> rawIds = _rawFileList;
             Set<String> searchEnginesIds = searchEngines.getSelectedValue();
             String projectName = _projectNameField.getValue().replace(" ", "_").replace("-", "_") + "___" + (new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Timestamp(System.currentTimeMillis())));
 
-            if (!_projectNameField.isValid()) {
-                _mgfFileList.setRequired(false, "Select at least 1 MGF file");
-                searchEngines.setRequired(false, "Select at least 1 search engine");
-                return;
-            }
-            if (_mgfFileList.isVisible()) {
-                if (spectrumIds == null) {
-                    _projectNameField.setRequired(false);
-                    searchEngines.setRequired(false, "Select at least 1 search engine");
-                    _rawFileList.setRequired(false, "Select at least 1 MGF file");
-                    return;
-                }
-            }
-            if (_rawFileList.isVisible()) {
-                if (rawIds == null) {
-                    _projectNameField.setRequired(false);
-                    searchEngines.setRequired(false, "Select at least 1 search engine");
-                    _mgfFileList.setRequired(false, "Select at least 1 MGF file");
-                    return;
-                }
-            }
-
-            if (searchEnginesIds == null) {
-
-                _projectNameField.setRequired(false);
-                _mgfFileList.setRequired(false, "Select at least 1 MGF file");
-                return;
-            }
-            if (fastFileId == null) {
-                Notification.show("FASTA file not available", Notification.Type.ERROR_MESSAGE);
-                return;
-            }
-
-            _projectNameField.setRequired(false);
-            _mgfFileList.setRequired(false, "Select at least 1 MGF file");
             searchEngines.setRequired(false, "Select at least 1 search engine");
             Map<String, Boolean> selectedSearchEngines = new HashMap<>();
             searchEnginesList.keySet().forEach((paramId) -> {
                 selectedSearchEngines.put(paramId, searchEngines.getSelectedValue().contains(paramId));
             });
-            String searchParamerterId =  _searchSettingsMap.get(_searchSettingsFileList.getSelectedValue()).getGalaxyId();
-            if (_mgfFileList.isVisible()) {
-                executeWorkFlow(projectName, fastFileId,searchParamerterId, spectrumIds, searchEnginesIds, _searchSettingsLayout.getSearchParameters(), false);
+            String searchParamerterId = _searchSettingsMap.get(_searchSettingsFileList.getSelectedValue()).getGalaxyId();
+            if (_rawFileList.isEmpty()) {
+                executeWorkFlow(projectName, fastFileId, searchParamerterId, spectrumIds, searchEnginesIds, _searchSettingsLayout.getSearchParameters(), false);
             } else {
-                executeWorkFlow(projectName, fastFileId,searchParamerterId, rawIds, searchEnginesIds, _searchSettingsLayout.getSearchParameters(), true);
+                executeWorkFlow(projectName, fastFileId, searchParamerterId, rawIds, searchEnginesIds, _searchSettingsLayout.getSearchParameters(), true);
             }
+//            projectSupHeader.setValue("existProject");
         });
         return executeWorkFlowBtn;
     }
-//private final    WebSearchParameters tempFileReader = new WebSearchParameters();;
 
     protected void setLayoutSearchSettingsFileListListeners(DropDownList searchSettingsFileList, Label searchSettingInfo, MultiSelectOptionGroup searchEngines, Button executeWorkFlowBtn) {
 
@@ -497,13 +581,12 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
             if (_searchSettingsFileList.getSelectedValue() != null) {
                 if (_searchSettingsFileList.getSelectedValue().equalsIgnoreCase("Add new")) {
                     String basepath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
-                    //new File(basepath + "/VAADIN/SEARCHGUI_IdentificationParameters.par")    /VAADIN/default_searching.par SEARCHGUI_IdentificationParameters.par
                     try {
-                        File file = new File(basepath + "/VAADIN/SEARCHGUI_IdentificationParameters_1.par");
+                        File file = new File(basepath + "/VAADIN/SEARCHGUI_IdentificationParameters.par");
                         IdentificationParameters searchParamUtil = IdentificationParameters.getIdentificationParameters(file);
                         _searchSettingsLayout.updateForms(searchParamUtil);
                         _editSearchOption.setPopupVisible(true);
-                    } catch (Exception ex) {
+                    } catch (IOException ex) {
                         System.out.println("exception is handeled ");
                         ex.printStackTrace();
                     }
@@ -512,7 +595,7 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
 
                 try {
                     File file = _searchSettingsMap.get(_searchSettingsFileList.getSelectedValue()).getFile();
-                    _searchParameters =  IdentificationParameters.getIdentificationParameters(file);
+                    _searchParameters = IdentificationParameters.getIdentificationParameters(file);
 //                    _searchParameters.setGalaxyId( _searchSettingsMap.get(_searchSettingsFileList.getSelectedValue()).getGalaxyId());
                     String descrip = _searchParameters.getDescription();
                     for (String mod : _searchSettingsLayout.getUpdatedModiList().keySet()) {
@@ -521,8 +604,6 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
                         }
 
                     }
-
-//                            descrip = descrip.replace(_searchParameters.getFastaFile().getName(), _searchSettingsLayout.getFastaFileName(_searchParameters.getFastaFile().getName().split("__")[0]));
                     searchSettingInfo.setValue(descrip);
                 } catch (IOException ex) {
                     ex.printStackTrace();
@@ -558,7 +639,8 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
      * @param rawFilesMap Raw file map
      */
     public void updateForm(Map<String, GalaxyTransferableFile> searchSettingsMap, Map<String, GalaxyFileObject> fastaFilesMap, Map<String, GalaxyFileObject> mgfFilesMap, Map<String, GalaxyFileObject> rawFilesMap) {
-
+//        existedProjectLayout.updateDatasetsTable(peptideShakerVisualizationDatasetMap);
+        mgf_raw_dataUploader.setBusy(false);
         this._searchSettingsMap = searchSettingsMap;
         this.updateFastaFileList(fastaFilesMap);
         Map<String, String> searchSettingsFileIdToNameMap = new LinkedHashMap<>();
@@ -568,35 +650,65 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
             selectedId = id;
         }
         searchSettingsFileIdToNameMap.put("Add new", "Add new");
-
         _searchSettingsFileList.updateList(searchSettingsFileIdToNameMap);
         _searchSettingsFileList.setSelected(selectedId);
         _searchSettingsFileList.setItemIcon("Add new", VaadinIcons.FILE_ADD);
         Map<String, String> mgfFileIdToNameMap = new LinkedHashMap<>();
+        mgfDataListLayout.removeAllComponents();
+        rawDataListLayout.removeAllComponents();
+        indexer = 1;
         mgfFilesMap.keySet().forEach((id) -> {
-            mgfFileIdToNameMap.put(id, mgfFilesMap.get(id).getName());
+            GalaxyFileObject ds = mgfFilesMap.get(id);
+            mgfFileIdToNameMap.put(id, ds.getName());
+            StatusLabel statusLabel = new StatusLabel();
+            statusLabel.setStatus(ds.getStatus());
+
+            Label nameLabel = new Label(ds.getName());
+            Label type = new Label();
+            type.setValue("<b>" + ds.getType() + "</b>");
+            type.setContentMode(ContentMode.HTML);
+            type.setDescription(ds.getType());
+            RadioButton selectionRadioBtn = new RadioButton(id) {
+                @Override
+                public void selectItem(Object itemId) {
+
+                }
+            };
+
+            HorizontalLayout rowLayout = initializeRowData(new Component[]{new Label(indexer + ""), selectionRadioBtn, nameLabel, type, statusLabel}, false);
+            rowLayout.setId(id);
+            rowLayout.addLayoutClickListener(mgfClickListener);
+
+            indexer++;
+            mgfDataListLayout.addComponent(rowLayout);
         });
-        _mgfFileList.updateList(mgfFileIdToNameMap);
-        if (mgfFileIdToNameMap.size() == 1) {
-            _mgfFileList.setSelectedValue(mgfFileIdToNameMap.keySet());
-        }
-        Map<String, String> rawFileIdToNameMap = new LinkedHashMap<>();
+        indexer = 1;
+        rawDataListLayout.removeAllComponents();
         rawFilesMap.keySet().forEach((id) -> {
-            rawFileIdToNameMap.put(id, rawFilesMap.get(id).getName());
+            GalaxyFileObject ds = rawFilesMap.get(id);
+            StatusLabel statusLabel = new StatusLabel();
+            statusLabel.setStatus(ds.getStatus());
+            Label nameLabel = new Label(ds.getName());
+            Label type = new Label();
+            type.setValue("<b>" + ds.getType() + "</b>");
+            type.setContentMode(ContentMode.HTML);
+            type.setDescription(ds.getType());
+            RadioButton selectionRadioBtn = new RadioButton(id) {
+                @Override
+                public void selectItem(Object itemId) {
+
+                }
+            };
+
+            HorizontalLayout rowLayout = initializeRowData(new Component[]{new Label(indexer + ""), selectionRadioBtn, nameLabel, type, statusLabel}, false);
+            rowLayout.setId(id);
+            rowLayout.addLayoutClickListener(rawClickListener);
+
+            rawDataListLayout.addComponent(rowLayout);
+            indexer++;
         });
-        _rawFileList.updateList(rawFileIdToNameMap);
-        _inputFileList.setItemEnabled("spectrumFile", !mgfFileIdToNameMap.isEmpty());
-        _inputFileList.setItemEnabled("rawFile", !rawFileIdToNameMap.isEmpty());
-
-        if (!rawFileIdToNameMap.isEmpty()) {
-            _inputFileList.setValue("rawFile");
-        } else if (!mgfFileIdToNameMap.isEmpty()) {
-            _inputFileList.setValue("spectrumFile");
-        } else {
-            _inputFileList.setValue(null);
-
-        }
-
+        updateMgfFilesTable();
+        updateRawFilesTable();
     }
 
     /**
@@ -610,7 +722,7 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
      * @param searchParameters searching parameters // * @param searchEngines
      * search engines
      */
-    public abstract void executeWorkFlow(String projectName, String fastaFileId,String searchParameterFileId, Set<String> inputIdsList, Set<String> searchEnginesList, IdentificationParameters searchParameters, boolean quant);
+    public abstract void executeWorkFlow(String projectName, String fastaFileId, String searchParameterFileId, Set<String> inputIdsList, Set<String> searchEnginesList, IdentificationParameters searchParameters, boolean quant);
 
     /**
      * Validate and save search setting .par file on galaxy server for future
@@ -650,11 +762,17 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
      * @param fastaFilesMap Map of FASTA files galaxy ID and FASTA Files dataset
      */
     public void updateFastaFileList(Map<String, GalaxyFileObject> fastaFilesMap) {
+        if (fastaFileIdToNameMap != null && fastaFileIdToNameMap.size() != fastaFilesMap.size()) {
+            fastaFileUploader.setBusy(false);
+            _fastaFileInputLayout.setEnabled(true);
+        }
         fastaFileIdToNameMap = new LinkedHashMap<>();
         String selectedId = "";
         for (String id : fastaFilesMap.keySet()) {
             fastaFileIdToNameMap.put(id, fastaFilesMap.get(id).getName());
-            selectedId = id;
+            if (selectedId.equals("")) {
+                selectedId = id;
+            }
         }
         this._fastaFileInputLayout.updateList(fastaFileIdToNameMap);
         this._fastaFileInputLayout.setSelected(selectedId);
@@ -683,17 +801,60 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
      * @param isNew create new file or edit exist file
      * @return updated search parameters files map
      */
-    public abstract Map<String, GalaxyTransferableFile> saveSearchGUIParameters(IdentificationParameters  searchParameters, boolean isNew);
+    public abstract Map<String, GalaxyTransferableFile> saveSearchGUIParameters(IdentificationParameters searchParameters, boolean isNew);
 
-    private void activateTilStep(int step) {
+    /**
+     * upload file into galaxy
+     *
+     *
+     * @param toUploadFiles files to be uploaded to galaxy
+     * @return updated files map
+     */
+    public abstract boolean uploadToGalaxy(PluploadFile[] toUploadFiles);
 
-        _searchSettingsFileList.setEnabled(step > 0);
-        _fastaFileInputLayout.setEnabled(step > 1);
-        _inputFileList.setEnabled(step > 1);
-        _mgfFileList.setEnabled(step > 1);
-        _rawFileList.setEnabled(step > 1);
-        _searchEngines.setEnabled(step > 1);
-        _executeWorkFlowBtn.setEnabled(step > 2);
+    private HorizontalLayout initializeRowData(Component[] data, boolean header) {
+        HorizontalLayout row = new HorizontalLayout();
+        row.setSpacing(true);
+        int i = 0;
+        for (Component component : data) {
+            component.addStyleName(ValoTheme.LABEL_NO_MARGIN);
+            row.addComponent(component);
+            row.setComponentAlignment(component, Alignment.MIDDLE_CENTER);
+            row.setExpandRatio(component, expandingRatio[i]);
+            i++;
+        }
+        row.setWidth(100, Unit.PERCENTAGE);
+        row.setHeight(30, Unit.PIXELS);
+        row.setStyleName("row");
+        if (header) {
+            row.addStyleName("header");
+        }
 
+        return row;
+    }
+
+    private void updateMgfFilesTable() {
+        Iterator<Component> itr = mgfDataListLayout.iterator();
+        while (itr.hasNext()) {
+            HorizontalLayout raw = (HorizontalLayout) itr.next();
+            if (_mgfFileList.contains(raw.getId() + "")) {
+                raw.addStyleName("selectedraw");
+            } else {
+                raw.removeStyleName("selectedraw");
+            }
+        }
+
+    }
+
+    private void updateRawFilesTable() {
+        Iterator<Component> itr = rawDataListLayout.iterator();
+        while (itr.hasNext()) {
+            HorizontalLayout raw = (HorizontalLayout) itr.next();
+            if (_rawFileList.contains(raw.getId() + "")) {
+                raw.addStyleName("selectedraw");
+            } else {
+                raw.removeStyleName("selectedraw");
+            }
+        }
     }
 }
