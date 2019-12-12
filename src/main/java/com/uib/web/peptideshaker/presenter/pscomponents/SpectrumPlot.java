@@ -330,7 +330,6 @@ public class SpectrumPlot extends AbsoluteLayout {
         ionsItem.getChildren().forEach((mi) -> {
             mi.setChecked(false);
         });
-        System.out.println("at farward ions " + identificationParameters.getSearchParameters().getForwardIons());
         identificationParameters.getSearchParameters().getForwardIons().forEach((i) -> {
             ionsItem.getChildren().get(i).setChecked(true);
         });
@@ -501,7 +500,6 @@ public class SpectrumPlot extends AbsoluteLayout {
 //            spectrumAnnotator.setPeptide(currentPeptide, specificAnnotationPreferences.getPrecursorCharge(), specificAnnotationPreferences);
         IonMatch[] annotations = spectrumAnnotator.getSpectrumAnnotation(annotationParameters, specificAnnotationParameters, currentSpectrum, currentPeptide,
                 modificationParameters, sequenceProvider, modificationSequenceMatchingParameters);
-        System.out.println("at current spectrum key 1 ------->>> update annotaion prefrencve " + annotations);
         spectrumPanel.setAnnotations(SpectrumAnnotator.getSpectrumAnnotation(annotations));
         spectrumPanel.showAnnotatedPeaksOnly(!annotationParameters.showAllPeaks());
         spectrumPanel.setYAxisZoomExcludesBackgroundPeaks(annotationParameters.yAxisZoomExcludesBackgroundPeaks());//
@@ -537,13 +535,13 @@ public class SpectrumPlot extends AbsoluteLayout {
     private SpectrumMatch spectrumMatch;
     private Thread selectedSpectrumThread;
 
-    public void selectedSpectrum(Spectrum currentSpectrum,SequenceProvider sequanceProvider, String charge, double fragmentIonAccuracy, IdentificationParameters identificationParameters, SpectrumMatch spectrumMatch) {
+    public void selectedSpectrum(Spectrum currentSpectrum, SequenceProvider sequanceProvider, String charge, double fragmentIonAccuracy, IdentificationParameters identificationParameters, SpectrumMatch spectrumMatch) {
         mainSizeReporter.removeResizeListener(compResizeListener);
         this.identificationParameters = identificationParameters;
         this.currentSpectrum = currentSpectrum;
         this.fragmentIonAccuracy = fragmentIonAccuracy;
         this.spectrumMatch = spectrumMatch;
-        this.sequenceProvider=sequanceProvider;
+        this.sequenceProvider = sequanceProvider;
         if (spectrumPanel != null) {
             spectrumPanel.reset();
             if (selectedSpectrumThread.isAlive()) {
@@ -552,12 +550,11 @@ public class SpectrumPlot extends AbsoluteLayout {
         }
         selectedSpectrumThread = new Thread(() -> {
             Precursor precursor = currentSpectrum.getPrecursor();
-            spectrumPanel =  new WebSpectrumPanel(
-                            currentSpectrum.getOrderedMzValues(), currentSpectrum.getIntensityValuesAsArray(),
-                            precursor.getMz(), Charge.toString(spectrumMatch.getBestPeptideAssumption().getIdentificationCharge()),
-                            "", 40, false, false, false, 2, false);
-                    
-                    
+            spectrumPanel = new WebSpectrumPanel(
+                    currentSpectrum.getOrderedMzValues(), currentSpectrum.getIntensityValuesAsArray(),
+                    precursor.getMz(), Charge.toString(spectrumMatch.getBestPeptideAssumption().getIdentificationCharge()),
+                    "", 40, false, false, false, 2, false);
+
 //                    
 //                    new WebSpectrumPanel(currentSpectrum.getOrderedMzValues(), currentSpectrum.getIntensityValuesNormalizedAsArray(), 500, "2",
 //                    "", 40, false, false, false, 2, false);

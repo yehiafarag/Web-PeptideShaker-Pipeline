@@ -1,16 +1,15 @@
 package com.uib.web.peptideshaker.model;
 
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
-import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.ProteinGroupObject;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import pl.exsio.plupload.PluploadFile;
@@ -29,18 +28,26 @@ public abstract class UploadedProjectUtility {
         File proteinFile = null;
         File peptideFile = null;
         boolean[] checkFiles = new boolean[2];
+        
+        List<String> filesnames = new ArrayList<>(3);
+        filesnames.add("");
+        filesnames.add("");
+        filesnames.add("");
         for (String key : uploadedFileMap.keySet()) {
             switch (key) {
                 case "Fasta":
                     fastaFile = (File) uploadedFileMap.get(key).getUploadedFile();
+                  filesnames.set(0,uploadedFileMap.get(key).getName() );
                     break;
                 case "Protein":
                     proteinFile = (File) uploadedFileMap.get(key).getUploadedFile();
                    checkFiles[0]=  checkProteinsFile(proteinFile);
+                     filesnames.set(1,uploadedFileMap.get(key).getName());
                     break;
                 case "Peptide":
                     peptideFile = (File) uploadedFileMap.get(key).getUploadedFile();
                     checkFiles[1]= checkPeptideFile(peptideFile);
+                      filesnames.set(2,uploadedFileMap.get(key).getName() );
                     break;
 
             }
@@ -48,8 +55,8 @@ public abstract class UploadedProjectUtility {
          if (!checkFiles[0] || !checkFiles[1]) {
              return checkFiles;
          }
-
-        projectName = projectName.replace(" ", "_").replace("-", "_") + "___" + (new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Timestamp(System.currentTimeMillis())));
+        projectName = projectName.replace(" ", "_").replace("-", "_") + "___" + (new SimpleDateFormat("dd-MM-yyyy_HH:mm:ss").format(new Timestamp(System.currentTimeMillis()))+ "___" +filesnames.toString().replace(" ", "").replace("[","").replace("]",""));
+      
         PeptideShakerVisualizationDataset psDs = new PeptideShakerVisualizationDataset(projectName, fastaFile, proteinFile, peptideFile, csf_pr_Accession_List) {
             @Override
             public Set<String[]> getPathwayEdges(Set<String> proteinAcc) {

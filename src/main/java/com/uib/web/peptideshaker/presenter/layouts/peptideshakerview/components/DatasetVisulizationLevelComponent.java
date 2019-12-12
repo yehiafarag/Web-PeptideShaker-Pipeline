@@ -146,7 +146,7 @@ public class DatasetVisulizationLevelComponent extends AbsoluteLayout implements
                 mainTable.setColumnWidth("validation", Math.max(32, (int) (32 * corrector)));
                 mainTable.setColumnWidth("confidence", Math.max(120, (int) (120 * corrector)));
                 mainTable.setColumnWidth("chromosom", Math.max(37, (int) (37 * corrector)));
-                mainTable.setColumnWidth("Name", Math.max(282, lastWidth - ((int) ((775 + intensityColumnWidth) * corrector))));
+                mainTable.setColumnWidth("Name", Math.max(282, lastWidth - ((int) ((775 + intensityColumnWidth) * corrector))-8));
                 proteinTableContainer.activateColumnResizeListener();
             }
         });

@@ -368,8 +368,12 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
      */
     @Override
     public String getStatus() {
+
         if (externalDataset || uploadedProject) {
             return status;
+        }
+        if (status.equalsIgnoreCase("new")) {
+            return "new";
         }
         if (SearchGUIResultFile == null) {
             return "Error";
@@ -488,8 +492,20 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
      * @return map of MGF input files used in generating the dataset.
      */
     public Map<String, GalaxyFileObject> getInputMGFFiles() {
+        if (multiMgf) {
+            Map<String, GalaxyFileObject> tempinputMGFFile = new LinkedHashMap<>();
+            for (String mgfName : inputMGFFiles.keySet()) {
+                if (mgfName.contains("-Multi-Indexed-MGF")) {
+                    tempinputMGFFile.put(mgfName, inputMGFFiles.get(mgfName));
+                }
+            }
+            this.inputMGFFiles.clear();
+            this.inputMGFFiles.putAll(tempinputMGFFile);
+            multiMgf = false;
+        }
         return inputMGFFiles;
     }
+    private boolean multiMgf = false;
 
     /**
      * Add MGF file to the dataset
@@ -498,7 +514,11 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
      * @param mgfDs MGF file representation on Online PeptideShaker
      */
     public void addMgfFiles(String mgfFileID, GalaxyFileObject mgfDs) {
+        if (mgfDs.getName().contains("-Multi-Indexed-MGF")) {
+            multiMgf = true;
+        }
         this.inputMGFFiles.put(mgfFileID, mgfDs);
+
     }
 
     /**
@@ -672,6 +692,21 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
         }
 
         return "input_fasta_file.fasta";
+    }
+
+    public String getUploadedFastaFileName() {
+        return uploadedFastaFile.getName();
+
+    }
+
+    public String getUploadedProteinFileName() {
+        return uploadedProteinFile.getName();
+
+    }
+
+    public String getUploadedPeptStringFileName() {
+        return uploadedPeptideFile.getName();
+
     }
 
     /**
@@ -1594,7 +1629,17 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
      * @return map of Spectrum Information
      */
     public Map<Object, SpectrumInformation> getSelectedSpectrumData(List<PSMObject> PSMs, PeptideObject peptideObject) {//SpectrumPlot plot
-
+        if (multiMgf) {
+            Map<String, GalaxyFileObject> tempinputMGFFile = new LinkedHashMap<>();
+            for (String mgfName : inputMGFFiles.keySet()) {
+                if (mgfName.contains("-Multi-Indexed-MGF")) {
+                    tempinputMGFFile.put(mgfName, inputMGFFiles.get(mgfName));
+                }
+            }
+            this.inputMGFFiles.clear();
+            this.inputMGFFiles.putAll(tempinputMGFFile);
+            multiMgf = false;
+        }
         if (identificationParameters == null) {
             initialiseIdintificationParameters();
         }
@@ -1606,8 +1651,6 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
             try {
                 if (!importedMgfFilesIndexers.containsKey(selectedPsm.getSpectrumFile())) {
                     Object object = SerializationUtils.readObject(MGFFileIndexMap.get("data/" + selectedPsm.getSpectrumFile() + ".cui").getFile());
-//                    MgfIndex newIndex = converIndex((com.compomics.util.experiment.io.mass_spectrometry.mgf.MgfIndex) object);
-                    System.out.println("at mgf file index " + MGFFileIndexMap.keySet());
                     importedMgfFilesIndexers.put(selectedPsm.getSpectrumFile(), (com.compomics.util.experiment.io.mass_spectrometry.mgf.MgfIndex) object);
                 }
 
@@ -1622,9 +1665,12 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
                     galaxyFileId = ds.getGalaxyId();
                     galaxyHistoryId = ds.getHistoryId();
                     break;
+                } else if (ds.getName().endsWith("-Multi-Indexed-MGF") && ds.getName().contains(selectedPsm.getSpectrumFile().replace(".mgf", ""))) {
+                    galaxyFileId = ds.getGalaxyId();
+                    galaxyHistoryId = ds.getHistoryId();
+                    break;
                 }
-            }
-            System.out.println("at ---->>> here we had an error " + mgfIndex);//+" hid:  "+ galaxyHistoryId+", fileid: "+ galaxyFileId+","+ selectedPsm.getSpectrumFile());
+            }//+" hid:  "+ galaxyHistoryId+", fileid: "+ galaxyFileId+","+ selectedPsm.getSpectrumFile());
             Spectrum spectrum = galaxyDatasetServingUtil.getSpectrum(mgfIndex.getIndex(selectedPsm.getSpectrumTitle()), galaxyHistoryId, galaxyFileId, selectedPsm.getSpectrumFile());
             int tCharge = 0;
             if (!selectedPsm.getMeasuredCharge().trim().equalsIgnoreCase("")) {
@@ -1650,8 +1696,7 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
                 }
             }
 
-            System.out.println("at selectedPsm " + selectedPsm.getProteins() + "  " + peptideObject.getProteinGroupKey());
-//            Protein psProtein = new Protein(galaxyLink, enzyme)
+          //            Protein psProtein = new Protein(galaxyLink, enzyme)
             Peptide psPeptide = new Peptide(peptideObject.getSequence(), peptideObject.getVariableModifications());//modifiedPeptideSequence.replace("NH2-", "").replace("-COOH", "")
 //            psPeptide.setProteinMapping(new ArrayList<>(selectedPsm.getProteins()));
             PeptideAssumption psAssumption = new PeptideAssumption(psPeptide, tCharge);
@@ -2818,14 +2863,14 @@ public abstract class PeptideShakerVisualizationDataset extends GalaxyFileObject
     public Set<NetworkGraphEdge> updateProteinPathwayInformation(Map<String, ProteinGroupObject> proteinNodes) {
 
         proteinNodes.values().stream().filter((protein) -> !(protein.isProtoformUpdated())).forEachOrdered((protein) -> {
-            Map<String, NetworkGraphNode>  subNodes ;
+            Map<String, NetworkGraphNode> subNodes;
             try {
                 if (uploadedProject) {
-                    subNodes=null;
+                    subNodes = null;
                 } else {
-                     subNodes = processPathwayMatcherFilesTask.call().get(protein.getAccession());
+                    subNodes = processPathwayMatcherFilesTask.call().get(protein.getAccession());
                 }
-               
+
                 NetworkGraphNode parentNode = new NetworkGraphNode(protein.getAccession(), true, true) {
                     @Override
                     public void selected(String id) {

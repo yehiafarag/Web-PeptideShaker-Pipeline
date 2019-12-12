@@ -1897,6 +1897,7 @@
         width: auto !important;
         height:100% !important;
         border:2px solid white;
+        padding-top: 3px;
     }
     .resizableimg img:hover{
         background-color: gray;
@@ -5009,21 +5010,17 @@
 
     }
     .v-absolutelayout-wrapper-smooth .v-label{
-
-        color:black;
-        border:1px solid gray;
-        height:17px !important;
-        top:6px !important;
-        left:50% !important;
-        margin-left:-90px;
-        background-color:rgba(255, 255, 255, 0.6);
-
-        width:180px !important;
-        text-align:center;
-        text-overflow:ellipsis;
-        overflow:hidden;
-        line-height:15px;
-        position:absolute;
+        color: black;
+        border: 1px solid gray;
+        height: 17px !important;
+        top: 6px !important;
+        background-color: rgba(255, 255, 255, 0.6);
+        width: 100% !important;
+        text-align: center;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        line-height: 15px;
+        position: absolute;
     }
     .piechartlegend {
         width:auto !important;
@@ -5290,19 +5287,19 @@
     }
 
     .mobilestyle .v-caption-useroverviewpanelstyle .Vaadin-Icons{
-        font-size:17px;
-        font-weight:bold;
-        color:gray !important;
-        position:absolute;
-        left:50% !important;
-        top:200px;
-        background-color:whitesmoke;
-        border:1px solid lightgray;
-        border-radius:3px;
-        width:20px !important;
-        height:20px;
-        text-align:right;
-        line-height:21px;
+        font-size: 17px;
+        font-weight: bold;
+        color: gray !important;
+        position: absolute;
+        top:5px;
+        right: -10px !important;
+        background-color: whitesmoke;
+        border: 1px solid lightgray;
+        border-radius: 20px;
+        width: 20px !important;
+        height: 20px;
+        text-align: right;
+        line-height: 21px;
         transform: rotate(-180deg);
         -webkit-transform: rotate(-180deg);
         -moz-transform: rotate(-180deg);
@@ -5311,26 +5308,27 @@
         filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
     }
     .mobilestyle  .v-caption-hidecontent .Vaadin-Icons{
-        font-size:17px;
-        font-weight:bold;
-        color:gray !important;
-        position:absolute;
-        left:16px !important;
-        top:200px;
-        background-color:whitesmoke;
-        border:1px solid lightgray;
-        border-radius:3px;
-        width:20px !important;
-        height:20px;
-        text-align:right;
-        line-height:21px;
+        font-size: 17px;
+        font-weight: bold;
+        color: gray !important;
+        position: absolute;
+        left:17px !important;
+        top: 12px;
+        background-color: whitesmoke;
+        border: 1px solid lightgray;
+        border-radius: 20px;
+        width: 20px !important;
+        height: 20px;
+        text-align: right;
+        line-height: 21px;
         transform: rotate(0deg);
         -webkit-transform: rotate(0deg);
         -moz-transform: rotate(0deg);
         -ms-transform: rotate(0deg);
         -o-transform: rotate(0deg);
         filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=0);
-        z-index:0 !important;
+        z-index: 0 !important;
+        cursor: pointer;
     }
     .mobilestyle .v-verticallayout-useroverviewpanelstyle {
         background-color:transparent;
@@ -5369,7 +5367,7 @@
         z-index:3 !important;
         border:1px solid lightgray;
         border-radius:5px;
-        max-height:250px;
+        max-height:205px;
     }
     .mobilestyle .v-slot-useroverviewpanelstyle.v-slot-hidecontent {
         max-width:25px !important;
@@ -5380,10 +5378,12 @@
 
     .mobilestyle .useroverviewpanelstyle{
         border-right-color:transparent ;
+        cursor:pointer;
     }
     .mobilestyle .useroverviewpanelstyle.hidecontent {
         border-right-color:lightgray;
-
+        padding-top: 25px;
+        cursor:pointer;
     }
     .mobilestyle .v-absolutelayout-wrapper-singlebtn{
         display:none
@@ -7093,6 +7093,84 @@
         color:gray !important;
 
     }
+
+    .v-label-uploadeddsinfo {
+        border:1px solid  lightgray;
+        background-color:whitesmoke;
+        border-radius:5px;
+    }
+    .v-label-uploadeddsinfo h1{
+        font-size:14px;
+        margin:5px;
+        font-weight:600;
+        border-bottom:1px solid lightgray;
+        padding-bottom:15px;
+        margin-left:15px !important;
+        margin-right:15px !important;
+    }
+
+    .v-label-uploadeddsinfo p{
+        font-size:12px;
+        margin:20px;
+        font-weight:500;
+        text-overflow:ellipsis;
+        overflow:hidden;
+        max-height:20px;
+        white-space: nowrap;
+    }
+    .v-window-windowcontainer .v-window-closebox {		
+        top: 10px !important;
+        position:absolute !important;
+        border-radius: 4px !important;
+        border: 1px solid #c5c5c5 !important;
+        background-color: #fafafa !important;
+        line-height: 20px !important;
+        padding:0px !important;
+        color:gray !important;
+    }
+.dropdownlistframe .v-caption-popupuploader img {
+    top: 3px !important;
+    left: 13px !important;
+}
+
+.v-popupview-popup-popupuploader {
+	background-color:rgba(0,0,0,0.6) !important;
+	width:100% !important; 
+	height:100% !important;
+	top:0px !important;
+	left:0px !important;
+	border-radius:0px !important;
+}
+
+.v-popupview-popup-popupuploader .popupContent{
+	background-color:white !important;
+	border:2px solid lightgray;
+	width: 378px !important;
+	height: 34px !important;
+	top:30% !important;
+	left:50% !important;
+	position:absolute;
+	border-radius:5px;
+	padding-top:5px;
+	padding-bottom:3px;
+	padding-left:3px;
+	padding-right:3px;
+	margin-left:-189px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }
 

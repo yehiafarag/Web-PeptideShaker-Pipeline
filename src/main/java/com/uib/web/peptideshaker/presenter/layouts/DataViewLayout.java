@@ -45,6 +45,8 @@ public abstract class DataViewLayout extends Panel {
     private final float[] expandingRatio = new float[]{5f, 31f, 8f, 8f, 8f, 8f, 8f, 8f, 8f, 8f};
     private final AbsoluteLayout panelsContainers;
     private final Map<String, ActionLabel> datasetLabelSet;
+    private Component nameLabel;
+    private boolean nelsSupported;
 
     /**
      * Constructor to initialise the main layout and attributes.
@@ -71,17 +73,13 @@ public abstract class DataViewLayout extends Panel {
         topDataTable.setSpacing(true);
         topPanelLayout.setContent(topDataTable);
 
-    
-
         Label inputFilesLabel = new Label("<font style='color: rgb(71, 71, 71); font-size: 14px;font-weight: 400; line-height:40px !important;'>Input Files</font>", ContentMode.HTML);
         panelsContainers.addComponent(inputFilesLabel, "top:50%;left:10px;right:10px;bottom:50%;");
         bottomPanelLayout = new Panel();
         bottomPanelLayout.setStyleName(ValoTheme.PANEL_BORDERLESS);
         bottomPanelLayout.setWidth(100, Unit.PERCENTAGE);
         bottomPanelLayout.setHeight(100, Unit.PERCENTAGE);
-//        bottomPanelLayout.setSpacing(true);
         bottomPanelLayout.addStyleName("maxheight50per");
-//        bottomPanelLayout.setMargin(new MarginInfo(false, false, true, false));
         panelsContainers.addComponent(bottomPanelLayout, "top: 50%;left: 10px;right: 10px;bottom: 10px;");
         bottomDataTable = new VerticalLayout();
         bottomDataTable.setWidth(100, Unit.PERCENTAGE);
@@ -91,8 +89,6 @@ public abstract class DataViewLayout extends Panel {
         initHeaders();
 
     }
-    private Component nameLabel;
-    private boolean nelsSupported;
 
     private void initHeaders() {
         Label headerName = new Label("Name");
@@ -156,10 +152,9 @@ public abstract class DataViewLayout extends Panel {
 
     public void updateDatasetsTable(Map<String, GalaxyFileObject> historyFilesMap) {
         datasetLabelSet.clear();
-        nelsSupported = false;//(boolean) VaadinSession.getCurrent().getAttribute("nelsgalaxy");
+        nelsSupported = false;
         topDataTable.removeAllComponents();
         bottomDataTable.removeAllComponents();
-
         int i = 1;
         for (GalaxyFileObject ds : historyFilesMap.values()) {
             if (ds.getName() == null || ds.getType().equalsIgnoreCase("FASTA File")) {
@@ -248,8 +243,7 @@ public abstract class DataViewLayout extends Panel {
 //            getToGalaxyLabel.setEnabled(!ds.isAvailableOnGalaxy());
             getToGalaxyLabel.setVisible(nelsSupported);
             HorizontalLayout rowLayout;
-            
-            
+
             if (ds.getType().equalsIgnoreCase("User uploaded Project")) {
                 nameLabel = new ActionLabel(VaadinIcons.CLUSTER, ds.getName().split("___")[0], "Uploaded Project results ") {
                     @Override
@@ -270,24 +264,17 @@ public abstract class DataViewLayout extends Panel {
 
                 };
                 infoLabel.setIcon(VaadinIcons.INFO_CIRCLE_O);
-                
-//                SearchSettingsLayout dsOverview = new SearchSettingsLayout((PeptideShakerVisualizationDataset) ds, false) {
-//                    private final PopupWindow tDsOverview = (PopupWindow) infoLabel;
-//
-//                    @Override
-//                    public void saveSearchingFile(IdentificationParameters searchParameters, boolean isNew) {
-//                        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-//                    }
-//
-//                    @Override
-//                    public void cancel() {
-//                        ((PopupWindow) tDsOverview).setPopupVisible(false);
-//                    }
-//
-//                };
-//                ((PopupWindow) infoLabel).setContent(dsOverview);
-                ((PopupWindow) infoLabel).setDescription("View search settings ");
+                VerticalLayout labelContainer = new VerticalLayout();
+                labelContainer.setWidth(330, Unit.PIXELS);
+                labelContainer.setHeight(260, Unit.PIXELS);
+                Label l = new Label("<h1>Uploaded Project</h1><p>Prject:      " + ds.getName().split("___")[0] + "</p><p>Upload time:" + ds.getName().split("___")[1].replace("_", " ") + "</p><p>Fasta:       " + ds.getName().split("___")[2].split(",")[0] + "</p><p>Proteins:    " + ds.getName().split("___")[2].split(",")[1] + "</p><p>Peptides:    " + ds.getName().split("___")[2].split(",")[2] + "</p>", ContentMode.HTML);
+                l.setSizeFull();
+                l.setStyleName("uploadeddsinfo");
+                labelContainer.addComponent(l);
 
+                ((PopupWindow) infoLabel).setContent(labelContainer);
+                ((PopupWindow) infoLabel).setDescription("View search settings ");
+                ((PopupWindow) infoLabel).setClosable(true);
                 if (statusLabel.getStatus() == 2) {
                     statusLabel.setStatus("Some files are missings or corrupted please re-run SearchGUI-PeptideShaker-WorkFlow");
                 }
@@ -300,17 +287,17 @@ public abstract class DataViewLayout extends Panel {
                 if (((PeptideShakerVisualizationDataset) ds).isQuantDataset()) {
                     quant = "<font>Quant</font>";
                 }
-                Label type = new Label(VaadinIcons.FILE_TEXT_O.getHtml() + "<div class='overlayicon'>" + VaadinIcons.ARROW_CIRCLE_UP_O.getHtml() + "</div>"+quant,ContentMode.HTML);
-               
+                Label type = new Label(VaadinIcons.FILE_TEXT_O.getHtml() + "<div class='overlayicon'>" + VaadinIcons.ARROW_CIRCLE_UP_O.getHtml() + "</div>" + quant, ContentMode.HTML);
+
                 type.setDescription(ds.getType() + " " + quantTooltip);
-                type.setStyleName("smalliconlabel"); 
+                type.setStyleName("smalliconlabel");
                 type.addStyleName("datatypeicon");
-                 ClipboardUtil shareLabel = new ClipboardUtil("");
-                 shareLabel.setEnabled(false);
+                ClipboardUtil shareLabel = new ClipboardUtil("");
+                shareLabel.setEnabled(false);
+                downloadLabel.setEnabled(false);
                 rowLayout = initializeRowData(new Component[]{new Label(i + ""), nameLabel, type, infoLabel, shareLabel, getToGalaxyLabel, nelsLabel, downloadLabel, deleteLabel, statusLabel}, false);
                 topDataTable.addComponent(rowLayout);
-            }
-            else if (ds.getType().equalsIgnoreCase("Web Peptide Shaker Dataset")) {
+            } else if (ds.getType().equalsIgnoreCase("Web Peptide Shaker Dataset")) {
 
                 nameLabel = new ActionLabel(VaadinIcons.CLUSTER, ds.getName().split("___")[0], "PeptideShaker results ") {
                     @Override
@@ -345,15 +332,6 @@ public abstract class DataViewLayout extends Panel {
 
                 }
                 ClipboardUtil shareLabel = new ClipboardUtil(link);
-//                DatasetOverviewLayout dsOverview = new DatasetOverviewLayout((PeptideShakerVisualizationDataset) ds) {
-//                    private final PopupWindow tDsOverview = (PopupWindow) infoLabel;
-//
-//                    @Override
-//                    public void close() {
-//                        ((PopupWindow) tDsOverview).setPopupVisible(false);
-//                    }
-//
-//                };
                 SearchSettingsLayout dsOverview = new SearchSettingsLayout((PeptideShakerVisualizationDataset) ds, false) {
                     private final PopupWindow tDsOverview = (PopupWindow) infoLabel;
 
@@ -368,8 +346,12 @@ public abstract class DataViewLayout extends Panel {
                     }
 
                 };
+                dsOverview.setSizeFull();
                 ((PeptideShakerVisualizationDataset) ds).setEnzyme(dsOverview.getEnzyme());
                 ((PopupWindow) infoLabel).setContent(dsOverview);
+                ((PopupWindow) infoLabel).setWidth(500, Unit.PIXELS);
+                ((PopupWindow) infoLabel).setHeight(500, Unit.PIXELS);
+                ((PopupWindow) infoLabel).setClosable(true);
                 ((PopupWindow) infoLabel).setDescription("View search settings ");
                 if (statusLabel.getStatus() == 2) {
                     statusLabel.setStatus("Some files are missings or corrupted please re-run SearchGUI-PeptideShaker-WorkFlow");
@@ -398,6 +380,7 @@ public abstract class DataViewLayout extends Panel {
                 infoLabel.addStyleName("centeredicon");
                 FileOverviewLayout fileOverview = new FileOverviewLayout(ds) {
                     private final PopupWindow tFileOverview = (PopupWindow) infoLabel;
+
                     @Override
                     public void close() {
                         ((PopupWindow) tFileOverview).setPopupVisible(false);
@@ -474,7 +457,7 @@ public abstract class DataViewLayout extends Panel {
     public abstract void deleteDataset(GalaxyFileObject ds);
 
     public abstract boolean sendToNeLS(GalaxyFileObject ds);
-    private final String html_Img =VaadinIcons.EYE.getHtml();// "<img src='VAADIN/themes/webpeptideshakertheme/img/venn_color.png' alt='Selected Project' style='width:25px; height: 25px'>";
+    private final String html_Img = VaadinIcons.EYE.getHtml();// "<img src='VAADIN/themes/webpeptideshakertheme/img/venn_color.png' alt='Selected Project' style='width:25px; height: 25px'>";
 
     public abstract boolean getFromNels(GalaxyFileObject ds);
 

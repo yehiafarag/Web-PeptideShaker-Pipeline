@@ -22,7 +22,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.LinkedHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.net.ssl.HttpsURLConnection;
@@ -97,18 +96,20 @@ public class PeptidShakerUI extends UI {
             String galaxyServerUrl = (scx.getInitParameter("galaxyServerUrl"));
             VaadinSession.getCurrent().setAttribute("galaxyServerUrl", galaxyServerUrl);
             String csfprLink = (scx.getInitParameter("csfprservice"));
-            String dbURL = (scx.getInitParameter("url"));
-            String dbDriver = (scx.getInitParameter("driver"));
-            String dbUserName = (scx.getInitParameter("userName"));
-            String dbPassword = (scx.getInitParameter("password"));
-            VaadinSession.getCurrent().setAttribute("dbURL", dbURL);
-            VaadinSession.getCurrent().setAttribute("dbDriver", dbDriver);
-            VaadinSession.getCurrent().setAttribute("dbUserName", dbUserName);
-            VaadinSession.getCurrent().setAttribute("dbPassword", dbPassword);
+//            String dbURL = (scx.getInitParameter("url"));
+//            String dbDriver = (scx.getInitParameter("driver"));
+//            String dbUserName = (scx.getInitParameter("userName"));
+//            String dbPassword = (scx.getInitParameter("password"));
+//            VaadinSession.getCurrent().setAttribute("dbURL", dbURL);
+//            VaadinSession.getCurrent().setAttribute("dbDriver", dbDriver);
+//            VaadinSession.getCurrent().setAttribute("dbUserName", dbUserName);
+//            VaadinSession.getCurrent().setAttribute("dbPassword", dbPassword);
             VaadinSession.getCurrent().setAttribute("csfprLink", csfprLink);
-            if (VaadinSession.getCurrent().getAttribute("uploaded_projects") == null) {
-                VaadinSession.getCurrent().setAttribute("uploaded_projects", new LinkedHashMap<>());
-            }
+
+            String psVersion = (scx.getInitParameter("psvirsion"));
+            String searchGUIversion = (scx.getInitParameter("searchguivirsion"));
+            VaadinSession.getCurrent().setAttribute("psVersion", psVersion);
+            VaadinSession.getCurrent().setAttribute("searchGUIversion", searchGUIversion);
 
             if (testUserAPIKey == null || galaxyServerUrl == null || !checkConnectionToGalaxy(galaxyServerUrl)) {
 //              updateCSFPRProteinsList(csfProteinsListURL);
@@ -120,8 +121,8 @@ public class PeptidShakerUI extends UI {
             }
             int screenH = Page.getCurrent().getWebBrowser().getScreenHeight();
             int screenW = Page.getCurrent().getWebBrowser().getScreenWidth();
-            mobileScreenComp = (Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile")) || (screenW < 1349 || screenH < 1000);
-            verticalScreenMode = (Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight());
+            mobileScreenComp = false;//(Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile")) || (screenW < 1349 || screenH < 1000);
+            verticalScreenMode = false;//(Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight());
 
 //            if (mobileScreenComp) {
             VaadinSession.getCurrent().setAttribute("smallscreenstyle", false);

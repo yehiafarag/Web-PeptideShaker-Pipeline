@@ -15121,6 +15121,7 @@ div.v-layout.v-horizontal.v-widget {
 	width: auto !important;
 	height: 100% !important;
 	border: 2px solid white;
+	padding-top: 3px;
 }
 
 .webpeptideshakertheme .resizableimg img:hover {
@@ -18112,10 +18113,8 @@ div.v-layout.v-horizontal.v-widget {
 	border: 1px solid gray;
 	height: 17px !important;
 	top: 6px !important;
-	left: 50% !important;
-	margin-left: -90px;
 	background-color: rgba(255, 255, 255, 0.6);
-	width: 180px !important;
+	width: 100% !important;
 	text-align: center;
 	text-overflow: ellipsis;
 	overflow: hidden;
@@ -18394,11 +18393,11 @@ div.v-layout.v-horizontal.v-widget {
 	font-weight: bold;
 	color: gray !important;
 	position: absolute;
-	left: 50% !important;
-	top: 200px;
+	top: 5px;
+	right: -10px !important;
 	background-color: whitesmoke;
 	border: 1px solid lightgray;
-	border-radius: 3px;
+	border-radius: 20px;
 	width: 20px !important;
 	height: 20px;
 	text-align: right;
@@ -18416,11 +18415,11 @@ div.v-layout.v-horizontal.v-widget {
 	font-weight: bold;
 	color: gray !important;
 	position: absolute;
-	left: 16px !important;
-	top: 200px;
+	left: 17px !important;
+	top: 12px;
 	background-color: whitesmoke;
 	border: 1px solid lightgray;
-	border-radius: 3px;
+	border-radius: 20px;
 	width: 20px !important;
 	height: 20px;
 	text-align: right;
@@ -18432,6 +18431,7 @@ div.v-layout.v-horizontal.v-widget {
 	-o-transform: rotate(0deg);
 	filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=0);
 	z-index: 0 !important;
+	cursor: pointer;
 }
 
 .webpeptideshakertheme .mobilestyle .v-verticallayout-useroverviewpanelstyle {
@@ -18470,7 +18470,7 @@ div.v-layout.v-horizontal.v-widget {
 	z-index: 3 !important;
 	border: 1px solid lightgray;
 	border-radius: 5px;
-	max-height: 250px;
+	max-height: 205px;
 }
 
 .webpeptideshakertheme .mobilestyle .v-slot-useroverviewpanelstyle.v-slot-hidecontent {
@@ -18481,10 +18481,13 @@ div.v-layout.v-horizontal.v-widget {
 
 .webpeptideshakertheme .mobilestyle .useroverviewpanelstyle {
 	border-right-color: transparent;
+	cursor: pointer;
 }
 
 .webpeptideshakertheme .mobilestyle .useroverviewpanelstyle.hidecontent {
 	border-right-color: lightgray;
+	padding-top: 25px;
+	cursor: pointer;
 }
 
 .webpeptideshakertheme .mobilestyle .v-absolutelayout-wrapper-singlebtn {
@@ -20284,4 +20287,71 @@ div.v-layout.v-horizontal.v-widget {
 	height: 16px !important;
 	width: 16px !important;
 	color: gray !important;
+}
+
+.webpeptideshakertheme .v-label-uploadeddsinfo {
+	border: 1px solid lightgray;
+	background-color: whitesmoke;
+	border-radius: 5px;
+}
+
+.webpeptideshakertheme .v-label-uploadeddsinfo h1 {
+	font-size: 14px;
+	margin: 5px;
+	font-weight: 600;
+	border-bottom: 1px solid lightgray;
+	padding-bottom: 15px;
+	margin-left: 15px !important;
+	margin-right: 15px !important;
+}
+
+.webpeptideshakertheme .v-label-uploadeddsinfo p {
+	font-size: 12px;
+	margin: 20px;
+	font-weight: 500;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	max-height: 20px;
+	white-space: nowrap;
+}
+
+.webpeptideshakertheme .v-window-windowcontainer .v-window-closebox {
+	top: 10px !important;
+	position: absolute !important;
+	border-radius: 4px !important;
+	border: 1px solid #c5c5c5 !important;
+	background-color: #fafafa !important;
+	line-height: 20px !important;
+	padding: 0px !important;
+	color: gray !important;
+}
+
+.webpeptideshakertheme .dropdownlistframe .v-caption-popupuploader img {
+	top: 3px !important;
+	left: 13px !important;
+}
+
+.webpeptideshakertheme .v-popupview-popup-popupuploader {
+	background-color: rgba(0, 0, 0, 0.6) !important;
+	width: 100% !important;
+	height: 100% !important;
+	top: 0px !important;
+	left: 0px !important;
+	border-radius: 0px !important;
+}
+
+.webpeptideshakertheme .v-popupview-popup-popupuploader .popupContent {
+	background-color: white !important;
+	border: 2px solid lightgray;
+	width: 378px !important;
+	height: 34px !important;
+	top: 30% !important;
+	left: 50% !important;
+	position: absolute;
+	border-radius: 5px;
+	padding-top: 5px;
+	padding-bottom: 3px;
+	padding-left: 3px;
+	padding-right: 3px;
+	margin-left: -189px;
 }

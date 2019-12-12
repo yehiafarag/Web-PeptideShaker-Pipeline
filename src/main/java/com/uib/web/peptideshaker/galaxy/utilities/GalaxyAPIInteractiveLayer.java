@@ -3,6 +3,7 @@ package com.uib.web.peptideshaker.galaxy.utilities;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
@@ -12,6 +13,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.codehaus.jettison.json.JSONException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -25,15 +28,15 @@ import org.json.simple.parser.ParseException;
  * @author Yehia Farag
  */
 public class GalaxyAPIInteractiveLayer {
-    
+
     public List<Map<String, Object>> getDatasetIdList(String galaxyUrl, String apiKey) {
-        
+
         try {
-            
+
             URL website = new URL(galaxyUrl + "/api/datasets/?key=" + apiKey);
             URLConnection conn = website.openConnection();
             conn.addRequestProperty("Accept", "application/json, text/javascript, */*; q=0.01;text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3");
-            
+
             String stringToParse;
             try (BufferedReader bin = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
                 stringToParse = bin.readLine();
@@ -41,23 +44,23 @@ public class GalaxyAPIInteractiveLayer {
             JSONParser parser = new JSONParser();
             JSONArray json = (JSONArray) parser.parse(stringToParse);
             List<Object> dataList = toList(json);
-            
+
             return filterDatasets(dataList, galaxyUrl, apiKey);
-            
+
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
+
         return new ArrayList<>();
     }
-    
+
     public Map<String, Object> getDatasetInformation(String galaxyUrl, String dsId, String historyId, String apiKey) {
-        
+
         try {
             URL website = new URL(galaxyUrl + "/api/histories/" + historyId + "/contents/datasets/" + dsId + "?key=" + apiKey);
             URLConnection conn = website.openConnection();
             conn.addRequestProperty("Accept", "application/json, text/javascript, */*; q=0.01;text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3");
-            
+
             String stringToParse;
             try (BufferedReader bin = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
                 stringToParse = bin.readLine();
@@ -70,18 +73,18 @@ public class GalaxyAPIInteractiveLayer {
         } catch (IOException | JSONException | ParseException e) {
             e.printStackTrace();
         }
-        
+
         return new HashMap<>();
     }
-    
+
     public String getUserMemoryUsage(String galaxyUrl, String userId, String apiKey) {
-        
+
         try {
-            
+
             URL website = new URL(galaxyUrl + "/api/users/" + userId + "?key=" + apiKey);
             URLConnection conn = website.openConnection();
             conn.addRequestProperty("Accept", "application/json, text/javascript, */*; q=0.01;text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3");
-            
+
             String stringToParse;
             try (BufferedReader bin = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
                 stringToParse = bin.readLine();
@@ -90,33 +93,67 @@ public class GalaxyAPIInteractiveLayer {
             JSONObject json = (JSONObject) parser.parse(stringToParse);
             Map<String, Object> dataList = jsonToMap(json);
             return dataList.get("nice_total_disk_usage") + "";
-            
+
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
+
         return "Not Available";
     }
-    
+
     private List<Map<String, Object>> filterDatasets(List<Object> dataList, String galaxyUrl, String apiKey) {
         List<Map<String, Object>> convertedList = new ArrayList<>();
         int dsSize = dataList.size();
         for (int i = 0; i < dsSize; i++) {
             Map<String, Object> datasetMap = (Map<String, Object>) dataList.get(i);
-        
-            if ((datasetMap.containsKey("collection_type") && datasetMap.get("collection_type").toString().equalsIgnoreCase("list")) || (datasetMap.get("purged") + "").equalsIgnoreCase("true") || (datasetMap.get("deleted") + "").equalsIgnoreCase("true")) {                
-//                dataList.remove(i);
+            if ((datasetMap.containsKey("collection_type") && datasetMap.get("collection_type").toString().equalsIgnoreCase("list") && datasetMap.get("deleted").toString().equalsIgnoreCase("false"))) {
+                if (datasetMap.get("name").toString().endsWith("-Indexed-MGF")) {
+                    Map<String, Object> collectionMap = getCollectionElements(datasetMap.get("url").toString(), galaxyUrl, apiKey);
+                    datasetMap.put("elements", ((List) collectionMap.get("elements")));
+                }
+            }
+
+            if ((datasetMap.containsKey("collection_type") && datasetMap.get("collection_type").toString().equalsIgnoreCase("list")) && (!datasetMap.get("name").toString().endsWith("-Indexed-MGF")) || (datasetMap.get("purged") + "").equalsIgnoreCase("true") || (datasetMap.get("deleted") + "").equalsIgnoreCase("true")) {
+
                 continue;
             }
             if ((datasetMap.get("extension") + "").equalsIgnoreCase("searchgui_archive")) {
                 datasetMap.put("misc_info", getDatasetInformation(galaxyUrl, (datasetMap.get("id") + ""), (datasetMap.get("history_id") + ""), apiKey).get("misc_info"));
             }
             convertedList.add(datasetMap);
-            
+
         }
-        
+
         return convertedList;
-        
+
+    }
+
+    private Map<String, Object> getCollectionElements(String url, String galaxyUrl, String apiKey) {
+        try {
+            URL website = new URL(galaxyUrl + url + "?key=" + apiKey);
+            URLConnection conn = website.openConnection();
+            conn.addRequestProperty("Accept", "application/json, text/javascript, */*; q=0.01;text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3");
+
+            String stringToParse = "";
+            try (BufferedReader bin = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
+                stringToParse = bin.readLine();
+            } catch (IOException ex) {
+                Logger.getLogger(GalaxyAPIInteractiveLayer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            JSONParser parser = new JSONParser();
+            JSONObject json = (JSONObject) parser.parse(stringToParse);
+            return jsonToMap(json);
+
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(GalaxyAPIInteractiveLayer.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ParseException ex) {
+            Logger.getLogger(GalaxyAPIInteractiveLayer.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(GalaxyAPIInteractiveLayer.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (JSONException ex) {
+            Logger.getLogger(GalaxyAPIInteractiveLayer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return new HashMap<>();
     }
 
     /**
@@ -128,12 +165,12 @@ public class GalaxyAPIInteractiveLayer {
      */
     private Map<String, Object> jsonToMap(JSONObject object) throws JSONException {
         Map<String, Object> map = new HashMap<>();
-        
+
         Iterator<String> keysItr = object.keySet().iterator();
         while (keysItr.hasNext()) {
             String key = keysItr.next();
             Object value = object.get(key);
-            
+
             if (value instanceof JSONArray) {
                 value = toList((JSONArray) value);
             } else if (value instanceof JSONObject) {
@@ -164,5 +201,5 @@ public class GalaxyAPIInteractiveLayer {
         }
         return list;
     }
-    
+
 }

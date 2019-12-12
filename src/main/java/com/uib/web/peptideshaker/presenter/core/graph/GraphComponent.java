@@ -263,6 +263,8 @@ public abstract class GraphComponent extends VerticalLayout {
                 intensityColorScaleLayout.setVisible((proteinsControl.getValue() + "").equalsIgnoreCase("Intensity"));
             }
             psmColorScaleLayout.setVisible((proteinsControl.getValue() + "").equalsIgnoreCase("PSMNumber"));
+
+//            scaleContainer.setVisible((proteinsControl.getValue() + "").equalsIgnoreCase("PSMNumber") || (proteinsControl.getValue() + "").equalsIgnoreCase("Intensity"));
         };
         proteinsControl.addValueChangeListener(proteinsControlListener);
 
@@ -412,16 +414,16 @@ public abstract class GraphComponent extends VerticalLayout {
                 graphsControl.setValue("Protein-Peptide");
                 return;
             }
-            lastSelected = proteinsControl.getValue();
-            protoformLayerContainer.setVisible(graphsControl.getValue().toString().equalsIgnoreCase("Proteoform"));
-            proteinPeptideGraphWrapper.setVisible(!protoformLayerContainer.isVisible());
-            if (protoformLayerContainer.isVisible()) {
-                updateProteinsMode("Proteoform");
-            } else {
-                proteinsControl.setValue(lastSelected);
-                updateProteinsMode("Protein-Peptide");
-                updateProteinsMode(lastSelected.toString());
-            }
+//            lastSelected = proteinsControl.getValue();
+//            protoformLayerContainer.setVisible(graphsControl.getValue().toString().equalsIgnoreCase("Proteoform"));
+//            proteinPeptideGraphWrapper.setVisible(!protoformLayerContainer.isVisible());
+//            if (protoformLayerContainer.isVisible()) {
+//                updateProteinsMode("Proteoform");
+//            } else {
+            proteinsControl.setValue(lastSelected);
+            updateProteinsMode("Protein-Peptide");
+            updateProteinsMode(lastSelected.toString());
+//            }
         };
         graphsControl.addValueChangeListener(graphsControlListener);
         scaleContainer = new AbsoluteLayout();
@@ -482,7 +484,7 @@ public abstract class GraphComponent extends VerticalLayout {
         }
         graph.getVertices().forEach((node) -> {
             String modificationsAsString = "";
-            ModificationMatch[] modifications=null;
+            ModificationMatch[] modifications = null;
             String sequence = "";
             int psmNumber;
             double intinsity;
@@ -575,10 +577,16 @@ public abstract class GraphComponent extends VerticalLayout {
             lastSelectedModeType = ("PSMNumber");
         }
         thumbImgeUrl = generateThumbImg();
+        if (psmColorScaleLayout != null) {
+            scaleContainer.removeComponent(psmColorScaleLayout);
+        }
         this.psmColorScaleLayout = psmColorScale.getVerticalScale(true);
         informationLegend.updatePSMNumberLayout(psmColorScale.getColorScale());
         scaleContainer.addComponent(psmColorScaleLayout);
         if (quantDs) {
+            if (intensityColorScaleLayout != null) {
+                scaleContainer.removeComponent(intensityColorScaleLayout);
+            }
             this.intensityColorScaleLayout = intensityColorScale.getVerticalScale(true);
             scaleContainer.addComponent(intensityColorScaleLayout);
             intensityColorScaleLayout.setVisible(false);
@@ -849,6 +857,7 @@ public abstract class GraphComponent extends VerticalLayout {
     }
 
     public void setEnablePathway(boolean enable) {
+        enable = false;
         graphsControl.setItemEnabled("Proteoform", enable);
         if (!enable) {
             graphsControl.setValue("Protein-Peptide");

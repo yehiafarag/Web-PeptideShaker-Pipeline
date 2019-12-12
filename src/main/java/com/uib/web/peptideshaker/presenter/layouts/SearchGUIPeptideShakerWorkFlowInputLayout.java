@@ -101,6 +101,7 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
      * Search engines file list available for user to select from.
      */
     private MultiSelectOptionGroup _searchEngines;
+    private OptionGroup rawMgfController;
     /**
      * Execution button for the work-flow
      */
@@ -224,7 +225,7 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
         spectrumFileContainer.setStyleName("titleinborder");
         newProjectContainer.addComponent(spectrumFileContainer, "left:25px;top:282px;right:25px");
 
-        OptionGroup rawMgfController = new OptionGroup();
+        rawMgfController = new OptionGroup();
         rawMgfController.setStyleName("controllercombobox");
         rawMgfController.addItem("rawFiles");
         rawMgfController.addItem("mgfFiles");
@@ -514,8 +515,8 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
         Button executeWorkFlowBtn = new Button("Execute");
         executeWorkFlowBtn.setStyleName(ValoTheme.BUTTON_SMALL);
         executeWorkFlowBtn.addStyleName(ValoTheme.BUTTON_TINY);
-        executeWorkFlowBtn.setWidth(100,Unit.PIXELS);
-        executeWorkFlowBtn.setHeight(100,Unit.PERCENTAGE);
+        executeWorkFlowBtn.setWidth(100, Unit.PIXELS);
+        executeWorkFlowBtn.setHeight(100, Unit.PERCENTAGE);
         layout.addComponent(executeWorkFlowBtn);
         layout.setComponentAlignment(executeWorkFlowBtn, Alignment.TOP_CENTER);
 
@@ -557,7 +558,7 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
             Set<String> spectrumIds = _mgfFileList;
             Set<String> rawIds = _rawFileList;
             Set<String> searchEnginesIds = searchEngines.getSelectedValue();
-            String projectName = _projectNameField.getValue().replace(" ", "_").replace("-", "_") + "___" + (new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Timestamp(System.currentTimeMillis())));
+            String projectName = _projectNameField.getValue().replace(" ", "_").replace("-", "_") + "___" + (new SimpleDateFormat("dd-MM-yyyy_HH:mm:ss").format(new Timestamp(System.currentTimeMillis())));
 
             searchEngines.setRequired(false, "Select at least 1 search engine");
             Map<String, Boolean> selectedSearchEngines = new HashMap<>();
@@ -856,5 +857,13 @@ public abstract class SearchGUIPeptideShakerWorkFlowInputLayout extends Panel {
                 raw.removeStyleName("selectedraw");
             }
         }
+    }
+
+    public void reset() {
+        _rawFileList.clear();
+        _mgfFileList.clear();
+        rawMgfController.select("rawFiles");
+        updateRawFilesTable();
+        this._projectNameField.clear();
     }
 }

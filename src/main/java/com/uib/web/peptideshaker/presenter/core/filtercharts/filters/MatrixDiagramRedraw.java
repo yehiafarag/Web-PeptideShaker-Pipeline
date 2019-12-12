@@ -204,7 +204,7 @@ public abstract class MatrixDiagramRedraw extends VerticalLayout {
         
         for (String row : effictiveRowMap.keySet()) {
             int i = effictiveRowMap.get(row);
-            rowLabelsWidth = Math.max(rowLabelsWidth, (row).length());
+            rowLabelsWidth = Math.min(Math.max(rowLabelsWidth, (row).length()),200);
             if (max < i) {
                 max = i;
             }
@@ -213,7 +213,7 @@ public abstract class MatrixDiagramRedraw extends VerticalLayout {
             }
             
         }
-        rowLabelsWidth = (rowLabelsWidth * 5) + 5 + 70;
+        rowLabelsWidth = Math.min((rowLabelsWidth * 5) + 5 + 70,200);
         int barchartHeight = 130;//Math.min(Math.max(100, mainHeight - (effictiveRows * 25)), 200); //start drawing columns
         double factor = -1;
         currentX = rowLabelsWidth;

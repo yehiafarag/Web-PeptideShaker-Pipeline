@@ -49,8 +49,13 @@ public class ReactomeDatabase {
      */
     private String dbPassword;
     private Connection conn = null;
+    private boolean dbEnabled = true;
 
     public ReactomeDatabase() {
+        if (VaadinSession.getCurrent().getAttribute("dbUserName") == null) {
+            dbEnabled = false;
+            return;
+        }
         this.dbURL = VaadinSession.getCurrent().getAttribute("dbURL").toString();
         this.dbDriver = VaadinSession.getCurrent().getAttribute("dbDriver").toString();
         this.dbUserName = VaadinSession.getCurrent().getAttribute("dbUserName").toString();
@@ -59,8 +64,15 @@ public class ReactomeDatabase {
 
     }
 
+    public boolean isDbEnabled() {
+        return dbEnabled;
+    }
+
     private String getDBName() {
         String databaseName = null;
+        if (!dbEnabled) {
+            return "Not Available";
+        }
         try {
 
             if (conn == null || conn.isClosed()) {
@@ -88,6 +100,9 @@ public class ReactomeDatabase {
 
     public Set<String> getCsfprAccList() {
         Set<String> csf_pr_acc_list = new LinkedHashSet<>();
+        if (!dbEnabled) {
+            return csf_pr_acc_list;
+        }
         String version = "";
         String updateStatment = "";
         try {
@@ -121,7 +136,7 @@ public class ReactomeDatabase {
             InputStreamReader r = new InputStreamReader(in);
             BufferedReader br = new BufferedReader(r);
             String line = br.readLine();
-            if (version.equalsIgnoreCase("") ||(line !=null && !line.contains(version))) {
+            if (version.equalsIgnoreCase("") || (line != null && !line.contains(version))) {
                 version = line.replace("CSF-PR Protein Accession List (", "").replace(")", "");
                 updateStatment = "INSERT INTO `csf_pr_accssion_list_" + version + "` (`Accssion`) VALUES ";//('lozt'), ('bozot');
                 while ((line = br.readLine()) != null) {
@@ -176,6 +191,9 @@ public class ReactomeDatabase {
         try {
 
             Set<String[]> edges = new LinkedHashSet<>();
+            if (!dbEnabled) {
+                return edges;
+            }
             if (conn == null || conn.isClosed()) {
                 Class.forName(dbDriver).newInstance();
                 conn = DriverManager.getConnection(dbURL + dbName, dbUserName, dbPassword);

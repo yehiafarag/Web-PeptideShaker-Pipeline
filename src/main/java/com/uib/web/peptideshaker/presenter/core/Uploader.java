@@ -1,5 +1,6 @@
 package com.uib.web.peptideshaker.presenter.core;
 
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -95,13 +96,7 @@ public abstract class Uploader extends AbsoluteLayout {
                 uploaderComponent.addStyleName("hidebywidth");
             }
             initUploaderComponent();
-            if (userUploadFolder != null) {
-                while (userUploadFolder.listFiles() != null && userUploadFolder.listFiles().length > 0) {
-                    for (File f : userUploadFolder.listFiles()) {
-                        f.delete();
-                    }
-                }
-            }
+           
         });
 
         uploaderBtn.addClickListener((Button.ClickEvent event) -> {
@@ -137,17 +132,10 @@ public abstract class Uploader extends AbsoluteLayout {
                     }
                     if (visible) {
                         uploaderBtn.click();
-                    } else {
-                               bar.setValue(0.0f);  initUploaderComponent();
-            if (userUploadFolder != null) {
-                while (userUploadFolder.listFiles() != null && userUploadFolder.listFiles().length > 0) {
-                    for (File f : userUploadFolder.listFiles()) {
-                        f.delete();
-                    }
-                }
-            }
                     }
                     if (!busy) {
+                        bar.setValue(0.0f);
+                        initUploaderComponent();
                         super.setPopupVisible(visible); //To change body of generated methods, choose Tools | Templates.
                     } else {
                         super.setPopupVisible(false);
@@ -172,7 +160,7 @@ public abstract class Uploader extends AbsoluteLayout {
         if (uploaderComponent != null) {
             Uploader.this.removeComponent(uploaderComponent);
         }
-        uploaderComponent = new Plupload("Browse", FontAwesome.FILES_O);
+        uploaderComponent = new Plupload("Browse", VaadinIcons.FOLDER_OPEN_O);
         uploaderComponent.setMaxFileSize("1gb");
         uploaderComponent.addStyleName(ValoTheme.BUTTON_TINY);
         uploaderComponent.addStyleName(ValoTheme.BUTTON_ICON_ONLY);
@@ -184,18 +172,20 @@ public abstract class Uploader extends AbsoluteLayout {
         });
         //show notification after file is uploaded
         uploaderComponent.addFileUploadedListener((PluploadFile file) -> {
-            Notification.show("I've just uploaded file: " + file.getName());
+            Notification.show("File uploaded : " + file.getName());
         });
 
-//update upload progress
         uploaderComponent.addUploadProgressListener((PluploadFile file) -> {
+//            busy = true;
             info.setValue("File: " + file.getName() + " - " + file.getPercent() + " %");
             float current = bar.getValue();
             if (current < 1.0f) {
-                bar.setValue((float) file.getPercent() / 100.0f);
+                float perc = (float) file.getPercent() / 100.0f;
+                bar.setValue(perc);
+                popupUploaderUnit.setDescription(((int)perc)+"%");
+                
             } else {
                 bar.setValue(0.0f);
-
             }
 
         });
@@ -203,6 +193,7 @@ public abstract class Uploader extends AbsoluteLayout {
 
 //autostart the uploader after addind files
         uploaderComponent.addFilesAddedListener((PluploadFile[] files) -> {
+              
             uploaderComponent.start();
         });
         uploaderComponent.addUploadStopListener(() -> {
@@ -215,6 +206,7 @@ public abstract class Uploader extends AbsoluteLayout {
             filesUploaded(uploaderComponent.getUploadedFiles());
             initUploaderComponent();
             uploaderComponent.removeStyleName("hidebywidth");
+           
             if (popupUploaderUnit != null) {
                 popupUploaderUnit.setPopupVisible(false);
             }
@@ -222,13 +214,14 @@ public abstract class Uploader extends AbsoluteLayout {
 
 //handle errors
         uploaderComponent.addErrorListener((PluploadError error) -> {
+           
             Notification.show("Error in uploading file, only " + filterSet + " file format allowed", Notification.Type.ERROR_MESSAGE);
             info.setValue("Not Supported File Format " + filterSet + " " + FontAwesome.FROWN_O.getHtml());
         });
 
     }
 
-    private final String htmlLoadingImg = "<img src='VAADIN/themes/webpeptideshakertheme/img/globeearthanimation.gif' alt='' style='width: 22px; top:0px; margin-left: -1px;position: absolute;'>";
+    private final String htmlLoadingImg = "<img src='VAADIN/themes/webpeptideshakertheme/img/globeearthanimation.gif' alt='' style='width: 17px;top: -17px;background-color: white;margin-left: -10px;position: absolute;'>";
 
     private boolean busy = false;
 

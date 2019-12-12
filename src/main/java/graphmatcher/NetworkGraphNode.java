@@ -134,13 +134,14 @@ public abstract class NetworkGraphNode extends VerticalLayout implements LayoutE
                     modMap.get(modification).addAll(modList);
                 }
             });
-
             for (String key : modMap.keySet()) {
                 List<String> moList = modMap.get(key);
+                
                 String subtooltip = "";
                 newIds = newIds.replaceAll(key, moList.toString().replace(",", "-_-"));
                 for (String convMod : new LinkedHashSet<>(moList)) {
                     Color modColor = new Color(PTM.getColor(convMod));
+                  
                     colorsSet.put(modColor.toString(), modColor);
                     covertedModColors.put(convMod, modColor);
                     subtooltip += "<font  style='color:rgb(" + modColor.getRed() + "," + modColor.getGreen() + "," + modColor.getBlue() + "); border-radius:100%;width: 100%;height: 100%;'>" + VaadinIcons.CIRCLE.getHtml() + "</font> " + convMod + " / ";
@@ -161,6 +162,9 @@ public abstract class NetworkGraphNode extends VerticalLayout implements LayoutE
 
             } else {
                 finalColor = Color.ORANGE;
+                modificationLabel = new Label("<div  style='background:rgb(" + finalColor.getRed() + "," + finalColor.getGreen() + "," + finalColor.getBlue() + "); border-radius:100%;width: 100%;height: 100%;    color: white; line-height: 17px; text-align: center;font-size: 12px;  font-weight: 700;'>ModIndex</div>", ContentMode.HTML);
+                modificationLabel.setSizeFull();
+                subContainer.addComponent(modificationLabel);
                 NetworkGraphNode.this.addStyleName("multimodificationprotoform");
             }
         } else {

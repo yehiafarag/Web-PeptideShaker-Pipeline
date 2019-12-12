@@ -89,10 +89,10 @@ public class RangeColorGenerator {
         double step = max / 50.0;
         for (double x = max; x > 0;) {
             if (gradeScale) {
-                l = new Label("<center style= ' background-color: " + RangeColorGenerator.this.getGradeColor(x, max, 0) + ";min-width: 100%;min-height: 100%;'></center>", ContentMode.HTML);
+                l = new Label("<center style= ' background-color: " + RangeColorGenerator.this.getGradeColor(x, max, 0) + ";'></center>", ContentMode.HTML);
                 x -= step;
             } else {
-                l = new Label("<center style= ' background-color: " + RangeColorGenerator.this.getColor(x * 0.02 * max) + ";min-width: 100%;min-height: 100%;'></center>", ContentMode.HTML);
+                l = new Label("<center style= ' background-color: " + RangeColorGenerator.this.getColor(x * 0.02 * max) + ";'></center>", ContentMode.HTML);
                 x--;
             }
             l.setSizeFull();
@@ -120,21 +120,21 @@ public class RangeColorGenerator {
      */
     public String getColor(double value) {
         if (value < 1) {
-            return "rgb(" + 245 + "," + 245 + "," + 245 + ")";
+            return "RGB(" + 245 + "," + 245 + "," + 245 + ")";
         }
         double n = (value) / max;
         double R1 = lowerColor.getRed() * n + upperColor.getRed() * (1 - n);
         double G1 = lowerColor.getGreen() * n + upperColor.getGreen() * (1 - n);
         double B1 = lowerColor.getBlue() * n + upperColor.getBlue() * (1 - n);
 
-        String rgb = "rgb(" + (int) R1 + "," + (int) G1 + "," + (int) B1 + ")";
+        String rgb = "RGB(" + (int) R1 + "," + (int) G1 + "," + (int) B1 + ")";
         return rgb;
     }
 
     public String getGradeColor(double value, double max1, double min) {
 
         if (value == 0.0) {
-            return "rgb(" + 245 + "," + 245 + "," + 245 + ")";
+            return "RGB(" + 245 + "," + 245 + "," + 245 + ")";
         }
         int h = 209;
         int s = 100;
@@ -144,7 +144,7 @@ public class RangeColorGenerator {
             System.out.println("at l " + l + "  " + max + "  " + value);
         }
         Color c = toRGB(h, s, l);
-        return "rgb(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")";
+        return "RGB(" + c.getRed() + "," + c.getGreen() + "," + c.getBlue() + ")";
 ////        int counter
 //        if (value <= 0.2) {
 //            return colorCategories.get(20.0);

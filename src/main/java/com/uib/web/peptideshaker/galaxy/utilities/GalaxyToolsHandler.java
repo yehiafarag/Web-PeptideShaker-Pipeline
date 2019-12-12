@@ -265,7 +265,7 @@ public abstract class GalaxyToolsHandler {
      */
     public Map<String, GalaxyTransferableFile> saveSearchGUIParameters(String galaxyURL, File user_folder, Map<String, GalaxyTransferableFile> searchParametersFilesMap, String workHistoryId, IdentificationParameters searchParameters, boolean isNew) {
 
-        String fileName = searchParameters.getName()+ ".par";
+        String fileName = searchParameters.getName() + ".par";
 //        String fileId;
 //        if (!isNew) {
 //            fileId = searchParameters.getFastaFile().getName().split("__")[3];
@@ -339,7 +339,7 @@ public abstract class GalaxyToolsHandler {
         } catch (FileNotFoundException ex) {
             System.out.println("Unable to open file '" + "'");
         } catch (IOException ex) {
-             ex.printStackTrace();
+            ex.printStackTrace();
             System.out.println("Error reading file '" + "'");
         }
         return json;
@@ -504,16 +504,19 @@ public abstract class GalaxyToolsHandler {
             File workflowFile;
             WorkflowInputs.WorkflowInput raw_mgf_FileInputData;
 
-            if (quant && inputFileIdsList.size() ==1) {
+            if (quant && inputFileIdsList.size() == 1) {
                 workflowFile = new File(basepath + "/VAADIN/Galaxy-Workflow-Full_workflow_quant_single_RAW.ga");//Galaxy-Workflow-Web-Peptide-Shaker-Multi-MGF-2018.ga
                 raw_mgf_FileInputData = new WorkflowInputs.WorkflowInput(inputFileIdsList.keySet().iterator().next(), WorkflowInputs.InputSourceType.HDA);
 
             } else if (quant && inputFileIdsList.size() > 1) {
-                workflowFile = new File(basepath + "/VAADIN/Galaxy-Workflow-Web-Peptide-Shaker-Multi-MGF-2018-updated-i.ga");//Galaxy-Workflow-Web-Peptide-Shaker-Multi-MGF-2018.ga
+                workflowFile = new File(basepath + "/VAADIN/Galaxy-Workflow-Full_workflow_quant_single_RAW.ga");//Galaxy-Workflow-Web-Peptide-Shaker-Multi-MGF-2018.ga
                 raw_mgf_FileInputData = prepareWorkflowCollectionList(WorkflowInputs.InputSourceType.HDCA, inputFileIdsList.keySet(), historyId);
-            } else {
-                workflowFile = new File(basepath + "/VAADIN/Galaxy-Workflow-Web-Peptide-Shaker-Single-MGF-2018-updated-i.ga");
+            } else if (!quant && inputFileIdsList.size() == 1) {
+                workflowFile = new File(basepath + "/VAADIN/Galaxy-Workflow-workflow_Single_MGF.ga");
                 raw_mgf_FileInputData = new WorkflowInputs.WorkflowInput(inputFileIdsList.keySet().iterator().next(), WorkflowInputs.InputSourceType.HDA);
+            } else {
+                workflowFile = new File(basepath + "/VAADIN/Galaxy-Workflow-workflow_Multi_MGF.ga");
+                raw_mgf_FileInputData = prepareWorkflowCollectionList(WorkflowInputs.InputSourceType.HDCA, inputFileIdsList.keySet(), historyId);
             }
             String jsonWorkflow = readWorkflowFile(workflowFile);
 
@@ -534,8 +537,13 @@ public abstract class GalaxyToolsHandler {
 
             WorkflowInputs.WorkflowInput workflowInput0 = new WorkflowInputs.WorkflowInput(searchParameterFileId, WorkflowInputs.InputSourceType.HDA);
             WorkflowInputs.WorkflowInput workflowInput1 = new WorkflowInputs.WorkflowInput(fastaFileId, WorkflowInputs.InputSourceType.HDA);
-            workflowInputs.setInput("0", workflowInput1);
-            workflowInputs.setInput("1", workflowInput0);            
+            if (quant) {
+                workflowInputs.setInput("0", workflowInput1);
+                workflowInputs.setInput("1", workflowInput0);
+            } else {
+                workflowInputs.setInput("0", workflowInput0);
+                workflowInputs.setInput("1", workflowInput1);
+            }
             workflowInputs.setInput("2", raw_mgf_FileInputData);
 
             Thread t = new Thread(() -> {
@@ -896,6 +904,9 @@ public abstract class GalaxyToolsHandler {
             for (PluploadFile file : toUploadFiles) {
                 File tFile = (File) file.getUploadedFile();
                 final ToolsClient.FileUploadRequest request = new ToolsClient.FileUploadRequest(workHistoryId, tFile);
+                if (file.getName().endsWith(".thermo.raw")) {
+                    request.setFileType("thermo.raw");
+                }
                 request.setDatasetName(file.getName());
                 List<OutputDataset> results = galaxyToolClient.upload(request).getOutputs();
                 tFile.delete();
@@ -905,12 +916,12 @@ public abstract class GalaxyToolsHandler {
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
-            synchronizeDataWithGalaxyServer(true); 
-            
+            synchronizeDataWithGalaxyServer(true);
+
         });
         t.start();
-     
-      return true;
+
+        return true;
     }
 
     /**

@@ -383,15 +383,14 @@ public abstract class NetworkGraphComponent extends VerticalLayout {
             this.activeGraphNodes.put(n2.getNodeId(), n2);
 
         });
-        for (String key : graphNodes.keySet()) {
-            int counter = 1;
+        graphNodes.keySet().forEach((key) -> {
+            int indexer = 1;
             for (String subKey : graphNodes.get(key).keySet()) {
                 if (subKey.contains(";")) {
-                    graphNodes.get(key).get(subKey).updateProteformIndex("P"+counter++);
+                    graphNodes.get(key).get(subKey).updateProteformIndex("P" + indexer++);
                 }
             }
-
-        }
+        });
         selectedIds.forEach((id) -> {
             if (this.graphNodes.containsKey(id)) {
                 this.graphNodes.get(id).values().forEach((n) -> {
@@ -682,7 +681,7 @@ public abstract class NetworkGraphComponent extends VerticalLayout {
         base64 = "data:image/png;base64," + base64;
         edgesImage.setSource(new ExternalResource(base64));
         edgesImage.removeStyleName("hide");
-        graphInfo.setValue("#Internal: <font style='float:right ;padding-left: 3px;'>" + (internalNodes.size()-1) + "</font><br/>#External: <font style='float:right ;padding-left: 3px;'>" + externalNodes.size() + "</font>");
+        graphInfo.setValue("#Internal: <font style='float:right ;padding-left: 3px;'>" + (internalNodes.size() - 1) + "</font><br/>#External: <font style='float:right ;padding-left: 3px;'>" + externalNodes.size() + "</font>");
         graphInfo.setData(!internalNodes.isEmpty());
 
     }

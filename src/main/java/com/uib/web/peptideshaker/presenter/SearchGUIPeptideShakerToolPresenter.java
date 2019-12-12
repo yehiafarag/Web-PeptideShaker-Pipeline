@@ -1,24 +1,21 @@
 package com.uib.web.peptideshaker.presenter;
 
 import com.compomics.util.parameters.identification.IdentificationParameters;
-import com.google.common.collect.HashBiMap;
 import com.uib.web.peptideshaker.presenter.core.ViewableFrame;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyFileObject;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyTransferableFile;
-import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.PeptideShakerVisualizationDataset;
 
 import com.uib.web.peptideshaker.presenter.layouts.SearchGUIPeptideShakerWorkFlowInputLayout;
 import com.uib.web.peptideshaker.presenter.core.BigSideBtn;
 import com.uib.web.peptideshaker.presenter.core.ButtonWithLabel;
 import com.uib.web.peptideshaker.presenter.core.SmallSideBtn;
 import com.vaadin.event.LayoutEvents;
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.AbsoluteLayout;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
@@ -59,19 +56,18 @@ public abstract class SearchGUIPeptideShakerToolPresenter extends VerticalLayout
         SearchGUIPeptideShakerToolPresenter.this.addStyleName("integratedframe");
     }
 
-    /**
-     * Update the work-flow input files
-     *
-     *
-     * @param searchSettingFilesMap Search settings .par files map
-     * @param fastaFilesMap The main FASTA File Map (ID to Name).
-     * @param mgfFilesMap The main MGF File Map (ID to Name).
-     * @param rawFilesMap The main Raw file map (ID to Name).
-     */
-    public void updatePeptideShakerToolInputForm(Map<String, GalaxyTransferableFile> searchSettingFilesMap, Map<String, GalaxyFileObject> fastaFilesMap, Map<String, GalaxyFileObject> mgfFilesMap, Map<String, GalaxyFileObject> rawFilesMap) {
+//    /**
+//     * Update the work-flow input files
+//     *
+//     *
+//     * @param searchSettingFilesMap Search settings .par files map
+//     * @param fastaFilesMap The main FASTA File Map (ID to Name).
+//     * @param mgfFilesMap The main MGF File Map (ID to Name).
+//     * @param rawFilesMap The main Raw file map (ID to Name).
+//     */
+//    public void updatePeptideShakerToolInputForm(Map<String, GalaxyTransferableFile> searchSettingFilesMap, Map<String, GalaxyFileObject> fastaFilesMap, Map<String, GalaxyFileObject> mgfFilesMap, Map<String, GalaxyFileObject> rawFilesMap) {
 //        peptideshakerToolInputForm.updateForm(searchSettingFilesMap, fastaFilesMap, mgfFilesMap, rawFilesMap, new HashMap<>());
-    }
-
+//    }
     /**
      * Initialise the main forms for user data input that is required for
      * performing search.
@@ -81,7 +77,7 @@ public abstract class SearchGUIPeptideShakerToolPresenter extends VerticalLayout
         smallControlButton.setData(SearchGUIPeptideShakerToolPresenter.this.getViewId());
         smallControlButton.setDescription("Search and process data (SearchGUI and PeptideShaker)");
         smallControlButton.addStyleName("smalltoolsbtn");
-         smallControlButton.addStyleName("searchguiicon");
+        smallControlButton.addStyleName("searchguiicon");
         controlButton = new ButtonWithLabel("Analyze Data</br><font>Search and process data</font>", 1);//spectra2.png
         controlButton.setData(SearchGUIPeptideShakerToolPresenter.this.getViewId());
         controlButton.updateIconResource(new ThemeResource("img/searchguiblue.png"));//img/workflow3.png
@@ -96,8 +92,13 @@ public abstract class SearchGUIPeptideShakerToolPresenter extends VerticalLayout
         peptideshakerToolInputForm = new SearchGUIPeptideShakerWorkFlowInputLayout() {
             @Override
             public void executeWorkFlow(String projectName, String fastaFileId, String searchParameterFileId, Set<String> inputFilesIdsList, Set<String> searchEnginesList, IdentificationParameters searchParam, boolean quant) {
-                SearchGUIPeptideShakerToolPresenter.this.execute_SearchGUI_PeptideShaker_WorkFlow(projectName, fastaFileId, searchParameterFileId, inputFilesIdsList, searchEnginesList, searchParam, quant);
+                if (quant && inputFilesIdsList.size() > 1) {
+                    Notification.show("Runing work flow with multiple thermo.raw files is not supported", Notification.Type.WARNING_MESSAGE);
+                    return;
+                }
 
+                SearchGUIPeptideShakerToolPresenter.this.execute_SearchGUI_PeptideShaker_WorkFlow(projectName, fastaFileId, searchParameterFileId, inputFilesIdsList, searchEnginesList, searchParam, quant);
+                this.reset();
             }
 
             @Override
@@ -145,7 +146,6 @@ public abstract class SearchGUIPeptideShakerToolPresenter extends VerticalLayout
      * Update Online PeptideShaker files from Galaxy Server
      *
      * @param historyFilesMap List of available files on Galaxy Server
-     * @param jobInProgress Jobs are running
      */
     public void updateSystemData(Map<String, GalaxyFileObject> historyFilesMap) {
 

@@ -6,7 +6,6 @@ import com.uib.web.peptideshaker.galaxy.utilities.GalaxyToolsHandler;
 import com.github.jmchilton.blend4j.galaxy.GalaxyInstance;
 import com.github.jmchilton.blend4j.galaxy.GalaxyInstanceFactory;
 import com.github.jmchilton.blend4j.galaxy.UsersClient;
-import com.github.jmchilton.blend4j.galaxy.beans.OutputDataset;
 import com.github.jmchilton.blend4j.galaxy.beans.User;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyTransferableFile;
 import com.uib.web.peptideshaker.galaxy.utilities.history.dataobjects.GalaxyFileObject;
@@ -64,6 +63,7 @@ public abstract class GalaxyInteractiveLayer {
     public Set<String> getCsf_pr_Accession_List() {
         return historyHandler.getCsf_pr_Accession_List();
     }
+
     /**
      * Constructor to initialise the main Galaxy history handler.
      */
@@ -140,6 +140,10 @@ public abstract class GalaxyInteractiveLayer {
         return true;
     }
 
+    public String getAPIKey() {
+        return Galaxy_Instance.getApiKey();
+    }
+
     /**
      * Get user overview information list for welcome page left panel
      *
@@ -169,6 +173,9 @@ public abstract class GalaxyInteractiveLayer {
                 inputFilesMap.put(inputFileId, historyHandler.getMgfFilesMap().get(inputFileId).getName());
             }
         });
+        if (inputFilesMap.isEmpty()) {
+            return;
+        }
         toolsHandler.execute_SearchGUI_PeptideShaker_WorkFlow(projectName, fastaFileId, searchParameterFileId, inputFilesMap, searchEnginesList, historyHandler.getWorkingHistoryId(), searchParameters, quant);
         toolsHandler.synchronizeDataWithGalaxyServer(true);
     }

@@ -168,7 +168,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         Label userLabel = initLeftSideInfoLabel(VaadinIcons.USER.getHtml() + " User ", "<i>Offline</i>");
         userOverviewLayout.addComponent(userLabel);
 
-        Label dsNumberLabel = initLeftSideInfoLabel(VaadinIcons.CLUSTER.getHtml() + " Results ", "<i></i>");
+        Label dsNumberLabel = initLeftSideInfoLabel("<img src='VAADIN/themes/webpeptideshakertheme/img/venn_icon.png' alt style='width: auto;height:15px;margin-left:-2px;    margin-right: 4px;'>" + " Projects ", "<i></i>");
         userOverviewLayout.addComponent(dsNumberLabel);
 
         Label filesNumberLabel = initLeftSideInfoLabel(VaadinIcons.FILE_TEXT_O.getHtml() + " Files ", "<i></i>");
@@ -177,10 +177,10 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         Label usedMemory = initLeftSideInfoLabel(VaadinIcons.CLOUD_O.getHtml() + " Storage ", "<i></i>");
         userOverviewLayout.addComponent(usedMemory);
 
-        Label searchGUI = initLeftSideInfoLabel("<img src='VAADIN/themes/webpeptideshakertheme/img/sgiconHRNSgray21.png' alt style='width: auto;height:15px;margin-left:-2px;    margin-right: 4px;'>" + " SearchGUI ", "<i></i>");
+        Label searchGUI = initLeftSideInfoLabel("<img src='VAADIN/themes/webpeptideshakertheme/img/sgiconHRNSgray21.png' alt style='width: auto;height:15px;margin-left:-2px;    margin-right: 4px;'>" + " SearchGUI ", "<i>" + VaadinSession.getCurrent().getAttribute("searchGUIversion") + "</i>");
         userOverviewLayout.addComponent(searchGUI);
 
-        Label peptideShaker = initLeftSideInfoLabel("<img src='VAADIN/themes/webpeptideshakertheme/img/psiconHRNSgray21.png' alt style='width: auto;height:15px;margin-left:-2px;    margin-right: 4px;'>" + " PeptideShaker ", "<i></i>");
+        Label peptideShaker = initLeftSideInfoLabel("<img src='VAADIN/themes/webpeptideshakertheme/img/psiconHRNSgray21.png' alt style='width: auto;height:15px;margin-left:-2px;    margin-right: 4px;'>" + " PeptideShaker ", "<i>" + VaadinSession.getCurrent().getAttribute("psVersion") + "</i>");
         userOverviewLayout.addComponent(peptideShaker);
 
         /**
@@ -237,7 +237,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         presenteControlButtonsLayout.setSpacing(true);
         presenterControlButtonsPanel.addComponent(presenteControlButtonsLayout);
         presenterControlButtonsPanel.setExpandRatio(presenteControlButtonsLayout, 0.6f);
-       // @todo:to be removed after galaxy comeback to life
+        // @todo:to be removed after galaxy comeback to life
         presenteControlButtonsLayout.setEnabled(true);
         presenteControlButtonsLayout.addStyleName("disableasenable");
         /**
@@ -353,13 +353,13 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         galaxyServiceBtns.setSizeFull();
         galaxyServiceBtns.setSpacing(true);
         galaxyLoginLayout.addComponent(galaxyServiceBtns);
-        Link regLink = new Link("Register", new ExternalResource("http://129.177.231.63:8081/galaxy/user/create"));
+        Link regLink = new Link("Register", new ExternalResource(VaadinSession.getCurrent().getAttribute("galaxyServerUrl") + "login"));
         regLink.setStyleName("newlink");
         regLink.setTargetName("_blank");
         galaxyServiceBtns.addComponent(regLink);
         galaxyServiceBtns.setExpandRatio(regLink, 0.1f);
 
-        Link userAPI = new Link("Get User API", new ExternalResource("http://129.177.231.63:8081/galaxy/user/api_key"));
+        Link userAPI = new Link("Get User API", new ExternalResource(VaadinSession.getCurrent().getAttribute("galaxyServerUrl") + "user/api_key"));
         userAPI.setStyleName("newlink");
         userAPI.setTargetName("_blank");
         galaxyServiceBtns.addComponent(userAPI);
@@ -383,7 +383,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
                     connectinoWindow.setStyleName("connectionwindow");
 
                     List<String> userOverviewData = connectToGalaxy(userAPIFeald.getValue(), viewId);
-                    System.out.println("at update user data :-D "+ userOverviewData);
+                    System.out.println("at update user data :-D " + userOverviewData);
                     updateConnectionStatusToGalaxy(userOverviewData);
                 };
                 if (executorService.isShutdown()) {
@@ -541,6 +541,9 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
             for (int i = 2; i < userOverviewLayout.getComponentCount(); i++) {
                 Label l = (Label) userOverviewLayout.getComponent(i);
                 updateLeftSideInfoLabel(l, userOverviewData.get(i - 1));
+                if (i == 4) {
+                    break;
+                }
             }
         }
     }
@@ -690,7 +693,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
      */
     public void setPresenterControlButtonContainer(AbsoluteLayout presenterBtnsContainer) {
 //        presenterBtnsContainer.addComponent(galaxyLloginBtn, 1, 1);
-presenterBtnsContainer.addComponent(galaxyLloginBtn,"left:50%;top:50%;");
+        presenterBtnsContainer.addComponent(galaxyLloginBtn, "left:50%;top:50%;");
         presenteControlButtonsLayout.addComponent(presenterBtnsContainer);
     }
 
