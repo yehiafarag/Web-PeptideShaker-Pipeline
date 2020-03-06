@@ -14,11 +14,18 @@ import com.uib.web.peptideshaker.presenter.WelcomePagePresenter;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import javax.net.ssl.HttpsURLConnection;
 import pl.exsio.plupload.PluploadFile;
 
 /**
@@ -64,13 +71,14 @@ public class WebPeptideShakerApp extends VerticalLayout {
 
     /**
      * Constructor to initialise the application.
+     *
+     * @param galaxyUrl web link to galaxy server
      */
-    public WebPeptideShakerApp() {
+    public WebPeptideShakerApp(String galaxyUrl) {
         WebPeptideShakerApp.this.setSizeFull();
         WebPeptideShakerApp.this.setMargin(new MarginInfo(true, true, true, true));
         WebPeptideShakerApp.this.addStyleName("mainapplicationframe");
         WebPeptideShakerApp.this.addStyleName("frame");
-
         this.uploadedProjectUtility = new UploadedProjectUtility() {
             @Override
             public void viewUploadedProjectDataset(PeptideShakerVisualizationDataset peptideShakerVisualizationDataset) {
@@ -84,25 +92,32 @@ public class WebPeptideShakerApp extends VerticalLayout {
             }
 
         };
+        /**
+         * check galaxy available.
+         */
+        boolean availableGalaxyServer = checkConnectionToGalaxy(galaxyUrl);
+        if (availableGalaxyServer) {
+            this.Galaxy_Interactive_Layer = new GalaxyInteractiveLayer() {
+                @Override
+                public void synchronizeDataWithGalaxyServer(Map<String, GalaxyFileObject> historyFilesMap, boolean jobsInProgress, boolean updatePresenterView) {
+                    if (historyFilesMap.size() == 1 && historyFilesMap.keySet().iterator().next().contains("_ExternalDS")) {
+                        fileSystemPresenter.viewDataset((PeptideShakerVisualizationDataset) historyFilesMap.values().iterator().next());
+                        for (String btn : presentationManager.getPresenterBtnsMap().keySet()) {
+                            presentationManager.getPresenterBtnsMap().get(btn).setEnabled(false);
+                        }
+                    } else {
+                        Map<String, GalaxyFileObject> tempHistoryFilesMap = new LinkedHashMap<>();
+                        tempHistoryFilesMap.putAll(((LinkedHashMap<String, GalaxyFileObject>) VaadinSession.getCurrent().getAttribute("uploaded_projects_" + this.getAPIKey())));
+                        tempHistoryFilesMap.putAll(historyFilesMap);
+                        fileSystemPresenter.updateSystemData(tempHistoryFilesMap, jobsInProgress);
+                        searchGUIPeptideShakerToolPresenter.updateSystemData(historyFilesMap);
 
-        this.Galaxy_Interactive_Layer = new GalaxyInteractiveLayer() {
-            @Override
-            public void synchronizeDataWithGalaxyServer(Map<String, GalaxyFileObject> historyFilesMap, boolean jobsInProgress, boolean updatePresenterView) {
-                if (historyFilesMap.size() == 1 && historyFilesMap.keySet().iterator().next().contains("_ExternalDS")) {
-                    fileSystemPresenter.viewDataset((PeptideShakerVisualizationDataset) historyFilesMap.values().iterator().next());
-                    for (String btn : presentationManager.getPresenterBtnsMap().keySet()) {
-                        presentationManager.getPresenterBtnsMap().get(btn).setEnabled(false);
                     }
-                } else {
-                    Map<String, GalaxyFileObject> tempHistoryFilesMap = new LinkedHashMap<>();
-                    tempHistoryFilesMap.putAll(((LinkedHashMap<String, GalaxyFileObject>) VaadinSession.getCurrent().getAttribute("uploaded_projects_" + this.getAPIKey())));
-                    tempHistoryFilesMap.putAll(historyFilesMap);
-                    fileSystemPresenter.updateSystemData(tempHistoryFilesMap, jobsInProgress);
-                    searchGUIPeptideShakerToolPresenter.updateSystemData(historyFilesMap);
-
                 }
-            }
-        };
+            };
+        } else {
+            this.Galaxy_Interactive_Layer = null;
+        }
         presentationManager = new PresenterManager();
         presentationManager.addStyleName("mainapplicationframe");
         WebPeptideShakerApp.this.addComponent(presentationManager);
@@ -112,37 +127,38 @@ public class WebPeptideShakerApp extends VerticalLayout {
          * landing page initialisation.
          *
          */
-        WelcomePagePresenter welcomePage = new WelcomePagePresenter() {
+        WelcomePagePresenter welcomePage = new WelcomePagePresenter(availableGalaxyServer) {
             @Override
             public List<String> connectToGalaxy(String userAPI, String viewId) {
                 String galaxyServerUrl = VaadinSession.getCurrent().getAttribute("galaxyServerUrl").toString();
                 String userDataFolderUrl = VaadinSession.getCurrent().getAttribute("userDataFolderUrl").toString();
+
                 if (userAPI.equalsIgnoreCase("test_User_Login")) {
                     userAPI = VaadinSession.getCurrent().getAttribute("testUserAPIKey").toString();
                 }
                 if (VaadinSession.getCurrent().getAttribute("uploaded_projects_" + userAPI) == null) {
                     VaadinSession.getCurrent().setAttribute("uploaded_projects_" + userAPI, new LinkedHashMap<>());
                 }
-
-                boolean connected = Galaxy_Interactive_Layer.connectToGalaxyServer(galaxyServerUrl, userAPI, userDataFolderUrl);
+                Galaxy_Interactive_Layer.connectToGalaxyServer(galaxyServerUrl, userAPI, userDataFolderUrl);
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException ex) {
                 }
-                presentationManager.setSideButtonsVisible(connected);
                 return Galaxy_Interactive_Layer.getUserOverViewList();
 
             }
 
             @Override
             public void maximizeView() {
-                super.updateUserOverviewPanel(Galaxy_Interactive_Layer.getUserOverViewList());
+                if (Galaxy_Interactive_Layer != null) {
+                    super.updateUserOverviewPanel(Galaxy_Interactive_Layer.getUserOverViewList());
+                }
                 super.maximizeView(); //To change body of generated methods, choose Tools | Templates.
             }
 
         };
+        presentationManager.setSideButtonsVisible(true);
         welcomePage.setPresenterControlButtonContainer(presentationManager.getPresenterButtonsContainerLayout());
-
         searchGUIPeptideShakerToolPresenter = new SearchGUIPeptideShakerToolPresenter() {
             @Override
             public void execute_SearchGUI_PeptideShaker_WorkFlow(String projectName, String fastaFileId, String searchParameterFileId, Set<String> inputFilesIdsList, Set<String> searchEnginesList, IdentificationParameters searchParameters, boolean quant) {
@@ -171,7 +187,14 @@ public class WebPeptideShakerApp extends VerticalLayout {
             }
 
         };
-        searchGUIPeptideShakerToolPresenter.initLayout();
+        presentationManager.registerView(searchGUIPeptideShakerToolPresenter);
+        searchGUIPeptideShakerToolPresenter.getLargePresenterControlButton().setEnabled(availableGalaxyServer);
+        searchGUIPeptideShakerToolPresenter.getSmallPresenterControlButton().setEnabled(availableGalaxyServer);
+        if (!availableGalaxyServer) {
+            Notification.show("Galaxy server is not available", Notification.Type.TRAY_NOTIFICATION);
+            searchGUIPeptideShakerToolPresenter.getLargePresenterControlButton().setDescription("Galaxy server is not available");
+            searchGUIPeptideShakerToolPresenter.getSmallPresenterControlButton().setDescription("Galaxy server is not available");
+        }
 
         fileSystemPresenter = new FileSystemPresenter() {
             @Override
@@ -235,7 +258,7 @@ public class WebPeptideShakerApp extends VerticalLayout {
         presentationManager.registerView(welcomePage);
         presentationManager.viewLayout(welcomePage.getViewId());
         presentationManager.registerView(fileSystemPresenter);
-        presentationManager.registerView(searchGUIPeptideShakerToolPresenter);
+
         interactivePSPRojectResultsPresenter = new InteractivePSPRojectResultsPresenter() {
             @Override
             public boolean[] processVisualizationDataset(String projectName, Map<String, PluploadFile> uploadedFileMap) {
@@ -243,8 +266,47 @@ public class WebPeptideShakerApp extends VerticalLayout {
             }
 
         };
+
         presentationManager.registerView(interactivePSPRojectResultsPresenter);
 
+    }
+
+    /**
+     * Check Galaxy server is available.
+     *
+     * @param urlAddress Galaxy server url
+     * @return is galaxy server available online
+     */
+    private boolean checkConnectionToGalaxy(String urlAddress) {
+        try {
+            URL url = new URL(urlAddress);
+            if (urlAddress.contains("https")) {
+                HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.connect();
+                int code = connection.getResponseCode();
+                if (code == 404) {
+                    return false;
+                }
+            } else {
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.connect();
+                int code = connection.getResponseCode();
+                if (code == 404) {
+                    return false;
+                }
+            }
+
+        } catch (MalformedURLException ex) {
+            return false;
+        } catch (IOException ex) {
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
 }

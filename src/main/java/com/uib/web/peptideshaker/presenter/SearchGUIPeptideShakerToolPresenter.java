@@ -54,6 +54,7 @@ public abstract class SearchGUIPeptideShakerToolPresenter extends VerticalLayout
         SearchGUIPeptideShakerToolPresenter.this.setSizeFull();
         SearchGUIPeptideShakerToolPresenter.this.setStyleName("activelayout");
         SearchGUIPeptideShakerToolPresenter.this.addStyleName("integratedframe");
+        initLayout();
     }
 
 //    /**
@@ -72,7 +73,7 @@ public abstract class SearchGUIPeptideShakerToolPresenter extends VerticalLayout
      * Initialise the main forms for user data input that is required for
      * performing search.
      */
-    public void initLayout() {
+    private void initLayout() {
         smallControlButton = new SmallSideBtn("img/searchguiblue.png");//spectra2.pngimg/searchgui-medium-shadow-2.png
         smallControlButton.setData(SearchGUIPeptideShakerToolPresenter.this.getViewId());
         smallControlButton.setDescription("Search and process data (SearchGUI and PeptideShaker)");

@@ -112,8 +112,11 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
 
     /**
      * Constructor to initialise the layout.
+     *
+     * @param availableGalaxy galaxy server is available
      */
-    public WelcomePagePresenter() {
+    public WelcomePagePresenter(boolean availableGalaxy) {
+
         WelcomePagePresenter.this.setSizeFull();
         WelcomePagePresenter.this.addStyleName("welcomepagestyle");
 
@@ -136,7 +139,14 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         galaxyLloginBtn = new ButtonWithLabel("Galaxy Login<br/><font>Login using API key</font>", 0);
         galaxyLloginBtn.updateIconResource(new ThemeResource("img/galaxylogocolor.png"));//galaxyLogo_2.png
         galaxyLloginBtn.addStyleName("galaxylabel");
-        galaxyLloginBtn.setDescription("Login to Galaxy - API key required");
+        if (availableGalaxy) {
+            galaxyLloginBtn.setDescription("Login to Galaxy - API key required");
+        } else {
+            galaxyLloginBtn.setDescription("Galaxy server is not available");
+            VaadinSession.getCurrent().setAttribute("psVersion", "offline");
+            VaadinSession.getCurrent().setAttribute("searchGUIversion", "offline");
+        }
+        galaxyLloginBtn.setEnabled(availableGalaxy);
 
         HorizontalLayout mainMiddlePanel = new HorizontalLayout();
         mainMiddlePanel.setSizeFull();
@@ -248,7 +258,6 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         userConnectionPanel.setHeightUndefined();
         userConnectionPanel.setMargin(new MarginInfo(true, true, true, true));
         userConnectionPanel.setSpacing(true);
-
         connectingLabel = new Label("<h1 class='animation'>Connecting to galaxy, Please wait...</h1>");
         connectingLabel.setVisible(false);
         connectingLabel.setCaptionAsHtml(true);
@@ -466,8 +475,9 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
             userOverviewPanel.addStyleName("hidecontent");
 
         }
-
-        this.loginAsGuest();
+        if (availableGalaxy) {
+            this.loginAsGuest();
+        }
 
     }
 

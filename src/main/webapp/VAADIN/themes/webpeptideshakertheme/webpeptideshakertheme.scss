@@ -84,18 +84,16 @@
     } 
 }
 
-
-
 @keyframes blinkII { 
     50% {        border-color: orange; 
                  border-width:2px;
-
                  /* CSS3 Transition */
                  -webkit-transition: all .5s ease-in-out;
                  -moz-transition: all .5s ease-in-out;
                  -o-transition: all .5s ease-in-out;
                  transition: all .5s ease-in-out;
     } 
+
 }
 @keyframes shake {
     10%, 90% {
@@ -121,6 +119,204 @@
 @keyframes Always {
     100% { transform: scale(1.1);}
 }
+
+
+ 
+        
+        
+        
+        
+        
+        
+@-webkit-keyframes v-progress-start {
+		0% {
+		width: 100%;
+                 height: 100%;
+	}
+		3% {
+		width: 100%;
+                 height: 100%;
+		
+	}
+		100% {
+		width: 100%;
+                 height: 100%;
+	}
+	}
+
+@-moz-keyframes v-progress-start {
+		0% {
+		width: 100%;
+                 height: 100%;
+	}
+		3% {
+		width: 100%;
+                 height: 100%;
+		
+	}
+		100% {
+		width: 100%;
+                 height: 100%;
+	}
+	}
+
+@keyframes v-progress-start {
+		0% {
+		width: 100%;
+                 height: 100%;
+	}
+		3% {
+		width: 100%;
+                 height: 100%;
+		
+	}
+		100% {
+		width: 100%;
+                 height: 100%;
+	}
+	}
+
+@-webkit-keyframes v-progress-delay {
+		0% {
+		width: 100%;
+                 height: 100%;
+	}
+		3% {
+		width: 100%;
+                 height: 100%;
+		
+	}
+		100% {
+		width: 100%;
+                 height: 100%;
+	}
+	}
+
+@-moz-keyframes v-progress-delay {
+		0% {
+		width: 100%;
+                 height: 100%;
+	}
+		3% {
+		width: 100%;
+                 height: 100%;
+		
+	}
+		100% {
+		width: 100%;
+                 height: 100%;
+	}
+	}
+
+@keyframes v-progress-delay {
+		0% {
+		width: 100%;
+                 height: 100%;
+	}
+		3% {
+		width: 100%;
+                 height: 100%;
+		
+	}
+		100% {
+		width: 100%;
+                 height: 100%;
+	}
+	}
+
+@-webkit-keyframes v-progress-wait {
+		0% {
+		width: 100%;
+                 height: 100%;
+	}
+		3% {
+		width: 100%;
+                 height: 100%;
+		
+	}
+		100% {
+		width: 100%;
+                 height: 100%;
+	}
+	}
+
+@-moz-keyframes v-progress-wait {
+		0% {
+		width: 100%;
+                 height: 100%;
+	}
+		3% {
+		width: 100%;
+                 height: 100%;
+		
+	}
+		100% {
+		width: 100%;
+                 height: 100%;
+	}
+	}
+
+@keyframes v-progress-wait {
+		0% {
+		width: 100%;
+                 height: 100%;
+	}
+		3% {
+		width: 100%;
+                 height: 100%;
+		
+	}
+		100% {
+		width: 100%;
+                height: 100%;
+	}
+	}
+
+@-webkit-keyframes v-progress-wait-pulse {
+		0% {
+		opacity:  1 !important;
+	}
+		50% {
+		opacity:  1 !important;
+	}
+		100% {
+		opacity:  1 !important;
+	}
+	}
+
+@-moz-keyframes v-progress-wait-pulse {
+		0% {
+		opacity:  1 !important;
+	}
+		50% {
+		opacity:  1 !important;
+	}
+		100% {
+		opacity:  1 !important;
+	}
+	}
+
+@keyframes v-progress-wait-pulse {
+		0% {
+		opacity:  1 !important;
+	}
+		50% {
+		opacity:  1 !important;
+	}
+		100% {
+		opacity:  1 !important;
+	}
+	}
+
+
+
+
+
+
+
+
+
+
 
 
 @mixin webpeptideshakertheme {
@@ -7128,39 +7324,50 @@
         padding:0px !important;
         color:gray !important;
     }
-.dropdownlistframe .v-caption-popupuploader img {
-    top: 3px !important;
-    left: 13px !important;
+    .dropdownlistframe .v-caption-popupuploader img {
+        top: 3px !important;
+        left: 13px !important;
+    }
+
+    .v-popupview-popup-popupuploader {
+        background-color:rgba(0,0,0,0.6) !important;
+        width:100% !important; 
+        height:100% !important;
+        top:0px !important;
+        left:0px !important;
+        border-radius:0px !important;
+    }
+
+    .v-popupview-popup-popupuploader .popupContent{
+        background-color:white !important;
+        border:2px solid lightgray;
+        width: 378px !important;
+        height: 34px !important;
+        top:30% !important;
+        left:50% !important;
+        position:absolute;
+        border-radius:5px;
+        padding-top:5px;
+        padding-bottom:3px;
+        padding-left:3px;
+        padding-right:3px;
+        margin-left:-189px;
+    }
+
+
+
+ .v-loading-indicator {
+	pointer-events: all !important;
+	background-image: url(img/loading_1.gif) !important;
+	background-repeat: no-repeat;
+	background-size: 80px 80px;
+	background-position: 33px 22.5px;
+	background-color: rgba(0,0,0,0.2);
 }
+.v-disabled.btnwithtext img {
 
-.v-popupview-popup-popupuploader {
-	background-color:rgba(0,0,0,0.6) !important;
-	width:100% !important; 
-	height:100% !important;
-	top:0px !important;
-	left:0px !important;
-	border-radius:0px !important;
+    opacity:0.5 !important;
 }
-
-.v-popupview-popup-popupuploader .popupContent{
-	background-color:white !important;
-	border:2px solid lightgray;
-	width: 378px !important;
-	height: 34px !important;
-	top:30% !important;
-	left:50% !important;
-	position:absolute;
-	border-radius:5px;
-	padding-top:5px;
-	padding-bottom:3px;
-	padding-left:3px;
-	padding-right:3px;
-	margin-left:-189px;
-}
-
-
-
-
 
 
 

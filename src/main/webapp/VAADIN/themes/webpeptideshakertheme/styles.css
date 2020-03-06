@@ -1656,6 +1656,177 @@ div.v-layout.v-horizontal.v-widget {
 	}
 	}
 
+@-webkit-keyframes v-progress-start {
+		0% {
+		width: 100%;
+		height: 100%;
+	}
+		3% {
+		width: 100%;
+		height: 100%;
+	}
+		100% {
+		width: 100%;
+		height: 100%;
+	}
+	}
+
+@-moz-keyframes v-progress-start {
+		0% {
+		width: 100%;
+		height: 100%;
+	}
+		3% {
+		width: 100%;
+		height: 100%;
+	}
+		100% {
+		width: 100%;
+		height: 100%;
+	}
+	}
+
+@keyframes v-progress-start {
+		0% {
+		width: 100%;
+		height: 100%;
+	}
+		3% {
+		width: 100%;
+		height: 100%;
+	}
+		100% {
+		width: 100%;
+		height: 100%;
+	}
+	}
+
+@-webkit-keyframes v-progress-delay {
+		0% {
+		width: 100%;
+		height: 100%;
+	}
+		3% {
+		width: 100%;
+		height: 100%;
+	}
+		100% {
+		width: 100%;
+		height: 100%;
+	}
+	}
+
+@-moz-keyframes v-progress-delay {
+		0% {
+		width: 100%;
+		height: 100%;
+	}
+		3% {
+		width: 100%;
+		height: 100%;
+	}
+		100% {
+		width: 100%;
+		height: 100%;
+	}
+	}
+
+@keyframes v-progress-delay {
+		0% {
+		width: 100%;
+		height: 100%;
+	}
+		3% {
+		width: 100%;
+		height: 100%;
+	}
+		100% {
+		width: 100%;
+		height: 100%;
+	}
+	}
+
+@-webkit-keyframes v-progress-wait {
+		0% {
+		width: 100%;
+		height: 100%;
+	}
+		3% {
+		width: 100%;
+		height: 100%;
+	}
+		100% {
+		width: 100%;
+		height: 100%;
+	}
+	}
+
+@-moz-keyframes v-progress-wait {
+		0% {
+		width: 100%;
+		height: 100%;
+	}
+		3% {
+		width: 100%;
+		height: 100%;
+	}
+		100% {
+		width: 100%;
+		height: 100%;
+	}
+	}
+
+@keyframes v-progress-wait {
+		0% {
+		width: 100%;
+		height: 100%;
+	}
+		3% {
+		width: 100%;
+		height: 100%;
+	}
+		100% {
+		width: 100%;
+		height: 100%;
+	}
+	}
+
+@-webkit-keyframes v-progress-wait-pulse {
+		0% {
+		opacity: 1 !important;
+	}
+		50% {
+		opacity: 1 !important;
+	}
+		100% {
+		opacity: 1 !important;
+	}
+	}
+
+@-moz-keyframes v-progress-wait-pulse {
+		0% {
+		opacity: 1 !important;
+	}
+		50% {
+		opacity: 1 !important;
+	}
+		100% {
+		opacity: 1 !important;
+	}
+	}
+
+@keyframes v-progress-wait-pulse {
+		0% {
+		opacity: 1 !important;
+	}
+		50% {
+		opacity: 1 !important;
+	}
+		100% {
+		opacity: 1 !important;
+	}
+	}
+
 @font-face {
 	font-family: "Vaadin-Icons";
 	src: url(../../../VAADIN/addons/vaadin-icons/fonts/Vaadin-Icons.eot);
@@ -20354,4 +20525,17 @@ div.v-layout.v-horizontal.v-widget {
 	padding-left: 3px;
 	padding-right: 3px;
 	margin-left: -189px;
+}
+
+.webpeptideshakertheme .v-loading-indicator {
+	pointer-events: all !important;
+	background-image: url(img/loading_1.gif) !important;
+	background-repeat: no-repeat;
+	background-size: 80px 80px;
+	background-position: 33px 22.5px;
+	background-color: rgba(0, 0, 0, 0.2);
+}
+.v-disabled.btnwithtext img {
+
+    opacity:0.5 !important;
 }
