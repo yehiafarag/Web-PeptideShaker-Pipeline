@@ -59,21 +59,23 @@ public abstract class GalaxyInteractiveLayer {
      * Decimal Format for memory usage
      */
     private final DecimalFormat dsFormater = new DecimalFormat("#.##");
-
-    public Set<String> getCsf_pr_Accession_List() {
-        return historyHandler.getCsf_pr_Accession_List();
-    }
+ 
 
     /**
      * Constructor to initialise the main Galaxy history handler.
      */
     public GalaxyInteractiveLayer() {
         this.userOverViewList = new ArrayList<>();
-//        if (csf_pr_Accession_List == null) {
-//            csf_pr_Accession_List = initialiseCSFList();
-//        }
-
         this.historyHandler = new GalaxyHistoryHandler() {
+            @Override
+            public Set<String> getCsf_pr_Accession_List() {
+               return  GalaxyInteractiveLayer.this.getCsf_pr_Accession_List();
+            }
+
+            @Override
+            public Set<String[]> getPathwayEdges(Set<String> proteinAcc) {
+                return GalaxyInteractiveLayer.this.getPathwayEdges(proteinAcc);
+            }
             @Override
             public void synchronizeDataWithGalaxyServer(Map<String, GalaxyFileObject> historyFilesMap, boolean jobsInProgress, boolean updatePresenterView, Set<String> toDeleteMap) {
                 //update history in the system                 
@@ -119,7 +121,6 @@ public abstract class GalaxyInteractiveLayer {
                 }
             };
             VaadinSession.getCurrent().setAttribute("ApiKey", Galaxy_Instance.getApiKey());
-
             UsersClient userClient = Galaxy_Instance.getUsersClient();
             User user = userClient.getUsers().get(0);
             userOverViewList.add(user.getUsername().replace("public_user", "Guest User <i style='font-size: 10px;position: relative;top: -23px;left: 101px;'>(public data)</i>"));
@@ -130,7 +131,7 @@ public abstract class GalaxyInteractiveLayer {
             userOverViewList.add(toolsHandler.getPeptideShaker_Tool_Version());
         } catch (Exception e) {
             e.printStackTrace();
-            System.out.println("at ---->>>>exception in galaxy connection cought " + e.getMessage());
+            System.out.println("at ---->>>> 135 exception in galaxy connection cought " + e.getMessage());
             if (VaadinSession.getCurrent().getSession() != null) {
                 VaadinSession.getCurrent().getSession().invalidate();
             }
@@ -298,34 +299,6 @@ public abstract class GalaxyInteractiveLayer {
         }
     }
 
-    private Set<String> initialiseCSFList() {
-        Set<String> csfprAccList = new HashSet<>();
-        String csfprfilepath = (String) VaadinSession.getCurrent().getAttribute("csfprfile");
-        if (csfprfilepath == null) {
-            return null;
-        }
-        try {
-            File file = new File(csfprfilepath);//Galaxy-Workflow-Web-Peptide-Shaker-Multi-MGF-2018.ga
-            FileReader fileReader = new FileReader(file);
-            String line;
-            try ( // Always wrap FileReader in BufferedReader.
-                    BufferedReader bufferedReader = new BufferedReader(fileReader)) {
-                while ((line = bufferedReader.readLine()) != null) {
-                    csfprAccList.add(line.split("\\(")[0].trim());
-                }
-                // Always close files.
-            }
-        } catch (FileNotFoundException ex) {
-            System.out.println(
-                    "Unable to open file '" + "'");
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            System.out.println("Error reading file '" + "'");
-        }
-        return csfprAccList;
-
-    }
-
     /**
      * Update and synchronise the data on Galaxy Server with the local file
      * system on Online Peptide Shaker
@@ -337,5 +310,19 @@ public abstract class GalaxyInteractiveLayer {
      * system
      */
     public abstract void synchronizeDataWithGalaxyServer(Map<String, GalaxyFileObject> historyFilesMap, boolean jobsInProgress, boolean updatePresenterView);
-
+  /**
+     * Get pathway information for accessions list
+     *
+     * @param proteinAcc protein accession list
+     * @return edges data for the selected accessions
+     *
+     */
+    public abstract Set<String[]> getPathwayEdges(Set<String> proteinAcc);
+      /**
+     * Get list of accessions available on csf-pr in order to allow mapping data
+     * to csf-pr
+     *
+     * @return set of Uni-prot protein accessions available on csf-pr
+     */
+    public abstract Set<String> getCsf_pr_Accession_List();
 }

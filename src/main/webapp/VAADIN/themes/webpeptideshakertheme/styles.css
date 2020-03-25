@@ -16619,30 +16619,6 @@ div.v-layout.v-horizontal.v-widget {
 	display: none !important;
 }
 
-.webpeptideshakertheme .mobilealertnotification {
-	min-height: 90px;
-	border-radius: 5px;
-	background-color: transparent !important;
-	top: auto !important;
-	bottom: 200px !important;
-}
-
-.webpeptideshakertheme .mobilealertnotification .v-Notification-caption {
-	font-size: 40px !important;
-	text-overflow: inherit !important;
-	font-family: cursive !important;
-	color: #5e9ae4 !important;
-	word-spacing: 10px;
-	letter-spacing: 5px;
-	font-weight: 100;
-	background-color: transparent !important;
-}
-
-.webpeptideshakertheme .mobilealertnotification .v-Notification-caption center {
-	color: orange;
-	font-family: cursive !important;
-}
-
 .webpeptideshakertheme .minimizelayout {
 	max-height: 40px;
 }
@@ -18615,20 +18591,20 @@ div.v-layout.v-horizontal.v-widget {
 	padding-right: 10px !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .actionbuttoncontainer .v-absolutelayout {
+.webpeptideshakertheme .mobilestyle.portraitmode .actionbuttoncontainer .v-absolutelayout {
 	margin-top: -70px;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-verticallayout-actionbuttoncontainer .v-absolutelayout-margin {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-verticallayout-actionbuttoncontainer .v-absolutelayout-margin {
 	overflow: visible !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-absolutelayout-wrapper-resultsbtn {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-absolutelayout-wrapper-resultsbtn {
 	left: 0% !important;
 	top: 100% !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-absolutelayout-wrapper-galaxylabel {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-absolutelayout-wrapper-galaxylabel {
 	left: 0% !important;
 	top: 150% !important;
 }
@@ -18710,11 +18686,11 @@ div.v-layout.v-horizontal.v-widget {
 	left: 0px !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .uploaderlayout {
+.webpeptideshakertheme .mobilestyle.portraitmode .uploaderlayout {
 	display: block !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode.frame {
+.webpeptideshakertheme .mobilestyle.portraitmode.frame {
 	min-height: 0px;
 	min-width: 0px !important;
 }
@@ -18724,7 +18700,7 @@ div.v-layout.v-horizontal.v-widget {
 	float: left !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-slot-subviewbuttonsactioncontainer {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-slot-subviewbuttonsactioncontainer {
 	top: auto !important;
 	bottom: 10px !important;
 	min-width: 270px !important;
@@ -18732,7 +18708,7 @@ div.v-layout.v-horizontal.v-widget {
 	margin-left: -135px !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-absolutelayout-subviewbuttonsactioncontainer {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-absolutelayout-subviewbuttonsactioncontainer {
 	top: auto !important;
 	bottom: -10px !important;
 	max-height: 0px !important;
@@ -18741,14 +18717,14 @@ div.v-layout.v-horizontal.v-widget {
 	position: relative !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-slot-dsoverviewbtn {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-slot-dsoverviewbtn {
 	margin: 0px !important;
 	left: 0px !important;
 	position: absolute !important;
 	top: 30px !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-horizontallayout-dsoverviewbtn {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-horizontallayout-dsoverviewbtn {
 	border-color: #88bfff;
 	border-radius: 5px !important;
 	border-bottom-left-radius: 0px !important;
@@ -18758,7 +18734,7 @@ div.v-layout.v-horizontal.v-widget {
 	width: 80px !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-horizontallayout-proteinoverviewbtn {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-horizontallayout-proteinoverviewbtn {
 	border-color: #88bfff;
 	border-radius: 5px !important;
 	border-bottom-left-radius: 0px !important;
@@ -18768,14 +18744,14 @@ div.v-layout.v-horizontal.v-widget {
 	width: 80px !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-slot-proteinoverviewbtn {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-slot-proteinoverviewbtn {
 	margin: 0px !important;
 	position: absolute;
 	left: 90px !important;
 	top: 30px;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-horizontallayout-psmoverviewbtn {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-horizontallayout-psmoverviewbtn {
 	border-color: #88bfff;
 	border-radius: 5px !important;
 	border-bottom-left-radius: 0px !important;
@@ -18785,7 +18761,7 @@ div.v-layout.v-horizontal.v-widget {
 	width: 80px !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-slot-psmoverviewbtn {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-slot-psmoverviewbtn {
 	margin: 0px !important;
 	position: absolute;
 	left: 180px !important;
@@ -18796,7 +18772,7 @@ div.v-layout.v-horizontal.v-widget {
 	border: 2px solid orange !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-slot-displayvisible {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-slot-displayvisible {
 	visibility: visible !important;
 	width: 50px !important;
 	border-right: 1px solid lightgray !important;
@@ -18823,7 +18799,7 @@ div.v-layout.v-horizontal.v-widget {
 	display: block;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .paggingbtnscontainer {
+.webpeptideshakertheme .mobilestyle.portraitmode .paggingbtnscontainer {
 	bottom: -30px !important;
 	position: absolute !important;
 	z-index: 1;
@@ -18926,7 +18902,7 @@ div.v-layout.v-horizontal.v-widget {
 	max-height: 80% !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-slot-middlefiltercontainerstyle.v-slot-viewdsfilter {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-slot-middlefiltercontainerstyle.v-slot-viewdsfilter {
 	height: 99% !important;
 	width: 100% !important;
 	left: -100% !important;
@@ -19007,7 +18983,7 @@ div.v-layout.v-horizontal.v-widget {
 	max-height: 30px;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-absolutelayout-wrapper-datasetfilterstyle {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-absolutelayout-wrapper-datasetfilterstyle {
 	bottom: 45px !important;
 	top: 20px !important;
 }
@@ -19017,7 +18993,7 @@ div.v-layout.v-horizontal.v-widget {
 	top: 0px !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-absolutelayout-wrapper-datasetproteinstablestyle {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-absolutelayout-wrapper-datasetproteinstablestyle {
 	margin-top: -10px !important;
 	top: 20px !important;
 	bottom: 45px !important;
@@ -19135,23 +19111,23 @@ div.v-layout.v-horizontal.v-widget {
 	height: 30px !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-slot-chromfilter.v-slot-viewdsfilter .v-label-resizableimg img {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-slot-chromfilter.v-slot-viewdsfilter .v-label-resizableimg img {
 	max-width: 95%;
 	height: auto !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-horizontallayout-mainapplicationframe {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-horizontallayout-mainapplicationframe {
 	max-width: 10000px;
 	max-height: 10000px;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-slot-pifilter.v-slot-viewdsfilter {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-slot-pifilter.v-slot-viewdsfilter {
 	width: 100% !important;
 	height: 50% !important;
 	margin-left: 10px;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-slot-validationfilter.v-slot-viewdsfilter {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-slot-validationfilter.v-slot-viewdsfilter {
 	height: 50% !important;
 	max-width: 100% !important;
 	position: relative !important;
@@ -19161,7 +19137,7 @@ div.v-layout.v-horizontal.v-widget {
 	margin-top: 0px;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-slot-chromfilter.v-slot-viewdsfilter {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-slot-chromfilter.v-slot-viewdsfilter {
 	height: 100% !important;
 	width: 100% !important;
 	top: auto !important;
@@ -19170,7 +19146,7 @@ div.v-layout.v-horizontal.v-widget {
 	margin-left: 12.5px;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-slot-graphcontainerstyle.v-slot-viewdsfilter {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-slot-graphcontainerstyle.v-slot-viewdsfilter {
 	width: 100% !important;
 	height: 100% !important;
 	margin-left: -22.5px !important;
@@ -19179,67 +19155,67 @@ div.v-layout.v-horizontal.v-widget {
 	position: absolute !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-slot-protein3dcontainerstyle.v-slot-viewdsfilter {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-slot-protein3dcontainerstyle.v-slot-viewdsfilter {
 	top: 20px;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-absolutelayout-wrapper-lefttoppanelstyle {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-absolutelayout-wrapper-lefttoppanelstyle {
 	left: 0px !important;
 	top: -30px !important;
 	width: 100% !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-absolutelayout-wrapper-lefttoppanelstyle div {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-absolutelayout-wrapper-lefttoppanelstyle div {
 	width: 100% !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-absolutelayout-wrapper-lefttoppanelstyle label {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-absolutelayout-wrapper-lefttoppanelstyle label {
 	font-size: 10px !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-absolutelayout-wrapper-righttbottompanelstyle {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-absolutelayout-wrapper-righttbottompanelstyle {
 	bottom: -30px !important;
 	right: 0px !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-horizontallayout-righttbottompanelstyle {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-horizontallayout-righttbottompanelstyle {
 	max-width: 200px !important;
 	overflow: hidden !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-absolutelayout-wrapper-righttbottompanelstyle .v-button-caption {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-absolutelayout-wrapper-righttbottompanelstyle .v-button-caption {
 	font-size: 10px !important;
 	max-width: 50px;
 	word-spacing: 0.01px !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-absolutelayout-wrapper-righttbottompanelstyle .v-button {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-absolutelayout-wrapper-righttbottompanelstyle .v-button {
 	padding: 0px !important;
 	margin: 0px !important;
 	padding-left: 10px !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-absolutelayout-wrapper-highlightedoptions {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-absolutelayout-wrapper-highlightedoptions {
 	bottom: -30px !important;
 	right: 185px !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-absolutelayout-wrapper-highlightedoptions label {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-absolutelayout-wrapper-highlightedoptions label {
 	font-size: 10px !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-absolutelayout-wrapper-leftbottompanelstyle {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-absolutelayout-wrapper-leftbottompanelstyle {
 	bottom: -30px !important;
 	left: 0px !important;
 	max-width: 20px !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-absolutelayout-wrapper-leftbottompanelstyle label {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-absolutelayout-wrapper-leftbottompanelstyle label {
 	font-size: 10px !important;
 	word-spacing: 1px;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-verticallayout-leftbottompanelstyle {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-verticallayout-leftbottompanelstyle {
 	max-width: 66px;
 	overflow: hidden !important;
 }
@@ -19248,11 +19224,11 @@ div.v-layout.v-horizontal.v-widget {
 	left: -11px !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .selectiondescriptionlabel i {
+.webpeptideshakertheme .mobilestyle.portraitmode .selectiondescriptionlabel i {
 	padding: 0px !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-slot-selectiondescriptionlabel {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-slot-selectiondescriptionlabel {
 	right: 10px !important;
 	top: 25px;
 	width: 100% !important;
@@ -19262,7 +19238,7 @@ div.v-layout.v-horizontal.v-widget {
 	max-height: 30px !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-label-selectiondescriptionlabel {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-label-selectiondescriptionlabel {
 	left: 0px !important;
 	position: absolute !important;
 	width: 100% !important;
@@ -19275,7 +19251,7 @@ div.v-layout.v-horizontal.v-widget {
 	overflow-y: scroll !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-absolutelayout-wrapper-floatrightinyscreen {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-absolutelayout-wrapper-floatrightinyscreen {
 	left: 50% !important;
 	margin-left: -250px;
 	max-width: 500px;
@@ -19443,22 +19419,22 @@ div.v-layout.v-horizontal.v-widget {
 	overflow: hidden;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-slot-middleviewcontainer {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-slot-middleviewcontainer {
 	left: 0px !important;
 	position: absolute !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-absolutelayout-wrapper-proteoformoptioncontrol {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-absolutelayout-wrapper-proteoformoptioncontrol {
 	left: 0px !important;
 	top: -30px !important;
 	width: 100% !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-absolutelayout-wrapper-psmchartcontainerstyle, .webpeptideshakertheme .mobilestyle.verticalmode .v-absolutelayout-wrapper-psmtablecontainerstyle {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-absolutelayout-wrapper-psmchartcontainerstyle, .webpeptideshakertheme .mobilestyle.portraitmode .v-absolutelayout-wrapper-psmtablecontainerstyle {
 	bottom: 40px !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode.smallpcscreen .v-slot-extendwidthstyle {
+.webpeptideshakertheme .mobilestyle.portraitmode.smallpcscreen .v-slot-extendwidthstyle {
 	height: 80% !important;
 	max-height: 80% !important;
 }
@@ -19483,18 +19459,18 @@ div.v-layout.v-horizontal.v-widget {
 	border: 2px solid gray;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-absolutelayout-wrapper-floatrightinyscreen .dropdownlistframe, .webpeptideshakertheme .mobilestyle.verticalmode .v-absolutelayout-wrapper-floatrightinyscreen .v-slot-psprojectname, .webpeptideshakertheme .mobilestyle.verticalmode .v-absolutelayout-wrapper-floatrightinyscreen .v-slot-smallfontlongtext, .webpeptideshakertheme .mobilestyle.verticalmode .v-absolutelayout-wrapper-floatrightinyscreen .v-slot-optiongroupframe {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-absolutelayout-wrapper-floatrightinyscreen .dropdownlistframe, .webpeptideshakertheme .mobilestyle.portraitmode .v-absolutelayout-wrapper-floatrightinyscreen .v-slot-psprojectname, .webpeptideshakertheme .mobilestyle.portraitmode .v-absolutelayout-wrapper-floatrightinyscreen .v-slot-smallfontlongtext, .webpeptideshakertheme .mobilestyle.portraitmode .v-absolutelayout-wrapper-floatrightinyscreen .v-slot-optiongroupframe {
 	max-width: 100%;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-absolutelayout-wrapper-floatrightinyscreen .v-label-smallfontlongtext {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-absolutelayout-wrapper-floatrightinyscreen .v-label-smallfontlongtext {
 	max-width: 100%;
 	height: 110px !important;
 	overflow: auto !important;
 	margin-top: 0px;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-absolutelayout-wrapper-floatrightinyscreen .v-horizontallayout-optiongroupframe {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-absolutelayout-wrapper-floatrightinyscreen .v-horizontallayout-optiongroupframe {
 	max-width: 100% !important;
 	min-width: 0px !important;
 	height: 150px !important;
@@ -19506,7 +19482,7 @@ div.v-layout.v-horizontal.v-widget {
 	top: 0px !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode .v-absolutelayout-wrapper-floatrightinyscreen {
+.webpeptideshakertheme .mobilestyle.portraitmode .v-absolutelayout-wrapper-floatrightinyscreen {
 	left: 50% !important;
 	margin-left: -250px;
 	max-width: 500px;
@@ -19515,7 +19491,7 @@ div.v-layout.v-horizontal.v-widget {
 	margin-top: -50% !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode.smallpcscreen .v-absolutelayout-wrapper-floatrightinyscreen {
+.webpeptideshakertheme .mobilestyle.portraitmode.smallpcscreen .v-absolutelayout-wrapper-floatrightinyscreen {
 	top: 0px !important;
 	margin-top: 0% !important;
 }
@@ -19525,7 +19501,7 @@ div.v-layout.v-horizontal.v-widget {
 	min-height: 14px !important;
 }
 
-.webpeptideshakertheme .mobilestyle.verticalmode.smallpcscreen .v-slot-selectiondescriptionlabel {
+.webpeptideshakertheme .mobilestyle.portraitmode.smallpcscreen .v-slot-selectiondescriptionlabel {
 	top: 17px;
 }
 
@@ -20535,7 +20511,438 @@ div.v-layout.v-horizontal.v-widget {
 	background-position: 33px 22.5px;
 	background-color: rgba(0, 0, 0, 0.2);
 }
-.v-disabled.btnwithtext img {
 
-    opacity:0.5 !important;
+.webpeptideshakertheme .v-disabled.btnwithtext img {
+	opacity: 0.5 !important;
+}
+
+.webpeptideshakertheme .mobilestyle .v-loading-indicator {
+	background-size: 150px 150px;
+	background-position: right 20px top 20px;
+}
+
+.webpeptideshakertheme .v-window-mobilealertnotification {
+	width: 610px !important;
+	border: 1px solid lightgray;
+	position: absolute !important;
+	top: auto !important;
+	bottom: 110px;
+}
+
+.webpeptideshakertheme .mobilealertnotification .v-label {
+	font-size: 20px !important;
+	min-width: 100%;
+	min-height: 100px;
+	padding: 20px !important;
+	text-overflow: inherit !important;
+	font-family: cursive !important;
+	color: #5e9ae4 !important;
+	word-spacing: 10px;
+	letter-spacing: 5px;
+	font-weight: 200;
+	background-color: transparent !important;
+	line-height: 40px;
+}
+
+.webpeptideshakertheme .mobilealertnotification .v-label center {
+	color: orange;
+	font-family: cursive !important;
+}
+
+.webpeptideshakertheme .mobilealertnotification .v-window-closebox {
+	border: 1px solid gray;
+	width: 30px !important;
+	height: 30px !important;
+	border-radius: 5px !important;
+	font-size: 40px !important;
+	color: gray !important;
+	top: -10px !important;
+	right: 8px !important;
+	position: absolute !important;
+	padding-left: 2px;
+	padding-top: 2px;
+}
+
+.webpeptideshakertheme .mobilestyle .v-horizontallayout-logocontainer .v-link-headerlogo, .webpeptideshakertheme .mobilestyle .v-horizontallayout-logocontainer .v-image {
+	font-size: 40px !important;
+	line-height: 160px !important;
+	width: 120px;
+	height: auto !important;
+}
+
+.webpeptideshakertheme .mobilestyle .v-absolutelayout-wrapper-welcomepagebody {
+	top: 140px !important;
+}
+
+.webpeptideshakertheme .mobilestyle .v-verticallayout-connectionpanelstyle {
+	display: none;
+}
+
+.webpeptideshakertheme .mobilestyle .useroverviewpanelstyle.hidecontent {
+	min-width: 50px;
+}
+
+.webpeptideshakertheme .mobilestyle .v-caption-useroverviewpanelstyle.v-caption .v-icon {
+	font-size: 30px !important;
+	width: 35px !important;
+	height: 35px !important;
+	line-height: 35px;
+	padding-left: 2px !important;
+	margin-left: -22px !important;
+}
+
+.webpeptideshakertheme .mobilestyle .v-verticallayout-useroverviewpanelstyle.v-verticallayout-hidecontent {
+	padding-top: 50px !important;
+	margin-left: 0px;
+}
+
+.webpeptideshakertheme .mobilestyle .useroverviewpanelstyle.hidecontent .v-slot {
+	font-size: 30px !important;
+	text-overflow: clip !important;
+	overflow: hidden !important;
+}
+
+.webpeptideshakertheme .mobilestyle .useroverviewpanelstyle.hidecontent .v-label div {
+	font-size: 30px !important;
+	text-overflow: clip !important;
+	overflow: hidden !important;
+	word-spacing: 10px;
+	color: transparent !important;
+}
+
+.webpeptideshakertheme .mobilestyle .useroverviewpanelstyle.hidecontent .v-icon {
+	color: black !important;
+}
+
+.webpeptideshakertheme .mobilestyle .useroverviewpanelstyle.hidecontent img {
+	width: 35px !important;
+	height: auto !important;
+}
+
+.webpeptideshakertheme .mobilestyle .v-slot-useroverviewpanelstyle {
+	min-width: 500px !important;
+	min-height: 400px;
+	font-size: 33px;
+	min-width: 500px !important;
+}
+
+.webpeptideshakertheme .mobilestyle .useroverviewpanelstyle img {
+	width: 35px !important;
+	height: auto !important;
+}
+
+.webpeptideshakertheme .mobilestyle .actionbuttoncontainer {
+	margin-left: 25px !important;
+}
+
+.webpeptideshakertheme .mobilestyle .actionbuttoncontainer .v-slot-disableasenable {
+	position: relative !important;
+	top: -55px !important;
+}
+
+.webpeptideshakertheme .mobilestyle .actionbuttoncontainer .v-slot-disableasenable .v-verticallayout-disableasenable {
+	height: 370px !important;
+}
+
+.webpeptideshakertheme .mobilestyle .v-horizontallayout-btnwithtext {
+	height: 100px !important;
+}
+
+.webpeptideshakertheme .mobilestyle .v-horizontallayout-btnwithtext .v-image {
+	height: 100% !important;
+	width: 100px !important;
+}
+
+.webpeptideshakertheme .mobilestyle .v-horizontallayout-btnwithtext .v-label {
+	font-size: 25px !important;
+	height: 100% !important;
+	line-height: 150% !important;
+	padding-top: 20px !important;
+}
+
+.webpeptideshakertheme .mobilestyle .v-horizontallayout-btnwithtext .v-label font {
+	font-size: 20px !important;
+}
+
+.webpeptideshakertheme .v-absolutelayout-wrapper-searchguiicon {
+	top: 10px !important;
+}
+
+.webpeptideshakertheme .mobilestyle .v-slot-leftsidelabel {
+	min-width: 500px;
+	top: 30px !important;
+	position: relative !important;
+	top: 20px !important;
+	min-height: 61px !important;
+}
+
+.webpeptideshakertheme .mobilestyle .v-label-leftsidelabel {
+	min-width: 460px;
+	top: 30px !important;
+	position: relative !important;
+	min-height: 50px !important;
+	top: 0px !important;
+	display: inline-block !important;
+}
+
+.webpeptideshakertheme .mobilestyle .v-slot-leftsidelabel.v-slot-hidetextonmobilemode {
+	display: none;
+}
+
+.webpeptideshakertheme .mobilestyle .v-label-leftsidelabel .v-icon {
+	font-size: 30px !important;
+	max-width: 80px !important;
+}
+
+.webpeptideshakertheme .mobilestyle .v-label-leftsidelabel b {
+	font-size: 25px !important;
+	min-width: 440px !important;
+	height: 50px !important;
+	display: inline-block !important;
+	top: -34px !important;
+	padding-left: 45px;
+	position: relative;
+}
+
+.webpeptideshakertheme .mobilestyle .v-label-leftsidelabel b i {
+	font-size: 20px !important;
+	min-width: 440px !important;
+	height: 50px !important;
+	display: inline-block !important;
+	top: -40px !important;
+	padding-left: 40px !important;
+	position: relative;
+}
+
+.webpeptideshakertheme .mobilestyle .v-label-leftsidelabel img {
+	top: 7px !important;
+	position: relative;
+}
+
+.webpeptideshakertheme .mobilestyle .v-label-leftsidelabel .lefttitle {
+	font-size: 25px !important;
+	min-width: 250px;
+	overflow: visible !important;
+}
+
+.webpeptideshakertheme .mobilestyle .hidecontent .v-label-leftsidelabel img {
+	top: 0px !important;
+	position: relative;
+}
+
+.webpeptideshakertheme .mobilestyle .hidecontent .v-label-leftsidelabel b {
+	display: none !important;
+}
+
+.webpeptideshakertheme .mobilestyle .nrightsidediv {
+	font-size: 25px !important;
+	top: -36px !important;
+	left: 260px !important;
+	position: relative !important;
+	width: 150px !important;
+	height: 40px !important;
+}
+
+.webpeptideshakertheme .mobilestyle .psversstyle {
+	top: -36px !important;
+	left: 259px !important;
+	height: 50px !important;
+	width: 200px !important;
+}
+
+.webpeptideshakertheme .mobilestyle .psversstyle i {
+	top: 0px !important;
+	position: relative !important;
+	left: 0px !important;
+}
+
+.webpeptideshakertheme .smallscreenstyle .v-slot-mainbodystyle.v-slot-connectionpanelstyle {
+	display: none;
+}
+
+.webpeptideshakertheme .smallscreenstyle .v-slot-leftsidelabel.v-slot-hidetextonmobilemode {
+	max-height: 30px;
+}
+
+.webpeptideshakertheme .lowresolutionstyle .v-horizontallayout-logocontainer .v-link-headerlogo, .webpeptideshakertheme .lowresolutionstyle .v-horizontallayout-logocontainer .v-image {
+	font-size: 30px !important;
+	line-height: 150px !important;
+	width: 80px;
+	height: auto !important;
+}
+
+.webpeptideshakertheme .lowresolutionstyle .v-label-leftsidelabel .v-icon {
+	font-size: 20px !important;
+	max-width: 80px !important;
+}
+
+.webpeptideshakertheme .lowresolutionstyle .v-caption-useroverviewpanelstyle.v-caption .v-icon {
+	font-size: 20px !important;
+	width: 25px !important;
+	height: 25px !important;
+	line-height: 25px;
+	padding-left: 0 !important;
+	margin-left: -12.5px !important;
+}
+
+.webpeptideshakertheme .lowresolutionstyle .v-verticallayout-useroverviewpanelstyle.v-verticallayout-hidecontent {
+	padding-top: 20px !important;
+	margin-left: 0px;
+}
+
+.webpeptideshakertheme .lowresolutionstyle .useroverviewpanelstyle.hidecontent .v-slot {
+	font-size: 20px !important;
+	text-overflow: clip !important;
+	overflow: hidden !important;
+}
+
+.webpeptideshakertheme .lowresolutionstyle .useroverviewpanelstyle.hidecontent .v-label div {
+	font-size: 20px !important;
+	text-overflow: clip !important;
+	overflow: hidden !important;
+	word-spacing: 10px;
+	color: transparent !important;
+}
+
+.webpeptideshakertheme .lowresolutionstyle .useroverviewpanelstyle.hidecontent img {
+	width: 25px !important;
+	height: auto !important;
+}
+
+.webpeptideshakertheme .lowresolutionstyle .useroverviewpanelstyle img {
+	width: 25px !important;
+	height: auto !important;
+}
+
+.webpeptideshakertheme .lowresolutionstyle .v-slot-useroverviewpanelstyle {
+	min-width: 500px !important;
+	min-height: 300px;
+	font-size: 20px;
+	min-height: 330px !important;
+}
+
+.webpeptideshakertheme .lowresolutionstyle .v-slot-leftsidelabel {
+	min-width: 500px;
+	top: 30px !important;
+	position: relative !important;
+	top: 20px !important;
+	min-height: 1px !important;
+	margin-left: 5px;
+}
+
+.webpeptideshakertheme .lowresolutionstyle .actionbuttoncontainer {
+	margin-left: 10px !important;
+	max-width: 100% !important;
+}
+
+.webpeptideshakertheme .lowresolutionstyle .actionbuttoncontainer .v-slot-disableasenable {
+	position: relative !important;
+	top: -65px !important;
+}
+
+.webpeptideshakertheme .lowresolutionstyle .actionbuttoncontainer .v-slot-disableasenable .v-verticallayout-disableasenable {
+	height: 240px !important;
+}
+
+.webpeptideshakertheme .lowresolutionstyle .v-horizontallayout-btnwithtext {
+	height: 80px !important;
+	width: 80px !important;
+}
+
+.webpeptideshakertheme .lowresolutionstyle .v-horizontallayout-btnwithtext .v-image {
+	height: 100% !important;
+	width: 80px !important;
+}
+
+.webpeptideshakertheme .lowresolutionstyle .v-horizontallayout-btnwithtext .v-label {
+	font-size: 20px !important;
+	height: 100% !important;
+	line-height: 100% !important;
+	padding-top: 10px !important;
+}
+
+.webpeptideshakertheme .lowresolutionstyle .v-horizontallayout-btnwithtext .v-label font {
+	font-size: 15px !important;
+}
+
+.webpeptideshakertheme .lowresolutionstyle .v-absolutelayout-wrapper-resultsbtn {
+	top: 10px !important;
+}
+
+.webpeptideshakertheme .lowresolutionstyle .welcomepagecontainer.v-absolutelayout-welcomepagecontainer {
+	max-width: 100% !important;
+	min-width: 500px !important;
+}
+
+.webpeptideshakertheme .v-absolutelayout-wrapper-resultsbtn {
+	top: 10px !important;
+}
+
+.webpeptideshakertheme .v-absolutelayout-smalltoolsbtn.v-absolutelayout-searchguiicon {
+	top: -10px !important;
+}
+
+.webpeptideshakertheme .mobilestyle .integratedframe {
+	border-top-left-radius: 5px;
+}
+
+.webpeptideshakertheme .smallscreenstyle .frame, .webpeptideshakertheme .mobilestyle .frame {
+	min-height: 100%;
+	min-width: 800px;
+}
+
+.webpeptideshakertheme .smallscreenstyle .portraitmode.frame {
+	min-height: 100% !important;
+	min-width: 600px;
+}
+
+.webpeptideshakertheme .smallscreenstyle .portraitmode .v-horizontallayout-mainapplicationframe {
+	max-width: 1057px;
+	max-height: 1920px;
+}
+
+.webpeptideshakertheme .v-absolutelayout-wrapper-homepagepresenterbtn {
+	padding-top: 2px !important;
+	top: 43px !important;
+}
+
+.webpeptideshakertheme .mobilestyle .v-absolutelayout-wrapper-homepagepresenterbtn {
+	top: auto !important;
+	bottom: 0px !important;
+	left: 0px !important;
+}
+
+.webpeptideshakertheme .mobilestyle .v-absolutelayout-wrapper-presenterbtn.v-absolutelayout-wrapper-smalltoolsbtn.v-absolutelayout-wrapper-searchguiicon {
+	top: 10px !important;
+}
+
+.webpeptideshakertheme .v-absolutelayout-resultsmallbtn {
+	top: -45px !important;
+}
+
+.webpeptideshakertheme .mobilestyle .v-absolutelayout-resultsmallbtn {
+	top: 0px !important;
+}
+
+.webpeptideshakertheme .mobilestyle .v-absolutelayout-wrapper-datainputsubcontainer {
+	top: 15px !important;
+	left: 15px !important;
+	right: 15px !important;
+	bottom: 15px !important;
+}
+
+.webpeptideshakertheme .mobilestyle .searchinputcontainer {
+	margin-left: 0px;
+	margin-top: 0px;
+	width: 100% !important;
+	height: 100% !important;
+}
+
+.webpeptideshakertheme .mobilestyle .v-absolutelayout-wrapper-subpanelframe.v-absolutelayout-wrapper-bottomformlayout.v-absolutelayout-wrapper-smallfontlongtext {
+	bottom: 15px !important;
+}
+
+.webpeptideshakertheme .mobilestyle .v-absolutelayout-wrapper-floatrightinyscreen .v-label-smallfontlongtext {
+	max-width: 100%;
+	height: 100% !important;
 }

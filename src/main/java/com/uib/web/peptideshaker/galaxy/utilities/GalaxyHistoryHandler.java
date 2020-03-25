@@ -10,7 +10,7 @@ import com.github.jmchilton.blend4j.galaxy.beans.Dataset;
 import com.github.jmchilton.blend4j.galaxy.beans.History;
 import com.github.wolfie.refresher.Refresher;
 import com.uib.web.peptideshaker.PeptidShakerUI;
-import com.uib.web.peptideshaker.dal.ReactomeDatabase;
+import com.uib.web.peptideshaker.dal.DatabaseLayer;
 import com.uib.web.peptideshaker.model.core.LinkUtil;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinSession;
@@ -87,9 +87,14 @@ public abstract class GalaxyHistoryHandler {
      * the dataset json file.
      */
     private final DateFormat df6 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-    private Set<String> csf_pr_Accession_List;
+    /**
+     * push to update the file system presenter.
+     */
     private boolean updatePresenterView;
-    private final ReactomeDatabase reactomeDatabase;
+    /**
+     * The alternative class to deal with Galaxy server API through REST
+     * services.
+     */
     private final GalaxyAPIInteractiveLayer galaxyApiInteractiveLayer = new GalaxyAPIInteractiveLayer();
 
     /**
@@ -100,9 +105,7 @@ public abstract class GalaxyHistoryHandler {
     public GalaxyHistoryHandler() {
         REFRESHER = new Refresher();
         ((PeptidShakerUI) UI.getCurrent()).addExtension(REFRESHER);
-        this.reactomeDatabase = new ReactomeDatabase();
 
-        this.csf_pr_Accession_List = this.reactomeDatabase.getCsfprAccList();
         refreshlistener = (Refresher source) -> {
             HistoriesClient loopGalaxyHistoriesClient = Galaxy_Instance.getHistoriesClient();
             List<History> historiesList = Galaxy_Instance.getHistoriesClient().getHistories();
@@ -124,9 +127,13 @@ public abstract class GalaxyHistoryHandler {
 
     }
 
-    public Set<String> getCsf_pr_Accession_List() {
-        return csf_pr_Accession_List;
-    }
+    /**
+     * Get list of accessions available on csf-pr in order to allow mapping data
+     * to csf-pr
+     *
+     * @return set of Uni-prot protein accessions available on csf-pr
+     */
+    public abstract Set<String> getCsf_pr_Accession_List();
 
     /**
      * System connected to Galaxy Server
@@ -421,23 +428,6 @@ public abstract class GalaxyHistoryHandler {
 
         }
         REFRESHER.setRefreshInterval(mSecound);
-
-//        refreshlistener = (Refresher source) -> {
-//            System.out.println("at call refrecher listener");
-//            HistoriesClient loopGalaxyHistoriesClient = Galaxy_Instance.getHistoriesClient();
-//            List<History> historiesList = Galaxy_Instance.getHistoriesClient().getHistories();
-//            boolean ready = false;
-//            for (History history : historiesList) {
-//                ready = (loopGalaxyHistoriesClient.showHistory(history.getId()).isReady());
-//                if (!ready) {
-//                    break;
-//                }
-//            }
-//            if (ready) {
-//                REFRESHER.removeListener(refreshlistener);
-//                updateHistory(updatePresenterView);
-//            }
-//        };
         REFRESHER.addListener(refreshlistener);
 
     }
@@ -563,6 +553,9 @@ public abstract class GalaxyHistoryHandler {
         private int dsNumbers;
         private Set<String> toDeleteMap = new HashSet<>();
 
+        /**
+         * error with java.util.ConcurrentModificationException**
+         */
         public UpdateDatasetructureTask(boolean updatePresenterView) {
             jobsInProgress = false;
             this.mgfFilesMap = new LinkedHashMap<>();
@@ -577,7 +570,6 @@ public abstract class GalaxyHistoryHandler {
             this.searchGUIFilesMap = new LinkedHashMap<>();
             this.historiesIds = new HashSet<>();
             this.NeLSFilesMap = new LinkedHashMap<>();
-//            this.tabMgfFilesMap = new HashMap<>();
             this.searchSettingsFilesMap = new LinkedHashMap<>();
 
             try {
@@ -586,10 +578,10 @@ public abstract class GalaxyHistoryHandler {
                     final LinkUtil linkUtil = new LinkUtil();
                     String[] dsDetails = linkUtil.decrypt(requestSearching.split("toShare_-_")[1]).split("-_-");
                     String project_name = dsDetails[0];
-                    PeptideShakerVisualizationDataset externaldataset = new PeptideShakerVisualizationDataset(project_name, user_folder, Galaxy_Instance.getGalaxyUrl(), Galaxy_Instance.getApiKey(), galaxyDatasetServingUtil, csf_pr_Accession_List) {
+                    PeptideShakerVisualizationDataset externaldataset = new PeptideShakerVisualizationDataset(project_name, user_folder, Galaxy_Instance.getGalaxyUrl(), Galaxy_Instance.getApiKey(), galaxyDatasetServingUtil, getCsf_pr_Accession_List()) {
                         @Override
                         public Set<String[]> getPathwayEdges(Set<String> proteinAcc) {
-                            return reactomeDatabase.getPathwayEdges(proteinAcc);
+                            return GalaxyHistoryHandler.this.getPathwayEdges(proteinAcc);
                         }
                     };
                     for (String indexedmgf : dsDetails[3].split("\\+")) {
@@ -616,10 +608,7 @@ public abstract class GalaxyHistoryHandler {
                     externaldataset.setDownloadUrl(Galaxy_Instance.getGalaxyUrl() + "/datasets/" + dsDetails[2].split(":")[1] + "/display?to_ext=zip");
                     historyFilesMap.put(project_name + "_ExternalDS", externaldataset);
                 } else {
-
-//                    NeLSFilesMap.putAll((LinkedHashMap<String, String>) VaadinSession.getCurrent().getAttribute("nelsFilesMap"));
                     HistoriesClient galaxyHistoriesClient = Galaxy_Instance.getHistoriesClient();
-
                     List<History> historiesList = galaxyHistoriesClient.getHistories();
                     if (historiesList.isEmpty()) {
                         galaxyHistoriesClient.create(new History("Online-PeptideShaker-History"));
@@ -642,19 +631,7 @@ public abstract class GalaxyHistoryHandler {
                     List<Map<String, Object>> results = galaxyApiInteractiveLayer.getDatasetIdList(Galaxy_Instance.getGalaxyUrl(), Galaxy_Instance.getApiKey());//sresp.getResults();
                     String userID = Galaxy_Instance.getUsersClient().getUsers().get(0).getId();
                     usedStorageSpace = galaxyApiInteractiveLayer.getUserMemoryUsage(Galaxy_Instance.getGalaxyUrl(), userID, Galaxy_Instance.getApiKey());
-
-//                    if (true) {
-//                        for (Map<String, Object> tempMap : results) {
-//                            for (String key : tempMap.keySet()) {
-//                                System.out.println("ay key: " + key + "  value: " + tempMap.get(key));
-//                            }
-//                            System.out.println("----------------------------------------------------------------");
-//                        }
-//                        results.clear();
-//
-//                    }
                     results.stream().filter((map) -> map != null && (!((map.get("purged") + "").equalsIgnoreCase("true") || (!historiesIds.contains(map.get("history_id") + "")) || (map.get("deleted") + "").equalsIgnoreCase("true")))).forEachOrdered((Map<String, Object> map) -> {
-
                         if (map.get("name").toString().contains("-ToDelete")) {
                             toDeleteMap.add(map.get("history_id") + ";" + map.get("id").toString());
                         } else if (map.containsKey("collection_type") && map.get("collection_type").toString().equalsIgnoreCase("list")) {
@@ -819,18 +796,17 @@ public abstract class GalaxyHistoryHandler {
                                 NeLSFilesMap.remove(ds.getNelsKey());
                             } else if ((map.get("name").toString().endsWith("-PS")) && (map.get("extension").toString().equalsIgnoreCase("zip"))) {
                                 String projectId = map.get("name").toString().replace("-PS", "");
-                                PeptideShakerVisualizationDataset vDs = new PeptideShakerVisualizationDataset(projectId, user_folder, Galaxy_Instance.getGalaxyUrl(), Galaxy_Instance.getApiKey(), galaxyDatasetServingUtil, csf_pr_Accession_List) {
+                                PeptideShakerVisualizationDataset vDs = new PeptideShakerVisualizationDataset(projectId, user_folder, Galaxy_Instance.getGalaxyUrl(), Galaxy_Instance.getApiKey(), galaxyDatasetServingUtil, getCsf_pr_Accession_List()) {
                                     @Override
                                     public Set<String[]> getPathwayEdges(Set<String> proteinAcc) {
-                                        return reactomeDatabase.getPathwayEdges(proteinAcc);
+                                        return GalaxyHistoryHandler.this.getPathwayEdges(proteinAcc);
                                     }
 
                                 };
                                 peptideShakerVisualizationMap.put(projectId, vDs);
                                 vDs.setHistoryId(map.get("history_id") + "");
                                 vDs.setType("Web Peptide Shaker Dataset");
-                                vDs.setName(projectId);
-//                                vDs.setFile_ext(map.get("file_ext") + "");
+                                vDs.setName(projectId);;
                                 vDs.setPeptideShakerResultsFileId(map.get("id").toString(), false);
                                 vDs.setStatus(map.get("state") + "");
                                 vDs.setGalaxyId(map.get("id").toString());
@@ -846,8 +822,12 @@ public abstract class GalaxyHistoryHandler {
                             }
                         }
                     });
+
+                    /**
+                     * Concurrent modification exception here.
+                     *
+                     */
                     peptideShakerVisualizationMap.keySet().stream().map((key) -> peptideShakerVisualizationMap.get(key)).filter((vDs) -> !(!searchGUIFilesMap.containsKey(vDs.getProjectName()))).forEachOrdered((vDs) -> {
-//                       
                         GalaxyFileObject ds = searchGUIFilesMap.get(vDs.getProjectName());
                         vDs.setCreateTime(ds.getCreate_time());
                         Dataset hcp = Galaxy_Instance.getHistoriesClient().showDataset(ds.getHistoryId(), ds.getGalaxyId());
@@ -925,5 +905,14 @@ public abstract class GalaxyHistoryHandler {
         }
 
     }
+
+    /**
+     * Get pathway information for accessions list
+     *
+     * @param proteinAcc protein accession list
+     * @return edges data for the selected accessions
+     *
+     */
+    public abstract Set<String[]> getPathwayEdges(Set<String> proteinAcc);
 
 }

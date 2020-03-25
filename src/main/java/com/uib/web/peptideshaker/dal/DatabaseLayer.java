@@ -26,7 +26,7 @@ import java.util.logging.Logger;
  *
  * @author Yehia Farag
  */
-public class ReactomeDatabase {
+public class DatabaseLayer {
 
     /**
      * Database URL.
@@ -51,7 +51,10 @@ public class ReactomeDatabase {
     private Connection conn = null;
     private boolean dbEnabled = true;
 
-    public ReactomeDatabase() {
+    /**
+     * Initialise the database layer.
+     */
+    public DatabaseLayer() {
         if (VaadinSession.getCurrent().getAttribute("dbUserName") == null) {
             dbEnabled = false;
             return;
@@ -64,10 +67,20 @@ public class ReactomeDatabase {
 
     }
 
+    /**
+     * Check if the database available
+     *
+     * @return database available
+     */
     public boolean isDbEnabled() {
         return dbEnabled;
     }
 
+    /**
+     * Get the name of the database based on the Reactom version.
+     *
+     * @return database name
+     */
     private String getDBName() {
         String databaseName = null;
         if (!dbEnabled) {
@@ -78,7 +91,6 @@ public class ReactomeDatabase {
             if (conn == null || conn.isClosed()) {
                 Class.forName(dbDriver).newInstance();
                 conn = DriverManager.getConnection(dbURL + "mysql", dbUserName, dbPassword);
-
             }
             //temp 
             Statement statement = conn.createStatement();
@@ -88,8 +100,8 @@ public class ReactomeDatabase {
                 String db = rs1.getString("Database");
                 if (db.contains("reactome_")) {
                     databaseName = db;
+                    break;
                 }
-
             }
             conn.close();
         } catch (SQLException | InstantiationException | IllegalAccessException | ClassNotFoundException ex) {
@@ -98,6 +110,13 @@ public class ReactomeDatabase {
         return databaseName;
     }
 
+    /**
+     * Get list of accessions available on csf-pr in order to allow mapping data
+     * to csf-pr.
+     *
+     * @return set of Uni-prot protein accessions available on csf-pr
+     *
+     */
     public Set<String> getCsfprAccList() {
         Set<String> csf_pr_acc_list = new LinkedHashSet<>();
         if (!dbEnabled) {
@@ -122,7 +141,7 @@ public class ReactomeDatabase {
                 }
             }
         } catch (SQLException | ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
-            Logger.getLogger(ReactomeDatabase.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(DatabaseLayer.class.getName()).log(Level.SEVERE, null, ex);
         }
         //check file on csfpr
         String csfprLink = VaadinSession.getCurrent().getAttribute("csfprLink") + "";
@@ -131,7 +150,6 @@ public class ReactomeDatabase {
             URL downloadableFile = new URL(csfprLink + updateFileName);
             URLConnection urlConn = downloadableFile.openConnection();
             urlConn.addRequestProperty("Connection", "keep-alive");
-//                conn.setDoInput(true);
             InputStream in = urlConn.getInputStream();
             InputStreamReader r = new InputStreamReader(in);
             BufferedReader br = new BufferedReader(r);
@@ -142,7 +160,6 @@ public class ReactomeDatabase {
                 while ((line = br.readLine()) != null) {
                     csf_pr_acc_list.add(line);
                     updateStatment += ("(?),");
-
                 }
                 updateStatment = updateStatment.substring(0, updateStatment.length() - 1) + ";";
             }
@@ -163,7 +180,6 @@ public class ReactomeDatabase {
                         preparedStatment.setString(i, str);
                     }
                     preparedStatment.executeUpdate();
-
                 }
 
             } else {
@@ -173,11 +189,8 @@ public class ReactomeDatabase {
                 while (rs.next()) {
                     String acc = rs.getString("Accssion");
                     csf_pr_acc_list.add(acc);
-
                 }
-
             }
-
         } catch (MalformedURLException ex) {
             ex.printStackTrace();
         } catch (IOException | SQLException ex) {
@@ -187,6 +200,12 @@ public class ReactomeDatabase {
         return csf_pr_acc_list;
     }
 
+    /**
+     * Get the edges information for selected accession list
+     *
+     * @param proteinAcc protein accession list
+     * @return set of edge data
+     */
     public Set<String[]> getPathwayEdges(Set<String> proteinAcc) {
         try {
 
@@ -204,7 +223,6 @@ public class ReactomeDatabase {
                     continue;
                 }
                 selectstatment = selectstatment + "`uniprot_acc`=? or ";
-
             }
             if (selectstatment.endsWith("where ")) {
                 return edges;
@@ -264,16 +282,7 @@ public class ReactomeDatabase {
         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | SQLException e) {
             System.out.println(e.getLocalizedMessage());
         }
-
         return null;
-    }
-
-    public void getFullPathways() {
-
-    }
-
-    public void checkUpdateCsfprAccList() {
-
     }
 
 }

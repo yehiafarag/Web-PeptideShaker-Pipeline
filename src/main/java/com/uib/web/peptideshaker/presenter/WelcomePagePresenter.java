@@ -149,6 +149,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         galaxyLloginBtn.setEnabled(availableGalaxy);
 
         HorizontalLayout mainMiddlePanel = new HorizontalLayout();
+        mainMiddlePanel.addStyleName("welcomepagebody");
         mainMiddlePanel.setSizeFull();
         mainMiddlePanel.setSpacing(true);
         container.addComponent(mainMiddlePanel, "left:10px;top:100px;");
@@ -175,7 +176,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         overviewLabel.addStyleName(ValoTheme.LABEL_H2);
         userOverviewLayout.addComponent(overviewLabel);
 
-        Label userLabel = initLeftSideInfoLabel(VaadinIcons.USER.getHtml() + " User ", "<i>Offline</i>");
+        Label userLabel = initLeftSideInfoLabel(VaadinIcons.USER.getHtml() + " User ", "<i class='rightsidediv'>Offline</i>");
         userOverviewLayout.addComponent(userLabel);
 
         Label dsNumberLabel = initLeftSideInfoLabel("<img src='VAADIN/themes/webpeptideshakertheme/img/venn_icon.png' alt style='width: auto;height:15px;margin-left:-2px;    margin-right: 4px;'>" + " Projects ", "<i></i>");
@@ -187,10 +188,12 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         Label usedMemory = initLeftSideInfoLabel(VaadinIcons.CLOUD_O.getHtml() + " Storage ", "<i></i>");
         userOverviewLayout.addComponent(usedMemory);
 
-        Label searchGUI = initLeftSideInfoLabel("<img src='VAADIN/themes/webpeptideshakertheme/img/sgiconHRNSgray21.png' alt style='width: auto;height:15px;margin-left:-2px;    margin-right: 4px;'>" + " SearchGUI ", "<i>" + VaadinSession.getCurrent().getAttribute("searchGUIversion") + "</i>");
+        Label searchGUI = initLeftSideInfoLabel("<img src='VAADIN/themes/webpeptideshakertheme/img/sgiconHRNSgray21.png' alt style='width: auto;height:15px;margin-left:-2px;    margin-right: 4px;'>" + " SearchGUI ", "<i class='nrightsidediv'>" + VaadinSession.getCurrent().getAttribute("searchGUIversion") + "</i>");
+         searchGUI.setValue(searchGUI.getValue().replace("<div style='white-space: nowrap;width: 65px;height: 20px;", "<div class='psversstyle' style='white-space: nowrap;width: 65px;height: 20px;"));    
         userOverviewLayout.addComponent(searchGUI);
 
-        Label peptideShaker = initLeftSideInfoLabel("<img src='VAADIN/themes/webpeptideshakertheme/img/psiconHRNSgray21.png' alt style='width: auto;height:15px;margin-left:-2px;    margin-right: 4px;'>" + " PeptideShaker ", "<i>" + VaadinSession.getCurrent().getAttribute("psVersion") + "</i>");
+        Label peptideShaker = initLeftSideInfoLabel("<img src='VAADIN/themes/webpeptideshakertheme/img/psiconHRNSgray21.png' alt style='width: auto;height:15px;margin-left:-2px;    margin-right: 4px;'>" + " PeptideShaker ", "<i class='nrightsidediv'>" + VaadinSession.getCurrent().getAttribute("psVersion") + "</i>");
+        peptideShaker.setValue(peptideShaker.getValue().replace("<div style='white-space: nowrap;width: 65px;height: 20px;", "<div class='psversstyle' style='white-space: nowrap;width: 65px;height: 20px;"));
         userOverviewLayout.addComponent(peptideShaker);
 
         /**
@@ -460,16 +463,15 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
         busyConnectinWindow.center();
         this.busyConnectinWindow.setWindowMode(WindowMode.NORMAL);
         busyConnectinWindow.addStyleName("hidewindow");
-
         if ((boolean) VaadinSession.getCurrent().getAttribute("mobilescreenstyle")) {
             userOverviewPanel.setIcon(VaadinIcons.ANGLE_RIGHT);
             userOverviewPanel.addLayoutClickListener((LayoutEvents.LayoutClickEvent event) -> {
                 if (userOverviewPanel.getStyleName().contains("hidecontent")) {
                     userOverviewPanel.removeStyleName("hidecontent");
-                    presenterControlButtonsPanel.addStyleName("reducewidth");
+//                    presenterControlButtonsPanel.addStyleName("reducewidth");
                 } else {
                     userOverviewPanel.addStyleName("hidecontent");
-                    presenterControlButtonsPanel.removeStyleName("reducewidth");
+//                    presenterControlButtonsPanel.removeStyleName("reducewidth");
                 }
             });
             userOverviewPanel.addStyleName("hidecontent");
@@ -546,7 +548,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
      */
     public void updateUserOverviewPanel(List<String> userOverviewData) {
         if (userOverviewData != null && !userOverviewData.isEmpty()) {
-            Label l1 = initLeftSideInfoLabel(VaadinIcons.USER.getHtml() + " <b style='color:#cd6e1d !important'>" + userOverviewData.get(0) + "</b>", "");
+            Label l1 = initLeftSideInfoLabel(VaadinIcons.USER.getHtml() + " <b class='rightsidediv' style='color:#cd6e1d !important'>" + userOverviewData.get(0) + "</b>", "");
             userOverviewLayout.replaceComponent(userOverviewLayout.getComponent(1), l1);
             for (int i = 2; i < userOverviewLayout.getComponentCount(); i++) {
                 Label l = (Label) userOverviewLayout.getComponent(i);
@@ -661,11 +663,12 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
      *
      */
     private Label initLeftSideInfoLabel(String title, String value) {
-        Label label = new Label("<div style='width:120px;font-size: 14px;'>" + title + "</div><div style='white-space: nowrap;width: 65px;height: 20px;font-size: 12px;color:#cd6e1d;position: relative;top: -20px;left: 120px;text-overflow: ellipsis;overflow: hidden;'>  " + value + " </div>");
+        Label label = new Label("<div class='lefttitle' style='width:120px;font-size: 14px;'>" + title + "</div><div style='white-space: nowrap;width: 65px;height: 20px;font-size: 12px;color:#cd6e1d;position: relative;top: -20px;left: 120px;text-overflow: ellipsis;overflow: hidden;'>  " + value + " </div>");
         label.setContentMode(ContentMode.HTML);
-        label.setHeight(30, Sizeable.Unit.PIXELS);
-        label.setWidth(180, Sizeable.Unit.PIXELS);
+        label.setHeight(30, Unit.PIXELS);
+        label.setWidth(180, Unit.PIXELS);
         label.setStyleName(ValoTheme.LABEL_SMALL);
+        label.addStyleName("leftsidelabel");
         return label;
 
     }
@@ -679,7 +682,7 @@ public abstract class WelcomePagePresenter extends VerticalLayout implements Vie
      */
     private void updateLeftSideInfoLabel(Label label, String value) {
         String org = label.getValue().split("</div>")[0];
-        label.setValue(org + "</div><div style='white-space: nowrap;width: 65px;height: 20px;font-size: 12px;color:#cd6e1d;position: relative;top: -20px;left: 120px;text-overflow: ellipsis;overflow: hidden;'>  " + value + " </div>");
+        label.setValue(org + "</div><div class='nrightsidediv' style='white-space: nowrap;width: 65px;height: 20px;font-size: 12px;color:#cd6e1d;position: relative;top: -20px;left: 120px;text-overflow: ellipsis;overflow: hidden;'>  " + value + " </div>");
 
     }
 

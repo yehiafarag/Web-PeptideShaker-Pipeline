@@ -93,7 +93,7 @@ public abstract class InteractivePSPRojectResultsPresenter extends VerticalLayou
         this.smallControlButton.setData(InteractivePSPRojectResultsPresenter.this.getViewId());
         this.smallControlButton.addStyleName("resultsmallbtn");
 
-        this.controlButton = new ButtonWithLabel("Visualise Data</br><font>Visualise project (Upload your own project files)</font>", 1);
+        this.controlButton = new ButtonWithLabel("Visualise Data</br><font>Visualise/Upload project</font>", 1);
         this.controlButton.setData(InteractivePSPRojectResultsPresenter.this.getViewId());
         this.controlButton.updateIcon(VaadinIcons.CLUSTER.getHtml());
         this.controlButton.updateIconResource(new ThemeResource("img/venn_color.png"));

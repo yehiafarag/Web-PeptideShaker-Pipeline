@@ -21,7 +21,7 @@ import com.vaadin.ui.Component;
  *
  * @author Yehia Farag
  */
-public class PresenterManager extends HorizontalLayout implements LayoutEvents.LayoutClickListener {
+public class PresenterManager  implements LayoutEvents.LayoutClickListener {
 
     /**
      * Top layout container.
@@ -37,16 +37,7 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
      * views.
      */
     private final AbsoluteLayout topMiddleLayoutContainer;
-    /**
-     * Left layout container is the main layout container that contain the main
-     * views.
-     */
-//    private final AbsoluteLayout bottomLayoutContainer;
-    /**
-     * Left layout container is the main layout container that contain the main
-     * views.
-     */
-    private final VerticalLayout middleLayoutContainer;
+
 
     /**
      * Presenter buttons container layout container is layout container that
@@ -54,16 +45,10 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
      */
     private final AbsoluteLayout presenterButtonsContainerLayout;
 
-    private final Button signOutBtn;
 
     public AbsoluteLayout getPresenterButtonsContainerLayout() {
         return presenterButtonsContainerLayout;
     }
-    /**
-     * Top layout container is the right side buttons layout container that
-     * contain the small control buttons.
-     */
-//    private final HorizontalLayout topLayoutBtnsContainer;
     /**
      * Presenter buttons layout container contains the presenter control buttons
      * layout.
@@ -93,46 +78,12 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
     /**
      * Constructor to initialise the layout.
      */
-    public PresenterManager() {
-        PresenterManager.this.setSizeFull();
-        PresenterManager.this.setStyleName("mainlayout");
+    public PresenterManager(AbsoluteLayout subViewButtonsActionContainer, AbsoluteLayout topMiddleLayoutContainer, AbsoluteLayout presenterButtonsContainerLayout, AbsoluteLayout subPresenterButtonsContainer) {  
+        this.subViewButtonsActionContainer = subViewButtonsActionContainer;
+        this.topMiddleLayoutContainer = topMiddleLayoutContainer;    
+        this.presenterButtonsContainerLayout = presenterButtonsContainerLayout;
+        this.subPresenterButtonsContainer = subPresenterButtonsContainer;
 
-        subViewButtonsActionContainer = new AbsoluteLayout();
-        subViewButtonsActionContainer.setSizeFull();
-        subViewButtonsActionContainer.setStyleName("subviewbuttonsactioncontainer");
-        PresenterManager.this.addComponent(subViewButtonsActionContainer);
-        PresenterManager.this.setExpandRatio(subViewButtonsActionContainer, 0);
-
-        middleLayoutContainer = new VerticalLayout();
-        middleLayoutContainer.setSizeFull();
-        middleLayoutContainer.setStyleName("middleviewcontainer");
-        PresenterManager.this.addComponent(middleLayoutContainer);
-        PresenterManager.this.setExpandRatio(middleLayoutContainer, 100);
-
-        topMiddleLayoutContainer = new AbsoluteLayout();
-        topMiddleLayoutContainer.setSizeFull();
-        middleLayoutContainer.addComponent(topMiddleLayoutContainer);
-        middleLayoutContainer.setExpandRatio(topMiddleLayoutContainer, 100);
-
-        subPresenterButtonsContainer = new AbsoluteLayout();
-        subPresenterButtonsContainer.setSizeFull();
-        subPresenterButtonsContainer.setData("controlBtnsAction");
-        subPresenterButtonsContainer.setStyleName("presentercontainer");
-        subPresenterButtonsContainer.addStyleName("bigmenubtn");
-        subPresenterButtonsContainer.addStyleName("selectedbiglbtn");
-        subPresenterButtonsContainer.addStyleName("hide");
-        subPresenterButtonsContainer.addStyleName("welcomepagstyle");
-        PresenterManager.this.addComponent(subPresenterButtonsContainer);
-        PresenterManager.this.setExpandRatio(subPresenterButtonsContainer, 0);
-
-        this.presenterButtonsContainerLayout = new AbsoluteLayout();
-        presenterButtonsContainerLayout.setSizeFull();
-
-        signOutBtn = new Button("Signout");
-        signOutBtn.addClickListener((Button.ClickEvent event) -> {
-            VaadinSession.getCurrent().getSession().invalidate();
-            Page.getCurrent().reload();
-        });
     }
 
     /**
@@ -146,7 +97,6 @@ public class PresenterManager extends HorizontalLayout implements LayoutEvents.L
         } else {
             subPresenterButtonsContainer.addStyleName("hide");
         }
-
     }
 
     int x = 0;

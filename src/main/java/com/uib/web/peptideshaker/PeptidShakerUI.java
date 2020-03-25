@@ -1,7 +1,6 @@
 package com.uib.web.peptideshaker;
 
 import com.uib.web.peptideshaker.galaxy.nelsgalaxy.NeLSStorageInteractiveLayer;
-import com.uib.web.peptideshaker.presenter.core.BasicUploader;
 import javax.servlet.annotation.WebServlet;
 
 import com.vaadin.annotations.Theme;
@@ -11,17 +10,14 @@ import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinSession;
-import com.vaadin.ui.Notification;
+import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.shared.ui.window.WindowMode;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.Window;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.ServletContext;
 
 /**
@@ -42,9 +38,12 @@ public class PeptidShakerUI extends UI {
      * The connection layer to NeLS-Galaxy server.
      */
     private NeLSStorageInteractiveLayer NeLS_Galaxy;
-    private Notification notification;
-    private boolean mobileScreenComp;
-    private boolean verticalScreenMode;
+    private Label notification;
+    private boolean mobileDeviceStyle;
+    private boolean smallDeviceStyle;
+    private boolean portraitScreenMode;
+    private Window notificationWindow;
+    private WebPeptideShakerApp webPeptideShakerApp;
 
     /**
      * The entry point for the application .
@@ -53,15 +52,46 @@ public class PeptidShakerUI extends UI {
      */
     @Override
     protected void init(VaadinRequest vaadinRequest) {
+        String brwserApp = Page.getCurrent().getWebBrowser().getBrowserApplication();
+        int screenWidth = Page.getCurrent().getBrowserWindowWidth();
+        int screenHeigh = Page.getCurrent().getBrowserWindowHeight();
+        portraitScreenMode = screenWidth < screenHeigh;
+        if (brwserApp.contains("Mobile")) {
+            mobileDeviceStyle = true;
+            PeptidShakerUI.this.addStyleName("mobilestyle");
+        } else if ((screenWidth < 1349 && screenWidth > 800) && (screenHeigh <= 800 && screenHeigh > 600)) {
+            smallDeviceStyle = true;
+            PeptidShakerUI.this.addStyleName("smallscreenstyle");
+        } else if ((screenHeigh < 1349 && screenHeigh > 800) && (screenWidth <= 800 && screenWidth > 600)) {
+            smallDeviceStyle = true;
+            PeptidShakerUI.this.addStyleName("smallscreenstyle");
+        }else if (screenHeigh <= 800 || screenWidth <= 600) {
+            PeptidShakerUI.this.addStyleName("lowresolutionstyle");
+            mobileDeviceStyle = true;
+            PeptidShakerUI.this.addStyleName("mobilestyle");
+        } else if (screenWidth <= 800 || screenHeigh <= 600) {
+            PeptidShakerUI.this.addStyleName("lowresolutionstyle");
+            mobileDeviceStyle = true;
+            PeptidShakerUI.this.addStyleName("mobilestyle");
+        }
         String localFileSystemFolderPath;
         String tempFolder;
+        notificationWindow = new Window();
         try {
             PeptidShakerUI.this.addStyleName("uicontainer");
             PeptidShakerUI.this.setSizeFull();
-            notification = new Notification("Use the device in landscape mode <center><i>(recommended)</i></center>", Notification.Type.ERROR_MESSAGE);
-            notification.setDelayMsec(10000);
-            notification.setHtmlContentAllowed(true);
+            notification = new Label("Use the device in landscape mode <center><i>(recommended)</i></center>", ContentMode.HTML);
             notification.setStyleName("mobilealertnotification");
+            notificationWindow.setStyleName("mobilealertnotification");
+            notificationWindow.setClosable(true);
+            notificationWindow.setModal(false);
+            notificationWindow.setWindowMode(WindowMode.NORMAL);
+            notificationWindow.setDraggable(false);
+            notificationWindow.setResizable(false);
+            UI.getCurrent().addWindow(notificationWindow);
+            notificationWindow.setVisible(false);
+            notificationWindow.setContent(notification);
+
             Path path;
             try {
                 path = Files.createTempDirectory("userTempFolder");
@@ -78,7 +108,6 @@ public class PeptidShakerUI extends UI {
              */
             ServletContext scx = VaadinServlet.getCurrent().getServletContext();
             scx.setAttribute("tempFolder", tempFolder);
-
             VaadinSession.getCurrent().setAttribute("userDataFolderUrl", localFileSystemFolderPath);
             VaadinSession.getCurrent().getSession().setAttribute("userDataFolderUrl", localFileSystemFolderPath);
             VaadinSession.getCurrent().setAttribute("ctxPath", vaadinRequest.getContextPath());
@@ -87,73 +116,35 @@ public class PeptidShakerUI extends UI {
             String galaxyServerUrl = (scx.getInitParameter("galaxyServerUrl"));
             VaadinSession.getCurrent().setAttribute("galaxyServerUrl", galaxyServerUrl);
             String csfprLink = (scx.getInitParameter("csfprservice"));
+            String dbURL = (scx.getInitParameter("url"));
+            String dbDriver = (scx.getInitParameter("driver"));
+            String dbUserName = (scx.getInitParameter("userName"));
+            String dbPassword = (scx.getInitParameter("password"));
+            VaadinSession.getCurrent().setAttribute("dbURL", dbURL);
+            VaadinSession.getCurrent().setAttribute("dbDriver", dbDriver);
+            VaadinSession.getCurrent().setAttribute("dbUserName", dbUserName);
+            VaadinSession.getCurrent().setAttribute("dbPassword", dbPassword);
             VaadinSession.getCurrent().setAttribute("csfprLink", csfprLink);
-
             String psVersion = (scx.getInitParameter("psvirsion"));
             String searchGUIversion = (scx.getInitParameter("searchguivirsion"));
             VaadinSession.getCurrent().setAttribute("psVersion", psVersion);
             VaadinSession.getCurrent().setAttribute("searchGUIversion", searchGUIversion);
-
-            mobileScreenComp = false;//(Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile")) || (screenW < 1349 || screenH < 1000);
-            verticalScreenMode = false;//(Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight());
-
-//            if (mobileScreenComp) {
-            VaadinSession.getCurrent().setAttribute("smallscreenstyle", false);
-            VaadinSession.getCurrent().setAttribute("mobilescreenstyle", mobileScreenComp);
-//            }
-
-            WebPeptideShakerApp webPeptideShakerApp = new WebPeptideShakerApp(galaxyServerUrl);
-            PeptidShakerUI.this.setContent(webPeptideShakerApp);
-
-            /**
-             * Check the visualisation mode based on screen size small screen
-             * for mobile browser or tablet.
-             *
-             * @todo: we need better optimisation to detect the window ratio.
-             */
-//        if ((Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight()) || (Page.getCurrent().getBrowserWindowWidth() < 650) || (Page.getCurrent().getBrowserWindowHeight() < 600)) {
-            if (mobileScreenComp) {
-                webPeptideShakerApp.addStyleName("mobilestyle");
-            }
-            if (mobileScreenComp && !(Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile"))) {
-                webPeptideShakerApp.addStyleName("smallpcscreen");
-            }
-//            if (smallscreen && verticalScreenMode) {
-//                webPeptideShakerApp.addStyleName("verticalmode");
-//            }
+            VaadinSession.getCurrent().setAttribute("mobilescreenstyle", (mobileDeviceStyle));
+            VaadinSession.getCurrent().setAttribute("smallscreenstyle", smallDeviceStyle);
+            webPeptideShakerApp = new WebPeptideShakerApp(galaxyServerUrl);
+            PeptidShakerUI.this.setContent(webPeptideShakerApp.getApplicationUserInterface());
             /**
              * On resize the browser re-arrange all the created pop-up windows
              * to the page center.
              */
             Page.getCurrent().addBrowserWindowResizeListener((Page.BrowserWindowResizeEvent event) -> {
-
-                if (mobileScreenComp && (Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight())) {
-                    if (Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile")) {
-                        notification.show(Page.getCurrent());
-                    }
-                    webPeptideShakerApp.addStyleName("verticalmode");
-//                    webPeptideShakerApp.addStyleName("hidemode");
-                } else if (Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile") && (Page.getCurrent().getBrowserWindowWidth() >= Page.getCurrent().getBrowserWindowHeight())) {
-//                    webPeptideShakerApp.removeStyleName("hidemode");
-                    webPeptideShakerApp.removeStyleName("verticalmode");
-
-                }
+                portraitScreenMode = (Page.getCurrent().getBrowserWindowWidth() < Page.getCurrent().getBrowserWindowHeight());
+                updateMainStyleMode(mobileDeviceStyle, portraitScreenMode);
                 UI.getCurrent().getWindows().forEach((w) -> {
                     w.center();
                 });
             });
-
-            if (mobileScreenComp && verticalScreenMode) {
-                if (Page.getCurrent().getWebBrowser().getBrowserApplication().contains("Mobile")) {
-                    notification.show(Page.getCurrent());
-                }
-                webPeptideShakerApp.addStyleName("verticalmode");
-//                    webPeptideShakerApp.addStyleName("hidemode");
-            } else if (mobileScreenComp && !verticalScreenMode) {
-//                    webPeptideShakerApp.removeStyleName("hidemode");
-                webPeptideShakerApp.removeStyleName("verticalmode");
-
-            }
+            updateMainStyleMode(mobileDeviceStyle, portraitScreenMode);
 
             /**
              * for future use to integrate with NeLS.
@@ -168,8 +159,29 @@ public class PeptidShakerUI extends UI {
             e.printStackTrace();
 
         }
+    }
 
-//        getSpectrum();
+    /**
+     * update main style for the application.
+     *
+     * @param mobileDeviceStyle the device is mobile phone
+     * @param portrait the screen is in portrait mode
+     */
+    private void updateMainStyleMode(boolean mobileDeviceStyle, boolean portrait) {
+        if (webPeptideShakerApp == null) {
+            return;
+        }
+        if (portrait) {
+            webPeptideShakerApp.getApplicationUserInterface().addStyleName("portraitmode");
+            notificationWindow.setVisible(false);
+        } else {
+            webPeptideShakerApp.getApplicationUserInterface().removeStyleName("portraitmode");
+        }
+        if (mobileDeviceStyle && portrait) {
+            notificationWindow.setVisible(true);
+        } else {
+            notificationWindow.setVisible(false);
+        }
     }
 
     @Override
@@ -179,7 +191,7 @@ public class PeptidShakerUI extends UI {
     }
 
     /**
-     * Main application servlet.
+     * Main application Servlet.
      */
     @WebServlet(urlPatterns = "/*", name = "PeptidShakerUIServlet", asyncSupported = true)
     @VaadinServletConfiguration(ui = PeptidShakerUI.class, productionMode = true, resourceCacheTime = 0)//, resourceCacheTime = 1
